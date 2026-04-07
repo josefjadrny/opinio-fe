@@ -14,13 +14,20 @@ import { AddProfileModal } from './components/profile-form/AddProfileModal';
 const SIDEBAR_KEY = 'pulse_sidebar_widths';
 const DEFAULT_LEFT = 360;
 const DEFAULT_RIGHT = 360;
-const MIN_WIDTH = 200;
+const MIN_WIDTH = 260;
 const MAX_WIDTH = 500;
+
+function clamp(v: number) {
+  return Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, v));
+}
 
 function loadSidebarWidths(): { left: number; right: number } {
   try {
     const raw = localStorage.getItem(SIDEBAR_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const { left, right } = JSON.parse(raw);
+      return { left: clamp(left), right: clamp(right) };
+    }
   } catch { /* ignore */ }
   return { left: DEFAULT_LEFT, right: DEFAULT_RIGHT };
 }
@@ -93,17 +100,11 @@ function AppContent() {
   }, [sidebarWidths]);
 
   const handleLeftDrag = useCallback((delta: number) => {
-    setSidebarWidths((prev) => ({
-      ...prev,
-      left: Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, prev.left + delta)),
-    }));
+    setSidebarWidths((prev) => ({ ...prev, left: clamp(prev.left + delta) }));
   }, []);
 
   const handleRightDrag = useCallback((delta: number) => {
-    setSidebarWidths((prev) => ({
-      ...prev,
-      right: Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, prev.right + delta)),
-    }));
+    setSidebarWidths((prev) => ({ ...prev, right: clamp(prev.right + delta) }));
   }, []);
 
   return (
