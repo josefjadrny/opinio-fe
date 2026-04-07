@@ -31,6 +31,7 @@ export function MobileFeed({
               profile={profile}
               variant="compact"
               isNew={positiveRecent.some((r) => r.id === profile.id)}
+              showOnly="like"
             />
           ))}
         </div>
@@ -50,6 +51,7 @@ export function MobileFeed({
               profile={profile}
               variant="compact"
               isNew={negativeRecent.some((r) => r.id === profile.id)}
+              showOnly="dislike"
             />
           ))}
         </div>

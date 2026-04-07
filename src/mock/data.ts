@@ -9,7 +9,7 @@ function p(
     id,
     name,
     role,
-    imageUrl: imageUrl ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=128&background=random`,
+    imageUrl: imageUrl ?? `/avatars/${id}.jpg`,
     countryCode,
     description,
     addedBy: 'system',

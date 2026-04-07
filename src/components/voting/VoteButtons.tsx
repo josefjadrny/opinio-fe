@@ -8,9 +8,10 @@ interface VoteButtonsProps {
   dislikes: number;
   myVote: 'like' | 'dislike' | null;
   compact?: boolean;
+  showOnly?: 'like' | 'dislike';
 }
 
-export function VoteButtons({ profileId, likes, dislikes, myVote, compact }: VoteButtonsProps) {
+export function VoteButtons({ profileId, likes, dislikes, myVote, compact, showOnly }: VoteButtonsProps) {
   const voteMutation = useVote();
   const { data: me } = useMe();
 
@@ -28,35 +29,39 @@ export function VoteButtons({ profileId, likes, dislikes, myVote, compact }: Vot
 
   return (
     <div className="flex items-center gap-2">
-      <button
-        onClick={() => handleVote('like')}
-        disabled={!canLike}
-        className={`${btnBase} ${
-          myVote === 'like'
-            ? 'bg-positive text-white'
-            : canLike
-              ? 'bg-positive/20 text-positive hover:bg-positive/30'
-              : 'bg-white/5 text-white/30 cursor-not-allowed'
-        }`}
-      >
-        <span>&#9650;</span>
-        <span className="tabular-nums">{formatNumber(likes)}</span>
-      </button>
+      {(!showOnly || showOnly === 'like') && (
+        <button
+          onClick={() => handleVote('like')}
+          disabled={!canLike}
+          className={`${btnBase} ${
+            myVote === 'like'
+              ? 'bg-positive text-white'
+              : canLike
+                ? 'bg-positive/20 text-positive hover:bg-positive/30'
+                : 'bg-white/5 text-white/30 cursor-not-allowed'
+          }`}
+        >
+          <span>&#9650;</span>
+          <span className="tabular-nums">{formatNumber(likes)}</span>
+        </button>
+      )}
 
-      <button
-        onClick={() => handleVote('dislike')}
-        disabled={!canDislike}
-        className={`${btnBase} ${
-          myVote === 'dislike'
-            ? 'bg-negative text-white'
-            : canDislike
-              ? 'bg-negative/20 text-negative hover:bg-negative/30'
-              : 'bg-white/5 text-white/30 cursor-not-allowed'
-        }`}
-      >
-        <span>&#9660;</span>
-        <span className="tabular-nums">{formatNumber(dislikes)}</span>
-      </button>
+      {(!showOnly || showOnly === 'dislike') && (
+        <button
+          onClick={() => handleVote('dislike')}
+          disabled={!canDislike}
+          className={`${btnBase} ${
+            myVote === 'dislike'
+              ? 'bg-negative text-white'
+              : canDislike
+                ? 'bg-negative/20 text-negative hover:bg-negative/30'
+                : 'bg-white/5 text-white/30 cursor-not-allowed'
+          }`}
+        >
+          <span>&#9660;</span>
+          <span className="tabular-nums">{formatNumber(dislikes)}</span>
+        </button>
+      )}
     </div>
   );
 }

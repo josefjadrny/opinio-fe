@@ -10,9 +10,10 @@ interface ProfileCardProps {
   variant?: 'default' | 'compact' | 'tooltip';
   isNew?: boolean;
   rank?: number;
+  showOnly?: 'like' | 'dislike';
 }
 
-export function ProfileCard({ profile, variant = 'default', isNew, rank }: ProfileCardProps) {
+export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnly }: ProfileCardProps) {
   const { t } = useI18n();
   if (variant === 'tooltip') {
     return (
@@ -29,6 +30,7 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank }: Profi
           dislikes={profile.dislikes}
           myVote={profile.myVote}
           compact
+          showOnly={showOnly}
         />
       </div>
     );
@@ -63,6 +65,7 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank }: Profi
           dislikes={profile.dislikes}
           myVote={profile.myVote}
           compact
+          showOnly={showOnly}
         />
       </div>
     );
@@ -99,6 +102,7 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank }: Profi
           likes={profile.likes}
           dislikes={profile.dislikes}
           myVote={profile.myVote}
+          showOnly={showOnly}
         />
       </div>
     </div>
