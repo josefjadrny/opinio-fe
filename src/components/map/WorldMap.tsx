@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
+import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import { useCountryProfiles } from '../../hooks/useCountryProfiles';
 import { numericToAlpha2 } from '../../utils/countries';
 import { CountryTooltip } from './CountryTooltip';
@@ -42,43 +42,44 @@ export function WorldMap() {
         // @ts-ignore
         preserveAspectRatio="xMidYMin meet"
       >
-        <Geographies geography={GEO_URL}>
-          {({ geographies }) =>
-            geographies.map((geo) => {
-              const alpha2 = numericToAlpha2(String(geo.id));
-              const isHovered = alpha2 === hoveredCountry;
+        <ZoomableGroup minZoom={1} maxZoom={1.5}>
+          <Geographies geography={GEO_URL}>
+            {({ geographies }) =>
+              geographies.map((geo) => {
+                const alpha2 = numericToAlpha2(String(geo.id));
+                const isHovered = alpha2 === hoveredCountry;
 
-              return (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  onMouseEnter={() => alpha2 && handleMouseEnter(alpha2)}
-                  onMouseLeave={handleMouseLeave}
-                  style={{
-                    default: {
-                      fill: '#3a3a6a',
-                      stroke: '#5a5a8a',
-                      strokeWidth: 0.5,
-                      outline: 'none',
-                    },
-                    hover: {
-                      fill: '#e94560',
-                      stroke: '#f1f1f1',
-                      strokeWidth: 0.75,
-                      outline: 'none',
-                      cursor: 'pointer',
-                    },
-                    pressed: {
-                      fill: '#e94560',
-                      outline: 'none',
-                    },
-                  }}
-                  className={isHovered ? '' : ''}
-                />
-              );
-            })
-          }
-        </Geographies>
+                return (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    onMouseEnter={() => alpha2 && handleMouseEnter(alpha2)}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                      default: {
+                        fill: '#3a3a6a',
+                        stroke: '#5a5a8a',
+                        strokeWidth: 0.5,
+                        outline: 'none',
+                      },
+                      hover: {
+                        fill: '#e94560',
+                        stroke: '#f1f1f1',
+                        strokeWidth: 0.75,
+                        outline: 'none',
+                        cursor: 'pointer',
+                      },
+                      pressed: {
+                        fill: '#e94560',
+                        outline: 'none',
+                      },
+                    }}
+                  />
+                );
+              })
+            }
+          </Geographies>
+        </ZoomableGroup>
       </ComposableMap>
 
       {hoveredCountry && (
