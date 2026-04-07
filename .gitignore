@@ -15,6 +15,9 @@ dist-ssr
 # Playwright
 .playwright-mcp/
 
+# Scripts (dev utilities, not part of the app)
+scripts/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

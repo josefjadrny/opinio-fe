@@ -48,7 +48,7 @@ export const SEED_PROFILES: Profile[] = [
   p('22', 'Penelope Cruz', 'actor', 'ES', 'Opens arts foundation for underprivileged youth', 2100, 150),
 
   // Musicians
-  p('23', 'Taylor Swift', 'musician', 'US', 'Endorses voter registration, crashes website', 7800, 2100),
+  p('23', 'Taylor Swift', 'musician', 'US', 'Endorses voter registration, crashes website', 7800, 2100, '/avatars/23.jpg'),
   p('24', 'Bad Bunny', 'musician', 'US', 'Speaks out about Puerto Rico recovery efforts', 4100, 600),
   p('25', 'BTS', 'musician', 'KR', 'Members begin military service, fans show support', 9200, 300),
   p('26', 'Beyonce', 'musician', 'US', 'Announces free concert series in underserved communities', 6500, 800),
@@ -59,8 +59,8 @@ export const SEED_PROFILES: Profile[] = [
   p('31', 'Rihanna', 'musician', 'US', 'Expands Fenty brand to 15 new countries', 5200, 400),
 
   // Athletes
-  p('32', 'Lionel Messi', 'athlete', 'AR', 'Leads Inter Miami to championship victory', 9500, 200),
-  p('33', 'Cristiano Ronaldo', 'athlete', 'PT', 'Scores 900th career goal in Saudi Arabia', 8800, 1200),
+  p('32', 'Lionel Messi', 'athlete', 'AR', 'Leads Inter Miami to championship victory', 9500, 200, '/avatars/32.jpg'),
+  p('33', 'Cristiano Ronaldo', 'athlete', 'PT', 'Scores 900th career goal in Saudi Arabia', 8800, 1200, '/avatars/33.jpg'),
   p('34', 'LeBron James', 'athlete', 'US', 'Speaks on social justice, funds new school', 5400, 1800),
   p('35', 'Naomi Osaka', 'athlete', 'JP', 'Opens mental health clinic for athletes', 3200, 200),
   p('36', 'Novak Djokovic', 'athlete', 'RS', 'Wins record Grand Slam despite vaccine controversy', 4100, 2800),
@@ -70,7 +70,7 @@ export const SEED_PROFILES: Profile[] = [
   p('40', 'Lewis Hamilton', 'athlete', 'GB', 'Pushes for diversity in motorsport', 3800, 900),
 
   // Business Leaders
-  p('41', 'Elon Musk', 'business_leader', 'US', 'Renames Twitter to X, fires 80% of staff', 3200, 7800),
+  p('41', 'Elon Musk', 'business_leader', 'US', 'Renames Twitter to X, fires 80% of staff', 3200, 7800, '/avatars/41.jpg'),
   p('42', 'Jeff Bezos', 'business_leader', 'US', 'Blue Origin launches first commercial space flight', 1800, 4500),
   p('43', 'Tim Cook', 'business_leader', 'US', 'Apple announces Vision Pro, faces privacy questions', 2900, 1200),
   p('44', 'Jensen Huang', 'business_leader', 'US', 'NVIDIA becomes most valuable company, AI boom continues', 5100, 800),

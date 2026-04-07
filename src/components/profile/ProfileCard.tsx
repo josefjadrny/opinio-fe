@@ -50,13 +50,11 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnl
           className="w-8 h-8 rounded-full object-cover shrink-0"
         />
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm font-medium text-white truncate">{profile.name}</span>
-            {isNew && <NewBadge />}
-          </div>
-          <div className="flex items-center gap-1.5">
-            <RoleBadge role={profile.role} />
+          <div className="flex items-center gap-1.5 flex-wrap">
             <CountryFlag code={profile.countryCode} />
+            <span className="text-sm font-medium text-white truncate">{profile.name}</span>
+            <RoleBadge role={profile.role} />
+            {isNew && <NewBadge />}
           </div>
         </div>
         <VoteButtons
@@ -85,13 +83,11 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnl
         className="w-12 h-12 rounded-full object-cover shrink-0"
       />
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
-          <span className="font-semibold text-white truncate">{profile.name}</span>
-          {isNew && <NewBadge />}
-        </div>
-        <div className="flex items-center gap-2 mb-1">
-          <RoleBadge role={profile.role} />
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
           <CountryFlag code={profile.countryCode} />
+          <span className="font-semibold text-white truncate">{profile.name}</span>
+          <RoleBadge role={profile.role} />
+          {isNew && <NewBadge />}
         </div>
         <p className="text-xs text-text-secondary line-clamp-2 mb-1">{profile.description}</p>
         {profile.addedBy && (
