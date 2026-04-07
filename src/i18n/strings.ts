@@ -1,7 +1,7 @@
 export interface Strings {
   appName: string;
-  gaining: string;
-  losing: string;
+  trending: string;
+  falling: string;
   addProfile: string;
   login: string;
   loginTooltip: string;
@@ -23,8 +23,8 @@ export interface Strings {
 
 const en: Strings = {
   appName: 'PULSE',
-  gaining: 'Gaining',
-  losing: 'Losing',
+  trending: 'Rising',
+  falling: 'Falling',
   addProfile: '+ Add Profile',
   login: 'Login',
   loginTooltip: 'Coming soon...',
@@ -56,8 +56,8 @@ const en: Strings = {
 
 const cs: Strings = {
   appName: 'PULSE',
-  gaining: 'Stoupající',
-  losing: 'Klesající',
+  trending: 'Stoupající',
+  falling: 'Klesající',
   addProfile: '+ Přidat profil',
   login: 'Přihlásit',
   loginTooltip: 'Již brzy...',

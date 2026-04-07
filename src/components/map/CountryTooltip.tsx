@@ -44,7 +44,7 @@ export function CountryTooltip({ countryCode, data, isLoading, position }: Count
         <>
           {data.positive.length > 0 && (
             <div className="mb-3">
-              <h3 className="text-xs font-bold text-positive uppercase mb-1.5">{t.gaining}</h3>
+              <h3 className="text-xs font-bold text-positive uppercase mb-1.5">{t.trending}</h3>
               <div className="space-y-1">
                 {data.positive.map((p) => (
                   <ProfileCard key={p.id} profile={p} variant="tooltip" />
@@ -55,7 +55,7 @@ export function CountryTooltip({ countryCode, data, isLoading, position }: Count
 
           {data.negative.length > 0 && (
             <div>
-              <h3 className="text-xs font-bold text-negative uppercase mb-1.5">{t.losing}</h3>
+              <h3 className="text-xs font-bold text-negative uppercase mb-1.5">{t.falling}</h3>
               <div className="space-y-1">
                 {data.negative.map((p) => (
                   <ProfileCard key={p.id} profile={p} variant="tooltip" />

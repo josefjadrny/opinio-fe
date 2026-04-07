@@ -22,7 +22,7 @@ export function MobileFeed({
       <section className="p-3">
         <h2 className="text-sm font-bold uppercase tracking-wider text-positive mb-2 flex items-center gap-2">
           <span className="w-2 h-2 bg-positive rounded-full" />
-          {t.gaining}
+          {t.trending}
         </h2>
         <div className="space-y-1.5">
           {[...positiveProfiles.slice(0, 10), ...positiveRecent].map((profile) => (
@@ -41,7 +41,7 @@ export function MobileFeed({
       <section className="p-3">
         <h2 className="text-sm font-bold uppercase tracking-wider text-negative mb-2 flex items-center gap-2">
           <span className="w-2 h-2 bg-negative rounded-full" />
-          {t.losing}
+          {t.falling}
         </h2>
         <div className="space-y-1.5">
           {[...negativeProfiles.slice(0, 10), ...negativeRecent].map((profile) => (

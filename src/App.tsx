@@ -121,7 +121,7 @@ function AppContent() {
         <div className="flex-1 flex min-h-0 overflow-hidden">
           <div style={{ width: sidebarWidths.left }} className="shrink-0">
             <Sidebar
-              title={t.gaining}
+              title={t.trending}
               profiles={positiveQuery.data?.profiles ?? []}
               recentlyAdded={positiveQuery.data?.recentlyAdded ?? []}
               accentColor="positive"
@@ -132,7 +132,7 @@ function AppContent() {
           <ResizeHandle side="right" onDrag={handleRightDrag} />
           <div style={{ width: sidebarWidths.right }} className="shrink-0">
             <Sidebar
-              title={t.losing}
+              title={t.falling}
               profiles={negativeQuery.data?.profiles ?? []}
               recentlyAdded={negativeQuery.data?.recentlyAdded ?? []}
               accentColor="negative"
