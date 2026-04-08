@@ -23,7 +23,7 @@ export interface Strings {
 }
 
 const en: Strings = {
-  appName: 'PULSE',
+  appName: 'OPINIO',
   trending: 'Rising',
   falling: 'Falling',
   addProfile: '+ Add Profile',
@@ -57,7 +57,7 @@ const en: Strings = {
 };
 
 const cs: Strings = {
-  appName: 'PULSE',
+  appName: 'OPINIO',
   trending: 'Stoupající',
   falling: 'Klesající',
   addProfile: '+ Přidat profil',

@@ -11,7 +11,7 @@ import { MobileFeed } from './components/layout/MobileFeed';
 import { WorldMap } from './components/map/WorldMap';
 import { AddProfileModal } from './components/profile-form/AddProfileModal';
 
-const SIDEBAR_KEY = 'pulse_sidebar_widths';
+const SIDEBAR_KEY = 'opinio_sidebar_widths';
 const DEFAULT_LEFT = 360;
 const DEFAULT_RIGHT = 360;
 const MIN_WIDTH = 260;

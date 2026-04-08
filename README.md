@@ -1,4 +1,4 @@
-# Pulse Earth
+# Opinio
 
 A global social voting platform where anyone can browse and vote for public figures from around the world, organized by country on an interactive world map. Rankings are always fresh — votes expire after 24 hours, making this a living snapshot of current sentiment, not a historical archive.
 

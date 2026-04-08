@@ -2,7 +2,7 @@ import type { Profile } from '../types/profile';
 import type { VoteAllowance } from '../types/api';
 import { SEED_PROFILES } from './data';
 
-const STORAGE_KEY = 'pulse_data';
+const STORAGE_KEY = 'opinio_data';
 const VOTE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const VOTE_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
 

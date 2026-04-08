@@ -7,7 +7,7 @@ interface I18nContextValue {
   setLocale: (locale: Locale) => void;
 }
 
-const LOCALE_KEY = 'pulse_locale';
+const LOCALE_KEY = 'opinio_locale';
 
 function loadLocale(): Locale {
   try {
