@@ -56,7 +56,7 @@ src/
 │   ├── profile/      # ProfileCard, NewBadge
 │   ├── profile-form/ # AddProfileModal (2-step with autocomplete)
 │   └── voting/       # VoteButtons
-├── context/          # FilterContext (country + role filter state)
+├── context/          # FilterContext + useFilters hook (country + role filter state)
 ├── hooks/            # useProfiles, useVote, useMe, useRealtimeUpdates, ...
 ├── i18n/             # I18nContext + strings (EN / CS — add locales here)
 ├── mock/             # Mock backend: data, handlers, realtime WS simulator, storage
@@ -159,6 +159,12 @@ The submit form queries trigram similarity on both name and description as the u
 Docker Compose with three services: PostgreSQL, Node.js Express API, nginx serving the Vite build.
 
 Required env vars: `DB_PASSWORD`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET`, `S3_REGION`, `MODERATION_APPROVE_THRESHOLD`, `MODERATION_REJECT_THRESHOLD`.
+
+---
+
+## License
+
+This project is **source-available, not open-source**. You may view the code and submit pull requests, but copying, forking, or redistributing is not permitted. See [LICENSE](LICENSE) for details.
 
 ---
 
