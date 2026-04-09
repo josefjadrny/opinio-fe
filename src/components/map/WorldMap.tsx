@@ -23,7 +23,7 @@ function clampTranslate(tx: number, ty: number, scale: number) {
 const projection = geoNaturalEarth1()
   .scale(158)
   .center([10, 20])
-  .translate([400, 280]);
+  .translate([400, 240]);
 
 const pathGenerator = geoPath(projection);
 
