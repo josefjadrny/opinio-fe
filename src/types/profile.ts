@@ -13,7 +13,7 @@ export interface Profile {
   id: string;
   name: string;
   role: Role;
-  imageUrl: string;
+  imageUrl: string | null;
   countryCode: string;
   description: string;
   addedBy: string;

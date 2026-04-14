@@ -41,7 +41,8 @@ export function VoteButtons({ profileId, likes, dislikes, myVote, compact, showO
                 : 'bg-white/5 text-white/30 cursor-not-allowed'
           }`}
         >
-          <span>&#9650;</span>
+          {/* &#xFE0E; forces text presentation, prevents black emoji rendering */}
+          <span>&#9650;&#xFE0E;</span>
           <span className="tabular-nums">{formatNumber(likes)}</span>
         </button>
       )}
@@ -58,7 +59,7 @@ export function VoteButtons({ profileId, likes, dislikes, myVote, compact, showO
                 : 'bg-white/5 text-white/30 cursor-not-allowed'
           }`}
         >
-          <span>&#9660;</span>
+          <span>&#9660;&#xFE0E;</span>
           <span className="tabular-nums">{formatNumber(dislikes)}</span>
         </button>
       )}

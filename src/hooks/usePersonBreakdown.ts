@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getPersonBreakdown } from '../mock/handlers';
+import { getPersonBreakdown } from '../api/client';
 
 export function usePersonBreakdown(profileId: string | null) {
   return useQuery({

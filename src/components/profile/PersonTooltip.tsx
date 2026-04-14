@@ -3,6 +3,7 @@ import type { Profile } from '../../types/profile';
 import type { PersonBreakdownResponse } from '../../types/api';
 import { getCountryFlag, getCountryName } from '../../utils/countries';
 import { RoleBadge } from '../common/RoleBadge';
+import { Avatar } from './Avatar';
 import { formatNumber } from '../../utils/formatNumber';
 
 interface PersonTooltipProps {
@@ -33,11 +34,7 @@ export function PersonTooltip({ profile, breakdown, isLoading, position, onMouse
     >
       {/* Header */}
       <div className="flex items-center gap-3 p-3 border-b border-border">
-        <img
-          src={profile.imageUrl}
-          alt={profile.name}
-          className="w-12 h-12 rounded-full object-cover shrink-0"
-        />
+        <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-12 h-12" />
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
             <span className="text-sm">{getCountryFlag(profile.countryCode)}</span>

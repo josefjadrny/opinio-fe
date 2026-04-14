@@ -7,6 +7,7 @@ import { NewBadge } from './NewBadge';
 import { PersonTooltip } from './PersonTooltip';
 import { usePersonBreakdown } from '../../hooks/usePersonBreakdown';
 import { useFilters } from '../../context/useFilters';
+import { Avatar } from './Avatar';
 
 interface ProfileCardProps {
   profile: Profile;
@@ -58,11 +59,7 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnl
   if (variant === 'tooltip') {
     return (
       <div className="flex items-center gap-2 py-1">
-        <img
-          src={profile.imageUrl}
-          alt={profile.name}
-          className="w-6 h-6 rounded-full object-cover shrink-0"
-        />
+        <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-6 h-6" />
         <span className="text-xs font-medium text-white truncate flex-1">{profile.name}</span>
         <VoteButtons
           profileId={profile.id}
@@ -89,11 +86,7 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnl
             {rank}
           </span>
         )}
-        <img
-          src={profile.imageUrl}
-          alt={profile.name}
-          className="w-8 h-8 rounded-full object-cover shrink-0"
-        />
+        <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-8 h-8" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <CountryFlag code={profile.countryCode} />
@@ -137,11 +130,7 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnl
           {rank}
         </span>
       )}
-      <img
-        src={profile.imageUrl}
-        alt={profile.name}
-        className="w-12 h-12 rounded-full object-cover shrink-0"
-      />
+      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-12 h-12" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5 flex-wrap">
           <CountryFlag code={profile.countryCode} />
