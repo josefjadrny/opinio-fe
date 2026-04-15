@@ -1,8 +1,7 @@
 import type {
   ProfilesResponse, CountryProfilesResponse, MeResponse,
-  VoteResponse, ProfileFilters, VoteType, PersonBreakdownResponse,
+  VoteResponse, ProfileFilters, VoteType,
 } from '../types/api';
-import type { Profile } from '../types/profile';
 
 const API_URL = import.meta.env.OPINIO_API_URL as string;
 

@@ -1,6 +1,7 @@
 import type { Profile } from '../../types/profile';
 import { useI18n } from '../../i18n/I18nContext';
 import { ProfileCard } from '../profile/ProfileCard';
+import { VoteBanner } from '../voting/VoteBanner';
 
 interface MobileFeedProps {
   positiveProfiles: Profile[];
@@ -18,6 +19,7 @@ export function MobileFeed({
   const { t } = useI18n();
 
   return (
+    <div className="flex-1 flex flex-col min-h-0">
     <div className="flex-1 overflow-y-auto">
       <section className="p-3">
         <h2 className="text-sm font-bold uppercase tracking-wider text-positive mb-2 flex items-center gap-2">
@@ -54,6 +56,8 @@ export function MobileFeed({
           ))}
         </div>
       </section>
+    </div>
+    <VoteBanner />
     </div>
   );
 }

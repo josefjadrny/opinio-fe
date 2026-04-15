@@ -11,6 +11,7 @@ import { Sidebar } from './components/layout/Sidebar';
 import { MobileFeed } from './components/layout/MobileFeed';
 import { WorldMap } from './components/map/WorldMap';
 import { AddProfileModal } from './components/profile-form/AddProfileModal';
+import { VoteBanner } from './components/voting/VoteBanner';
 
 const SIDEBAR_KEY = 'opinio_sidebar_widths';
 const DEFAULT_LEFT = 360;
@@ -120,26 +121,29 @@ function AppContent() {
           negativeRecent={negativeQuery.data?.recentlyAdded ?? []}
         />
       ) : (
-        <div className="flex-1 flex min-h-0 overflow-hidden">
-          <div style={{ width: sidebarWidths.left }} className="shrink-0">
-            <Sidebar
-              title={t.trending}
-              profiles={positiveQuery.data?.profiles ?? []}
-              recentlyAdded={positiveQuery.data?.recentlyAdded ?? []}
-              accentColor="positive"
-            />
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 flex min-h-0 overflow-hidden">
+            <div style={{ width: sidebarWidths.left }} className="shrink-0">
+              <Sidebar
+                title={t.trending}
+                profiles={positiveQuery.data?.profiles ?? []}
+                recentlyAdded={positiveQuery.data?.recentlyAdded ?? []}
+                accentColor="positive"
+              />
+            </div>
+            <ResizeHandle side="left" onDrag={handleLeftDrag} />
+            <WorldMap />
+            <ResizeHandle side="right" onDrag={handleRightDrag} />
+            <div style={{ width: sidebarWidths.right }} className="shrink-0">
+              <Sidebar
+                title={t.falling}
+                profiles={negativeQuery.data?.profiles ?? []}
+                recentlyAdded={negativeQuery.data?.recentlyAdded ?? []}
+                accentColor="negative"
+              />
+            </div>
           </div>
-          <ResizeHandle side="left" onDrag={handleLeftDrag} />
-          <WorldMap />
-          <ResizeHandle side="right" onDrag={handleRightDrag} />
-          <div style={{ width: sidebarWidths.right }} className="shrink-0">
-            <Sidebar
-              title={t.falling}
-              profiles={negativeQuery.data?.profiles ?? []}
-              recentlyAdded={negativeQuery.data?.recentlyAdded ?? []}
-              accentColor="negative"
-            />
-          </div>
+          <VoteBanner />
         </div>
       )}
 
