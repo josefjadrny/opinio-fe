@@ -34,15 +34,27 @@ jobs:
           aws s3 sync dist/ s3://opinio.live \
             --delete \
             --exclude "index.html" \
+            --exclude "favicon.svg" \
+            --exclude "icon.svg" \
             --cache-control "public, max-age=31536000, immutable"
           aws s3 sync dist/ s3://www.opinio.live \
             --delete \
             --exclude "index.html" \
+            --exclude "favicon.svg" \
+            --exclude "icon.svg" \
             --cache-control "public, max-age=31536000, immutable"
 
-      # Upload index.html with no-cache
+      # Upload index.html and root SVG assets with no-cache
       - run: |
           aws s3 cp dist/index.html s3://opinio.live/index.html \
             --cache-control "no-cache, no-store, must-revalidate"
           aws s3 cp dist/index.html s3://www.opinio.live/index.html \
             --cache-control "no-cache, no-store, must-revalidate"
+          aws s3 cp dist/favicon.svg s3://opinio.live/favicon.svg \
+            --cache-control "public, max-age=86400"
+          aws s3 cp dist/favicon.svg s3://www.opinio.live/favicon.svg \
+            --cache-control "public, max-age=86400"
+          aws s3 cp dist/icon.svg s3://opinio.live/icon.svg \
+            --cache-control "public, max-age=86400"
+          aws s3 cp dist/icon.svg s3://www.opinio.live/icon.svg \
+            --cache-control "public, max-age=86400"
