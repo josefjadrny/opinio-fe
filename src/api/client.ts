@@ -40,6 +40,14 @@ export function getMe(): Promise<MeResponse> {
   return apiFetch('/api/me');
 }
 
+export function loginWithGoogle(): void {
+  window.location.href = `${API_URL}/auth/google`;
+}
+
+export function logout(): Promise<{ ok: boolean }> {
+  return apiFetch('/auth/logout', { method: 'POST' });
+}
+
 // TODO: wire to POST /api/profiles once implemented in BE
 export { addNewProfile } from '../mock/handlers';
 

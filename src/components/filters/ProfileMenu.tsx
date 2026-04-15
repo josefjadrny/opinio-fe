@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Avatar } from '../profile/Avatar';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
+import { logout } from '../../api/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ProfileMenuProps {
   onOpenSettings: () => void;
@@ -13,6 +15,13 @@ export function ProfileMenu({ onOpenSettings, onOpenAbout }: ProfileMenuProps) {
   const ref = useRef<HTMLDivElement>(null);
   const { data: me } = useMe();
   const { t } = useI18n();
+  const queryClient = useQueryClient();
+
+  const handleLogout = async () => {
+    setOpen(false);
+    await logout();
+    queryClient.invalidateQueries({ queryKey: ['me'] });
+  };
 
   const user = me?.user;
   const isAnonymous = !user || user.tier === 'anonymous';
@@ -79,7 +88,7 @@ export function ProfileMenu({ onOpenSettings, onOpenAbout }: ProfileMenuProps) {
             </button>
           ) : (
             <button
-              onClick={() => setOpen(false)}
+              onClick={handleLogout}
               className="w-full text-left px-4 py-2.5 text-sm text-negative hover:bg-white/5 transition-colors flex items-center gap-2.5"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
