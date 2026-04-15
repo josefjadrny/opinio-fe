@@ -19,7 +19,6 @@ export function VoteButtons({ profileId, likes, dislikes, myVote, compact, showO
   const canDislike = (me?.voteAllowance.dislike.remaining ?? 0) > 0;
 
   const handleVote = (type: 'like' | 'dislike') => {
-    if (myVote) return;
     voteMutation.mutate({ profileId, type });
   };
 
@@ -34,11 +33,9 @@ export function VoteButtons({ profileId, likes, dislikes, myVote, compact, showO
           onClick={() => handleVote('like')}
           disabled={!canLike}
           className={`${btnBase} ${
-            myVote === 'like'
-              ? 'bg-positive text-white'
-              : canLike
-                ? 'bg-positive/20 text-positive hover:bg-positive/30'
-                : 'bg-white/5 text-white/30 cursor-not-allowed'
+            canLike
+              ? 'bg-positive/20 text-positive hover:bg-positive/30'
+              : 'bg-positive/15 text-positive/60 cursor-not-allowed'
           }`}
         >
           {/* &#xFE0E; forces text presentation, prevents black emoji rendering */}
@@ -52,11 +49,9 @@ export function VoteButtons({ profileId, likes, dislikes, myVote, compact, showO
           onClick={() => handleVote('dislike')}
           disabled={!canDislike}
           className={`${btnBase} ${
-            myVote === 'dislike'
-              ? 'bg-negative text-white'
-              : canDislike
-                ? 'bg-negative/20 text-negative hover:bg-negative/30'
-                : 'bg-white/5 text-white/30 cursor-not-allowed'
+            canDislike
+              ? 'bg-negative/20 text-negative hover:bg-negative/30'
+              : 'bg-negative/15 text-negative/60 cursor-not-allowed'
           }`}
         >
           <span>&#9660;&#xFE0E;</span>
