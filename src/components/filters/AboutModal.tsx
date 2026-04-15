@@ -36,15 +36,8 @@ export function AboutModal({ onClose }: AboutModalProps) {
 
       <div className="border-t border-border" />
 
-      {/* No ads */}
-      <div className="flex items-start gap-3">
-        <span className="text-lg mt-0.5">🚫</span>
+      <div className="space-y-2">
         <p className="text-sm text-white/60 leading-relaxed">{t.aboutNoAds}</p>
-      </div>
-
-      {/* Fresh data */}
-      <div className="flex items-start gap-3">
-        <span className="text-lg mt-0.5">⏱</span>
         <p className="text-sm text-white/60 leading-relaxed">{t.aboutFreshData}</p>
       </div>
 
