@@ -16,7 +16,10 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
   return (
     <div className="flex items-center justify-between gap-3 px-4 py-3 bg-surface border-b border-border">
       <div className="flex items-center gap-3">
-        <h1 className="text-xl font-bold text-accent tracking-tight mr-2">{t.appName}</h1>
+        <div className="flex items-center gap-1.5 mr-2">
+          <img src="/favicon.svg" alt="Opinio" className="w-7 h-7" />
+          <h1 className="text-xl font-bold text-accent tracking-tight">{t.appName}</h1>
+        </div>
         <CountryFilter />
         <RoleFilter />
         <button
