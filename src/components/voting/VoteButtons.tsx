@@ -15,8 +15,8 @@ export function VoteButtons({ profileId, likes, dislikes, myVote, compact, showO
   const voteMutation = useVote();
   const { data: me } = useMe();
 
-  const canLike = !myVote && (me?.voteAllowance.like.remaining ?? 0) > 0;
-  const canDislike = !myVote && (me?.voteAllowance.dislike.remaining ?? 0) > 0;
+  const canLike = (me?.voteAllowance.like.remaining ?? 0) > 0;
+  const canDislike = (me?.voteAllowance.dislike.remaining ?? 0) > 0;
 
   const handleVote = (type: 'like' | 'dislike') => {
     if (myVote) return;
