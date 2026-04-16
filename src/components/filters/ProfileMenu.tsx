@@ -32,6 +32,7 @@ export function ProfileMenu({ onOpenSettings, onOpenAbout }: ProfileMenuProps) {
   const isAnonymous = !user || user.tier === 'anonymous';
   const displayName = isAnonymous ? t.anonymousUser : (user?.displayName ?? t.anonymousUser);
   const anonymousFlag = user?.countryCode ? getCountryFlag(user.countryCode) : '🌍';
+  const profileButtonLabel = isAnonymous ? t.profile : displayName;
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -53,7 +54,7 @@ export function ProfileMenu({ onOpenSettings, onOpenAbout }: ProfileMenuProps) {
           ? <span className="w-6 h-6 flex items-center justify-center text-base leading-none shrink-0">{anonymousFlag}</span>
           : <Avatar name={displayName} imageUrl={user?.avatarUrl ?? null} className="w-6 h-6" isAnonymous={isAnonymous} />
         }
-        <span className="text-white text-sm font-medium">{t.profile}</span>
+        <span className="text-white text-sm font-medium max-w-28 truncate">{profileButtonLabel}</span>
         <svg className={`w-3.5 h-3.5 text-white/60 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
