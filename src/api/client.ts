@@ -1,6 +1,6 @@
 import type {
   ProfilesResponse, CountryProfilesResponse, MeResponse,
-  VoteResponse, ProfileFilters, VoteType,
+  VoteResponse, ProfileFilters, VoteType, PersonBreakdownResponse,
 } from '../types/api';
 
 const API_URL = import.meta.env.OPINIO_API_URL as string;
@@ -55,8 +55,9 @@ export function logout(): Promise<{ ok: boolean }> {
 // TODO: wire to POST /api/profiles once implemented in BE
 export { addNewProfile } from '../mock/handlers';
 
-// TODO: wire to GET /api/profiles/:id/breakdown once implemented in BE
-export { getPersonBreakdown } from '../mock/handlers';
+export function getPersonBreakdown(profileId: string): Promise<PersonBreakdownResponse> {
+  return apiFetch(`/api/profiles/${profileId}/breakdown`);
+}
 
 // TODO: wire to wss://${API_URL}/ws once BE WebSocket is implemented
 export { subscribe as subscribeRealtime } from '../mock/realtime';
