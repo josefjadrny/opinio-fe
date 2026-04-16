@@ -64,9 +64,6 @@ export function AboutModal({ onClose }: AboutModalProps) {
             {t.aboutBackendRepo}
           </a>
         </div>
-        <p className="text-xs text-white/40 pt-1">
-          🇪🇺 {t.aboutEuProject} · 🇨🇿 {t.aboutMadeInCzechia}
-        </p>
       </div>
 
       <div className="border-t border-border" />
@@ -93,6 +90,12 @@ export function AboutModal({ onClose }: AboutModalProps) {
         </div>
         <p className="text-xs text-white/30 mt-3">{t.aboutVoteExpiry}</p>
       </div>
+
+      <div className="border-t border-border" />
+
+      <p className="text-xs text-white/40">
+        🇪🇺 {t.aboutEuProject} · 🇨🇿 {t.aboutMadeInCzechia} · 🇩🇪 {t.aboutHostedInGermany}
+      </p>
     </div>
   );
 

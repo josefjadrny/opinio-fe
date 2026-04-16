@@ -50,6 +50,7 @@ export interface Strings {
   aboutBackendRepo: string;
   aboutEuProject: string;
   aboutMadeInCzechia: string;
+  aboutHostedInGermany: string;
   aboutTiersTitle: string;
   aboutTierAnonymous: string;
   aboutTierRegistered: string;
@@ -112,6 +113,7 @@ const en: Strings = {
   aboutBackendRepo: 'Backend repository',
   aboutEuProject: 'EU project',
   aboutMadeInCzechia: 'Made in Czechia',
+  aboutHostedInGermany: 'Hosted in Germany',
   aboutTiersTitle: 'Voting limits (per hour)',
   aboutTierAnonymous: 'Anonymous',
   aboutTierRegistered: 'Registered',
@@ -184,6 +186,7 @@ const cs: Strings = {
   aboutBackendRepo: 'Backend repozitář',
   aboutEuProject: 'EU projekt',
   aboutMadeInCzechia: 'Vyrobeno v Česku',
+  aboutHostedInGermany: 'Hostováno v Německu',
   aboutTiersTitle: 'Limity hlasování (za hodinu)',
   aboutTierAnonymous: 'Anonymní',
   aboutTierRegistered: 'Registrovaný',
@@ -256,6 +259,7 @@ const es: Strings = {
   aboutBackendRepo: 'Repositorio del backend',
   aboutEuProject: 'Proyecto de la UE',
   aboutMadeInCzechia: 'Hecho en Chequia',
+  aboutHostedInGermany: 'Alojado en Alemania',
   aboutTiersTitle: 'Límites de votación (por hora)',
   aboutTierAnonymous: 'Anónimo',
   aboutTierRegistered: 'Registrado',
