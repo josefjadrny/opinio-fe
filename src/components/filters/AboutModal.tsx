@@ -58,7 +58,10 @@ export function AboutModal({ onClose }: AboutModalProps) {
       <div className="border-t border-border" />
 
       <div className="space-y-2">
-        <p className="text-sm font-semibold text-white">{t.aboutOpenSourceTitle}</p>
+        <p className="text-sm font-semibold text-white">
+          {t.aboutOpenSourceTitle}{' '}
+          <span className="text-white/85 font-medium">{t.aboutOpenSourceTitleEmphasis}</span>
+        </p>
         <p className="text-sm text-white/60 leading-relaxed">{t.aboutOpenSourceBody}</p>
         <div className="flex flex-col gap-1.5 pt-1">
           <a
