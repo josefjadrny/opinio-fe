@@ -93,6 +93,7 @@ export async function getMe(): Promise<MeResponse> {
       avatarUrl: null,
       tier: 'anonymous',
       canChangeCountry: false,
+      language: null,
     },
     voteAllowance: getVoteAllowance(),
   };

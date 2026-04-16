@@ -29,6 +29,7 @@ export interface MeUser {
   avatarUrl: string | null;
   tier: 'anonymous' | 'registered' | 'supporter';
   canChangeCountry: boolean;
+  language: string | null;
 }
 
 export interface MeResponse {
