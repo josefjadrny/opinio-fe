@@ -37,7 +37,7 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnl
     setHoveredProfileCountry(profile.countryCode);
     hoverTimer.current = setTimeout(() => {
       setHoveredId(profile.id);
-    }, 350);
+    }, 500);
   }, [profile.id, profile.countryCode, setHoveredProfileCountry]);
 
   const handleMouseLeave = useCallback(() => {
