@@ -37,7 +37,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
       <div className="border-t border-border" />
 
       <div className="space-y-2">
-        <p className="text-sm text-white/60 leading-relaxed">{t.aboutNoAds}</p>
+        <p className="text-sm font-semibold text-white">{t.aboutNoAds}</p>
         <p className="text-sm text-white/60 leading-relaxed">{t.aboutFreshData}</p>
       </div>
 
