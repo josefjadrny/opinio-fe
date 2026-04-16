@@ -28,6 +28,13 @@ export function useAnimatedValue(target: number): number {
     const gap = Math.abs(to - from);
     if (gap === 0) return;
 
+    // For tiny gaps (e.g. a single vote click) snap immediately — no animation needed
+    if (gap <= 2) {
+      refs.current.displayed = to;
+      setDisplayed(to);
+      return;
+    }
+
     const step = Math.max(1, Math.ceil(gap / MAX_TICKS));
     const tickMs = Math.min(MAX_TICK_MS, Math.max(MIN_TICK_MS, Math.round(POLL_MS * step / gap)));
 
