@@ -3,6 +3,7 @@ import { Avatar } from '../profile/Avatar';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
 import { logout, loginWithGoogle } from '../../api/client';
+import { getCountryFlag } from '../../utils/countries';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface ProfileMenuProps {
@@ -47,7 +48,10 @@ export function ProfileMenu({ onOpenSettings, onOpenAbout }: ProfileMenuProps) {
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/30 hover:border-white/60 transition-colors"
       >
-        <Avatar name={displayName} imageUrl={user?.avatarUrl ?? null} className="w-6 h-6" />
+        {isAnonymous && user?.countryCode
+          ? <span className="w-6 h-6 flex items-center justify-center text-base leading-none shrink-0">{getCountryFlag(user.countryCode)}</span>
+          : <Avatar name={displayName} imageUrl={user?.avatarUrl ?? null} className="w-6 h-6" />
+        }
         <span className="text-white text-sm font-medium">{t.profile}</span>
         <svg className={`w-3.5 h-3.5 text-white/60 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />

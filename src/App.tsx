@@ -109,6 +109,15 @@ function AppContent() {
 
   useRealtimeUpdates();
 
+  // Poll profiles every 10s — using a standalone interval rather than refetchInterval
+  // so that setQueriesData calls from useRealtimeUpdates don't reset the timer.
+  useEffect(() => {
+    const id = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ['profiles'] });
+    }, 10_000);
+    return () => clearInterval(id);
+  }, [queryClient]);
+
   useEffect(() => {
     saveSidebarWidths(sidebarWidths);
   }, [sidebarWidths]);
