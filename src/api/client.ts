@@ -59,7 +59,7 @@ export function updateMe(fields: { countryCode?: string; displayName?: string })
   });
 }
 
-export function uploadImage(blob: Blob): Promise<{ url: string }> {
+export function uploadImage(blob: Blob): Promise<{ url: string; key: string }> {
   const form = new FormData();
   form.append('file', blob, 'photo.jpg');
   return apiFetch('/api/images', { method: 'POST', body: form });
@@ -71,6 +71,7 @@ export function addNewProfile(data: {
   countryCode: string;
   description: string;
   imageUrl: string;
+  imageKey?: string;
   addedBy: string;
 }): Promise<import('../types/profile').Profile> {
   return apiFetch('/api/profiles', {
