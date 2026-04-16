@@ -12,8 +12,12 @@ export interface Strings {
   cancel: string;
   adding: string;
   addProfileTitle: string;
+  nameLabel: string;
   namePlaceholder: string;
+  roleLabel: string;
+  descriptionLabel: string;
   descriptionPlaceholder: string;
+  photoLabel: string;
   imageUrlPlaceholder: string;
   yourNamePlaceholder: string;
   byAuthor: string;
@@ -59,10 +63,14 @@ const en: Strings = {
   loading: 'Loading...',
   cancel: 'Cancel',
   adding: 'Adding...',
-  addProfileTitle: 'Nominate a Figure',
-  namePlaceholder: 'Name *',
-  descriptionPlaceholder: 'Latest statement or opinion *',
-  imageUrlPlaceholder: 'Image URL (optional)',
+  addProfileTitle: 'Nominate a Person',
+  nameLabel: 'Name',
+  namePlaceholder: 'Full name',
+  roleLabel: 'Role',
+  descriptionLabel: 'Description',
+  descriptionPlaceholder: 'Latest statement or opinion',
+  photoLabel: 'Photo URL',
+  imageUrlPlaceholder: 'https://...',
   yourNamePlaceholder: 'Your name *',
   byAuthor: 'by {author}',
   newBadge: 'NEW',
@@ -118,9 +126,13 @@ const cs: Strings = {
   cancel: 'Zrušit',
   adding: 'Přidávání...',
   addProfileTitle: 'Nominovat osobu',
-  namePlaceholder: 'Jméno *',
-  descriptionPlaceholder: 'Poslední výrok nebo názor *',
-  imageUrlPlaceholder: 'URL obrázku (volitelné)',
+  nameLabel: 'Jméno',
+  namePlaceholder: 'Celé jméno',
+  roleLabel: 'Role',
+  descriptionLabel: 'Popis',
+  descriptionPlaceholder: 'Poslední výrok nebo názor',
+  photoLabel: 'URL fotografie',
+  imageUrlPlaceholder: 'https://...',
   yourNamePlaceholder: 'Vaše jméno *',
   byAuthor: 'přidal {author}',
   newBadge: 'NOVÝ',

@@ -52,10 +52,10 @@ export function logout(): Promise<{ ok: boolean }> {
   return apiFetch('/auth/logout', { method: 'POST' });
 }
 
-export function updateCountry(countryCode: string): Promise<{ ok: boolean }> {
+export function updateMe(fields: { countryCode?: string; displayName?: string }): Promise<{ ok: boolean }> {
   return apiFetch('/api/me', {
     method: 'PATCH',
-    body: JSON.stringify({ countryCode }),
+    body: JSON.stringify(fields),
   });
 }
 
