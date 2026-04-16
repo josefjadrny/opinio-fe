@@ -253,9 +253,9 @@ const es: Strings = {
 };
 
 export const LANGUAGES = {
-  en: { label: 'English', strings: en },
-  cs: { label: 'Čeština', strings: cs },
-  es: { label: 'Español', strings: es },
+  en: { label: '🇬🇧 English', strings: en },
+  cs: { label: '🇨🇿 Čeština', strings: cs },
+  es: { label: '🇪🇸 Español', strings: es },
 } as const;
 
 export type Locale = keyof typeof LANGUAGES;
