@@ -89,8 +89,7 @@ function ResizeHandle({ side, onDrag }: { side: 'left' | 'right'; onDrag: (delta
 
 function AppContent() {
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [showAbout, setShowAbout] = useState(false);
+  const [activeModal, setActiveModal] = useState<'settings' | 'about' | null>(null);
   const isMobile = useIsMobile();
   const { country, role } = useFilters();
   const [sidebarWidths, setSidebarWidths] = useState(loadSidebarWidths);
@@ -115,7 +114,7 @@ function AppContent() {
 
   return (
     <div className="h-screen flex flex-col bg-surface">
-      <FilterBar onAddProfile={() => setShowAddModal(true)} onOpenSettings={() => setShowSettings(true)} onOpenAbout={() => setShowAbout(true)} />
+      <FilterBar onAddProfile={() => setShowAddModal(true)} onOpenSettings={() => setActiveModal('settings')} onOpenAbout={() => setActiveModal('about')} />
 
       {isMobile ? (
         <>
@@ -125,8 +124,8 @@ function AppContent() {
             negativeProfiles={negativeQuery.data?.profiles ?? []}
             negativeRecent={negativeQuery.data?.recentlyAdded ?? []}
           />
-          {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
-          {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
+          {activeModal === 'settings' && <SettingsModal onClose={() => setActiveModal(null)} />}
+          {activeModal === 'about' && <AboutModal onClose={() => setActiveModal(null)} />}
         </>
       ) : (
         <div className="flex-1 flex min-h-0 overflow-hidden">
@@ -144,8 +143,8 @@ function AppContent() {
             <div className="absolute bottom-0 left-0 right-0 z-10">
               <VoteBanner />
             </div>
-            {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
-            {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
+            {activeModal === 'settings' && <SettingsModal onClose={() => setActiveModal(null)} />}
+            {activeModal === 'about' && <AboutModal onClose={() => setActiveModal(null)} />}
           </div>
           <ResizeHandle side="right" onDrag={handleRightDrag} />
           <div style={{ width: sidebarWidths.right }} className="shrink-0">

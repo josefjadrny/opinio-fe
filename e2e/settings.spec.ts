@@ -64,6 +64,24 @@ test.describe('Profile menu + Settings modal', () => {
     await expect(nameInput).toHaveValue('Anonymous');
   });
 
+  test('switching Settings → About replaces modal (no stacking)', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    // Open Settings
+    await page.getByRole('button', { name: /profile/i }).click();
+    await page.getByRole('button', { name: /settings/i }).click();
+    await expect(page.getByRole('heading', { name: /settings/i })).toBeVisible();
+    // Now open About without closing Settings first
+    await page.getByRole('button', { name: /profile/i }).click();
+    await page.getByRole('button', { name: /about/i }).click();
+    // About should be visible
+    await expect(page.getByRole('heading', { name: /about/i })).toBeVisible();
+    // Settings should NOT be visible
+    await expect(page.getByRole('heading', { name: /settings/i })).not.toBeVisible();
+    // Only one modal backdrop
+    const backdrops = page.locator('.fixed.inset-0');
+    expect(await backdrops.count()).toBeLessThanOrEqual(2);
+  });
+
   test('mobile: settings opens as bottom sheet', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('http://localhost:5173');
