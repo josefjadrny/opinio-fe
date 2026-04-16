@@ -6,9 +6,13 @@ import type {
 const API_URL = import.meta.env.OPINIO_API_URL as string;
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const hasBody = init?.body != null;
   const res = await fetch(`${API_URL}${path}`, {
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...init?.headers },
+    headers: {
+      ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
+      ...init?.headers,
+    },
     ...init,
   });
   if (!res.ok) {
