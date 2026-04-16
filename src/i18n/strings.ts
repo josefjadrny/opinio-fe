@@ -44,6 +44,11 @@ export interface Strings {
   aboutWhatBody: string;
   aboutNoAds: string;
   aboutFreshData: string;
+  aboutOpenSourceTitle: string;
+  aboutOpenSourceBody: string;
+  aboutFrontendRepo: string;
+  aboutBackendRepo: string;
+  aboutEuProject: string;
   aboutTiersTitle: string;
   aboutTierAnonymous: string;
   aboutTierRegistered: string;
@@ -100,6 +105,11 @@ const en: Strings = {
   aboutWhatBody: 'No useless comments. No spam. Just express your opinion - simply and honestly.',
   aboutNoAds: 'No ads. Ever.',
   aboutFreshData: 'Votes expire after 24 hours - rankings reflect how people feel right now, not last year.',
+  aboutOpenSourceTitle: 'Free, transparent, and open to everyone.',
+  aboutOpenSourceBody: 'Opinio is free and open source. The code is public, anyone can participate, and the ranking rules are transparent.',
+  aboutFrontendRepo: 'Frontend repository',
+  aboutBackendRepo: 'Backend repository',
+  aboutEuProject: 'EU project',
   aboutTiersTitle: 'Voting limits (per hour)',
   aboutTierAnonymous: 'Anonymous',
   aboutTierRegistered: 'Registered',
@@ -166,6 +176,11 @@ const cs: Strings = {
   aboutWhatBody: 'Žádné zbytečné komentáře. Žádný spam. Jen vyjádři svůj názor - jednoduše a upřímně.',
   aboutNoAds: 'Žádné reklamy. Nikdy.',
   aboutFreshData: 'Hlasy vyprší po 24 hodinách - žebříčky ukazují, jak se lidé cítí teď, ne loni.',
+  aboutOpenSourceTitle: 'Zdarma, transparentní a otevřené všem.',
+  aboutOpenSourceBody: 'Opinio je zdarma a open source. Kód je veřejný, zapojit se může kdokoli a pravidla řazení jsou transparentní.',
+  aboutFrontendRepo: 'Frontend repozitář',
+  aboutBackendRepo: 'Backend repozitář',
+  aboutEuProject: 'EU projekt',
   aboutTiersTitle: 'Limity hlasování (za hodinu)',
   aboutTierAnonymous: 'Anonymní',
   aboutTierRegistered: 'Registrovaný',
@@ -232,6 +247,11 @@ const es: Strings = {
   aboutWhatBody: 'Sin comentarios inútiles. Sin spam. Solo expresa tu opinión — de forma simple y honesta.',
   aboutNoAds: 'Sin anuncios. Nunca.',
   aboutFreshData: 'Los votos caducan a las 24 horas — los rankings reflejan cómo se siente la gente ahora, no el año pasado.',
+  aboutOpenSourceTitle: 'Gratis, transparente y abierto para todos.',
+  aboutOpenSourceBody: 'Opinio es gratis y de código abierto. El código es público, cualquiera puede participar y las reglas de clasificación son transparentes.',
+  aboutFrontendRepo: 'Repositorio del frontend',
+  aboutBackendRepo: 'Repositorio del backend',
+  aboutEuProject: 'Proyecto de la UE',
   aboutTiersTitle: 'Límites de votación (por hora)',
   aboutTierAnonymous: 'Anónimo',
   aboutTierRegistered: 'Registrado',

@@ -43,6 +43,32 @@ export function AboutModal({ onClose }: AboutModalProps) {
 
       <div className="border-t border-border" />
 
+      <div className="space-y-2">
+        <p className="text-sm font-semibold text-white">{t.aboutOpenSourceTitle}</p>
+        <p className="text-sm text-white/60 leading-relaxed">{t.aboutOpenSourceBody}</p>
+        <div className="flex flex-col gap-1.5 pt-1">
+          <a
+            href="https://github.com/josefjadrny/opinio-fe"
+            target="_blank"
+            rel="noreferrer"
+            className="text-sm text-accent hover:text-accent/80 transition-colors"
+          >
+            {t.aboutFrontendRepo}
+          </a>
+          <a
+            href="https://github.com/josefjadrny/opinio-api"
+            target="_blank"
+            rel="noreferrer"
+            className="text-sm text-accent hover:text-accent/80 transition-colors"
+          >
+            {t.aboutBackendRepo}
+          </a>
+        </div>
+        <p className="text-xs text-white/40 pt-1">🇪🇺 {t.aboutEuProject}</p>
+      </div>
+
+      <div className="border-t border-border" />
+
       {/* Tiers */}
       <div>
         <p className="text-sm font-semibold text-white mb-3">{t.aboutTiersTitle}</p>
