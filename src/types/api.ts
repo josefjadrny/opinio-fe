@@ -28,6 +28,7 @@ export interface MeUser {
   countryCode: string | null;
   avatarUrl: string | null;
   tier: 'anonymous' | 'registered' | 'supporter';
+  canChangeCountry: boolean;
 }
 
 export interface MeResponse {

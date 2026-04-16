@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Avatar } from '../profile/Avatar';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
 import { LANGUAGES, type Locale } from '../../i18n/strings';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import { getCountryFlag, getCountryName } from '../../utils/countries';
+import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
+import { updateCountry } from '../../api/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface SettingsModalProps {
   onClose: () => void;
@@ -103,12 +105,29 @@ function SettingsContent({
   setLocale,
 }: {
   displayName: string;
-  user: { avatarUrl: string | null; provider: string | null; countryCode: string | null } | undefined;
+  user: { avatarUrl: string | null; provider: string | null; countryCode: string | null; canChangeCountry?: boolean } | undefined;
   isAnonymous: boolean;
   t: ReturnType<typeof useI18n>['t'];
   locale: string;
   setLocale: (l: Locale) => void;
 }) {
+  const queryClient = useQueryClient();
+  const [saving, setSaving] = useState(false);
+
+  const canChangeCountry = user?.canChangeCountry ?? false;
+
+  const handleCountryChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const code = e.target.value;
+    if (!code) return;
+    setSaving(true);
+    try {
+      await updateCountry(code);
+      await queryClient.invalidateQueries({ queryKey: ['me'] });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="px-6 py-5 space-y-5">
       {/* Avatar + identity */}
@@ -139,19 +158,34 @@ function SettingsContent({
       {/* Country */}
       <div>
         <label className="block text-xs font-medium text-white/50 mb-1.5">{t.country}</label>
-        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 cursor-not-allowed">
-          {user?.countryCode ? (
-            <>
-              <span className="text-lg leading-none">{getCountryFlag(user.countryCode)}</span>
-              <span className="text-sm text-white/40">{getCountryName(user.countryCode)}</span>
-            </>
-          ) : (
-            <span className="text-sm text-white/40">—</span>
-          )}
-        </div>
-        {isAnonymous && (
-          <p className="text-xs text-white/30 mt-1">{t.detectedFromIp}</p>
+        {canChangeCountry ? (
+          <select
+            value={user?.countryCode ?? ''}
+            onChange={handleCountryChange}
+            disabled={saving}
+            className="w-full text-white text-sm rounded-lg border border-border px-3 py-2 focus:outline-none focus:border-accent disabled:opacity-50"
+            style={{ backgroundColor: '#1a1a2e' }}
+          >
+            <option value="" disabled style={{ backgroundColor: '#1a1a2e', color: 'white' }}>— select —</option>
+            {ALL_COUNTRIES.map(({ code, name }) => (
+              <option key={code} value={code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
+                {getCountryFlag(code)} {name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 cursor-not-allowed">
+            {user?.countryCode ? (
+              <>
+                <span className="text-lg leading-none">{getCountryFlag(user.countryCode)}</span>
+                <span className="text-sm text-white/40">{getCountryName(user.countryCode)}</span>
+              </>
+            ) : (
+              <span className="text-sm text-white/40">—</span>
+            )}
+          </div>
         )}
+        <p className="text-xs text-white/30 mt-1">{t.detectedFromIp}</p>
       </div>
 
       {/* Language */}

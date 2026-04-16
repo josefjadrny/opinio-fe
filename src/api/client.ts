@@ -52,6 +52,13 @@ export function logout(): Promise<{ ok: boolean }> {
   return apiFetch('/auth/logout', { method: 'POST' });
 }
 
+export function updateCountry(countryCode: string): Promise<{ ok: boolean }> {
+  return apiFetch('/api/me', {
+    method: 'PATCH',
+    body: JSON.stringify({ countryCode }),
+  });
+}
+
 // TODO: wire to POST /api/profiles once implemented in BE
 export { addNewProfile } from '../mock/handlers';
 
