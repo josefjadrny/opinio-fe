@@ -64,7 +64,9 @@ export function AboutModal({ onClose }: AboutModalProps) {
             {t.aboutBackendRepo}
           </a>
         </div>
-        <p className="text-xs text-white/40 pt-1">🇪🇺 {t.aboutEuProject}</p>
+        <p className="text-xs text-white/40 pt-1">
+          🇪🇺 {t.aboutEuProject} · 🇨🇿 {t.aboutMadeInCzechia}
+        </p>
       </div>
 
       <div className="border-t border-border" />
