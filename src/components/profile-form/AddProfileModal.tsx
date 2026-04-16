@@ -11,6 +11,28 @@ import type { Role } from '../../types/profile';
 
 const SIZE = 128;
 
+function getDefaultCountryCode() {
+  const locale = navigator.language || 'en-US';
+  const region = locale.split('-')[1]?.toUpperCase();
+  if (region && ALL_COUNTRIES.some((c) => c.code === region)) return region;
+  return 'US';
+}
+
+function getCountryOptionLabel(code: string) {
+  const country = ALL_COUNTRIES.find((c) => c.code === code);
+  return country ? `${country.name} (${code})` : code;
+}
+
+function findCountry(value: string) {
+  const normalized = value.trim().toLowerCase();
+  return ALL_COUNTRIES.find((country) => {
+    const optionLabel = `${country.name} (${country.code})`.toLowerCase();
+    return country.code.toLowerCase() === normalized
+      || country.name.toLowerCase() === normalized
+      || optionLabel === normalized;
+  });
+}
+
 // Resize a File to 128×128 JPEG (cover crop) using canvas
 function resizeImage(file: File): Promise<Blob> {
   return new Promise((resolve, reject) => {
@@ -57,17 +79,21 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
 
   const [name, setName] = useState('');
   const [role, setRole] = useState<Role>('politician');
-  const [countryCode, setCountryCode] = useState(() => {
-    const locale = navigator.language || 'en-US';
-    const region = locale.split('-')[1]?.toUpperCase();
-    if (region && ALL_COUNTRIES.some((c) => c.code === region)) return region;
-    return 'US';
-  });
+  const [countryCode, setCountryCode] = useState(getDefaultCountryCode);
+  const [countryInput, setCountryInput] = useState(() => getCountryOptionLabel(getDefaultCountryCode()));
+  const [countryMenuOpen, setCountryMenuOpen] = useState(false);
   const [description, setDescription] = useState('');
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const countryFieldRef = useRef<HTMLDivElement>(null);
+
+  const filteredCountries = ALL_COUNTRIES.filter((country) => {
+    const query = countryInput.trim().toLowerCase();
+    if (!query) return true;
+    return country.name.toLowerCase().includes(query) || country.code.toLowerCase().includes(query);
+  }).slice(0, 12);
 
   // Set country from user's profile once on mount
   const countryInitialized = useRef(false);
@@ -75,6 +101,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     if (!countryInitialized.current && user?.countryCode) {
       if (ALL_COUNTRIES.some((c) => c.code === user.countryCode)) {
         setCountryCode(user.countryCode!);
+        setCountryInput(getCountryOptionLabel(user.countryCode!));
       }
       countryInitialized.current = true;
     }
@@ -88,6 +115,18 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
+
+  useEffect(() => {
+    function onPointerDown(e: MouseEvent) {
+      if (!countryFieldRef.current?.contains(e.target as Node)) {
+        setCountryMenuOpen(false);
+        setCountryInput(getCountryOptionLabel(countryCode));
+      }
+    }
+
+    document.addEventListener('mousedown', onPointerDown);
+    return () => document.removeEventListener('mousedown', onPointerDown);
+  }, [countryCode]);
 
   // Cleanup preview URL on unmount
   useEffect(() => {
@@ -176,18 +215,85 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
 
       <div>
         <label className="block text-xs font-medium text-white/50 mb-1.5">{t.country}</label>
-        <select
-          value={countryCode}
-          onChange={(e) => setCountryCode(e.target.value)}
-          className="w-full text-white text-sm rounded-lg border border-border px-3 py-2 focus:outline-none focus:border-accent"
-          style={{ backgroundColor: '#1a1a2e' }}
-        >
-          {ALL_COUNTRIES.map((c) => (
-            <option key={c.code} value={c.code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
-              {getCountryFlag(c.code)} {c.name}
-            </option>
-          ))}
-        </select>
+        <div ref={countryFieldRef} className="relative">
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-base leading-none pointer-events-none">
+              {getCountryFlag(countryCode)}
+            </span>
+            <input
+              type="text"
+              value={countryInput}
+              onFocus={() => {
+                setCountryMenuOpen(true);
+                setCountryInput('');
+              }}
+              onChange={(e) => {
+                setCountryInput(e.target.value);
+                setCountryMenuOpen(true);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setCountryMenuOpen(false);
+                  setCountryInput(getCountryOptionLabel(countryCode));
+                }
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const match = findCountry(countryInput) ?? filteredCountries[0];
+                  if (match) {
+                    setCountryCode(match.code);
+                    setCountryInput(getCountryOptionLabel(match.code));
+                    setCountryMenuOpen(false);
+                  }
+                }
+              }}
+              autoComplete="off"
+              className="w-full text-white text-sm rounded-lg border border-border pl-11 pr-10 py-2 focus:outline-none focus:border-accent"
+              placeholder={t.country}
+              style={{ backgroundColor: '#1a1a2e' }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setCountryMenuOpen((open) => {
+                  const next = !open;
+                  if (next) setCountryInput('');
+                  else setCountryInput(getCountryOptionLabel(countryCode));
+                  return next;
+                });
+              }}
+              className="absolute inset-y-0 right-0 px-3 text-white/40 hover:text-white/70 transition-colors"
+            >
+              <svg className={`w-4 h-4 transition-transform ${countryMenuOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+
+          {countryMenuOpen && (
+            <div className="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto rounded-lg border border-border bg-surface shadow-xl">
+              {filteredCountries.length > 0 ? (
+                filteredCountries.map((c) => (
+                  <button
+                    key={c.code}
+                    type="button"
+                    onClick={() => {
+                      setCountryCode(c.code);
+                      setCountryInput(getCountryOptionLabel(c.code));
+                      setCountryMenuOpen(false);
+                    }}
+                    className="w-full px-3 py-2 text-left text-sm text-white hover:bg-white/5 transition-colors"
+                  >
+                    <span className="mr-2">{getCountryFlag(c.code)}</span>
+                    {c.name}
+                    <span className="ml-2 text-white/35">{c.code}</span>
+                  </button>
+                ))
+              ) : (
+                <div className="px-3 py-2 text-sm text-white/40">No country found</div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <div>
