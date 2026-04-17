@@ -3,6 +3,8 @@ import { useI18n } from '../../i18n/I18nContext';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useMe } from '../../hooks/useMe';
 import { loginWithGoogle } from '../../api/client';
+import { Avatar } from '../profile/Avatar';
+import { getCountryFlag } from '../../utils/countries';
 import {
   useSupportTickets, useCreateTicket,
   useUpdateStatus, useUpdateReply, useUpdateNote,
@@ -47,11 +49,25 @@ function BackButton({ onClick, label }: { onClick: () => void; label: string }) 
 // ── Category ───────────────────────────────────────────────────────────────
 
 const CATEGORY_ICONS: Record<string, string> = {
-  bug: '🐛',
+  bug: '🔧',
   feature: '💡',
   billing: '💳',
   other: '📋',
 };
+
+// ── Tier badge ─────────────────────────────────────────────────────────────
+
+const TIER_CLASSES: Record<string, string> = {
+  registered: 'text-white/40',
+  supporter: 'text-red-400',
+  admin: 'text-red-400',
+};
+
+function TierBadge({ tier }: { tier: string | null | undefined }) {
+  if (!tier || tier === 'anonymous') return null;
+  const label = tier === 'supporter' ? 'Supporter ❤' : tier === 'admin' ? 'Admin ❤' : 'Registered';
+  return <span className={`text-xs ${TIER_CLASSES[tier] ?? 'text-white/40'}`}>{label}</span>;
+}
 
 // ── Status badge ───────────────────────────────────────────────────────────
 
@@ -127,11 +143,23 @@ function TicketList({
                 </div>
                 <StatusBadge status={ticket.status} label={t.supportStatuses[ticket.status] ?? ticket.status} />
               </div>
-              <div className="mt-1.5 flex items-center gap-2">
-                {isAdmin && ticket.userDisplayName && (
-                  <span className="text-xs text-white/40 truncate max-w-32">{ticket.userDisplayName}</span>
+              <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+                {isAdmin && (
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <Avatar
+                      name={ticket.userDisplayName ?? '?'}
+                      imageUrl={ticket.userAvatarUrl ?? null}
+                      className="w-4 h-4"
+                      isAnonymous={false}
+                    />
+                    <span className="text-xs text-white/50 truncate max-w-28">{ticket.userDisplayName}</span>
+                    {ticket.userCountryCode && (
+                      <span className="text-xs leading-none">{getCountryFlag(ticket.userCountryCode)}</span>
+                    )}
+                    <TierBadge tier={ticket.userTier} />
+                  </div>
                 )}
-                {isAdmin && ticket.userDisplayName && <span className="text-white/20 text-xs">·</span>}
+                {isAdmin && <span className="text-white/20 text-xs">·</span>}
                 <span className="text-xs text-white/30">{formatDate(ticket.createdAt)}</span>
                 {ticket.adminReply && (
                   <>
@@ -288,10 +316,18 @@ function TicketDetail({
         <span className="text-2xl leading-none mt-0.5">{CATEGORY_ICONS[ticket.category]}</span>
         <div>
           <h3 className="text-base font-semibold text-white">{ticket.title}</h3>
-          <p className="text-xs text-white/30 mt-0.5">
-            {t.supportCategories[ticket.category]} · {formatDate(ticket.createdAt)}
-            {isAdmin && ticket.userDisplayName && ` · ${ticket.userDisplayName}`}
-          </p>
+          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+            <span className="text-xs text-white/30">{t.supportCategories[ticket.category]} · {formatDate(ticket.createdAt)}</span>
+            {isAdmin && (
+              <>
+                <span className="text-white/20 text-xs">·</span>
+                <Avatar name={ticket.userDisplayName ?? '?'} imageUrl={ticket.userAvatarUrl ?? null} className="w-4 h-4" isAnonymous={false} />
+                <span className="text-xs text-white/50">{ticket.userDisplayName}</span>
+                {ticket.userCountryCode && <span className="text-xs leading-none">{getCountryFlag(ticket.userCountryCode)}</span>}
+                <TierBadge tier={ticket.userTier} />
+              </>
+            )}
+          </div>
         </div>
       </div>
 

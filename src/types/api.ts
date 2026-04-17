@@ -84,6 +84,9 @@ export interface SupportTicket {
   adminReply: string | null;
   adminNote?: string | null;
   userDisplayName?: string;
+  userCountryCode?: string | null;
+  userTier?: string | null;
+  userAvatarUrl?: string | null;
   createdAt: string;
   updatedAt: string;
 }
