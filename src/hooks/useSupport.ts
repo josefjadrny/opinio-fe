@@ -5,7 +5,11 @@ import {
 } from '../api/client';
 
 export function useSupportTickets() {
-  return useQuery({ queryKey: ['support'], queryFn: getSupportTickets });
+  return useQuery({
+    queryKey: ['support'],
+    queryFn: getSupportTickets,
+    retry: false,
+  });
 }
 
 export function useCreateTicket() {
