@@ -162,8 +162,6 @@ function SettingsContent({
         <div className="min-w-0">
           <p className="text-sm font-medium text-white truncate">{displayName}</p>
           <div className="flex items-center gap-1 mt-0.5">
-            {user?.tier === 'supporter' && <span className="text-red-400 text-xs leading-none">❤</span>}
-            {user?.tier === 'admin' && <span className="text-red-400 text-xs leading-none">❤</span>}
             <p className="text-xs text-white/40">
               {isAnonymous
                 ? t.notLoggedIn
@@ -173,6 +171,8 @@ function SettingsContent({
                 ? 'Admin'
                 : 'Registered user'}
             </p>
+            {user?.tier === 'supporter' && <span className="text-red-400 text-xs leading-none">❤</span>}
+            {user?.tier === 'admin' && <span className="text-red-400 text-xs leading-none">❤</span>}
           </div>
           {isAnonymous && (
             <button
