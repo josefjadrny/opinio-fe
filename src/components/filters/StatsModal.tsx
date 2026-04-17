@@ -93,7 +93,7 @@ function StatsContent({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
       {isLoading ? (
         <p className="text-sm text-white/40 text-center py-6">{t.loading}</p>
       ) : (
-        <div className="flex gap-6">
+        <div className="flex flex-col gap-6">
           <LeaderboardTable
             title={t.statsTopLikers}
             rows={data?.topLikers ?? []}
