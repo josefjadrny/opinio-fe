@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { Routes, Route, Outlet, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { FilterProvider } from './context/FilterContext';
 import { useFilters } from './context/useFilters';
@@ -87,9 +88,8 @@ function ResizeHandle({ side, onDrag }: { side: 'left' | 'right'; onDrag: (delta
   );
 }
 
-function AppContent() {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [activeModal, setActiveModal] = useState<'settings' | 'about' | null>(null);
+function AppLayout() {
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { country, role } = useFilters();
   const [sidebarWidths, setSidebarWidths] = useState(loadSidebarWidths);
@@ -109,8 +109,6 @@ function AppContent() {
 
   useRealtimeUpdates();
 
-  // Poll profiles every 10s — using a standalone interval rather than refetchInterval
-  // so that setQueriesData calls from useRealtimeUpdates don't reset the timer.
   useEffect(() => {
     const id = setInterval(() => {
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
@@ -131,20 +129,16 @@ function AppContent() {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col bg-surface">
-      <FilterBar onAddProfile={() => setShowAddModal(true)} onOpenSettings={() => setActiveModal('settings')} onOpenAbout={() => setActiveModal('about')} />
+    <div className="h-dvh flex flex-col bg-surface">
+      <FilterBar onAddProfile={() => navigate('/add')} />
 
       {isMobile ? (
-        <>
-          <MobileFeed
-            positiveProfiles={positiveQuery.data?.profiles ?? []}
-            positiveRecent={positiveQuery.data?.recentlyAdded ?? []}
-            negativeProfiles={negativeQuery.data?.profiles ?? []}
-            negativeRecent={negativeQuery.data?.recentlyAdded ?? []}
-          />
-          {activeModal === 'settings' && <SettingsModal onClose={() => setActiveModal(null)} />}
-          {activeModal === 'about' && <AboutModal onClose={() => setActiveModal(null)} />}
-        </>
+        <MobileFeed
+          positiveProfiles={positiveQuery.data?.profiles ?? []}
+          positiveRecent={positiveQuery.data?.recentlyAdded ?? []}
+          negativeProfiles={negativeQuery.data?.profiles ?? []}
+          negativeRecent={negativeQuery.data?.recentlyAdded ?? []}
+        />
       ) : (
         <div className="flex-1 flex min-h-0 overflow-hidden">
           <div style={{ width: sidebarWidths.left }} className="shrink-0">
@@ -161,8 +155,6 @@ function AppContent() {
             <div className="absolute bottom-0 left-0 right-0 z-10">
               <VoteBanner />
             </div>
-            {activeModal === 'settings' && <SettingsModal onClose={() => setActiveModal(null)} />}
-            {activeModal === 'about' && <AboutModal onClose={() => setActiveModal(null)} />}
           </div>
           <ResizeHandle side="right" onDrag={handleRightDrag} />
           <div style={{ width: sidebarWidths.right }} className="shrink-0">
@@ -176,8 +168,36 @@ function AppContent() {
         </div>
       )}
 
-      {showAddModal && <AddProfileModal onClose={() => setShowAddModal(false)} />}
+      {/* Modal routes render here */}
+      <Outlet />
     </div>
+  );
+}
+
+function AddRoute() {
+  const navigate = useNavigate();
+  return <AddProfileModal onClose={() => navigate(-1)} />;
+}
+
+function SettingsRoute() {
+  const navigate = useNavigate();
+  return <SettingsModal onClose={() => navigate(-1)} />;
+}
+
+function AboutRoute() {
+  const navigate = useNavigate();
+  return <AboutModal onClose={() => navigate(-1)} />;
+}
+
+function AppContent() {
+  return (
+    <Routes>
+      <Route path="/" element={<AppLayout />}>
+        <Route path="add" element={<AddRoute />} />
+        <Route path="settings" element={<SettingsRoute />} />
+        <Route path="about" element={<AboutRoute />} />
+      </Route>
+    </Routes>
   );
 }
 

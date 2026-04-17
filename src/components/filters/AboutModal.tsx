@@ -1,9 +1,17 @@
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, type ReactNode } from 'react';
 import { useI18n } from '../../i18n/I18nContext';
 import { useIsMobile } from '../../hooks/useIsMobile';
 
 interface AboutModalProps {
   onClose: () => void;
+}
+
+function withVoteIcons(text: string): ReactNode[] {
+  return text.split(/(▲|▼)/).map((part, i) => {
+    if (part === '▲') return <span key={i} className="text-positive font-medium">▲</span>;
+    if (part === '▼') return <span key={i} className="text-negative font-medium">▼</span>;
+    return <Fragment key={i}>{part}</Fragment>;
+  });
 }
 
 export function AboutModal({ onClose }: AboutModalProps) {
@@ -107,7 +115,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
             <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-positive/20 text-positive">5 {t.aboutVotesPerHour}</span>
           </div>
         </div>
-        <p className="text-xs text-white/30 mt-3">{t.aboutVoteExpiry}</p>
+        <p className="text-xs text-white/30 mt-3">{withVoteIcons(t.aboutVoteExpiry)}</p>
       </div>
 
       <div className="border-t border-border" />

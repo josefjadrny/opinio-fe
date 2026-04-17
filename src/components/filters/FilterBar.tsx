@@ -7,11 +7,9 @@ import { useMe } from '../../hooks/useMe';
 
 interface FilterBarProps {
   onAddProfile: () => void;
-  onOpenSettings: () => void;
-  onOpenAbout: () => void;
 }
 
-export function FilterBar({ onAddProfile, onOpenSettings, onOpenAbout }: FilterBarProps) {
+export function FilterBar({ onAddProfile }: FilterBarProps) {
   const { t } = useI18n();
   const { isLoading: meLoading } = useMe();
   const { country, role, setCountry, setRole } = useFilters();
@@ -51,7 +49,7 @@ export function FilterBar({ onAddProfile, onOpenSettings, onOpenAbout }: FilterB
             {t.addProfile}
           </button>
         )}
-        <ProfileMenu onOpenSettings={onOpenSettings} onOpenAbout={onOpenAbout} />
+        <ProfileMenu />
       </div>
     </div>
   );

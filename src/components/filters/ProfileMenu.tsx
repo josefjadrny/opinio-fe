@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Avatar } from '../profile/Avatar';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
@@ -6,12 +7,8 @@ import { logout, loginWithGoogle } from '../../api/client';
 import { getCountryFlag } from '../../utils/countries';
 import { useQueryClient } from '@tanstack/react-query';
 
-interface ProfileMenuProps {
-  onOpenSettings: () => void;
-  onOpenAbout: () => void;
-}
-
-export function ProfileMenu({ onOpenSettings, onOpenAbout }: ProfileMenuProps) {
+export function ProfileMenu() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { data: me } = useMe();
@@ -63,7 +60,7 @@ export function ProfileMenu({ onOpenSettings, onOpenAbout }: ProfileMenuProps) {
       {open && (
         <div className="absolute right-0 top-full mt-1.5 w-48 bg-surface border border-border rounded-xl shadow-xl z-50 overflow-hidden py-1">
           <button
-            onClick={() => { setOpen(false); onOpenSettings(); }}
+            onClick={() => { setOpen(false); navigate('/settings'); }}
             className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/5 transition-colors flex items-center gap-2.5"
           >
             <svg className="w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -74,7 +71,7 @@ export function ProfileMenu({ onOpenSettings, onOpenAbout }: ProfileMenuProps) {
           </button>
 
           <button
-            onClick={() => { setOpen(false); onOpenAbout(); }}
+            onClick={() => { setOpen(false); navigate('/about'); }}
             className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/5 transition-colors flex items-center gap-2.5"
           >
             <svg className="w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
