@@ -5,27 +5,34 @@ import { CountryFlag } from '../common/CountryFlag';
 import { VoteButtons } from '../voting/VoteButtons';
 import { NewBadge } from './NewBadge';
 import { PersonTooltip } from './PersonTooltip';
+import { ProfileDetailModal } from './ProfileDetailModal';
 import { usePersonBreakdown } from '../../hooks/usePersonBreakdown';
 import { useFilters } from '../../context/useFilters';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import { Avatar } from './Avatar';
+
+const ONE_HOUR_MS = 3_600_000;
 
 interface ProfileCardProps {
   profile: Profile;
   variant?: 'default' | 'compact' | 'tooltip';
-  isNew?: boolean;
   rank?: number;
   showOnly?: 'like' | 'dislike';
   reverseVotes?: boolean;
 }
 
-export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnly, reverseVotes }: ProfileCardProps) {
+export function ProfileCard({ profile, variant = 'default', rank, showOnly, reverseVotes }: ProfileCardProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const hoverTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const isOverTooltip = useRef(false);
-  const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(hoveredId);
-  const { setHoveredProfileCountry } = useFilters();
+  const isMobile = useIsMobile();
+  const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(hoveredId ?? (detailOpen ? profile.id : null));
+  const { setHoveredProfileCountry, setCountry } = useFilters();
+
+  const isNew = Date.now() - new Date(profile.createdAt).getTime() < ONE_HOUR_MS;
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
@@ -57,6 +64,12 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnl
     isOverTooltip.current = false;
     setHoveredId(null);
   }, []);
+
+  const handleFlagClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCountry(profile.countryCode);
+  }, [profile.countryCode, setCountry]);
+
   if (variant === 'tooltip') {
     return (
       <div className="flex items-center gap-2 py-1">
@@ -66,7 +79,6 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnl
           profileId={profile.id}
           likes={profile.likes}
           dislikes={profile.dislikes}
-         
           compact
           showOnly={showOnly}
           reverseVotes={reverseVotes}
@@ -77,53 +89,69 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnl
 
   if (variant === 'compact') {
     return (
-      <div
-        className="flex items-center gap-3 px-3 py-2 bg-surface-light/50 rounded-lg hover:bg-surface-light transition-colors"
-        onMouseEnter={handleMouseEnter}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-      >
-        {rank != null && (
-          <span className="text-xs font-bold text-text-secondary w-5 text-right shrink-0">
-            {rank}
-          </span>
-        )}
-        <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-8 h-8" />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <CountryFlag code={profile.countryCode} />
-            <span className="text-sm font-medium text-white truncate">{profile.name}</span>
-            <RoleBadge role={profile.role} />
-            {isNew && <NewBadge />}
+      <>
+        <div
+          className="flex items-center gap-3 px-3 py-2 bg-surface-light/50 rounded-lg hover:bg-surface-light transition-colors select-none"
+          onMouseEnter={handleMouseEnter}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        >
+          {rank != null && (
+            <span className="text-xs font-bold text-text-secondary w-5 text-right shrink-0">
+              {rank}
+            </span>
+          )}
+          <div
+            className="flex items-center gap-3 flex-1 min-w-0"
+            onClick={isMobile ? () => setDetailOpen(true) : undefined}
+          >
+            <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-8 h-8 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="cursor-pointer" onClick={handleFlagClick}>
+                  <CountryFlag code={profile.countryCode} />
+                </span>
+                <span className="text-sm font-medium text-white truncate">{profile.name}</span>
+                <RoleBadge role={profile.role} />
+                {isNew && <NewBadge />}
+              </div>
+            </div>
           </div>
+          <VoteButtons
+            profileId={profile.id}
+            likes={profile.likes}
+            dislikes={profile.dislikes}
+            compact
+            showOnly={showOnly}
+            reverseVotes={reverseVotes}
+          />
+          {hoveredId && !isMobile && (
+            <PersonTooltip
+              profile={profile}
+              breakdown={breakdown}
+              isLoading={breakdownLoading}
+              position={mousePos}
+              onMouseEnter={handleTooltipEnter}
+              onMouseLeave={handleTooltipLeave}
+            />
+          )}
         </div>
-        <VoteButtons
-          profileId={profile.id}
-          likes={profile.likes}
-          dislikes={profile.dislikes}
-         
-          compact
-          showOnly={showOnly}
-          reverseVotes={reverseVotes}
-        />
-        {hoveredId && (
-          <PersonTooltip
+        {detailOpen && (
+          <ProfileDetailModal
             profile={profile}
             breakdown={breakdown}
             isLoading={breakdownLoading}
-            position={mousePos}
-            onMouseEnter={handleTooltipEnter}
-            onMouseLeave={handleTooltipLeave}
+            onClose={() => setDetailOpen(false)}
           />
         )}
-      </div>
+      </>
     );
   }
 
   // default variant
   return (
     <div
-      className="flex items-start gap-3 p-3 bg-surface-light/50 rounded-xl hover:bg-surface-light transition-colors"
+      className="flex items-start gap-3 p-3 bg-surface-light/50 rounded-xl hover:bg-surface-light transition-colors select-none"
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -136,7 +164,9 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnl
       <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-12 h-12" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-          <CountryFlag code={profile.countryCode} />
+          <span className="cursor-pointer" onClick={handleFlagClick}>
+            <CountryFlag code={profile.countryCode} />
+          </span>
           <span className="font-semibold text-white truncate">{profile.name}</span>
           <RoleBadge role={profile.role} />
           {isNew && <NewBadge />}
@@ -146,7 +176,6 @@ export function ProfileCard({ profile, variant = 'default', isNew, rank, showOnl
           profileId={profile.id}
           likes={profile.likes}
           dislikes={profile.dislikes}
-         
           showOnly={showOnly}
           reverseVotes={reverseVotes}
         />
