@@ -91,7 +91,8 @@ function StatusBadge({ status, label }: { status: string; label: string }) {
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString(undefined, {
     day: 'numeric', month: 'short', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
+    hour: '2-digit', minute: '2-digit',
+    timeZone: 'UTC', timeZoneName: 'short',
   });
 }
 
