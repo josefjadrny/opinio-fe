@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useI18n } from '../../i18n/I18nContext';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useMe } from '../../hooks/useMe';
+import { loginWithGoogle } from '../../api/client';
 import {
   useSupportTickets, useCreateTicket,
   useUpdateStatus, useUpdateReply, useUpdateNote,
@@ -420,6 +421,9 @@ function SupportContent() {
       <div className="px-6 py-10 flex flex-col items-center gap-3 text-center">
         <span className="text-4xl">🔒</span>
         <p className="text-sm text-white/50">{t.supportSignIn}</p>
+        <button onClick={loginWithGoogle} className="mt-1 text-xs text-accent hover:text-accent/80 transition-colors">
+          {t.login} →
+        </button>
       </div>
     );
   }
