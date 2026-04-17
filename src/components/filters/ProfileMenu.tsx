@@ -59,7 +59,7 @@ export function ProfileMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1.5 w-48 bg-surface border border-border rounded-xl shadow-xl z-50 overflow-hidden py-1">
+        <div className="absolute right-0 top-full mt-1.5 w-48 bg-surface border border-border rounded-xl shadow-xl z-50 py-1">
           <button
             onClick={() => { setOpen(false); navigate('/settings' + location.search); }}
             className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/5 transition-colors flex items-center gap-2.5"
@@ -103,7 +103,7 @@ export function ProfileMenu() {
               {t.support}
             </button>
             {isAnonymous && (
-              <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1.5 rounded-lg bg-surface border border-border shadow-xl text-xs text-white/60 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50">
+              <div className="pointer-events-none absolute right-full top-1/2 -translate-y-1/2 mr-2 px-2.5 py-1.5 rounded-lg bg-surface border border-border shadow-xl text-xs text-white/60 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50">
                 {t.supportSignIn}
               </div>
             )}
