@@ -89,6 +89,10 @@ function StatusBadge({ status, label }: { status: string; label: string }) {
 // ── Date formatting ────────────────────────────────────────────────────────
 
 function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString(undefined, {
     day: 'numeric', month: 'short', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
@@ -321,7 +325,7 @@ function TicketDetail({
         <div>
           <h3 className="text-base font-semibold text-white">{ticket.title}</h3>
           <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-            <span className="text-xs text-white/30">{t.supportCategories[ticket.category]} · {formatDate(ticket.createdAt)}</span>
+            <span className="text-xs text-white/30">{t.supportCategories[ticket.category]} · {formatDateTime(ticket.createdAt)}</span>
             {isAdmin && (
               <>
                 <span className="text-white/20 text-xs">·</span>
