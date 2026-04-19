@@ -94,6 +94,8 @@ export interface Strings {
   supportCategories: Record<string, string>;
   supportStatuses: Record<string, string>;
   roles: Record<string, string>;
+  votesLeft: string;
+  nextVote: string;
 }
 
 const en: Strings = {
@@ -213,6 +215,8 @@ const en: Strings = {
     activist: 'Activist',
     other: 'Other',
   },
+  votesLeft: 'votes left',
+  nextVote: 'next vote',
 };
 
 const cs: Strings = {
@@ -332,6 +336,8 @@ const cs: Strings = {
     activist: 'Aktivista',
     other: 'Ostatní',
   },
+  votesLeft: 'zbývá hlasů',
+  nextVote: 'příští hlas',
 };
 
 const es: Strings = {
@@ -451,6 +457,8 @@ const es: Strings = {
     activist: 'Activista',
     other: 'Otro',
   },
+  votesLeft: 'votos restantes',
+  nextVote: 'próximo voto',
 };
 
 export const LANGUAGES = {

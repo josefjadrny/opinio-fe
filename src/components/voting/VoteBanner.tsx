@@ -1,5 +1,6 @@
 import { useMe } from '../../hooks/useMe';
 import { useCountdown } from '../../hooks/useCountdown';
+import { useI18n } from '../../i18n/I18nContext';
 
 function VoteSlot({ type, remaining, nextAt }: {
   type: 'like' | 'dislike';
@@ -40,14 +41,16 @@ function VoteSlot({ type, remaining, nextAt }: {
 
 export function VoteBanner() {
   const { data: me } = useMe();
+  const { t } = useI18n();
 
   if (!me) return null;
 
   const { like, dislike } = me.voteAllowance;
+  const allExhausted = like.remaining === 0 && dislike.remaining === 0;
 
   return (
     <div className="flex items-center justify-center gap-4 py-2 border-t border-white/10 bg-surface/80 backdrop-blur-sm text-sm text-white/50">
-      <span>votes left</span>
+      <span>{allExhausted ? t.nextVote : t.votesLeft}</span>
       <VoteSlot type="like" remaining={like.remaining} nextAt={like.nextAt} />
       <VoteSlot type="dislike" remaining={dislike.remaining} nextAt={dislike.nextAt} />
     </div>
