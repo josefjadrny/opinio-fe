@@ -127,6 +127,7 @@ function SettingsContent({
   const [saving, setSaving] = useState(false);
   const [nameValue, setNameValue] = useState(displayName);
   const [nameSaving, setNameSaving] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
 
   const canChangeCountry = user?.canChangeCountry ?? false;
 
@@ -142,13 +143,26 @@ function SettingsContent({
     }
   };
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const filtered = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    setNameValue(filtered);
+    setNameError(null);
+  };
+
   const handleNameBlur = async () => {
     const trimmed = nameValue.trim();
     if (!trimmed || trimmed === displayName) return;
+    if (!/^[a-z0-9_]{3,30}$/.test(trimmed)) {
+      setNameError(t.displayNameFormat);
+      return;
+    }
     setNameSaving(true);
+    setNameError(null);
     try {
       await updateMe({ displayName: trimmed });
       await queryClient.invalidateQueries({ queryKey: ['me'] });
+    } catch (err: any) {
+      setNameError(err?.status === 409 ? t.displayNameTaken : t.displayNameFormat);
     } finally {
       setNameSaving(false);
     }
@@ -160,7 +174,7 @@ function SettingsContent({
       <div className="flex items-center gap-4">
         <Avatar name={displayName} imageUrl={user?.avatarUrl ?? null} className="w-16 h-16" isAnonymous={isAnonymous} />
         <div className="min-w-0">
-          <p className="text-sm font-medium text-white truncate">{displayName}</p>
+          <p className="text-sm font-medium text-white truncate">{isAnonymous ? displayName : `@${displayName}`}</p>
           <div className="flex items-center gap-1 mt-0.5">
             <p className="text-xs text-white/40">
               {isAnonymous
@@ -189,20 +203,28 @@ function SettingsContent({
       {/* Display name */}
       <div>
         <label className="block text-xs font-medium text-white/50 mb-1.5">{t.displayName}</label>
-        <input
-          type="text"
-          value={nameValue}
-          onChange={(e) => setNameValue(e.target.value)}
-          onBlur={handleNameBlur}
-          onKeyDown={(e) => { if (e.key === 'Enter') { e.currentTarget.blur(); } }}
-          maxLength={50}
-          disabled={isAnonymous || nameSaving}
-          className={`w-full rounded-lg px-3 py-2 text-sm transition-colors focus:outline-none ${
-            isAnonymous
-              ? 'bg-white/5 border border-white/10 text-white/40 cursor-not-allowed'
-              : 'bg-surface text-white border border-border focus:border-accent'
-          }`}
-        />
+        <div className={`flex items-center rounded-lg border text-sm transition-colors ${
+          isAnonymous
+            ? 'bg-white/5 border-white/10 cursor-not-allowed'
+            : nameError
+            ? 'border-red-500/60 bg-surface'
+            : 'border-border bg-surface focus-within:border-accent'
+        }`}>
+          <span className={`pl-3 select-none ${isAnonymous ? 'text-white/20' : 'text-white/40'}`}>@</span>
+          <input
+            type="text"
+            value={nameValue}
+            onChange={handleNameChange}
+            onBlur={handleNameBlur}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.currentTarget.blur(); } }}
+            maxLength={30}
+            disabled={isAnonymous || nameSaving}
+            className={`flex-1 bg-transparent px-1.5 py-2 focus:outline-none ${
+              isAnonymous ? 'text-white/40 cursor-not-allowed' : 'text-white'
+            }`}
+          />
+        </div>
+        {nameError && <p className="text-xs text-red-400 mt-1">{nameError}</p>}
       </div>
 
       {/* Country */}

@@ -50,7 +50,7 @@ function LeaderboardTable({
                 {voter.countryCode ? getCountryFlag(voter.countryCode) : '🌍'}
               </span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-white truncate">{voter.displayName}</p>
+                <p className="text-sm text-white truncate">@{voter.displayName}</p>
                 {voter.countryCode && (
                   <p className="text-xs text-white/30 truncate">{getCountryName(voter.countryCode)}</p>
                 )}

@@ -55,7 +55,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
         <div className="px-6 py-5 space-y-4">
           <p className="text-sm text-white/70 leading-relaxed">{profile.description}</p>
           {profile.addedBy && (
-            <p className="text-xs text-white/30">reported by {profile.addedBy}</p>
+            <p className="text-xs text-white/30">reported by @{profile.addedBy}</p>
           )}
 
           <VoteButtons profileId={profile.id} likes={profile.likes} dislikes={profile.dislikes} />

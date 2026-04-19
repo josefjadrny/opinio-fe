@@ -74,6 +74,8 @@ export interface Strings {
   supportNewTicket: string;
   supportNoTickets: string;
   supportOverview: string;
+  displayNameFormat: string;
+  displayNameTaken: string;
   noCountryWarning: string;
   supportSignIn: string;
   supportTitleLabel: string;
@@ -170,6 +172,8 @@ const en: Strings = {
   supportNewTicket: 'New ticket',
   supportNoTickets: 'No tickets yet',
   supportOverview: 'Have a question, found a bug, or want to request a feature? Open a ticket and we\'ll get back to you.',
+  displayNameFormat: 'Only lowercase letters, numbers, and underscores (3–30 characters)',
+  displayNameTaken: 'This handle is already taken',
   noCountryWarning: "We couldn't detect your country. Voting is disabled.",
   supportSignIn: 'Sign in to access support',
   supportTitleLabel: 'Subject',
@@ -287,6 +291,8 @@ const cs: Strings = {
   supportNewTicket: 'Nový požadavek',
   supportNoTickets: 'Zatím žádné požadavky',
   supportOverview: 'Máte otázku, našli jste chybu nebo chcete navrhnout funkci? Otevřete požadavek a ozveme se vám.',
+  displayNameFormat: 'Pouze malá písmena, číslice a podtržítka (3–30 znaků)',
+  displayNameTaken: 'Toto jméno je již obsazeno',
   noCountryWarning: 'Nepodařilo se nám zjistit vaši zemi. Hlasování je zakázáno.',
   supportSignIn: 'Přihlaste se pro přístup k podpoře',
   supportTitleLabel: 'Předmět',
@@ -404,6 +410,8 @@ const es: Strings = {
   supportNewTicket: 'Nuevo ticket',
   supportNoTickets: 'Sin tickets todavía',
   supportOverview: '¿Tienes una pregunta, encontraste un error o quieres sugerir una función? Abre un ticket y te responderemos.',
+  displayNameFormat: 'Solo letras minúsculas, números y guiones bajos (3–30 caracteres)',
+  displayNameTaken: 'Este nombre ya está en uso',
   noCountryWarning: 'No pudimos detectar tu país. La votación está deshabilitada.',
   supportSignIn: 'Inicia sesión para acceder al soporte',
   supportTitleLabel: 'Asunto',

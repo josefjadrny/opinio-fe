@@ -30,7 +30,7 @@ export function ProfileMenu() {
   const isAnonymous = !user || user.tier === 'anonymous';
   const displayName = isAnonymous ? t.anonymousUser : (user?.displayName ?? t.anonymousUser);
   const anonymousFlag = meLoading ? null : (user?.countryCode ? getCountryFlag(user.countryCode) : null);
-  const profileButtonLabel = isAnonymous ? t.profile : displayName;
+  const profileButtonLabel = isAnonymous ? t.profile : `@${displayName}`;
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {

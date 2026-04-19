@@ -164,7 +164,7 @@ function TicketList({
                       className="w-4 h-4"
                       isAnonymous={false}
                     />
-                    <span className="text-xs text-white/50 truncate max-w-28">{ticket.userDisplayName}</span>
+                    <span className="text-xs text-white/50 truncate max-w-28">@{ticket.userDisplayName}</span>
                     {ticket.userCountryCode && (
                       <span className="text-xs leading-none">{getCountryFlag(ticket.userCountryCode)}</span>
                     )}
@@ -334,7 +334,7 @@ function TicketDetail({
               <>
                 <span className="text-white/20 text-xs">·</span>
                 <Avatar name={ticket.userDisplayName ?? '?'} imageUrl={ticket.userAvatarUrl ?? null} className="w-4 h-4" isAnonymous={false} />
-                <span className="text-xs text-white/50">{ticket.userDisplayName}</span>
+                <span className="text-xs text-white/50">@{ticket.userDisplayName}</span>
                 {ticket.userCountryCode && <span className="text-xs leading-none">{getCountryFlag(ticket.userCountryCode)}</span>}
                 <TierBadge tier={ticket.userTier} />
               </>
