@@ -45,7 +45,7 @@ export interface VoteResponse {
 export interface ProfileFilters {
   type: 'positive' | 'negative';
   country?: string;
-  role?: string;
+  roles?: string[];
 }
 
 export type VoteType = 'like' | 'dislike';

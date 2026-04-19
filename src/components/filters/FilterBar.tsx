@@ -14,8 +14,8 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
   const navigate = useNavigate();
   const { t } = useI18n();
   const { isLoading: meLoading } = useMe();
-  const { country, role, setCountry, setRole } = useFilters();
-  const hasFilters = !!(country || role);
+  const { country, roles, setCountry, setRoles } = useFilters();
+  const hasFilters = !!(country || roles.length);
 
   return (
     <div className="flex items-center justify-between gap-3 px-4 py-3 bg-surface border-b border-border">
@@ -31,7 +31,7 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
           <CountryFilter />
           <RoleFilter />
           <button
-            onClick={() => { setCountry(undefined); setRole(undefined); }}
+            onClick={() => { setCountry(undefined); setRoles([]); }}
             disabled={!hasFilters}
             className="text-sm font-medium px-4 py-1.5 rounded-lg border transition-colors disabled:opacity-30 disabled:cursor-not-allowed border-white/30 text-white hover:enabled:border-white/60"
           >

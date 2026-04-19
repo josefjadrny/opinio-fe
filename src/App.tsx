@@ -169,7 +169,7 @@ function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
-  const { country, role } = useFilters();
+  const { country, roles } = useFilters();
   const [sidebarWidths, setSidebarWidths] = useState(loadSidebarWidths);
   const { t } = useI18n();
   const queryClient = useQueryClient();
@@ -182,8 +182,8 @@ function AppLayout() {
     }
   }, [queryClient]);
 
-  const positiveQuery = useProfiles({ type: 'positive', country, role });
-  const negativeQuery = useProfiles({ type: 'negative', country, role });
+  const positiveQuery = useProfiles({ type: 'positive', country, roles });
+  const negativeQuery = useProfiles({ type: 'negative', country, roles });
 
   useRealtimeUpdates();
 

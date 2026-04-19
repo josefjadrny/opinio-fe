@@ -30,6 +30,8 @@ The API URL is configured via `OPINIO_API_URL` in `.env` (defaults to `http://lo
 - **Rising** sidebar — top net positive scores; **Falling** sidebar — most disliked
 - **Like / Dislike** voting with per-tier hourly allowances (requires country detection; warning shown if unknown)
 - **Nominate** — add a public figure with role, description, and avatar
+- **Country filter** — searchable dropdown with flags, type to filter by name
+- **Role filter** — multi-select badge dropdown; select multiple roles, dimmed = inactive
 - **Country tooltip** — hover a country on the map to see top 4 rising + falling
 - **Person breakdown** — hover a card to see top fan/critic countries
 - **Google OAuth** — sign in to unlock higher vote allowance and settings

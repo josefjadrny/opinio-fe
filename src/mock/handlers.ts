@@ -34,8 +34,8 @@ export async function getProfiles(filters: ProfileFilters): Promise<ProfilesResp
   if (filters.country) {
     profiles = profiles.filter((p) => p.countryCode === filters.country);
   }
-  if (filters.role) {
-    profiles = profiles.filter((p) => p.role === filters.role);
+  if (filters.roles?.length) {
+    profiles = profiles.filter((p) => filters.roles!.includes(p.role));
   }
 
   const sorted = [...profiles].sort((a, b) => {

@@ -4,10 +4,11 @@ import type { Role } from '../types/profile';
 
 export interface FilterState {
   country: string | undefined;
-  role: Role | undefined;
+  roles: Role[];
   hoveredProfileCountry: string | undefined;
   setCountry: (c: string | undefined) => void;
-  setRole: (r: Role | undefined) => void;
+  setRoles: (r: Role[]) => void;
+  toggleRole: (r: Role) => void;
   setHoveredProfileCountry: (c: string | undefined) => void;
 }
 
@@ -19,7 +20,8 @@ export function FilterProvider({ children }: { children: ReactNode }) {
   const [hoveredProfileCountry, setHoveredProfileCountry] = useState<string | undefined>();
 
   const country = searchParams.get('country') ?? undefined;
-  const role = (searchParams.get('role') as Role) ?? undefined;
+  const rolesParam = searchParams.get('roles');
+  const roles = rolesParam ? (rolesParam.split(',').filter(Boolean) as Role[]) : [];
 
   const setCountry = useCallback((c: string | undefined) => {
     setSearchParams((prev) => {
@@ -29,16 +31,28 @@ export function FilterProvider({ children }: { children: ReactNode }) {
     });
   }, [setSearchParams]);
 
-  const setRole = useCallback((r: Role | undefined) => {
+  const setRoles = useCallback((r: Role[]) => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
-      if (r) next.set('role', r); else next.delete('role');
+      if (r.length > 0) next.set('roles', r.join(',')); else next.delete('roles');
+      return next;
+    });
+  }, [setSearchParams]);
+
+  const toggleRole = useCallback((r: Role) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      const current = (next.get('roles') ?? '').split(',').filter(Boolean) as Role[];
+      const updated = current.includes(r)
+        ? current.filter(x => x !== r)
+        : [...current, r];
+      if (updated.length > 0) next.set('roles', updated.join(',')); else next.delete('roles');
       return next;
     });
   }, [setSearchParams]);
 
   return (
-    <FilterContext.Provider value={{ country, role, hoveredProfileCountry, setCountry, setRole, setHoveredProfileCountry }}>
+    <FilterContext.Provider value={{ country, roles, hoveredProfileCountry, setCountry, setRoles, toggleRole, setHoveredProfileCountry }}>
       {children}
     </FilterContext.Provider>
   );

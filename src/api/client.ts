@@ -26,7 +26,7 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 export function getProfiles(filters: ProfileFilters): Promise<ProfilesResponse> {
   const params = new URLSearchParams({ type: filters.type });
   if (filters.country) params.set('country', filters.country);
-  if (filters.role) params.set('role', filters.role);
+  if (filters.roles?.length) params.set('roles', filters.roles.join(','));
   return apiFetch(`/api/profiles?${params}`);
 }
 
