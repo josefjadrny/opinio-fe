@@ -32,6 +32,7 @@ The API URL is configured via `OPINIO_API_URL` in `.env` (defaults to `http://lo
 - **Nominate** — add a public figure with role, description, and avatar
 - **Country filter** — searchable dropdown with flags, type to filter by name
 - **Role filter** — multi-select badge dropdown; select multiple roles, dimmed = inactive
+- **Mobile filter sheet** — bottom sheet with country search + role badges; filter icon in header with active-state dot
 - **Country tooltip** — hover a country on the map to see top 4 rising + falling
 - **Person breakdown** — hover a card to see top fan/critic countries
 - **Google OAuth** — sign in to unlock higher vote allowance and settings
