@@ -78,7 +78,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const isAnonymous = !user || user.tier === 'anonymous';
 
   const [name, setName] = useState('');
-  const [role, setRole] = useState<Role>('politician');
+  const [role, setRole] = useState<Role>('politics');
   const [countryCode, setCountryCode] = useState(getDefaultCountryCode);
   const [countryInput, setCountryInput] = useState(() => getCountryOptionLabel(getDefaultCountryCode()));
   const [countryMenuOpen, setCountryMenuOpen] = useState(false);

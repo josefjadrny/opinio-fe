@@ -1,27 +1,23 @@
 import type { Role } from '../types/profile';
 
 export const ROLE_LABELS: Record<Role, string> = {
-  politician: 'Politician',
-  actor: 'Actor',
-  musician: 'Musician',
-  athlete: 'Athlete',
-  business_leader: 'Business Leader',
-  influencer: 'Influencer',
-  journalist: 'Journalist',
-  activist: 'Activist',
-  other: 'Other',
+  politics: 'Politics',
+  culture: 'Culture',
+  sports: 'Sports',
+  business: 'Business',
+  media: 'Media',
+  health: 'Health',
+  tech: 'Tech',
 };
 
 export const ROLE_COLORS: Record<Role, string> = {
-  politician: 'bg-blue-600',
-  actor: 'bg-purple-600',
-  musician: 'bg-pink-600',
-  athlete: 'bg-green-600',
-  business_leader: 'bg-yellow-600',
-  influencer: 'bg-orange-600',
-  journalist: 'bg-cyan-600',
-  activist: 'bg-red-600',
-  other: 'bg-gray-600',
+  politics: 'bg-blue-600',
+  culture: 'bg-purple-600',
+  sports: 'bg-green-600',
+  business: 'bg-yellow-600',
+  media: 'bg-cyan-600',
+  health: 'bg-rose-600',
+  tech: 'bg-indigo-600',
 };
 
 export const ALL_ROLES: Role[] = Object.keys(ROLE_LABELS) as Role[];

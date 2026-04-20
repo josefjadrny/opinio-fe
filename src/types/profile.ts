@@ -1,13 +1,11 @@
 export type Role =
-  | 'politician'
-  | 'actor'
-  | 'musician'
-  | 'athlete'
-  | 'business_leader'
-  | 'influencer'
-  | 'journalist'
-  | 'activist'
-  | 'other';
+  | 'politics'
+  | 'culture'
+  | 'sports'
+  | 'business'
+  | 'media'
+  | 'health'
+  | 'tech';
 
 export interface Profile {
   id: string;
