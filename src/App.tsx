@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { isOrderLocked } from './utils/voteLock';
-import { Routes, Route, Outlet, useNavigate, useLocation, useMatch, useParams } from 'react-router-dom';
+import { Routes, Route, Outlet, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { FilterProvider } from './context/FilterContext';
 import { useFilters } from './context/useFilters';
@@ -14,7 +14,7 @@ import { FilterBar } from './components/filters/FilterBar';
 import { Sidebar } from './components/layout/Sidebar';
 import { MobileFeed } from './components/layout/MobileFeed';
 import { WorldMap } from './components/map/WorldMap';
-import { DesktopProfilePanel } from './components/profile/DesktopProfilePanel';
+import { DesktopProfileModal } from './components/profile/DesktopProfileModal';
 import { ProfileDetailModal } from './components/profile/ProfileDetailModal';
 import { AddProfileModal } from './components/profile-form/AddProfileModal';
 import { VoteBanner } from './components/voting/VoteBanner';
@@ -188,9 +188,6 @@ function AppLayout() {
   const { t } = useI18n();
   const queryClient = useQueryClient();
 
-  const profileMatch = useMatch('/p/:id');
-  const selectedProfileId = profileMatch?.params.id ?? null;
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('registered') === '1') {
@@ -249,12 +246,6 @@ function AppLayout() {
           <ResizeHandle side="left" onDrag={handleLeftDrag} />
           <div className="flex-1 min-w-0 relative min-h-0">
             <WorldMap />
-            <div className="absolute bottom-0 left-0 right-0 z-20 flex flex-col">
-              {selectedProfileId && (
-                <DesktopProfilePanel profileId={selectedProfileId} />
-              )}
-              <VoteBanner />
-            </div>
           </div>
           <ResizeHandle side="right" onDrag={handleRightDrag} />
           <div style={{ width: sidebarWidths.right }} className="shrink-0">
@@ -270,6 +261,11 @@ function AppLayout() {
 
       {/* Modal routes render here */}
       <Outlet />
+
+      {/* Always-visible vote allowance bar — above all modals */}
+      <div className="fixed bottom-0 left-0 right-0 z-[60]">
+        <VoteBanner />
+      </div>
     </div>
   );
 }
@@ -307,25 +303,23 @@ function ProfileDetailRoute() {
   const { data: profile, isLoading } = useProfile(id ?? null);
   const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(id ?? null);
 
-  // Update SEO once profile loads
   useEffect(() => {
     if (profile) applyProfileSeo(profile.name, profile.description, profile.id);
   }, [profile]);
 
-  // Only render the modal on mobile — desktop panel is rendered inside AppLayout's center column
-  if (!isMobile) return null;
+  if (isMobile) {
+    if (isLoading || !profile) return null;
+    return (
+      <ProfileDetailModal
+        profile={profile}
+        breakdown={breakdown}
+        isLoading={breakdownLoading}
+        onClose={() => navigate('/' + location.search)}
+      />
+    );
+  }
 
-  if (isLoading) return null;
-  if (!profile) return null;
-
-  return (
-    <ProfileDetailModal
-      profile={profile}
-      breakdown={breakdown}
-      isLoading={breakdownLoading}
-      onClose={() => navigate('/' + location.search)}
-    />
-  );
+  return <DesktopProfileModal profileId={id ?? ''} />;
 }
 
 function AppContent() {
