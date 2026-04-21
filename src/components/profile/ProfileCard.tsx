@@ -107,14 +107,16 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
           >
             <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-8 h-8 shrink-0" />
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5 min-w-0 mb-0.5">
-                <span className="cursor-pointer shrink-0" onClick={handleFlagClick}>
-                  <CountryFlag code={profile.countryCode} />
-                </span>
-                <span className="text-sm font-medium text-white truncate flex-1 min-w-0">{profile.name}</span>
-                {isNew && <NewBadge />}
+              <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
+                <span className="text-sm font-medium text-white truncate min-w-0 flex-shrink">{profile.name}</span>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="cursor-pointer" onClick={handleFlagClick}>
+                    <CountryFlag code={profile.countryCode} />
+                  </span>
+                  <RoleBadge role={profile.role} />
+                  {isNew && <NewBadge />}
+                </div>
               </div>
-              <RoleBadge role={profile.role} />
             </div>
           </div>
           <VoteButtons
@@ -163,17 +165,17 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
       )}
       <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-12 h-12" />
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5 min-w-0">
-          <span className="font-semibold text-white truncate flex-1 min-w-0">{profile.name}</span>
-          {isNew && <NewBadge />}
+        <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0 mb-0.5">
+          <span className="font-semibold text-white truncate min-w-0 flex-shrink">{profile.name}</span>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="cursor-pointer" onClick={handleFlagClick}>
+              <CountryFlag code={profile.countryCode} />
+            </span>
+            <RoleBadge role={profile.role} />
+            {isNew && <NewBadge />}
+          </div>
         </div>
-        <div className="flex items-center gap-1.5 mb-1">
-          <span className="cursor-pointer shrink-0" onClick={handleFlagClick}>
-            <CountryFlag code={profile.countryCode} />
-          </span>
-          <RoleBadge role={profile.role} />
-        </div>
-        <p className="text-xs text-text-secondary line-clamp-2 mb-1.5">{profile.description}</p>
+        <p className="text-xs text-text-secondary line-clamp-2 mb-1">{profile.description}</p>
         <VoteButtons
           profileId={profile.id}
           likes={profile.likes}

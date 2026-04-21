@@ -18,11 +18,11 @@ import { AboutModal } from './components/filters/AboutModal';
 import { StatsModal } from './components/filters/StatsModal';
 import { SupportModal } from './components/filters/SupportModal';
 
-const SIDEBAR_KEY = 'opinio_sidebar_widths_v2';
-const DEFAULT_LEFT = 400;
-const DEFAULT_RIGHT = 400;
-const MIN_WIDTH = 280;
-const MAX_WIDTH = 500;
+const SIDEBAR_KEY = 'opinio_sidebar_widths_v3';
+const DEFAULT_LEFT = 520;
+const DEFAULT_RIGHT = 520;
+const MIN_WIDTH = 300;
+const MAX_WIDTH = 700;
 
 const BASE_URL = 'https://opinio.live';
 const DEFAULT_TITLE = 'Opinio';
