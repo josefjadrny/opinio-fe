@@ -42,6 +42,7 @@ The API URL is configured via `OPINIO_API_URL` in `.env` (defaults to `http://lo
 - **i18n** — English, Czech, Spanish; language synced server-side for registered users
 - **Animated vote counters** — smooth animation toward new value over 10 s poll window
 - **10 s profile polling** — standalone interval immune to realtime cache resets
+- **Vote lock** — list order frozen for 5 s after casting a vote to prevent accidental misclicks during reorder
 
 ## Project Structure
 
