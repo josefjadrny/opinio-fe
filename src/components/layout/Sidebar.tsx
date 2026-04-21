@@ -39,7 +39,7 @@ export function Sidebar({ title, profiles, recentlyAdded, accentColor }: Sidebar
           {title}
         </h2>
       </div>
-      <div className="flex-1 overflow-y-auto px-2 py-1.5 space-y-1">
+      <div className="flex-1 overflow-y-auto px-1 py-1.5 space-y-1">
         {items.map(({ profile }) => (
           <ProfileCard
             key={profile.id}

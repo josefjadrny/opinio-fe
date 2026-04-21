@@ -153,7 +153,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   // default variant
   return (
     <div
-      className="flex items-start gap-2.5 px-2.5 py-2 bg-surface-light/50 rounded-xl hover:bg-surface-light transition-colors select-none"
+      className="flex items-start gap-2.5 px-1.5 py-2 bg-surface-light/50 rounded-xl hover:bg-surface-light transition-colors select-none"
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
