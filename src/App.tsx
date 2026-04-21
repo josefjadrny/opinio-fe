@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { isOrderLocked } from './utils/voteLock';
 import { Routes, Route, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { FilterProvider } from './context/FilterContext';
@@ -189,7 +190,9 @@ function AppLayout() {
 
   useEffect(() => {
     const id = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ['profiles'] });
+      if (!isOrderLocked()) {
+        queryClient.invalidateQueries({ queryKey: ['profiles'] });
+      }
     }, 10_000);
     return () => clearInterval(id);
   }, [queryClient]);
