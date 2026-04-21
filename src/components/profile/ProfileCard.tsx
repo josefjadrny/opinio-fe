@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import type { Profile } from '../../types/profile';
 import { RoleBadge } from '../common/RoleBadge';
 import { CountryFlag } from '../common/CountryFlag';
@@ -24,6 +25,7 @@ interface ProfileCardProps {
 export function ProfileCard({ profile, variant = 'default', rank, showOnly, reverseVotes }: ProfileCardProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const hoverTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -36,8 +38,9 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   const isNew = Date.now() - new Date(profile.createdAt).getTime() < ONE_HOUR_MS;
 
   const openDetail = useCallback(() => {
+    queryClient.setQueryData(['profile', profile.id], profile);
     navigate('/p/' + profile.id + location.search);
-  }, [navigate, profile.id, location.search]);
+  }, [navigate, profile, location.search, queryClient]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
