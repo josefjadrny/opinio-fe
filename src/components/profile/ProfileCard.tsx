@@ -153,7 +153,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   // default variant
   return (
     <div
-      className="flex items-start gap-3 p-3 bg-surface-light/50 rounded-xl hover:bg-surface-light transition-colors select-none"
+      className="flex items-start gap-2.5 px-2.5 py-2 bg-surface-light/50 rounded-xl hover:bg-surface-light transition-colors select-none"
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -163,7 +163,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
           {rank}
         </span>
       )}
-      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-12 h-12" />
+      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-10 h-10" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
           <span className="font-semibold text-white truncate min-w-0 flex-shrink">{profile.name}</span>
@@ -175,7 +175,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
             {isNew && <NewBadge />}
           </div>
         </div>
-        <p className="text-[13px] text-text-secondary line-clamp-2 mb-1">{profile.description}</p>
+        <p className="text-[13px] text-text-secondary line-clamp-2 mb-0.5">{profile.description}</p>
         <VoteButtons
           profileId={profile.id}
           likes={profile.likes}
