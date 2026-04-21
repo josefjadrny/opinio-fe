@@ -1,6 +1,6 @@
 # Opinio — Frontend
 
-React frontend for [Opinio](https://opinio.live) — a global social voting platform where anyone can browse and vote for public figures from around the world, organized by country on an interactive world map. Rankings refresh every 24 hours as votes expire, keeping results a live snapshot of current sentiment.
+React frontend for [Opinio](https://opinio.live) — a global social voting platform where anyone can browse and vote on statements, events, and public figures from around the world, organized by country on an interactive world map. Rankings refresh every 24 hours as votes expire, keeping results a live snapshot of current sentiment.
 
 ## Tech Stack
 
@@ -26,13 +26,13 @@ The API URL is configured via `OPINIO_API_URL` in `.env` (defaults to `http://lo
 
 ## Features
 
-- **World map** (desktop) / **ranked feed** (mobile) of public figures
+- **World map** (desktop) / **ranked feed** (mobile) of statements, events, and public figures
 - **Rising** sidebar — top net positive scores; **Falling** sidebar — most disliked
 - **Like / Dislike** voting with per-tier hourly allowances (requires country detection; warning shown if unknown)
-- **Nominate** — add a public figure with role, description, and avatar
+- **Nominate** — submit a statement or event with category, long description, and avatar
 - **Country filter** — searchable dropdown with flags, type to filter by name
-- **Role filter** — multi-select badge dropdown; select multiple roles, dimmed = inactive
-- **Mobile filter sheet** — bottom sheet with country search + role badges; filter icon in header with active-state dot
+- **Category filter** — multi-select badge dropdown; select multiple categories, dimmed = inactive
+- **Mobile filter sheet** — bottom sheet with country search + category badges; filter icon in header with active-state dot
 - **Country tooltip** — hover a country on the map to see top 4 rising + falling
 - **Person breakdown** — hover a card to see top fan/critic countries
 - **Google OAuth** — sign in to unlock higher vote allowance and settings
