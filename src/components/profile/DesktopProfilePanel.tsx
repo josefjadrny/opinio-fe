@@ -32,7 +32,7 @@ export function DesktopProfilePanel({ profileId }: DesktopProfilePanelProps) {
   const close = () => navigate('/' + location.search);
 
   return (
-    <div className="border-t border-border bg-surface/95 backdrop-blur-sm flex flex-col h-[52vh]">
+    <div className="border-t border-border bg-surface/95 backdrop-blur-sm flex flex-col h-96">
       {isLoading && (
         <div className="flex items-center justify-center py-6 text-sm text-white/40">Loading…</div>
       )}

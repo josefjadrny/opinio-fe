@@ -247,14 +247,14 @@ function AppLayout() {
             />
           </div>
           <ResizeHandle side="left" onDrag={handleLeftDrag} />
-          <div className="flex-1 min-w-0 flex flex-col min-h-0">
-            <div className="relative flex-1 min-h-0">
-              <WorldMap />
+          <div className="flex-1 min-w-0 relative min-h-0">
+            <WorldMap />
+            <div className="absolute bottom-0 left-0 right-0 z-20 flex flex-col">
+              {selectedProfileId && (
+                <DesktopProfilePanel profileId={selectedProfileId} />
+              )}
+              <VoteBanner />
             </div>
-            {selectedProfileId && (
-              <DesktopProfilePanel profileId={selectedProfileId} />
-            )}
-            <VoteBanner />
           </div>
           <ResizeHandle side="right" onDrag={handleRightDrag} />
           <div style={{ width: sidebarWidths.right }} className="shrink-0">

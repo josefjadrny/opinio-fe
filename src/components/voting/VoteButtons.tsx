@@ -98,7 +98,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
         title={!hasCountry ? t.noCountryWarning : undefined}
         className={`vote-bump ${btnBase} ${
           canLike
-            ? 'bg-positive/20 text-positive hover:bg-positive/30'
+            ? 'bg-positive/20 text-positive hover:bg-positive/30 cursor-pointer'
             : 'bg-positive/15 text-positive/60 cursor-not-allowed'
         }`}
       >
@@ -129,7 +129,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
         title={!hasCountry ? t.noCountryWarning : undefined}
         className={`vote-bump ${btnBase} ${
           canDislike
-            ? 'bg-negative/20 text-negative hover:bg-negative/30'
+            ? 'bg-negative/20 text-negative hover:bg-negative/30 cursor-pointer'
             : 'bg-negative/15 text-negative/60 cursor-not-allowed'
         }`}
       >
