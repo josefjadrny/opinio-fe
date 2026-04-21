@@ -6,15 +6,15 @@ export interface Strings {
   login: string;
   loginTooltip: string;
   allCountries: string;
-  allRoles: string;
+  allCategories: string;
   noProfiles: string;
   loading: string;
   cancel: string;
   adding: string;
   addProfileTitle: string;
-  nameLabel: string;
-  namePlaceholder: string;
-  roleLabel: string;
+  statementLabel: string;
+  statementPlaceholder: string;
+  categoryLabel: string;
   descriptionLabel: string;
   descriptionPlaceholder: string;
   photoLabel: string;
@@ -102,19 +102,19 @@ const en: Strings = {
   appName: 'OPINIO',
   trending: 'Rising',
   falling: 'Falling',
-  addProfile: 'Nominate',
+  addProfile: 'Opinion',
   login: 'Sign in',
   loginTooltip: 'Sign in with Google',
   allCountries: 'All Countries',
-  allRoles: 'All Roles',
+  allCategories: 'All Categories',
   noProfiles: 'No profiles yet',
   loading: 'Loading...',
   cancel: 'Cancel',
   adding: 'Adding...',
-  addProfileTitle: 'Nominate a Person',
-  nameLabel: 'Name',
-  namePlaceholder: 'Full name',
-  roleLabel: 'Role',
+  addProfileTitle: 'Drop an opinion',
+  statementLabel: 'Statement',
+  statementPlaceholder: 'Headline, name, or event…',
+  categoryLabel: 'Category',
   descriptionLabel: 'Description',
   descriptionPlaceholder: 'Latest statement or opinion',
   photoLabel: 'Avatar',
@@ -128,7 +128,7 @@ const en: Strings = {
   newBadge: 'NEW',
   clearFilters: 'Clear filters',
   signIn: 'Sign in',
-  nominateTooltip: 'Sign in to nominate',
+  nominateTooltip: 'Sign in to drop an opinion',
   profile: 'Profile',
   settings: 'Settings',
   about: 'About',
@@ -221,19 +221,19 @@ const cs: Strings = {
   appName: 'OPINIO',
   trending: 'Stoupající',
   falling: 'Klesající',
-  addProfile: 'Nominovat',
+  addProfile: 'Názor',
   login: 'Přihlásit se',
   loginTooltip: 'Přihlásit se přes Google',
   allCountries: 'Všechny země',
-  allRoles: 'Všechny role',
+  allCategories: 'Všechny kategorie',
   noProfiles: 'Zatím žádné profily',
   loading: 'Načítání...',
   cancel: 'Zrušit',
   adding: 'Přidávání...',
-  addProfileTitle: 'Nominovat osobu',
-  nameLabel: 'Jméno',
-  namePlaceholder: 'Celé jméno',
-  roleLabel: 'Role',
+  addProfileTitle: 'Přidat názor',
+  statementLabel: 'Prohlášení',
+  statementPlaceholder: 'Titulek, jméno nebo událost…',
+  categoryLabel: 'Kategorie',
   descriptionLabel: 'Popis',
   descriptionPlaceholder: 'Poslední výrok nebo názor',
   photoLabel: 'Avatar',
@@ -247,7 +247,7 @@ const cs: Strings = {
   newBadge: 'NOVÝ',
   clearFilters: 'Zrušit filtry',
   signIn: 'Přihlásit se',
-  nominateTooltip: 'Přihlaste se pro nominaci',
+  nominateTooltip: 'Přihlaste se pro přidání názoru',
   profile: 'Profil',
   settings: 'Nastavení',
   about: 'O aplikaci',
@@ -340,19 +340,19 @@ const es: Strings = {
   appName: 'OPINIO',
   trending: 'Subiendo',
   falling: 'Bajando',
-  addProfile: 'Nominar',
+  addProfile: 'Opinión',
   login: 'Iniciar sesión',
   loginTooltip: 'Iniciar sesión con Google',
   allCountries: 'Todos los países',
-  allRoles: 'Todos los roles',
+  allCategories: 'Todas las categorías',
   noProfiles: 'Aún no hay perfiles',
   loading: 'Cargando...',
   cancel: 'Cancelar',
   adding: 'Añadiendo...',
-  addProfileTitle: 'Nominar una persona',
-  nameLabel: 'Nombre',
-  namePlaceholder: 'Nombre completo',
-  roleLabel: 'Rol',
+  addProfileTitle: 'Dar una opinión',
+  statementLabel: 'Declaración',
+  statementPlaceholder: 'Titular, nombre o evento…',
+  categoryLabel: 'Categoría',
   descriptionLabel: 'Descripción',
   descriptionPlaceholder: 'Última declaración u opinión',
   photoLabel: 'Avatar',
@@ -366,7 +366,7 @@ const es: Strings = {
   newBadge: 'NUEVO',
   clearFilters: 'Borrar filtros',
   signIn: 'Iniciar sesión',
-  nominateTooltip: 'Inicia sesión para nominar',
+  nominateTooltip: 'Inicia sesión para dar una opinión',
   profile: 'Perfil',
   settings: 'Ajustes',
   about: 'Acerca de',

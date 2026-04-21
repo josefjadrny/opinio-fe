@@ -19,10 +19,10 @@ export function RoleFilter() {
   }, [open]);
 
   const label = roles.length === 0
-    ? t.allRoles
+    ? t.allCategories
     : roles.length === 1
     ? t.roles[roles[0]]
-    : `${roles.length} roles`;
+    : `${roles.length} categories`;
 
   return (
     <div className="relative" ref={ref}>

@@ -89,7 +89,7 @@ export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
 
           {/* Roles */}
           <div>
-            <p className="text-xs font-medium text-white/50 mb-2">{t.allRoles}</p>
+            <p className="text-xs font-medium text-white/50 mb-2">{t.allCategories}</p>
             <div className="flex flex-wrap gap-2">
               {ALL_ROLES.map((r: Role) => {
                 const active = roles.includes(r);
