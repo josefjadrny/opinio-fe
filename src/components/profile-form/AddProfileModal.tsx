@@ -218,7 +218,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-white/50 mb-1.5">{t.country}</label>
+        <label className="block text-xs font-medium text-white/50 mb-1.5">{t.profileCountry}</label>
         <div ref={countryFieldRef} className="relative">
           <div className="relative">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-base leading-none pointer-events-none">
@@ -252,7 +252,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
               }}
               autoComplete="off"
               className="w-full text-white text-sm rounded-lg border border-border pl-11 pr-10 py-2 focus:outline-none focus:border-accent"
-              placeholder={t.country}
+              placeholder={t.profileCountry}
               style={{ backgroundColor: '#1a1a2e' }}
             />
             <button

@@ -35,6 +35,7 @@ export interface Strings {
   logout: string;
   displayName: string;
   country: string;
+  profileCountry: string;
   detectedFromIp: string;
   anonymousUser: string;
   loginToUnlock: string;
@@ -135,6 +136,7 @@ const en: Strings = {
   logout: 'Log out',
   displayName: 'Display name',
   country: 'Country',
+  profileCountry: 'Country of origin',
   detectedFromIp: 'Detected from your IP',
   anonymousUser: 'Anonymous',
   loginToUnlock: 'Log in to change settings',
@@ -254,6 +256,7 @@ const cs: Strings = {
   logout: 'Odhlásit',
   displayName: 'Zobrazované jméno',
   country: 'Země',
+  profileCountry: 'Země původu',
   detectedFromIp: 'Zjištěno z vaší IP',
   anonymousUser: 'Anonymní',
   loginToUnlock: 'Přihlaste se pro změnu nastavení',
@@ -373,6 +376,7 @@ const es: Strings = {
   logout: 'Cerrar sesión',
   displayName: 'Nombre visible',
   country: 'País',
+  profileCountry: 'País de origen',
   detectedFromIp: 'Detectado desde tu IP',
   anonymousUser: 'Anónimo',
   loginToUnlock: 'Inicia sesión para cambiar ajustes',
