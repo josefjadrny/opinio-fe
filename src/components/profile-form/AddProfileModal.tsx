@@ -311,6 +311,9 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           className="w-full bg-surface text-white text-sm rounded-lg border border-border px-3 py-2 focus:outline-none focus:border-accent resize-none"
           required
         />
+        <p className={`text-xs mt-1 text-right ${description.length >= 230 ? 'text-red-400' : 'text-white/25'}`}>
+          {description.length} / 255
+        </p>
       </div>
 
       {/* Photo */}
