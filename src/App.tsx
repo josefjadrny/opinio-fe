@@ -1,17 +1,21 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { isOrderLocked } from './utils/voteLock';
-import { Routes, Route, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Outlet, useNavigate, useLocation, useMatch, useParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { FilterProvider } from './context/FilterContext';
 import { useFilters } from './context/useFilters';
 import { I18nProvider, useI18n } from './i18n/I18nContext';
 import { useProfiles } from './hooks/useProfiles';
+import { useProfile } from './hooks/useProfile';
+import { usePersonBreakdown } from './hooks/usePersonBreakdown';
 import { useRealtimeUpdates } from './hooks/useRealtimeUpdates';
 import { useIsMobile } from './hooks/useIsMobile';
 import { FilterBar } from './components/filters/FilterBar';
 import { Sidebar } from './components/layout/Sidebar';
 import { MobileFeed } from './components/layout/MobileFeed';
 import { WorldMap } from './components/map/WorldMap';
+import { DesktopProfilePanel } from './components/profile/DesktopProfilePanel';
+import { ProfileDetailModal } from './components/profile/ProfileDetailModal';
 import { AddProfileModal } from './components/profile-form/AddProfileModal';
 import { VoteBanner } from './components/voting/VoteBanner';
 import { SettingsModal } from './components/filters/SettingsModal';
@@ -27,7 +31,7 @@ const MAX_WIDTH = 700;
 
 const BASE_URL = 'https://opinio.live';
 const DEFAULT_TITLE = 'Opinio';
-const DEFAULT_DESCRIPTION = 'Discover who is rising and falling worldwide in real time. Vote on public figures, explore country trends, and see live rankings refreshed every 24 hours.';
+const DEFAULT_DESCRIPTION = 'Discover who is rising and falling worldwide in real time. Vote on statements and public figures, explore country trends, and see live rankings refreshed every 24 hours.';
 
 type SeoMeta = {
   title: string;
@@ -62,7 +66,6 @@ function getSeoMeta(pathname: string): SeoMeta {
       canonicalPath: '/stats',
     };
   }
-
   if (pathname === '/about') {
     return {
       title: DEFAULT_TITLE,
@@ -70,7 +73,6 @@ function getSeoMeta(pathname: string): SeoMeta {
       canonicalPath: '/about',
     };
   }
-
   if (pathname === '/support') {
     return {
       title: DEFAULT_TITLE,
@@ -78,7 +80,6 @@ function getSeoMeta(pathname: string): SeoMeta {
       canonicalPath: '/support',
     };
   }
-
   return {
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
@@ -89,7 +90,6 @@ function getSeoMeta(pathname: string): SeoMeta {
 function applySeo(pathname: string) {
   const meta = getSeoMeta(pathname);
   const canonicalUrl = `${BASE_URL}${meta.canonicalPath}`;
-
   document.title = meta.title;
   upsertMeta('meta[name="description"]', { name: 'description', content: meta.description });
   upsertMeta('meta[property="og:title"]', { property: 'og:title', content: meta.title });
@@ -97,6 +97,19 @@ function applySeo(pathname: string) {
   upsertMeta('meta[property="og:url"]', { property: 'og:url', content: canonicalUrl });
   upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: meta.title });
   upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: meta.description });
+  upsertCanonical(canonicalUrl);
+}
+
+function applyProfileSeo(name: string, description: string, id: string) {
+  const title = `${name} — Opinio`;
+  const canonicalUrl = `${BASE_URL}/p/${id}`;
+  document.title = title;
+  upsertMeta('meta[name="description"]', { name: 'description', content: description });
+  upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title });
+  upsertMeta('meta[property="og:description"]', { property: 'og:description', content: description });
+  upsertMeta('meta[property="og:url"]', { property: 'og:url', content: canonicalUrl });
+  upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title });
+  upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
   upsertCanonical(canonicalUrl);
 }
 
@@ -175,6 +188,9 @@ function AppLayout() {
   const { t } = useI18n();
   const queryClient = useQueryClient();
 
+  const profileMatch = useMatch('/p/:id');
+  const selectedProfileId = profileMatch?.params.id ?? null;
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('registered') === '1') {
@@ -231,11 +247,14 @@ function AppLayout() {
             />
           </div>
           <ResizeHandle side="left" onDrag={handleLeftDrag} />
-          <div className="relative flex-1 min-w-0">
-            <WorldMap />
-            <div className="absolute bottom-0 left-0 right-0 z-10">
-              <VoteBanner />
+          <div className="flex-1 min-w-0 flex flex-col min-h-0">
+            <div className="relative flex-1 min-h-0">
+              <WorldMap />
             </div>
+            {selectedProfileId && (
+              <DesktopProfilePanel profileId={selectedProfileId} />
+            )}
+            <VoteBanner />
           </div>
           <ResizeHandle side="right" onDrag={handleRightDrag} />
           <div style={{ width: sidebarWidths.right }} className="shrink-0">
@@ -280,11 +299,43 @@ function SupportRoute() {
   return <SupportModal onClose={() => navigate(-1)} />;
 }
 
+function ProfileDetailRoute() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isMobile = useIsMobile();
+  const { data: profile, isLoading } = useProfile(id ?? null);
+  const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(id ?? null);
+
+  // Update SEO once profile loads
+  useEffect(() => {
+    if (profile) applyProfileSeo(profile.name, profile.description, profile.id);
+  }, [profile]);
+
+  // Only render the modal on mobile — desktop panel is rendered inside AppLayout's center column
+  if (!isMobile) return null;
+
+  if (isLoading) return null;
+  if (!profile) return null;
+
+  return (
+    <ProfileDetailModal
+      profile={profile}
+      breakdown={breakdown}
+      isLoading={breakdownLoading}
+      onClose={() => navigate('/' + location.search)}
+    />
+  );
+}
+
 function AppContent() {
   const location = useLocation();
 
   useEffect(() => {
-    applySeo(location.pathname);
+    // Don't override SEO for profile pages — ProfileDetailRoute handles that
+    if (!location.pathname.startsWith('/p/')) {
+      applySeo(location.pathname);
+    }
   }, [location.pathname]);
 
   return (
@@ -295,6 +346,7 @@ function AppContent() {
         <Route path="about" element={<AboutRoute />} />
         <Route path="stats" element={<StatsRoute />} />
         <Route path="support" element={<SupportRoute />} />
+        <Route path="p/:id" element={<ProfileDetailRoute />} />
       </Route>
     </Routes>
   );

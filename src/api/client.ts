@@ -81,6 +81,10 @@ export function addNewProfile(data: {
   });
 }
 
+export function getProfile(profileId: string): Promise<import('../types/profile').Profile> {
+  return apiFetch(`/api/profiles/${profileId}`);
+}
+
 export function getPersonBreakdown(profileId: string): Promise<PersonBreakdownResponse> {
   return apiFetch(`/api/profiles/${profileId}/breakdown`);
 }

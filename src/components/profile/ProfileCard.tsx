@@ -1,11 +1,11 @@
 import { useState, useCallback, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import type { Profile } from '../../types/profile';
 import { RoleBadge } from '../common/RoleBadge';
 import { CountryFlag } from '../common/CountryFlag';
 import { VoteButtons } from '../voting/VoteButtons';
 import { NewBadge } from './NewBadge';
 import { PersonTooltip } from './PersonTooltip';
-import { ProfileDetailModal } from './ProfileDetailModal';
 import { usePersonBreakdown } from '../../hooks/usePersonBreakdown';
 import { useFilters } from '../../context/useFilters';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -22,17 +22,22 @@ interface ProfileCardProps {
 }
 
 export function ProfileCard({ profile, variant = 'default', rank, showOnly, reverseVotes }: ProfileCardProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [detailOpen, setDetailOpen] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const hoverTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const isOverTooltip = useRef(false);
   const isMobile = useIsMobile();
-  const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(hoveredId ?? (detailOpen ? profile.id : null));
-  const { setHoveredProfileCountry, setCountry } = useFilters();
+  const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(hoveredId);
+  const { setHoveredProfileCountry } = useFilters();
 
   const isNew = Date.now() - new Date(profile.createdAt).getTime() < ONE_HOUR_MS;
+
+  const openDetail = useCallback(() => {
+    navigate('/p/' + profile.id + location.search);
+  }, [navigate, profile.id, location.search]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
@@ -65,11 +70,6 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
     setHoveredId(null);
   }, []);
 
-  const handleFlagClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCountry(profile.countryCode);
-  }, [profile.countryCode, setCountry]);
-
   if (variant === 'tooltip') {
     return (
       <div className="flex items-center gap-2 py-1">
@@ -89,74 +89,61 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
 
   if (variant === 'compact') {
     return (
-      <>
-        <div
-          className="flex items-center gap-3 px-3 py-2 bg-surface-light/50 rounded-lg hover:bg-surface-light transition-colors select-none"
-          onMouseEnter={handleMouseEnter}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-        >
-          {rank != null && (
-            <span className="text-xs font-bold text-text-secondary w-5 text-right shrink-0">
-              {rank}
-            </span>
-          )}
-          <div
-            className="flex items-center gap-3 flex-1 min-w-0"
-            onClick={isMobile ? () => setDetailOpen(true) : undefined}
-          >
-            <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-8 h-8 shrink-0" />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
-                <span className="text-sm font-medium text-white truncate min-w-0 flex-shrink">{profile.name}</span>
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="cursor-pointer" onClick={handleFlagClick}>
-                    <CountryFlag code={profile.countryCode} />
-                  </span>
-                  <RoleBadge role={profile.role} />
-                  {isNew && <NewBadge />}
-                </div>
+      <div
+        className="flex items-center gap-3 px-3 py-2 bg-surface-light/50 rounded-lg hover:bg-surface-light transition-colors select-none cursor-pointer"
+        onMouseEnter={handleMouseEnter}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onClick={isMobile ? openDetail : undefined}
+      >
+        {rank != null && (
+          <span className="text-xs font-bold text-text-secondary w-5 text-right shrink-0">
+            {rank}
+          </span>
+        )}
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-8 h-8 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
+              <span className="text-sm font-medium text-white truncate min-w-0 flex-shrink">{profile.name}</span>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <CountryFlag code={profile.countryCode} />
+                <RoleBadge role={profile.role} />
+                {isNew && <NewBadge />}
               </div>
             </div>
           </div>
-          <VoteButtons
-            profileId={profile.id}
-            likes={profile.likes}
-            dislikes={profile.dislikes}
-            compact
-            showOnly={showOnly}
-            reverseVotes={reverseVotes}
-          />
-          {hoveredId && !isMobile && (
-            <PersonTooltip
-              profile={profile}
-              breakdown={breakdown}
-              isLoading={breakdownLoading}
-              position={mousePos}
-              onMouseEnter={handleTooltipEnter}
-              onMouseLeave={handleTooltipLeave}
-            />
-          )}
         </div>
-        {detailOpen && (
-          <ProfileDetailModal
+        <VoteButtons
+          profileId={profile.id}
+          likes={profile.likes}
+          dislikes={profile.dislikes}
+          compact
+          showOnly={showOnly}
+          reverseVotes={reverseVotes}
+        />
+        {hoveredId && !isMobile && (
+          <PersonTooltip
             profile={profile}
             breakdown={breakdown}
             isLoading={breakdownLoading}
-            onClose={() => setDetailOpen(false)}
+            position={mousePos}
+            onMouseEnter={handleTooltipEnter}
+            onMouseLeave={handleTooltipLeave}
           />
         )}
-      </>
+      </div>
     );
   }
 
   // default variant
   return (
     <div
-      className="flex items-start gap-2.5 px-1.5 py-2 bg-surface-light/50 rounded-xl hover:bg-surface-light transition-colors select-none"
+      className="flex items-start gap-2.5 px-1.5 py-2 bg-surface-light/50 rounded-xl hover:bg-surface-light transition-colors select-none cursor-pointer"
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onClick={openDetail}
     >
       {rank != null && (
         <span className="text-sm font-bold text-text-secondary w-6 text-right shrink-0 pt-1">
@@ -168,9 +155,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
         <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
           <span className="font-semibold text-white truncate min-w-0 flex-shrink">{profile.name}</span>
           <div className="flex items-center gap-1.5 shrink-0">
-            <span className="cursor-pointer" onClick={handleFlagClick}>
-              <CountryFlag code={profile.countryCode} />
-            </span>
+            <CountryFlag code={profile.countryCode} />
             <RoleBadge role={profile.role} />
             {isNew && <NewBadge />}
           </div>

@@ -34,7 +34,7 @@ interface ZoomState {
 }
 
 export function WorldMap() {
-  const { country: selectedCountry, setCountry, hoveredProfileCountry } = useFilters();
+  const { hoveredProfileCountry } = useFilters();
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [countries, setCountries] = useState<GeoJSON.Feature[]>([]);
@@ -107,11 +107,6 @@ export function WorldMap() {
     dragRef.current = null;
   }, []);
 
-  const handleClick = useCallback((alpha2: string) => {
-    if (dragRef.current) return; // don't fire click after drag
-    setCountry(alpha2 === selectedCountry ? undefined : alpha2);
-  }, [selectedCountry, setCountry]);
-
   const handleMouseEnter = useCallback((alpha2: string) => {
     setHoveredCountry(alpha2);
     clearTimeout(debounceRef.current);
@@ -141,7 +136,6 @@ export function WorldMap() {
           {countries.map((geo, i) => {
             const id = String((geo as GeoJSON.Feature & { id?: string | number }).id ?? '');
             const alpha2 = numericToAlpha2(id);
-            const isSelected = selectedCountry !== undefined && alpha2 === selectedCountry;
             const isHovered = !!alpha2 && (alpha2 === hoveredCountry || alpha2 === hoveredProfileCountry);
             const d = pathGenerator(geo);
             if (!d) return null;
@@ -150,13 +144,12 @@ export function WorldMap() {
               <path
                 key={`${id}-${i}`}
                 d={d}
-                fill={isSelected || isHovered ? '#e94560' : '#3a3a6a'}
-                stroke={isSelected || isHovered ? '#f1f1f1' : '#5a5a8a'}
-                strokeWidth={(isSelected || isHovered ? 0.75 : 0.5) / zoom.scale}
-                style={{ outline: 'none', cursor: alpha2 ? 'pointer' : 'default' }}
+                fill={isHovered ? '#e94560' : '#3a3a6a'}
+                stroke={isHovered ? '#f1f1f1' : '#5a5a8a'}
+                strokeWidth={(isHovered ? 0.75 : 0.5) / zoom.scale}
+                style={{ outline: 'none', cursor: 'grab' }}
                 onMouseEnter={() => alpha2 && handleMouseEnter(alpha2)}
                 onMouseLeave={handleMouseLeave}
-                onClick={() => alpha2 && handleClick(alpha2)}
               />
             );
           })}
