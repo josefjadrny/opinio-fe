@@ -30,7 +30,7 @@ export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col justify-end"
+      className="fixed inset-0 z-[70] flex flex-col justify-end"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />

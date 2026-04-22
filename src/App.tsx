@@ -262,10 +262,14 @@ function AppLayout() {
       {/* Modal routes render here */}
       <Outlet />
 
-      {/* Always-visible vote allowance bar — above all modals */}
-      <div className="fixed bottom-0 left-0 right-0 z-[60]">
+      {/* Vote allowance bar — fixed on mobile, normal flow on desktop (so it doesn't overlay sidebars) */}
+      {isMobile ? (
+        <div className="fixed bottom-0 left-0 right-0 z-[60]">
+          <VoteBanner />
+        </div>
+      ) : (
         <VoteBanner />
-      </div>
+      )}
     </div>
   );
 }
