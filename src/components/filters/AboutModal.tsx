@@ -133,7 +133,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
         onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       >
         <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-        <div className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto">
+        <div className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto pb-16">
           <div className="flex justify-center pt-3 pb-1">
             <div className="w-10 h-1 bg-white/20 rounded-full" />
           </div>

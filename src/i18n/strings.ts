@@ -221,8 +221,8 @@ const en: Strings = {
   },
   votesLeft: 'votes left',
   nextVote: 'next vote',
-  agree: 'Agree',
-  disagree: 'Disagree',
+  agree: 'Like',
+  disagree: 'Dislike',
 };
 
 const cs: Strings = {
@@ -344,8 +344,8 @@ const cs: Strings = {
   },
   votesLeft: 'zbývá hlasů',
   nextVote: 'příští hlas',
-  agree: 'Souhlasím',
-  disagree: 'Nesouhlasím',
+  agree: 'Líbí',
+  disagree: 'Nelíbí',
 };
 
 const es: Strings = {
@@ -467,8 +467,8 @@ const es: Strings = {
   },
   votesLeft: 'votos restantes',
   nextVote: 'próximo voto',
-  agree: 'De acuerdo',
-  disagree: 'En desacuerdo',
+  agree: 'Me gusta',
+  disagree: 'No me gusta',
 };
 
 export const LANGUAGES = {

@@ -39,7 +39,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
         <div className="absolute inset-0 bg-black/60" onClick={onClose} />
 
         {/* Sheet */}
-        <div className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto">
+        <div className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto pb-16">
           {/* Drag handle */}
           <div className="flex justify-center pt-3 pb-1">
             <div className="w-10 h-1 bg-white/20 rounded-full" />
