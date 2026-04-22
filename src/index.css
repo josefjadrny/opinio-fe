@@ -32,6 +32,14 @@ body {
   overflow: hidden;
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @keyframes vote-particle {
   0%   { transform: translateY(0) scale(1);   opacity: 1; }
   60%  { opacity: 1; }
