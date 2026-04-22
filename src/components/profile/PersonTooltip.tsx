@@ -5,6 +5,7 @@ import { getCountryFlag, getCountryName } from '../../utils/countries';
 import { RoleBadge } from '../common/RoleBadge';
 import { Avatar } from './Avatar';
 import { formatNumber } from '../../utils/formatNumber';
+import { useI18n } from '../../i18n/I18nContext';
 
 interface PersonTooltipProps {
   profile: Profile;
@@ -20,6 +21,7 @@ const HEIGHT = 420;
 const PADDING = 14;
 
 export function PersonTooltip({ profile, breakdown, isLoading, position, onMouseEnter, onMouseLeave }: PersonTooltipProps) {
+  const { t } = useI18n();
   let left = position.x + PADDING;
   let top = position.y + PADDING;
   if (left + WIDTH > window.innerWidth) left = position.x - WIDTH - PADDING;
@@ -59,12 +61,12 @@ export function PersonTooltip({ profile, breakdown, isLoading, position, onMouse
         <div className="flex items-center gap-1.5">
           <span className="text-positive text-sm">▲</span>
           <span className="text-sm font-bold text-positive">{formatNumber(profile.likes)}</span>
-          <span className="text-xs text-text-secondary">likes</span>
+          <span className="text-xs text-text-secondary">{t.agree}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="text-negative text-sm">▼</span>
           <span className="text-sm font-bold text-negative">{formatNumber(profile.dislikes)}</span>
-          <span className="text-xs text-text-secondary">dislikes</span>
+          <span className="text-xs text-text-secondary">{t.disagree}</span>
         </div>
       </div>
 
