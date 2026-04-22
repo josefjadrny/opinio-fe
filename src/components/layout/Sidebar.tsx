@@ -35,7 +35,7 @@ export function Sidebar({ title, profiles, recentlyAdded, accentColor }: Sidebar
   return (
     <div className={`flex flex-col h-full min-h-0 ${borderClass}`}>
       <div className="px-3 py-2 border-b border-border">
-        <h2 className={`text-sm font-bold uppercase tracking-wider ${textColor}`}>
+        <h2 className={`text-sm font-bold uppercase tracking-wider text-center ${textColor}`}>
           {title}
         </h2>
       </div>
