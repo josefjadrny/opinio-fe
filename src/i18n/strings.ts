@@ -12,6 +12,7 @@ export interface Strings {
   cancel: string;
   adding: string;
   addProfileTitle: string;
+  dropButton: string;
   statementLabel: string;
   statementPlaceholder: string;
   categoryLabel: string;
@@ -115,6 +116,7 @@ const en: Strings = {
   cancel: 'Cancel',
   adding: 'Adding...',
   addProfileTitle: 'Drop an opinion',
+  dropButton: 'Drop',
   statementLabel: 'Statement',
   statementPlaceholder: 'Headline, name, or event…',
   categoryLabel: 'Category',
@@ -237,6 +239,7 @@ const cs: Strings = {
   cancel: 'Zrušit',
   adding: 'Přidávání...',
   addProfileTitle: 'Přidat názor',
+  dropButton: 'Přidat',
   statementLabel: 'Prohlášení',
   statementPlaceholder: 'Titulek, jméno nebo událost…',
   categoryLabel: 'Kategorie',
@@ -359,6 +362,7 @@ const es: Strings = {
   cancel: 'Cancelar',
   adding: 'Añadiendo...',
   addProfileTitle: 'Dar una opinión',
+  dropButton: 'Soltar',
   statementLabel: 'Declaración',
   statementPlaceholder: 'Titular, nombre o evento…',
   categoryLabel: 'Categoría',
