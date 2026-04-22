@@ -1,7 +1,6 @@
 import { Fragment, type ReactNode } from 'react';
 import { ModalShell } from '../common/ModalShell';
 import { useI18n } from '../../i18n/I18nContext';
-import { BrandName } from '../common/BrandName';
 
 interface AboutModalProps {
   onClose: () => void;
@@ -33,7 +32,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
         {/* Branding */}
         <div className="flex items-center gap-3 pb-1">
           <img src="/favicon.svg" alt="Opinio" className="w-10 h-10" />
-          <BrandName className="text-2xl" />
+          <span className="text-2xl font-bold text-accent tracking-tight">{t.appName}</span>
         </div>
 
         <div className="border-t border-border" />

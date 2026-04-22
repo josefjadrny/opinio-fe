@@ -7,7 +7,6 @@ import { MobileFilterSheet } from './MobileFilterSheet';
 import { useFilters } from '../../context/useFilters';
 import { ProfileMenu } from './ProfileMenu';
 import { useMe } from '../../hooks/useMe';
-import { BrandName } from '../common/BrandName';
 
 interface FilterBarProps {
   onAddProfile: () => void;
@@ -30,7 +29,7 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
             className="flex items-center gap-1.5 mr-2 hover:opacity-80 transition-opacity shrink-0 cursor-pointer"
           >
             <img src="/favicon.svg" alt="Opinio" className="w-7 h-7" />
-            <BrandName className="text-xl" />
+            <h1 className="text-xl font-bold text-accent tracking-tight">{t.appName}</h1>
           </button>
           {/* Desktop filters — md+ only */}
           <div className="hidden md:flex items-center gap-3">
