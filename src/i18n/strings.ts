@@ -42,6 +42,8 @@ export interface Strings {
   loginToUnlock: string;
   notLoggedIn: string;
   language: string;
+  upgradeBanner: string;
+  manageSubscription: string;
   aboutHero: string;
   aboutFreshness: string;
   aboutPrinciplesTitle: string;
@@ -172,9 +174,11 @@ const en: Strings = {
   profileCountry: 'Country of origin',
   detectedFromIp: 'Detected from your IP',
   anonymousUser: 'Anonymous',
-  loginToUnlock: 'Log in to change settings',
+  loginToUnlock: 'Log in',
   notLoggedIn: 'Not logged in',
   language: 'Language',
+  upgradeBanner: 'Upgrade',
+  manageSubscription: 'Manage subscription',
   aboutHero: 'Vote on the stories shaping the world today.',
   aboutFreshness: 'You see current sentiment, not history. Every vote expires after 24 hours.',
   aboutPrinciplesTitle: 'Our principles',
@@ -324,8 +328,10 @@ const cs: Strings = {
   profileCountry: 'Země původu',
   detectedFromIp: 'Zjištěno z vaší IP',
   anonymousUser: 'Anonymní',
-  loginToUnlock: 'Přihlaste se pro změnu nastavení',
+  loginToUnlock: 'Přihlásit se',
   notLoggedIn: 'Nepřihlášen',
+  upgradeBanner: 'Upgradovat',
+  manageSubscription: 'Spravovat předplatné',
   language: 'Jazyk',
   aboutHero: 'Hlasujte o názorech, které utvářejí dnešní svět.',
   aboutFreshness: 'Vidíte aktuální náladu, ne historii. Každý hlas vyprší po 24 hodinách.',
@@ -476,8 +482,10 @@ const es: Strings = {
   profileCountry: 'País de origen',
   detectedFromIp: 'Detectado desde tu IP',
   anonymousUser: 'Anónimo',
-  loginToUnlock: 'Inicia sesión para cambiar ajustes',
+  loginToUnlock: 'Iniciar sesión',
   notLoggedIn: 'No has iniciado sesión',
+  upgradeBanner: 'Mejorar',
+  manageSubscription: 'Gestionar suscripción',
   language: 'Idioma',
   aboutHero: 'Vote on the stories shaping the world today.',
   aboutFreshness: 'You see current sentiment, not history. Every vote expires after 24 hours.',

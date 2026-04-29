@@ -116,5 +116,13 @@ export function updateSupportNote(id: string, adminNote: string): Promise<{ ok: 
   return apiFetch(`/api/support/${id}/note`, { method: 'PATCH', body: JSON.stringify({ adminNote }) });
 }
 
+export function createCheckoutSession(): Promise<{ url: string }> {
+  return apiFetch('/api/billing/checkout', { method: 'POST', body: JSON.stringify({}) });
+}
+
+export function createPortalSession(): Promise<{ url: string }> {
+  return apiFetch('/api/billing/portal', { method: 'POST', body: JSON.stringify({}) });
+}
+
 // TODO: wire to wss://${API_URL}/ws once BE WebSocket is implemented
 export { subscribe as subscribeRealtime } from '../mock/realtime';

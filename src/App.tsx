@@ -203,6 +203,18 @@ function AppLayout() {
       queryClient.invalidateQueries({ queryKey: ['me'] });
       window.history.replaceState({}, '', window.location.pathname);
     }
+    const billing = params.get('billing');
+    if (billing) {
+      // After Stripe redirect — webhook may land 1–3s after the browser returns. Refetch a few times.
+      queryClient.invalidateQueries({ queryKey: ['me'] });
+      if (billing === 'success') {
+        const t1 = setTimeout(() => queryClient.invalidateQueries({ queryKey: ['me'] }), 2_000);
+        const t2 = setTimeout(() => queryClient.invalidateQueries({ queryKey: ['me'] }), 6_000);
+        // Best-effort cleanup if the user navigates away
+        window.addEventListener('beforeunload', () => { clearTimeout(t1); clearTimeout(t2); }, { once: true });
+      }
+      window.history.replaceState({}, '', window.location.pathname);
+    }
   }, [queryClient]);
 
   const positiveQuery = useProfiles({ type: 'positive', country, roles });

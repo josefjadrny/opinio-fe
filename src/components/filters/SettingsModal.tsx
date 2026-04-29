@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ModalShell } from '../common/ModalShell';
 import { Avatar } from '../profile/Avatar';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
 import { LANGUAGES, type Locale } from '../../i18n/strings';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
-import { loginWithGoogle, updateMe } from '../../api/client';
+import { loginWithGoogle, updateMe, createCheckoutSession, createPortalSession } from '../../api/client';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface SettingsModalProps {
@@ -145,9 +145,9 @@ function SettingsContent({
       {/* Avatar + identity */}
       <div className="flex items-center gap-4">
         <Avatar name={displayName} imageUrl={user?.avatarUrl ?? null} className="w-16 h-16" isAnonymous={isAnonymous} />
-        <div className="min-w-0">
+        <div className="min-w-0 flex flex-col gap-0.5 items-start">
           <p className="text-sm font-medium text-white truncate">{isAnonymous ? displayName : `@${displayName}`}</p>
-          <div className="flex items-center gap-1 mt-0.5">
+          <div className="flex items-center gap-1">
             <p className="text-xs text-white/40">
               {isAnonymous
                 ? t.notLoggedIn
@@ -164,11 +164,13 @@ function SettingsContent({
             <button
               type="button"
               onClick={loginWithGoogle}
-              className="text-xs text-accent/80 hover:text-accent mt-1 underline underline-offset-2 transition-colors"
+              className="text-xs text-accent/80 hover:text-accent underline underline-offset-2 transition-colors"
             >
               {t.loginToUnlock}
             </button>
           )}
+          {!isAnonymous && user?.tier === 'registered' && <UpgradeLink t={t} />}
+          {!isAnonymous && user?.tier === 'supporter' && <ManageSubscriptionLink t={t} />}
         </div>
       </div>
 
@@ -238,5 +240,55 @@ function SettingsContent({
         </SelectField>
       </div>
     </div>
+  );
+}
+
+function useBillingRedirect(fetchUrl: () => Promise<{ url: string }>) {
+  const [loading, setLoading] = useState(false);
+  const inFlight = useRef(false);
+  const handleClick = async () => {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    setLoading(true);
+    try {
+      const { url } = await fetchUrl();
+      window.location.href = url;
+      // keep loading=true; we're leaving the page
+    } catch {
+      // re-enable after a short cooldown so users don't hammer it
+      setTimeout(() => {
+        inFlight.current = false;
+        setLoading(false);
+      }, 2000);
+    }
+  };
+  return { loading, handleClick };
+}
+
+function UpgradeLink({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
+  const { loading, handleClick } = useBillingRedirect(createCheckoutSession);
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={loading}
+      className="text-xs text-accent/80 hover:text-accent underline underline-offset-2 transition-colors disabled:opacity-50 disabled:cursor-wait"
+    >
+      {loading ? `${t.upgradeBanner}…` : t.upgradeBanner}
+    </button>
+  );
+}
+
+function ManageSubscriptionLink({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
+  const { loading, handleClick } = useBillingRedirect(createPortalSession);
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={loading}
+      className="text-xs text-accent/80 hover:text-accent underline underline-offset-2 transition-colors disabled:opacity-50 disabled:cursor-wait"
+    >
+      {loading ? `${t.manageSubscription}…` : t.manageSubscription}
+    </button>
   );
 }
