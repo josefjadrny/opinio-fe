@@ -45,19 +45,24 @@ export interface Strings {
   aboutHero: string;
   aboutFreshness: string;
   aboutPrinciplesTitle: string;
-  aboutPrincipleNoAds: string;
-  aboutPrincipleNoSharing: string;
-  aboutPrincipleNoTweaks: string;
-  aboutPrincipleDataDeletion: string;
+  aboutPrincipleTimeTitle: string;
+  aboutPrincipleTimeBody: string;
+  aboutPrinciplePrivacyTitle: string;
+  aboutPrinciplePrivacyBody: string;
+  aboutPrinciplePrivacyContactPrefix: string;
+  aboutPrinciplePrivacyContactLink: string;
+  aboutPrincipleVoiceTitle: string;
+  aboutPrincipleVoiceBody: string;
+  aboutPrincipleVoiceForDevs: string;
   aboutFrontendRepo: string;
   aboutBackendRepo: string;
-  aboutSourceLink: string;
   aboutMadeInCzechia: string;
   aboutHostedInGermany: string;
   aboutEuOrigin: string;
   aboutTiersTitle: string;
   aboutTierAnonymous: string;
   aboutTierRegistered: string;
+  aboutTierAddsOpinions: string;
   aboutTierSupporter: string;
   aboutSupporterPriceNote: string;
   aboutVotesPerHour: string;
@@ -165,21 +170,26 @@ const en: Strings = {
   notLoggedIn: 'Not logged in',
   language: 'Language',
   aboutHero: 'Vote on the stories shaping the world today.',
-  aboutFreshness: 'Every vote expires after 24 hours. You see current sentiment, not history.',
+  aboutFreshness: 'You see current sentiment, not history. Every vote expires after 24 hours.',
   aboutPrinciplesTitle: 'Our principles',
-  aboutPrincipleNoAds: 'No ads. No trackers.',
-  aboutPrincipleNoSharing: "We don't share your data with third parties.",
-  aboutPrincipleNoTweaks: "We don't tweak the rankings.",
-  aboutPrincipleDataDeletion: 'Delete your data via support. Inactive accounts are auto-removed after 6 months.',
-  aboutFrontendRepo: 'Frontend repository',
-  aboutBackendRepo: 'Backend repository',
-  aboutSourceLink: 'Source',
+  aboutPrincipleTimeTitle: 'We respect your time',
+  aboutPrincipleTimeBody: 'No ads, no tracking.',
+  aboutPrinciplePrivacyTitle: 'We respect your privacy',
+  aboutPrinciplePrivacyBody: "We don't share your data with anyone. Inactive accounts are deleted after 6 months.",
+  aboutPrinciplePrivacyContactPrefix: 'Need it sooner? Contact',
+  aboutPrinciplePrivacyContactLink: 'support',
+  aboutPrincipleVoiceTitle: 'We respect your voice',
+  aboutPrincipleVoiceBody: 'Our ranking algorithms are open and publicly accessible',
+  aboutPrincipleVoiceForDevs: 'for devs',
+  aboutFrontendRepo: 'Frontend',
+  aboutBackendRepo: 'Backend',
   aboutMadeInCzechia: 'Made in Czechia',
   aboutHostedInGermany: 'Hosted in Germany',
   aboutEuOrigin: 'EU origin',
   aboutTiersTitle: 'Voting limits (per hour)',
   aboutTierAnonymous: 'Anonymous',
   aboutTierRegistered: 'Registered',
+  aboutTierAddsOpinions: 'posting available',
   aboutTierSupporter: 'Supporter',
   aboutSupporterPriceNote: '€2.99 / month',
   aboutVotesPerHour: 'votes / hr',
@@ -187,7 +197,7 @@ const en: Strings = {
   privacy: 'Privacy',
   privacyLastUpdated: 'Last updated: April 29, 2026',
   privacyOperatorTitle: 'Operator',
-  privacyOperatorBody: 'Operator and data controller: Josef Jadrný, Czechia. Contact: bc.josefjadrny@gmail.com.',
+  privacyOperatorBody: 'Operator and data controller: Josef Jadrný, Czechia. Contact: support@opinio.live.',
   privacyDataTitle: 'What we collect',
   privacyDataBody: 'When you sign in: provider id, email, display name, avatar URL. When you vote: IP address, country code (from your IP), and your user id. Your preferences: chosen interface language and country override.',
   privacyWhyTitle: 'Why we collect it',
@@ -201,7 +211,7 @@ const en: Strings = {
   privacyRetentionProfiles: 'Profiles with no votes after 3 days are deleted automatically.',
   privacyRetentionAccounts: 'User accounts inactive for 6 months are deleted automatically.',
   privacyRightsTitle: 'Your rights',
-  privacyRightsBody: 'Under GDPR you have the right to access, correct, or delete your data, or to object to processing. Contact us through support or by email at bc.josefjadrny@gmail.com. We respond within 30 days.',
+  privacyRightsBody: 'Under GDPR you have the right to access, correct, or delete your data, or to object to processing. Contact us through support or by email at support@opinio.live. We respond within 30 days.',
   privacyOpenSupport: 'Open support',
   comingSoon: 'coming soon',
   stats: 'Stats',
@@ -306,21 +316,26 @@ const cs: Strings = {
   notLoggedIn: 'Nepřihlášen',
   language: 'Jazyk',
   aboutHero: 'Hlasujte o názorech, které utvářejí dnešní svět.',
-  aboutFreshness: 'Každý hlas vyprší po 24 hodinách. Vidíte aktuální náladu, ne historii.',
+  aboutFreshness: 'Vidíte aktuální náladu, ne historii. Každý hlas vyprší po 24 hodinách.',
   aboutPrinciplesTitle: 'Naše principy',
-  aboutPrincipleNoAds: 'Žádné reklamy. Žádné sledovače.',
-  aboutPrincipleNoSharing: 'Vaše data nepředáváme třetím stranám.',
-  aboutPrincipleNoTweaks: 'Pořadí nijak neupravujeme.',
-  aboutPrincipleDataDeletion: 'Smazání dat přes podporu. Neaktivní účty mažeme po 6 měsících.',
-  aboutFrontendRepo: 'Frontend repo',
-  aboutBackendRepo: 'Backend repo',
-  aboutSourceLink: 'Zdrojový kód',
+  aboutPrincipleTimeTitle: 'Respektujeme váš čas',
+  aboutPrincipleTimeBody: 'Žádné reklamy, žádné sledování.',
+  aboutPrinciplePrivacyTitle: 'Respektujeme vaše soukromí',
+  aboutPrinciplePrivacyBody: 'Vaše data s nikým nesdílíme. Neaktivní účty mažeme po 6 měsících.',
+  aboutPrinciplePrivacyContactPrefix: 'Chcete to dřív? Napište',
+  aboutPrinciplePrivacyContactLink: 'podpoře',
+  aboutPrincipleVoiceTitle: 'Respektujeme váš hlas',
+  aboutPrincipleVoiceBody: 'Naše algoritmy řazení jsou otevřené a veřejně přístupné',
+  aboutPrincipleVoiceForDevs: 'pro vývojáře',
+  aboutFrontendRepo: 'Frontend',
+  aboutBackendRepo: 'Backend',
   aboutMadeInCzechia: 'Vytvořeno v Česku',
   aboutHostedInGermany: 'Hostováno v Německu',
   aboutEuOrigin: 'Původ v EU',
   aboutTiersTitle: 'Limity hlasování (za hodinu)',
   aboutTierAnonymous: 'Anonymní',
   aboutTierRegistered: 'Registrovaný',
+  aboutTierAddsOpinions: 'přispívání dostupné',
   aboutTierSupporter: 'Podporovatel',
   aboutSupporterPriceNote: '2,99 € / měsíc',
   aboutVotesPerHour: 'hlasů / hod',
@@ -328,7 +343,7 @@ const cs: Strings = {
   privacy: 'Ochrana osobních údajů',
   privacyLastUpdated: 'Aktualizováno: 29. dubna 2026',
   privacyOperatorTitle: 'Provozovatel',
-  privacyOperatorBody: 'Provozovatel a správce údajů: Josef Jadrný, Česko. Kontakt: bc.josefjadrny@gmail.com.',
+  privacyOperatorBody: 'Provozovatel a správce údajů: Josef Jadrný, Česko. Kontakt: support@opinio.live.',
   privacyDataTitle: 'Co sbíráme',
   privacyDataBody: 'Při přihlášení: ID poskytovatele, e-mail, zobrazované jméno, URL avataru. Při hlasování: IP adresa, kód země (z vaší IP) a vaše ID uživatele. Vaše předvolby: zvolený jazyk rozhraní a případně přepsaná země.',
   privacyWhyTitle: 'Proč to sbíráme',
@@ -342,7 +357,7 @@ const cs: Strings = {
   privacyRetentionProfiles: 'Profily bez hlasů po 3 dnech mažeme automaticky.',
   privacyRetentionAccounts: 'Neaktivní uživatelské účty po 6 měsících mažeme automaticky.',
   privacyRightsTitle: 'Vaše práva',
-  privacyRightsBody: 'Podle GDPR máte právo na přístup ke svým údajům, jejich opravu nebo smazání, případně proti jejich zpracování vznést námitku. Pište přes podporu nebo e-mailem na bc.josefjadrny@gmail.com. Odpovídáme do 30 dnů.',
+  privacyRightsBody: 'Podle GDPR máte právo na přístup ke svým údajům, jejich opravu nebo smazání, případně proti jejich zpracování vznést námitku. Pište přes podporu nebo e-mailem na support@opinio.live. Odpovídáme do 30 dnů.',
   privacyOpenSupport: 'Otevřít podporu',
   comingSoon: 'již brzy',
   stats: 'Statistiky',
@@ -447,21 +462,26 @@ const es: Strings = {
   notLoggedIn: 'No has iniciado sesión',
   language: 'Idioma',
   aboutHero: 'Vote on the stories shaping the world today.',
-  aboutFreshness: 'Every vote expires after 24 hours. You see current sentiment, not history.',
-  aboutPrinciplesTitle: 'Our principles',
-  aboutPrincipleNoAds: 'No ads. No trackers.',
-  aboutPrincipleNoSharing: "We don't share your data with third parties.",
-  aboutPrincipleNoTweaks: "We don't tweak the rankings.",
-  aboutPrincipleDataDeletion: 'Delete your data via support. Inactive accounts are auto-removed after 6 months.',
-  aboutFrontendRepo: 'Repositorio del frontend',
-  aboutBackendRepo: 'Repositorio del backend',
-  aboutSourceLink: 'Source',
+  aboutFreshness: 'You see current sentiment, not history. Every vote expires after 24 hours.',
+  aboutPrinciplesTitle: 'Nuestros principios',
+  aboutPrincipleTimeTitle: 'Respetamos tu tiempo',
+  aboutPrincipleTimeBody: 'Sin anuncios, sin seguimiento.',
+  aboutPrinciplePrivacyTitle: 'Respetamos tu privacidad',
+  aboutPrinciplePrivacyBody: 'No compartimos tus datos con nadie. Las cuentas inactivas se eliminan tras 6 meses.',
+  aboutPrinciplePrivacyContactPrefix: '¿Lo necesitas antes? Escribe a',
+  aboutPrinciplePrivacyContactLink: 'soporte',
+  aboutPrincipleVoiceTitle: 'Respetamos tu voz',
+  aboutPrincipleVoiceBody: 'Nuestros algoritmos de ranking son abiertos y de acceso público',
+  aboutPrincipleVoiceForDevs: 'para desarrolladores',
+  aboutFrontendRepo: 'Frontend',
+  aboutBackendRepo: 'Backend',
   aboutMadeInCzechia: 'Made in Czechia',
   aboutHostedInGermany: 'Hosted in Germany',
   aboutEuOrigin: 'EU origin',
   aboutTiersTitle: 'Voting limits (per hour)',
   aboutTierAnonymous: 'Anonymous',
   aboutTierRegistered: 'Registered',
+  aboutTierAddsOpinions: 'publicación disponible',
   aboutTierSupporter: 'Supporter',
   aboutSupporterPriceNote: '€2.99 / month',
   aboutVotesPerHour: 'votes / hr',
@@ -469,7 +489,7 @@ const es: Strings = {
   privacy: 'Privacy',
   privacyLastUpdated: 'Last updated: April 29, 2026',
   privacyOperatorTitle: 'Operator',
-  privacyOperatorBody: 'Operator and data controller: Josef Jadrný, Czechia. Contact: bc.josefjadrny@gmail.com.',
+  privacyOperatorBody: 'Operator and data controller: Josef Jadrný, Czechia. Contact: support@opinio.live.',
   privacyDataTitle: 'What we collect',
   privacyDataBody: 'When you sign in: provider id, email, display name, avatar URL. When you vote: IP address, country code (from your IP), and your user id. Your preferences: chosen interface language and country override.',
   privacyWhyTitle: 'Why we collect it',
@@ -483,7 +503,7 @@ const es: Strings = {
   privacyRetentionProfiles: 'Profiles with no votes after 3 days are deleted automatically.',
   privacyRetentionAccounts: 'User accounts inactive for 6 months are deleted automatically.',
   privacyRightsTitle: 'Your rights',
-  privacyRightsBody: 'Under GDPR you have the right to access, correct, or delete your data, or to object to processing. Contact us through support or by email at bc.josefjadrny@gmail.com. We respond within 30 days.',
+  privacyRightsBody: 'Under GDPR you have the right to access, correct, or delete your data, or to object to processing. Contact us through support or by email at support@opinio.live. We respond within 30 days.',
   privacyOpenSupport: 'Open support',
   comingSoon: 'próximamente',
   stats: 'Estadísticas',

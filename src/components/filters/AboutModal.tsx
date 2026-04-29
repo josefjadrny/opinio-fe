@@ -36,25 +36,30 @@ export function AboutModal({ onClose }: AboutModalProps) {
           <span className="text-2xl font-bold text-accent tracking-tight">{t.appName}</span>
         </div>
 
-        {/* Hero */}
-        <p className="text-sm text-white leading-relaxed">{t.aboutHero}</p>
-
-        {/* Freshness */}
-        <p className="text-sm text-white/60 leading-relaxed">{t.aboutFreshness}</p>
+        {/* Hero + freshness */}
+        <div>
+          <p className="text-sm font-semibold text-white leading-relaxed mb-2">{t.aboutHero}</p>
+          <p className="text-sm text-white/60 leading-relaxed">{t.aboutFreshness}</p>
+        </div>
 
         <div className="border-t border-border" />
 
         {/* Tiers */}
         <div>
-          <p className="text-sm font-semibold text-white mb-3">{t.aboutTiersTitle}</p>
+          <p className="text-sm font-semibold text-white mb-2">{t.aboutTiersTitle}</p>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm text-white/60">{t.aboutTierAnonymous}</span>
               <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/50">1 {t.aboutVotesPerHour}</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-white/60">{t.aboutTierRegistered}</span>
-              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-accent/20 text-accent">3 {t.aboutVotesPerHour}</span>
+            <div className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-2 text-sm text-white/60 min-w-0">
+                <span className="shrink-0">{t.aboutTierRegistered}</span>
+                <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-white/10 text-white/40 border border-white/10 shrink-0">
+                  {t.aboutTierAddsOpinions}
+                </span>
+              </span>
+              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-accent/20 text-accent shrink-0">3 {t.aboutVotesPerHour}</span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="flex items-center gap-2 text-sm text-white/60 min-w-0">
@@ -74,11 +79,53 @@ export function AboutModal({ onClose }: AboutModalProps) {
         {/* Principles */}
         <div>
           <p className="text-sm font-semibold text-white mb-2">{t.aboutPrinciplesTitle}</p>
-          <ul className="space-y-1.5 text-sm text-white/60">
-            <li className="flex gap-2"><span className="text-accent shrink-0">·</span><span>{t.aboutPrincipleNoAds}</span></li>
-            <li className="flex gap-2"><span className="text-accent shrink-0">·</span><span>{t.aboutPrincipleNoSharing}</span></li>
-            <li className="flex gap-2"><span className="text-accent shrink-0">·</span><span>{t.aboutPrincipleNoTweaks}</span></li>
-            <li className="flex gap-2"><span className="text-accent shrink-0">·</span><span>{t.aboutPrincipleDataDeletion}</span></li>
+          <ul className="space-y-2 text-sm text-white/60">
+            <li className="flex gap-2">
+              <span className="text-accent shrink-0 text-[10px] leading-relaxed">▶</span>
+              <span>
+                <span className="text-white/80">{t.aboutPrincipleTimeTitle}.</span>{' '}{t.aboutPrincipleTimeBody}
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-accent shrink-0 text-[10px] leading-relaxed">▶</span>
+              <span>
+                <span className="text-white/80">{t.aboutPrinciplePrivacyTitle}.</span>{' '}{t.aboutPrinciplePrivacyBody}{' '}
+                {t.aboutPrinciplePrivacyContactPrefix}{' '}
+                <button
+                  type="button"
+                  onClick={() => navigate('/support' + location.search)}
+                  className="text-accent hover:text-accent/80 transition-colors"
+                >
+                  {t.aboutPrinciplePrivacyContactLink}
+                </button>
+                .
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-accent shrink-0 text-[10px] leading-relaxed">▶</span>
+              <span>
+                <span className="text-white/80">{t.aboutPrincipleVoiceTitle}.</span>{' '}{t.aboutPrincipleVoiceBody}{' '}
+                <span className="text-white/40">({t.aboutPrincipleVoiceForDevs}</span>{': '}
+                <a
+                  href="https://github.com/josefjadrny/opinio-fe"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-accent hover:text-accent/80 transition-colors"
+                >
+                  {t.aboutFrontendRepo}
+                </a>
+                <span className="text-white/40">{' · '}</span>
+                <a
+                  href="https://github.com/josefjadrny/opinio-api"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-accent hover:text-accent/80 transition-colors"
+                >
+                  {t.aboutBackendRepo}
+                </a>
+                <span className="text-white/40">)</span>
+              </span>
+            </li>
           </ul>
         </div>
 
@@ -93,7 +140,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
             <span>·</span>
             <span>🇪🇺 {t.aboutEuOrigin}</span>
           </div>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <div>
             <button
               type="button"
               onClick={() => navigate('/privacy' + location.search)}
@@ -101,15 +148,6 @@ export function AboutModal({ onClose }: AboutModalProps) {
             >
               {t.privacy}
             </button>
-            <span className="text-white/30">·</span>
-            <a
-              href="https://github.com/josefjadrny/opinio-fe"
-              target="_blank"
-              rel="noreferrer"
-              className="text-accent hover:text-accent/80 transition-colors"
-            >
-              {t.aboutSourceLink}
-            </a>
           </div>
         </div>
       </div>
