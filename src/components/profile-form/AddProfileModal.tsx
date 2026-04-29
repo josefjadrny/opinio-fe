@@ -95,7 +95,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     const query = countryInput.trim().toLowerCase();
     if (!query) return true;
     return country.name.toLowerCase().includes(query) || country.code.toLowerCase().includes(query);
-  }).slice(0, 12);
+  });
 
   const countryInitialized = useRef(false);
   useEffect(() => {

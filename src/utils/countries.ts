@@ -1,5 +1,4 @@
-// Curated list used for profile filters (countries that can have profiles)
-const COUNTRIES: Record<string, string> = {
+const ALL_COUNTRY_NAMES: Record<string, string> = {
   AF: 'Afghanistan', AL: 'Albania', DZ: 'Algeria', AR: 'Argentina', AU: 'Australia',
   AT: 'Austria', BD: 'Bangladesh', BE: 'Belgium', BR: 'Brazil', BG: 'Bulgaria',
   CA: 'Canada', CL: 'Chile', CN: 'China', CO: 'Colombia', HR: 'Croatia',
@@ -13,13 +12,8 @@ const COUNTRIES: Record<string, string> = {
   SG: 'Singapore', ZA: 'South Africa', ES: 'Spain', SE: 'Sweden', CH: 'Switzerland',
   TW: 'Taiwan', TH: 'Thailand', TR: 'Turkey', UA: 'Ukraine', AE: 'UAE',
   GB: 'United Kingdom', US: 'United States', VE: 'Venezuela', VN: 'Vietnam',
-};
-
-// Full display names for all countries in world-110m.json (used in map tooltips)
-const ALL_COUNTRY_NAMES: Record<string, string> = {
-  ...COUNTRIES,
   AM: 'Armenia', AO: 'Angola', AZ: 'Azerbaijan', BA: 'Bosnia and Herzegovina',
-  BD: 'Bangladesh', BF: 'Burkina Faso', BJ: 'Benin', BO: 'Bolivia',
+  BF: 'Burkina Faso', BJ: 'Benin', BO: 'Bolivia',
   BS: 'Bahamas', BT: 'Bhutan', BW: 'Botswana', BN: 'Brunei',
   BI: 'Burundi', BZ: 'Belize', BY: 'Belarus', CD: 'DR Congo',
   CF: 'Central African Republic', CG: 'Republic of Congo', CI: "Côte d'Ivoire",
@@ -121,6 +115,6 @@ export function numericToAlpha2(id: string): string | undefined {
   return NUMERIC_TO_ALPHA2[id];
 }
 
-export const ALL_COUNTRIES = Object.entries(COUNTRIES)
+export const ALL_COUNTRIES = Object.entries(ALL_COUNTRY_NAMES)
   .map(([code, name]) => ({ code, name }))
   .sort((a, b) => a.name.localeCompare(b.name));
