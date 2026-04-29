@@ -35,7 +35,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       setLocaleState(serverLang as Locale);
       localStorage.setItem(LOCALE_KEY, serverLang);
     }
-  // Only run when server data first loads — not on every locale change
+  // Only run when server data first loads - not on every locale change
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me?.user?.language, me?.user?.tier]);
 

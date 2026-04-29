@@ -206,7 +206,7 @@ function SettingsContent({
             onChange={handleCountryChange}
             disabled={saving}
           >
-            <option value="" disabled style={{ backgroundColor: '#1a1a2e', color: 'white' }}>— select —</option>
+            <option value="" disabled style={{ backgroundColor: '#1a1a2e', color: 'white' }}>- select -</option>
             {ALL_COUNTRIES.map(({ code, name }) => (
               <option key={code} value={code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
                 {getCountryFlag(code)} {name}
@@ -221,7 +221,7 @@ function SettingsContent({
                 <span className="text-sm text-white">{getCountryName(user.countryCode)}</span>
               </>
             ) : (
-              <span className="text-sm text-white">—</span>
+              <span className="text-sm text-white">-</span>
             )}
           </div>
         )}

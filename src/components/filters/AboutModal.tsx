@@ -81,13 +81,13 @@ export function AboutModal({ onClose }: AboutModalProps) {
           <p className="text-sm font-semibold text-white mb-2">{t.aboutPrinciplesTitle}</p>
           <ul className="space-y-2 text-sm text-white/60">
             <li className="flex gap-2">
-              <span className="text-accent shrink-0 text-[10px] leading-relaxed">▶</span>
+              <span className="text-positive shrink-0 text-[10px] leading-relaxed">▶</span>
               <span>
                 <span className="text-white/80">{t.aboutPrincipleTimeTitle}.</span>{' '}{t.aboutPrincipleTimeBody}
               </span>
             </li>
             <li className="flex gap-2">
-              <span className="text-accent shrink-0 text-[10px] leading-relaxed">▶</span>
+              <span className="text-positive shrink-0 text-[10px] leading-relaxed">▶</span>
               <span>
                 <span className="text-white/80">{t.aboutPrinciplePrivacyTitle}.</span>{' '}{t.aboutPrinciplePrivacyBody}{' '}
                 {t.aboutPrinciplePrivacyContactPrefix}{' '}
@@ -102,7 +102,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
               </span>
             </li>
             <li className="flex gap-2">
-              <span className="text-accent shrink-0 text-[10px] leading-relaxed">▶</span>
+              <span className="text-positive shrink-0 text-[10px] leading-relaxed">▶</span>
               <span>
                 <span className="text-white/80">{t.aboutPrincipleVoiceTitle}.</span>{' '}{t.aboutPrincipleVoiceBody}{' '}
                 <span className="text-white/40">({t.aboutPrincipleVoiceForDevs}</span>{': '}

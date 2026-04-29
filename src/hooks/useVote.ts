@@ -11,7 +11,7 @@ export function useVote() {
     mutationFn: ({ profileId, type }: { profileId: string; type: VoteType }) =>
       vote(profileId, type),
     onSuccess: (data: VoteResponse) => {
-      // Immediately patch counts — order stays frozen for 5s, then unlock triggers invalidation
+      // Immediately patch counts - order stays frozen for 5s, then unlock triggers invalidation
       const patch = (p: Profile) => p.id === data.profile.id ? data.profile : p;
       queryClient.setQueriesData<ProfilesResponse>({ queryKey: ['profiles'] }, (old) =>
         old ? { ...old, profiles: old.profiles.map(patch), recentlyAdded: old.recentlyAdded.map(patch) } : old

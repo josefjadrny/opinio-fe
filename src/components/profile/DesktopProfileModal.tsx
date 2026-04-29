@@ -68,7 +68,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
               </button>
             </div>
 
-            {/* Body — two columns */}
+            {/* Body - two columns */}
             <div className="flex-1 overflow-y-auto">
               <div className="grid grid-cols-2 gap-0 divide-x divide-border">
                 {/* Left: description */}
@@ -108,7 +108,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
               </div>
             </div>
 
-            {/* Footer — full-width vote buttons */}
+            {/* Footer - full-width vote buttons */}
             <div className="flex shrink-0 border-t border-border rounded-none">
               <button
                 onClick={() => voteMutation.mutate({ profileId: profile.id, type: 'like' })}

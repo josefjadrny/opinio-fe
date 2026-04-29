@@ -116,7 +116,7 @@ export const SEED_PROFILES: Profile[] = [
   p('74', 'Yuval Noah Harari', 'politics', 'IL', 'Warns about AI threats to democracy', 3200, 600),
   p('75', 'Neil deGrasse Tyson', 'politics', 'US', 'Debunks viral conspiracy theories', 3800, 800),
 
-  // Germany — enough entries to fill the country tooltip (5 rising + 5 falling)
+  // Germany - enough entries to fill the country tooltip (5 rising + 5 falling)
   p('81', 'Friedrich Merz', 'politics', 'DE', 'Wins federal election, forms new coalition', 4200, 1800),
   p('82', 'Robert Habeck', 'politics', 'DE', 'Defends green energy transition amid criticism', 1900, 3100),
   p('83', 'Annalena Baerbock', 'politics', 'DE', 'Pushes for tougher EU sanctions on Russia', 2800, 1500),

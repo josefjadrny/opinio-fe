@@ -354,7 +354,7 @@ function TicketDetail({
               rows={2}
               maxLength={5000}
               className="w-full text-white text-sm rounded-lg border border-border px-3 py-2 focus:outline-none focus:border-accent bg-transparent placeholder:text-white/25 resize-none"
-              placeholder="Internal notes — never shown to the user"
+              placeholder="Internal notes - never shown to the user"
             />
             <div className="flex items-center justify-between mt-1">
               {saveMsg === 'note' ? <span className="text-xs text-positive">Saved</span> : <span />}

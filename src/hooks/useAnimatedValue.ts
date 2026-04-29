@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 const POLL_MS = 10_000;
-const MIN_TICK_MS = 500;  // fastest tick — 20 ticks per poll window
+const MIN_TICK_MS = 500;  // fastest tick - 20 ticks per poll window
 const MAX_TICK_MS = 2_000;
 
 const MAX_TICKS = Math.floor(POLL_MS / MIN_TICK_MS); // 20
@@ -10,7 +10,7 @@ const MAX_TICKS = Math.floor(POLL_MS / MIN_TICK_MS); // 20
  * Animates a numeric value toward its target, always finishing within
  * the 10s poll window regardless of gap size.
  *
- * step    = ceil(gap / 20)   — e.g. gap 5 → step 1, gap 50 → step 3, gap 200 → step 10
+ * step    = ceil(gap / 20)   - e.g. gap 5 → step 1, gap 50 → step 3, gap 200 → step 10
  * tickMs  = clamp(10000 * step / gap, 500ms, 2000ms)
  *
  * gap  5 → step 1, tick 2000ms  → done in 10s
@@ -28,7 +28,7 @@ export function useAnimatedValue(target: number): number {
     const gap = Math.abs(to - from);
     if (gap === 0) return;
 
-    // For tiny gaps (e.g. a single vote click) snap immediately — no animation needed
+    // For tiny gaps (e.g. a single vote click) snap immediately - no animation needed
     if (gap <= 2) {
       refs.current.displayed = to;
       setDisplayed(to);

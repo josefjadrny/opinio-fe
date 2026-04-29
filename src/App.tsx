@@ -109,7 +109,7 @@ function applySeo(pathname: string) {
 }
 
 function applyProfileSeo(name: string, description: string, id: string) {
-  const title = `${name} — Opinio`;
+  const title = `${name} - Opinio`;
   const canonicalUrl = `${BASE_URL}/p/${id}`;
   document.title = title;
   upsertMeta('meta[name="description"]', { name: 'description', content: description });
@@ -301,7 +301,7 @@ function AppLayout() {
       {/* Modal routes render here */}
       <Outlet />
 
-      {/* Vote allowance bar — mobile only (desktop renders inside map column) */}
+      {/* Vote allowance bar - mobile only (desktop renders inside map column) */}
       {isMobile && (
         <div className="fixed bottom-0 left-0 right-0 z-[60]">
           <VoteBanner />
@@ -372,7 +372,7 @@ function AppContent() {
   const location = useLocation();
 
   useEffect(() => {
-    // Don't override SEO for profile pages — ProfileDetailRoute handles that
+    // Don't override SEO for profile pages - ProfileDetailRoute handles that
     if (!location.pathname.startsWith('/p/')) {
       applySeo(location.pathname);
     }

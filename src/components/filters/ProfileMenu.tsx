@@ -26,7 +26,7 @@ export function ProfileMenu({ onOpen }: ProfileMenuProps) {
     try {
       await logout();
     } catch {
-      // Proceed regardless — cookie may already be gone
+      // Proceed regardless - cookie may already be gone
     }
     await queryClient.resetQueries({ queryKey: ['me'] });
   };

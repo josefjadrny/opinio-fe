@@ -32,7 +32,7 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
             <img src="/favicon.svg" alt="Opinio" className="w-7 h-7" />
             <h1 className="text-xl font-bold text-accent tracking-tight">{t.appName}</h1>
           </button>
-          {/* Desktop filters — md+ only */}
+          {/* Desktop filters - md+ only */}
           <div className="hidden md:flex items-center gap-3">
             <CountryFilter />
             <RoleFilter />
@@ -46,7 +46,7 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* Mobile filter icon — hidden at md+ */}
+          {/* Mobile filter icon - hidden at md+ */}
           <HeaderButton
             onClick={() => setFilterSheetOpen(true)}
             className="relative md:hidden p-2 text-white"
