@@ -269,7 +269,7 @@ function AppLayout() {
         <div className="flex-1 flex min-h-0 overflow-hidden">
           <div
             style={{ width: sidebarWidths.left, maxWidth: 'calc(50vw - 250px)' }}
-            className="shrink-0"
+            className="shrink-0 relative z-10 bg-surface/80 backdrop-blur-md"
           >
             <Sidebar
               title={t.trending}
@@ -286,7 +286,7 @@ function AppLayout() {
           <ResizeHandle side="right" onDrag={handleRightDrag} />
           <div
             style={{ width: sidebarWidths.right, maxWidth: 'calc(50vw - 250px)' }}
-            className="shrink-0"
+            className="shrink-0 relative z-10 bg-surface/80 backdrop-blur-md"
           >
             <Sidebar
               title={t.falling}

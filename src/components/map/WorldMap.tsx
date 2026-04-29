@@ -124,12 +124,12 @@ export function WorldMap() {
   }, []);
 
   return (
-    <div className="relative flex-1 min-h-0 overflow-hidden" onMouseMove={handleMouseMove}>
+    <div className="relative flex-1 min-h-0" onMouseMove={handleMouseMove}>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         preserveAspectRatio="xMidYMid meet"
-        style={{ width: '100%', height: '100%', display: 'block', cursor: dragRef.current ? 'grabbing' : 'grab' }}
+        style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible', cursor: dragRef.current ? 'grabbing' : 'grab' }}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
