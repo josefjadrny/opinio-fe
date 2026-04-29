@@ -28,3 +28,6 @@ scripts/
 *.njsproj
 *.sln
 *.sw?
+
+# local env (do not commit)
+.env
