@@ -133,6 +133,8 @@ export interface Strings {
   nextVote: string;
   agree: string;
   disagree: string;
+  share: string;
+  linkCopied: string;
 }
 
 const en: Strings = {
@@ -289,6 +291,8 @@ const en: Strings = {
   nextVote: 'next vote',
   agree: 'Like',
   disagree: 'Dislike',
+  share: 'Share',
+  linkCopied: 'Link copied',
 };
 
 const cs: Strings = {
@@ -445,6 +449,8 @@ const cs: Strings = {
   nextVote: 'příští hlas',
   agree: 'Líbí',
   disagree: 'Nelíbí',
+  share: 'Sdílet',
+  linkCopied: 'Odkaz zkopírován',
 };
 
 const es: Strings = {
@@ -601,6 +607,8 @@ const es: Strings = {
   nextVote: 'próximo voto',
   agree: 'Me gusta',
   disagree: 'No me gusta',
+  share: 'Compartir',
+  linkCopied: 'Enlace copiado',
 };
 
 export const LANGUAGES = {

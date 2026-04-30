@@ -6,6 +6,7 @@ import { useVote } from '../../hooks/useVote';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from './Avatar';
+import { ShareButton } from './ShareButton';
 import { RoleBadge } from '../common/RoleBadge';
 import { CountryFlag } from '../common/CountryFlag';
 import { getCountryFlag, getCountryName } from '../../utils/countries';
@@ -61,11 +62,14 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                 </div>
                 <p className="text-[11px] text-white/30">@{profile.addedBy} · {formatDate(profile.createdAt)}</p>
               </div>
-              <button onClick={close} className="text-white/40 hover:text-white/80 transition-colors p-1 shrink-0">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              <div className="flex items-center gap-1 shrink-0">
+                <ShareButton profileId={profile.id} profileName={profile.name} />
+                <button onClick={close} className="text-white/40 hover:text-white/80 transition-colors p-1">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {/* Body - two columns */}

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import type { Profile } from '../../types/profile';
 import type { PersonBreakdownResponse } from '../../types/api';
 import { Avatar } from './Avatar';
+import { ShareButton } from './ShareButton';
 import { RoleBadge } from '../common/RoleBadge';
 import { CountryFlag } from '../common/CountryFlag';
 import { VoteButtons } from '../voting/VoteButtons';
@@ -45,11 +46,14 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
               <RoleBadge role={profile.role} />
             </div>
           </div>
-          <button onClick={onClose} className="text-white/40 hover:text-white/80 transition-colors p-1 shrink-0 ml-3">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-1 shrink-0 ml-3">
+            <ShareButton profileId={profile.id} profileName={profile.name} />
+            <button onClick={onClose} className="text-white/40 hover:text-white/80 transition-colors p-1">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div className="px-6 py-5 space-y-4">
