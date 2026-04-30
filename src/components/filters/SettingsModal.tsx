@@ -238,9 +238,9 @@ function useBillingRedirect(fetchUrl: () => Promise<{ url: string }>) {
 function UpgradeChip({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
   const { loading, handleClick } = useBillingRedirect(createCheckoutSession);
   return (
-    <ActionChip tone="red" onClick={handleClick} disabled={loading} className="mt-1">
+    <ActionChip onClick={handleClick} disabled={loading} className="mt-1">
+      <span aria-hidden className="text-red-400">❤</span>
       <span>{loading ? `${t.upgradeBanner}…` : t.upgradeBanner}</span>
-      <span aria-hidden>❤</span>
     </ActionChip>
   );
 }
