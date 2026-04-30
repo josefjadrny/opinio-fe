@@ -93,7 +93,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   if (variant === 'compact') {
     return (
       <div
-        className="flex items-center gap-3 px-3 py-2 bg-surface-light/50 rounded-lg hover:bg-surface-light transition-colors select-none cursor-pointer"
+        className="flex items-center gap-3 px-3 py-2 bg-surface-light/50 rounded-lg ring-1 ring-transparent hover:bg-surface-light hover:ring-white/10 transition-all duration-150 select-none"
         onMouseEnter={handleMouseEnter}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -144,7 +144,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   // default variant
   return (
     <div
-      className="flex items-start gap-2.5 px-1.5 py-2 bg-surface-light/50 rounded-xl hover:bg-surface-light transition-colors select-none cursor-pointer"
+      className="flex items-start gap-2.5 px-1.5 py-2 bg-surface-light/50 rounded-xl ring-1 ring-transparent hover:bg-surface-light hover:ring-white/10 transition-all duration-150 select-none"
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}

@@ -129,7 +129,7 @@ export function WorldMap() {
         ref={svgRef}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         preserveAspectRatio="xMidYMid meet"
-        style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible', cursor: dragRef.current ? 'grabbing' : 'grab' }}
+        style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
@@ -149,7 +149,7 @@ export function WorldMap() {
                 fill={isHovered ? '#e94560' : '#3a3a6a'}
                 stroke={isHovered ? '#f1f1f1' : '#5a5a8a'}
                 strokeWidth={(isHovered ? 0.75 : 0.5) / zoom.scale}
-                style={{ outline: 'none', cursor: 'grab' }}
+                style={{ outline: 'none' }}
                 onMouseEnter={() => alpha2 && handleMouseEnter(alpha2)}
                 onMouseLeave={handleMouseLeave}
               />

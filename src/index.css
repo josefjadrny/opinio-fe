@@ -18,6 +18,14 @@
   box-sizing: border-box;
 }
 
+/* Suppress the pointer-hand cursor on interactive elements site-wide.
+   Modern app UIs (Linear, Stripe, Notion) rely on hover state for affordance
+   and reserve the hand cursor for actual hyperlinks. Keeping `cursor-pointer`
+   in markup is harmless — this rule no-ops it. Other cursor utilities
+   (cursor-not-allowed, cursor-grab, cursor-text, cursor-col-resize) are
+   unaffected. */
+.cursor-pointer { cursor: default; }
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
