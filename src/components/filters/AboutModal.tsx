@@ -1,7 +1,11 @@
 import { Fragment } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ModalShell } from '../common/ModalShell';
+import { ActionChip } from '../common/ActionChip';
 import { useI18n } from '../../i18n/I18nContext';
+import { useMe } from '../../hooks/useMe';
+import { useBillingRedirect } from '../../hooks/useBillingRedirect';
+import { createCheckoutSession, loginWithGoogle } from '../../api/client';
 
 interface AboutModalProps {
   onClose: () => void;
@@ -64,9 +68,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
             <div className="flex items-center justify-between gap-2">
               <span className="flex items-center gap-2 text-sm text-white/60 min-w-0">
                 <span className="shrink-0">{t.aboutTierSupporter}</span>
-                <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-white/10 text-white/40 border border-white/10 shrink-0">
-                  {t.comingSoon} · {t.aboutSupporterPriceNote}
-                </span>
+                <SupporterCta />
               </span>
               <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-positive/20 text-positive shrink-0">5 {t.aboutVotesPerHour}</span>
             </div>
@@ -152,5 +154,29 @@ export function AboutModal({ onClose }: AboutModalProps) {
         </div>
       </div>
     </ModalShell>
+  );
+}
+
+function SupporterCta() {
+  const { t } = useI18n();
+  const { data: me } = useMe();
+  const tier = me?.user?.tier;
+  const isAlreadySupporter = tier === 'supporter' || tier === 'admin';
+  const isAnonymous = !tier || tier === 'anonymous';
+  const { loading, handleClick: handleCheckout } = useBillingRedirect(createCheckoutSession);
+
+  if (isAlreadySupporter) {
+    return (
+      <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-white/10 text-white/40 border border-white/10 shrink-0">
+        {t.aboutSupporterPriceNote}
+      </span>
+    );
+  }
+
+  return (
+    <ActionChip onClick={isAnonymous ? loginWithGoogle : handleCheckout} disabled={loading} className="shrink-0">
+      <span aria-hidden className="text-red-400">❤</span>
+      <span>{t.buyUsCoffee} · {t.aboutSupporterPriceNote}</span>
+    </ActionChip>
   );
 }

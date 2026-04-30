@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { ModalShell } from '../common/ModalShell';
 import { SelectField } from '../common/SelectField';
 import { Avatar } from '../profile/Avatar';
 import { ActionChip } from '../common/ActionChip';
+import { useBillingRedirect } from '../../hooks/useBillingRedirect';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
 import { LANGUAGES, type Locale } from '../../i18n/strings';
@@ -211,28 +212,6 @@ function SettingsContent({
       </div>
     </div>
   );
-}
-
-function useBillingRedirect(fetchUrl: () => Promise<{ url: string }>) {
-  const [loading, setLoading] = useState(false);
-  const inFlight = useRef(false);
-  const handleClick = async () => {
-    if (inFlight.current) return;
-    inFlight.current = true;
-    setLoading(true);
-    try {
-      const { url } = await fetchUrl();
-      window.location.href = url;
-      // keep loading=true; we're leaving the page
-    } catch {
-      // re-enable after a short cooldown so users don't hammer it
-      setTimeout(() => {
-        inFlight.current = false;
-        setLoading(false);
-      }, 2000);
-    }
-  };
-  return { loading, handleClick };
 }
 
 function UpgradeChip({ t }: { t: ReturnType<typeof useI18n>['t'] }) {

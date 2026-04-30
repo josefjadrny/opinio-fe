@@ -92,7 +92,7 @@ export interface Strings {
   privacyRightsTitle: string;
   privacyRightsBody: string;
   privacyOpenSupport: string;
-  comingSoon: string;
+  buyUsCoffee: string;
   stats: string;
   statsTitle: string;
   statsTopLikers: string;
@@ -225,7 +225,7 @@ const en: Strings = {
   privacyRightsTitle: 'Your rights',
   privacyRightsBody: 'Under GDPR you have the right to access, correct, or delete your data, or to object to processing. Contact us through {support} or by email at {email}. We respond within 7 days.',
   privacyOpenSupport: 'Open support',
-  comingSoon: 'coming soon',
+  buyUsCoffee: 'Buy us a coffee',
   stats: 'Stats',
   statsTitle: 'Community Stats',
   statsTopLikers: 'Top Likers',
@@ -377,7 +377,7 @@ const cs: Strings = {
   privacyRightsTitle: 'Vaše práva',
   privacyRightsBody: 'Podle GDPR máte právo na přístup ke svým údajům, jejich opravu nebo smazání, případně proti jejich zpracování vznést námitku. Pište přes {support} nebo e-mailem na {email}. Odpovídáme do 7 dnů.',
   privacyOpenSupport: 'Otevřít podporu',
-  comingSoon: 'již brzy',
+  buyUsCoffee: 'Kup nám kafe',
   stats: 'Statistiky',
   statsTitle: 'Komunitní statistiky',
   statsTopLikers: 'Top hlasující (kladně)',
@@ -529,7 +529,7 @@ const es: Strings = {
   privacyRightsTitle: 'Your rights',
   privacyRightsBody: 'Under GDPR you have the right to access, correct, or delete your data, or to object to processing. Contact us through {support} or by email at {email}. We respond within 7 days.',
   privacyOpenSupport: 'Open support',
-  comingSoon: 'próximamente',
+  buyUsCoffee: 'Invítanos a un café',
   stats: 'Estadísticas',
   statsTitle: 'Estadísticas de la comunidad',
   statsTopLikers: 'Top votantes positivos',
