@@ -43,6 +43,8 @@ The API URL is configured via `OPINIO_API_URL` in `.env` — copy `.env.example`
 - **Animated vote counters** — smooth animation toward new value over 10 s poll window
 - **10 s profile polling** — standalone interval immune to realtime cache resets
 - **Vote lock** — list order frozen for 5 s after casting a vote to prevent accidental misclicks during reorder
+- **Share button** — profile detail modals expose a share button that uses the Web Share API on devices that support it (mobile, macOS Safari) and falls back to clipboard copy elsewhere
+- **Per-profile social previews** — `opinio.live/p/<id>` URLs return profile-specific OG meta (title, description, avatar) via a Cloudflare Worker so social cards on WhatsApp, Twitter, iMessage, etc. show the actual profile, not the site default
 
 ## Project Structure
 
@@ -65,7 +67,22 @@ src/
 ├── mock/             # Mock handlers for unimplemented endpoints (WebSocket)
 ├── types/            # TypeScript interfaces (api.ts, profile.ts)
 └── utils/            # countries, roles, formatNumber
+
+cloudflare-worker/   # Cloudflare Worker that rewrites OG meta tags for
+                     # /p/<uuid> URLs so social previews show the profile
+                     # instead of the site default. See its README.
 ```
+
+## Deployment
+
+GitHub Actions runs on every push to `master`:
+
+| Job | What it does |
+|-----|-------------|
+| Frontend → S3 | `npm run build` then sync `dist/` to `s3://opinio.live` and `s3://www.opinio.live` |
+| Cloudflare Worker (OG meta) | `npx wrangler deploy` from `cloudflare-worker/` |
+
+Required GitHub Actions secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `CLOUDFLARE_API_TOKEN` (token needs `Account > Workers Scripts: Edit` and `Zone > Workers Routes: Edit`).
 
 ## User Tiers
 

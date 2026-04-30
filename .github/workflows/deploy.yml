@@ -1,4 +1,4 @@
-name: Deploy to S3
+name: Deploy
 
 on:
   push:
@@ -7,7 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-fe:
+    name: Frontend → S3
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -58,3 +59,24 @@ jobs:
             --cache-control "public, max-age=86400"
           aws s3 cp dist/icon.svg s3://www.opinio.live/icon.svg \
             --cache-control "public, max-age=86400"
+
+  deploy-worker:
+    name: Cloudflare Worker (OG meta)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cloudflare-worker
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: cloudflare-worker/package-lock.json
+
+      - run: npm ci
+
+      - run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
