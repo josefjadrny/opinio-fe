@@ -47,10 +47,16 @@ function replaceMetaContent(html, attrPattern, value) {
   return html.replace(re, `$1${value}$2`);
 }
 
+function removeMetaTag(html, attrPattern) {
+  const re = new RegExp(`\\s*<meta\\s+${attrPattern}[^>]*>`, 'i');
+  return html.replace(re, '');
+}
+
 function injectProfileMeta(html, meta) {
   const title = escapeHtml(meta.title);
   const description = escapeHtml(meta.description);
   const image = escapeHtml(meta.image);
+  const imageAlt = escapeHtml(meta.imageAlt);
   const url = escapeHtml(meta.url);
 
   let out = html.replace(/<title>[^<]*<\/title>/i, `<title>${title}</title>`);
@@ -59,9 +65,23 @@ function injectProfileMeta(html, meta) {
   out = replaceMetaContent(out, 'property="og:description"', description);
   out = replaceMetaContent(out, 'property="og:url"', url);
   out = replaceMetaContent(out, 'property="og:image"', image);
+  out = replaceMetaContent(out, 'property="og:image:alt"', imageAlt);
   out = replaceMetaContent(out, 'name="twitter:title"', title);
   out = replaceMetaContent(out, 'name="twitter:description"', description);
   out = replaceMetaContent(out, 'name="twitter:image"', image);
+  out = replaceMetaContent(out, 'name="twitter:image:alt"', imageAlt);
+
+  // Avatars are 128x128 squares — strip the default 1200x630 PNG hints
+  // and switch the Twitter card to the small "summary" layout. Without this
+  // WhatsApp / Twitter / iMessage see the size mismatch and either reject the
+  // image or fall back to the default site OG.
+  if (meta.isAvatar) {
+    out = removeMetaTag(out, 'property="og:image:type"');
+    out = removeMetaTag(out, 'property="og:image:width"');
+    out = removeMetaTag(out, 'property="og:image:height"');
+    out = replaceMetaContent(out, 'name="twitter:card"', 'summary');
+  }
+
   out = out.replace(
     /(<link\s+rel="canonical"\s+href=")[^"]*(")/i,
     `$1${url}$2`
@@ -93,17 +113,21 @@ export default {
       return new Response(shellText, { status: 200, headers });
     }
 
-    const title = `${profile.name} — Opinio`;
-    const descSource = profile.description || `${profile.name} on Opinio — vote like or dislike.`;
+    const title = `${profile.name} - Opinio`;
+    const descSource = profile.description || `${profile.name} on Opinio - vote like or dislike.`;
     const description = truncate(descSource, 200);
+    const hasAvatar = !!profile.imageUrl;
     const image = profile.imageUrl || DEFAULT_OG_IMAGE;
+    const imageAlt = hasAvatar ? profile.name : 'Opinio live global social voting';
     const canonicalUrl = `${SITE_BASE}/p/${id}`;
 
     const html = injectProfileMeta(shellText, {
       title,
       description,
       image,
+      imageAlt,
       url: canonicalUrl,
+      isAvatar: hasAvatar,
     });
 
     return new Response(html, { status: 200, headers });

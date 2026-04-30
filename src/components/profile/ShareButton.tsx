@@ -12,7 +12,7 @@ export function ShareButton({ profileId, profileName }: ShareButtonProps) {
 
   async function handleShare() {
     const url = `${window.location.origin}/p/${profileId}`;
-    const title = `${profileName} — Opinio`;
+    const title = `${profileName} - Opinio`;
 
     if (typeof navigator.share === 'function') {
       try {
