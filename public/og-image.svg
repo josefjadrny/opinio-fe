@@ -1,43 +1,71 @@
-<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#111827"/>
-      <stop offset="1" stop-color="#0F766E"/>
+      <stop offset="0" stop-color="#1a1a2e"/>
+      <stop offset="0.55" stop-color="#16213e"/>
+      <stop offset="1" stop-color="#0f3460"/>
     </linearGradient>
-    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(970 70) rotate(130) scale(690 760)">
-      <stop stop-color="#22D3EE" stop-opacity="0.35"/>
-      <stop offset="1" stop-color="#22D3EE" stop-opacity="0"/>
+    <radialGradient id="glowGreen" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(120 90) scale(420 420)">
+      <stop stop-color="#22c55e" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#22c55e" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowRed" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1080 540) scale(440 440)">
+      <stop stop-color="#e94560" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#e94560" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#glowGreen)"/>
+  <rect width="1200" height="630" fill="url(#glowRed)"/>
 
-  <circle cx="140" cy="60" r="10" fill="#34D399"/>
-  <circle cx="180" cy="60" r="10" fill="#22D3EE"/>
-  <circle cx="220" cy="60" r="10" fill="#60A5FA"/>
+  <!-- Brand bars (left green / right red) echoing the Rising/Falling sidebars -->
+  <rect x="0" y="0" width="6" height="630" fill="#22c55e"/>
+  <rect x="1194" y="0" width="6" height="630" fill="#e94560"/>
 
-  <text x="120" y="180" fill="#F8FAFC" font-family="Segoe UI, Arial, sans-serif" font-size="90" font-weight="800">Opinio</text>
+  <!-- Opinio mask/logo mark — anonymous mask shape with red mouth + green eyes -->
+  <g transform="translate(120 110)">
+    <rect x="0" y="0" width="76" height="76" rx="18" fill="#0f3460" stroke="#2a2a4a" stroke-width="2"/>
+    <circle cx="26" cy="32" r="6" fill="#22c55e"/>
+    <circle cx="50" cy="32" r="6" fill="#22c55e"/>
+    <rect x="22" y="50" width="32" height="6" rx="3" fill="#e94560"/>
+  </g>
 
-  <!-- No Comments Badge -->
-  <rect x="120" y="230" width="180" height="65" rx="10" fill="#EC4899" fill-opacity="0.2" stroke="#EC4899" stroke-width="2"/>
-  <text x="210" y="262" fill="#FBE7F3" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">No Comments</text>
-  <text x="210" y="285" fill="#FBCFE8" font-family="Segoe UI, Arial, sans-serif" font-size="13">Just voting</text>
+  <!-- Wordmark -->
+  <text x="220" y="170" fill="#f1f1f1" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="84" font-weight="800" letter-spacing="-2">Opinio</text>
 
-  <!-- No Ads Badge -->
-  <rect x="330" y="230" width="180" height="65" rx="10" fill="#10B981" fill-opacity="0.2" stroke="#10B981" stroke-width="2"/>
-  <text x="420" y="262" fill="#D1FAE5" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">No Ads</text>
-  <text x="420" y="285" fill="#A7F3D0" font-family="Segoe UI, Arial, sans-serif" font-size="13">Pure voting</text>
+  <!-- Headline -->
+  <text x="120" y="290" fill="#f1f1f1" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="52" font-weight="700" letter-spacing="-1">Live world rankings of</text>
+  <text x="120" y="350" fill="#f1f1f1" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="52" font-weight="700" letter-spacing="-1">people and statements</text>
 
-  <!-- Vote Free Badge -->
-  <rect x="540" y="230" width="180" height="65" rx="10" fill="#3B82F6" fill-opacity="0.2" stroke="#3B82F6" stroke-width="2"/>
-  <text x="630" y="262" fill="#DBEAFE" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">Vote Free</text>
-  <text x="630" y="285" fill="#BFDBFE" font-family="Segoe UI, Arial, sans-serif" font-size="13">Always free</text>
+  <!-- Subhead -->
+  <text x="120" y="400" fill="#a0a0b0" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500">Vote like or dislike. Rankings refresh every 24 hours.</text>
 
-  <text x="120" y="350" fill="#CFFAFE" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">Express your opinion</text>
-  <text x="120" y="400" fill="#A5F3FC" font-family="Segoe UI, Arial, sans-serif" font-size="30">Simply and honestly • No comments, just votes</text>
-  <text x="120" y="445" fill="#86C6FF" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-style="italic">Seeded in EU 🇪🇺</text>
+  <!-- Rising pill -->
+  <g transform="translate(120 440)">
+    <rect width="180" height="56" rx="14" fill="#22c55e" fill-opacity="0.16" stroke="#22c55e" stroke-width="2"/>
+    <path d="M28 36 L42 20 L56 36" stroke="#22c55e" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="78" y="37" fill="#dcfce7" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">Rising</text>
+  </g>
 
-  <rect x="120" y="510" width="280" height="70" rx="14" fill="#0EA5A7" fill-opacity="0.24" stroke="#22D3EE" stroke-opacity="0.58" stroke-width="2"/>
-  <text x="260" y="556" fill="#E0F2FE" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" text-anchor="middle">opinio.live</text>
+  <!-- Falling pill -->
+  <g transform="translate(320 440)">
+    <rect width="180" height="56" rx="14" fill="#e94560" fill-opacity="0.16" stroke="#e94560" stroke-width="2"/>
+    <path d="M28 20 L42 36 L56 20" stroke="#e94560" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="78" y="37" fill="#fee2e2" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">Falling</text>
+  </g>
+
+  <!-- 24h pill -->
+  <g transform="translate(520 440)">
+    <rect width="200" height="56" rx="14" fill="#0f3460" stroke="#2a2a4a" stroke-width="2"/>
+    <circle cx="42" cy="28" r="14" stroke="#a0a0b0" stroke-width="2.5" fill="none"/>
+    <path d="M42 19 L42 28 L48 32" stroke="#a0a0b0" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <text x="74" y="37" fill="#a0a0b0" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">24h votes</text>
+  </g>
+
+  <!-- Domain badge -->
+  <g transform="translate(120 540)">
+    <rect width="240" height="64" rx="16" fill="#e94560" fill-opacity="0.14" stroke="#e94560" stroke-opacity="0.55" stroke-width="2"/>
+    <text x="120" y="42" fill="#f1f1f1" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" font-weight="700" text-anchor="middle">opinio.live</text>
+  </g>
 </svg>

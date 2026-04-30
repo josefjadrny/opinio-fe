@@ -33,7 +33,8 @@ const MIN_WIDTH = 300;
 const MAX_WIDTH = 700;
 
 const BASE_URL = 'https://opinio.live';
-const DEFAULT_TITLE = 'Opinio';
+const BRAND = 'Opinio';
+const DEFAULT_TITLE = 'Opinio — Live world rankings of people and statements';
 const DEFAULT_DESCRIPTION = 'Discover who is rising and falling worldwide in real time. Vote on statements and public figures, explore country trends, and see live rankings refreshed every 24 hours.';
 
 type SeoMeta = {
@@ -64,28 +65,28 @@ function upsertCanonical(href: string) {
 function getSeoMeta(pathname: string): SeoMeta {
   if (pathname === '/stats') {
     return {
-      title: DEFAULT_TITLE,
+      title: `Top voters by country — ${BRAND}`,
       description: 'See the most active voters by likes and dislikes across countries on Opinio.',
       canonicalPath: '/stats',
     };
   }
   if (pathname === '/about') {
     return {
-      title: DEFAULT_TITLE,
+      title: `About Opinio — How live voting works`,
       description: 'Learn how Opinio works: fast social voting, expiring votes after 24 hours, and live world trends.',
       canonicalPath: '/about',
     };
   }
   if (pathname === '/privacy') {
     return {
-      title: DEFAULT_TITLE,
+      title: `Privacy notice — ${BRAND}`,
       description: 'Opinio privacy notice: what we collect, why, retention, and your rights under GDPR.',
       canonicalPath: '/privacy',
     };
   }
   if (pathname === '/support') {
     return {
-      title: DEFAULT_TITLE,
+      title: `Support — ${BRAND}`,
       description: 'Contact Opinio support, manage your tickets, and get help with voting, profiles, and account settings.',
       canonicalPath: '/support',
     };
@@ -111,7 +112,7 @@ function applySeo(pathname: string) {
 }
 
 function applyProfileSeo(name: string, description: string, id: string) {
-  const title = `${name} - Opinio`;
+  const title = `${name} — ${BRAND}`;
   const canonicalUrl = `${BASE_URL}/p/${id}`;
   document.title = title;
   upsertMeta('meta[name="description"]', { name: 'description', content: description });
