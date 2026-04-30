@@ -331,7 +331,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           <div className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 flex items-center justify-between gap-3">
             <p className="text-sm text-white/60">{t.nominateTooltip}</p>
             <button type="button" onClick={loginWithGoogle} className="shrink-0 text-sm font-medium text-accent hover:text-accent/80 transition-colors">
-              {t.signIn}
+              {t.login}
             </button>
           </div>
         ) : (

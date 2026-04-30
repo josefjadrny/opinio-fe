@@ -84,7 +84,7 @@ function TicketList({
 }) {
   return (
     <div className="px-6 py-5 flex flex-col gap-4">
-      {!isAdmin && <p className="text-sm text-white/40 leading-relaxed">{t.supportOverview}</p>}
+      {!isAdmin && <p className="text-sm text-white/60 leading-relaxed">{t.supportOverview}</p>}
       <div className="flex justify-end">
         {!isAdmin && (
           <button

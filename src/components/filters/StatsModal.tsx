@@ -70,7 +70,7 @@ function StatsContent({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
 
   return (
     <div className="px-6 py-5 space-y-5">
-      <p className="text-sm text-white/40 leading-relaxed">{t.statsOverview}</p>
+      <p className="text-sm text-white/60 leading-relaxed">{t.statsOverview}</p>
       <div>
         <label className="block text-xs font-medium text-white/50 mb-1.5">{t.country}</label>
         <SelectField value={country} onChange={(e) => setCountry(e.target.value)}>

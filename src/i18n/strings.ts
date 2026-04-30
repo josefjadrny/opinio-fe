@@ -28,7 +28,6 @@ export interface Strings {
   byAuthor: string;
   newBadge: string;
   clearFilters: string;
-  signIn: string;
   nominateTooltip: string;
   profile: string;
   settings: string;
@@ -39,7 +38,6 @@ export interface Strings {
   profileCountry: string;
   detectedFromIp: string;
   anonymousUser: string;
-  loginToUnlock: string;
   notLoggedIn: string;
   language: string;
   upgradeBanner: string;
@@ -163,7 +161,6 @@ const en: Strings = {
   byAuthor: 'by {author}',
   newBadge: 'NEW',
   clearFilters: 'Clear filters',
-  signIn: 'Sign in',
   nominateTooltip: 'Sign in to drop an opinion',
   profile: 'Profile',
   settings: 'Settings',
@@ -174,7 +171,6 @@ const en: Strings = {
   profileCountry: 'Country of origin',
   detectedFromIp: 'Detected from your IP',
   anonymousUser: 'Anonymous',
-  loginToUnlock: 'Log in',
   notLoggedIn: 'Not logged in',
   language: 'Language',
   upgradeBanner: 'Become a supporter',
@@ -317,7 +313,6 @@ const cs: Strings = {
   byAuthor: 'přidal {author}',
   newBadge: 'NOVÝ',
   clearFilters: 'Zrušit filtry',
-  signIn: 'Přihlásit se',
   nominateTooltip: 'Přihlaste se pro přidání názoru',
   profile: 'Profil',
   settings: 'Nastavení',
@@ -328,7 +323,6 @@ const cs: Strings = {
   profileCountry: 'Země původu',
   detectedFromIp: 'Zjištěno z vaší IP',
   anonymousUser: 'Anonymní',
-  loginToUnlock: 'Přihlásit se',
   notLoggedIn: 'Nepřihlášen',
   upgradeBanner: 'Stát se podporovatelem',
   manageSubscription: 'Spravovat předplatné',
@@ -471,7 +465,6 @@ const es: Strings = {
   byAuthor: 'por {author}',
   newBadge: 'NUEVO',
   clearFilters: 'Borrar filtros',
-  signIn: 'Iniciar sesión',
   nominateTooltip: 'Inicia sesión para dar una opinión',
   profile: 'Perfil',
   settings: 'Ajustes',
@@ -482,7 +475,6 @@ const es: Strings = {
   profileCountry: 'País de origen',
   detectedFromIp: 'Detectado desde tu IP',
   anonymousUser: 'Anónimo',
-  loginToUnlock: 'Iniciar sesión',
   notLoggedIn: 'No has iniciado sesión',
   upgradeBanner: 'Conviértete en supporter',
   manageSubscription: 'Gestionar suscripción',
