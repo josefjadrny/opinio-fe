@@ -22,7 +22,7 @@ npm run dev       # http://localhost:5173
 npm run build     # production build
 ```
 
-The API URL is configured via `OPINIO_API_URL` in `.env` (defaults to `http://localhost:3000`).
+The API URL is configured via `OPINIO_API_URL` in `.env` — copy `.env.example` if you don't have one yet (defaults to `http://localhost:3000`).
 
 ## Features
 
@@ -36,7 +36,7 @@ The API URL is configured via `OPINIO_API_URL` in `.env` (defaults to `http://lo
 - **Country tooltip** — hover a country on the map to see top 4 rising + falling
 - **Person breakdown** — hover a card to see top fan/critic countries
 - **Google OAuth** — sign in to unlock higher vote allowance and settings
-- **Settings modal** — display name, country override, language preference
+- **Settings modal** — display name, country override, language preference; subtle Upgrade link redirects registered users to Stripe Checkout, supporters get a Manage subscription link to the Stripe Customer Portal
 - **Stats page** — community leaderboard (top likers + dislikers), country filter
 - **Support page** — submit tickets, track status; admin sees all tickets with user info
 - **i18n** — English, Czech, Spanish; language synced server-side for registered users
@@ -73,7 +73,7 @@ src/
 |------|-------------|-------|
 | Anonymous | 1 | Identified by IP |
 | Registered | 3 | Google OAuth |
-| Supporter | 5 | Paid tier (coming soon) |
+| Supporter | 5 | Paid €2.99/month — Stripe-hosted Checkout |
 | Admin | 5 | Full support ticket management |
 
 ## License
