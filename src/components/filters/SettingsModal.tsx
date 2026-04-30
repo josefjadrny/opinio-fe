@@ -239,9 +239,10 @@ function UpgradeLink({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
       type="button"
       onClick={handleClick}
       disabled={loading}
-      className="text-xs text-accent/80 hover:text-accent underline underline-offset-2 transition-colors disabled:opacity-50 disabled:cursor-wait"
+      className="text-xs text-accent/80 hover:text-accent underline underline-offset-2 transition-colors disabled:opacity-50 disabled:cursor-wait inline-flex items-center gap-1"
     >
-      {loading ? `${t.upgradeBanner}…` : t.upgradeBanner}
+      <span>{loading ? `${t.upgradeBanner}…` : t.upgradeBanner}</span>
+      <span className="text-red-400 leading-none no-underline">❤</span>
     </button>
   );
 }
