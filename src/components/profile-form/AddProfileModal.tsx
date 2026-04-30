@@ -338,7 +338,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           <button
             type="submit"
             disabled={mutation.isPending}
-            className="w-full bg-accent text-white text-sm font-medium py-2 rounded-lg hover:bg-accent/80 transition-colors disabled:opacity-50"
+            className="w-full bg-positive/80 text-white text-sm font-medium py-2 rounded-lg hover:bg-positive transition-colors disabled:opacity-50"
           >
             {mutation.isPending ? t.adding : t.dropButton}
           </button>
