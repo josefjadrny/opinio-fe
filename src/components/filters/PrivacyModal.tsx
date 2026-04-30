@@ -84,6 +84,9 @@ export function PrivacyModal({ onClose }: PrivacyModalProps) {
             <BulletItem>
               <span className="text-white/80">{t.privacyDataPrefsTitle}:</span>{' '}{t.privacyDataPrefsBody}
             </BulletItem>
+            <BulletItem>
+              <span className="text-white/80">{t.privacyDataSubscriptionTitle}:</span>{' '}{t.privacyDataSubscriptionBody}
+            </BulletItem>
           </ul>
         </Section>
 

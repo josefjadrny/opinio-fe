@@ -62,7 +62,6 @@ export interface Strings {
   aboutTiersTitle: string;
   aboutTierAnonymous: string;
   aboutTierRegistered: string;
-  aboutTierAddsOpinions: string;
   aboutTierSupporter: string;
   aboutSupporterPriceNote: string;
   aboutVotesPerHour: string;
@@ -79,6 +78,8 @@ export interface Strings {
   privacyDataVoteBody: string;
   privacyDataPrefsTitle: string;
   privacyDataPrefsBody: string;
+  privacyDataSubscriptionTitle: string;
+  privacyDataSubscriptionBody: string;
   privacyWhyTitle: string;
   privacyWhyBody: string;
   privacyCookiesTitle: string;
@@ -195,13 +196,12 @@ const en: Strings = {
   aboutTiersTitle: 'Voting limits (per hour)',
   aboutTierAnonymous: 'Anonymous',
   aboutTierRegistered: 'Registered',
-  aboutTierAddsOpinions: 'posting available',
   aboutTierSupporter: 'Supporter',
   aboutSupporterPriceNote: '€2.99 / month',
   aboutVotesPerHour: 'votes / hr',
   aboutVoteExpiry: 'Votes expire after 24 hours, so rankings reflect how people feel right now. You gain new votes every hour. Each vote counts once per type (▲ or ▼) within your hourly allowance.',
   privacy: 'Privacy',
-  privacyLastUpdated: 'Last updated: April 29, 2026',
+  privacyLastUpdated: 'Last updated: April 30, 2026',
   privacyOperatorTitle: 'Operator',
   privacyOperatorName: 'Josef Jadrny, Czechia',
   privacyOperatorBody: 'Operator and data controller: {operator}. Contact: {email}.',
@@ -212,12 +212,14 @@ const en: Strings = {
   privacyDataVoteBody: 'your IP address, the country we detect from it, and your account ID.',
   privacyDataPrefsTitle: 'Your preferences',
   privacyDataPrefsBody: 'the language you have chosen and the country you have manually set (if any).',
+  privacyDataSubscriptionTitle: 'When you subscribe',
+  privacyDataSubscriptionBody: 'a Stripe customer ID, subscription ID, status, and the current period end date. Card numbers and billing details are handled and stored by Stripe — we never see or store them.',
   privacyWhyTitle: 'Why we collect it',
-  privacyWhyBody: 'We collect this data only for the platform to function: to identify your account, prevent duplicate sign-ins, limit how many votes a single person or IP can cast per hour, show country breakdowns, and default your country and language correctly.',
+  privacyWhyBody: 'We collect this data only for the platform to function: to identify your account, prevent duplicate sign-ins, limit how many votes a single person or IP can cast per hour, show country breakdowns, default your country and language correctly, and keep paid Supporter subscriptions in sync.',
   privacyCookiesTitle: 'Cookies',
   privacyCookiesBody: 'We set a single signed cookie that keeps you signed in. We do not use any analytics, advertising, or tracking cookies.',
   privacyThirdPartiesTitle: 'Third parties',
-  privacyThirdPartiesBody: 'We do not sell, rent, or share your data. Servers run on Amazon Web Services. Sign-in is handled by Google as identity provider - Google\'s privacy policy applies for that step. Cloudflare proxies traffic and detects your country from your IP.',
+  privacyThirdPartiesBody: 'We do not sell, rent, or share your data. Servers run on Amazon Web Services. Sign-in is handled by Google as identity provider — Google\'s privacy policy applies for that step. Payments are processed by Stripe — when you subscribe, your card and billing details are collected and stored by Stripe under their privacy policy. Cloudflare proxies traffic and detects your country from your IP.',
   privacyRetentionTitle: 'Retention',
   privacyRetentionVotes: 'Votes are deleted after 24 hours.',
   privacyRetentionProfiles: 'Profiles with no votes after 3 days are deleted automatically.',
@@ -347,13 +349,12 @@ const cs: Strings = {
   aboutTiersTitle: 'Limity hlasování (za hodinu)',
   aboutTierAnonymous: 'Anonymní',
   aboutTierRegistered: 'Registrovaný',
-  aboutTierAddsOpinions: 'přispívání dostupné',
   aboutTierSupporter: 'Podporovatel',
   aboutSupporterPriceNote: '2,99 € / měsíc',
   aboutVotesPerHour: 'hlasů / hod',
   aboutVoteExpiry: 'Hlasy vyprší po 24 hodinách, takže žebříčky ukazují, jak se lidé cítí právě teď. Nové hlasy získáváš každou hodinu. Každý hlas se počítá jednou za typ (▲ nebo ▼) v rámci hodinového limitu.',
   privacy: 'Ochrana osobních údajů',
-  privacyLastUpdated: 'Aktualizováno: 29. dubna 2026',
+  privacyLastUpdated: 'Aktualizováno: 30. dubna 2026',
   privacyOperatorTitle: 'Provozovatel',
   privacyOperatorName: 'Josef Jadrny, Česko',
   privacyOperatorBody: 'Provozovatel a správce údajů: {operator}. Kontakt: {email}.',
@@ -364,12 +365,14 @@ const cs: Strings = {
   privacyDataVoteBody: 'vaši IP adresu, zemi, kterou z ní zjistíme, a ID vašeho účtu.',
   privacyDataPrefsTitle: 'Vaše předvolby',
   privacyDataPrefsBody: 'jazyk, který jste si zvolili, a zemi, kterou jste si případně nastavili.',
+  privacyDataSubscriptionTitle: 'Při předplatném',
+  privacyDataSubscriptionBody: 'Stripe customer ID, ID předplatného, stav a datum konce aktuálního období. Čísla karet a fakturační údaje zpracovává a ukládá Stripe — my je nikdy nevidíme ani neukládáme.',
   privacyWhyTitle: 'Proč to sbíráme',
-  privacyWhyBody: 'Tato data sbíráme jen aby platforma fungovala: pro identifikaci vašeho účtu, prevenci duplicitních přihlášení, omezení počtu hlasů jednoho uživatele nebo IP za hodinu, zobrazení rozpadu podle zemí a správné nastavení vaší země a jazyka.',
+  privacyWhyBody: 'Tato data sbíráme jen aby platforma fungovala: pro identifikaci vašeho účtu, prevenci duplicitních přihlášení, omezení počtu hlasů jednoho uživatele nebo IP za hodinu, zobrazení rozpadu podle zemí, správné nastavení vaší země a jazyka a pro synchronizaci placených Supporter předplatných.',
   privacyCookiesTitle: 'Soubory cookie',
   privacyCookiesBody: 'Nastavujeme jednu podepsanou cookie pro přihlášení. Žádné analytické, reklamní ani sledovací cookies.',
   privacyThirdPartiesTitle: 'Třetí strany',
-  privacyThirdPartiesBody: 'Vaše data neprodáváme, nepronajímáme ani je nesdílíme. Servery běží na Amazon Web Services. Přihlášení zajišťuje Google jako poskytovatel identity - pro tento krok platí jeho zásady ochrany. Cloudflare proxuje provoz a detekuje zemi z vaší IP.',
+  privacyThirdPartiesBody: 'Vaše data neprodáváme, nepronajímáme ani je nesdílíme. Servery běží na Amazon Web Services. Přihlášení zajišťuje Google jako poskytovatel identity — pro tento krok platí jeho zásady ochrany. Platby zpracovává Stripe — při předplatném vaše údaje karty a fakturační údaje sbírá a ukládá Stripe podle svých zásad ochrany. Cloudflare proxuje provoz a detekuje zemi z vaší IP.',
   privacyRetentionTitle: 'Doba uchování',
   privacyRetentionVotes: 'Hlasy mažeme po 24 hodinách.',
   privacyRetentionProfiles: 'Profily bez hlasů po 3 dnech mažeme automaticky.',
@@ -499,13 +502,12 @@ const es: Strings = {
   aboutTiersTitle: 'Voting limits (per hour)',
   aboutTierAnonymous: 'Anonymous',
   aboutTierRegistered: 'Registered',
-  aboutTierAddsOpinions: 'publicación disponible',
   aboutTierSupporter: 'Supporter',
   aboutSupporterPriceNote: '€2.99 / month',
   aboutVotesPerHour: 'votes / hr',
   aboutVoteExpiry: 'Los votos caducan a las 24 horas, así que los rankings reflejan cómo se siente la gente ahora. Ganas nuevos votos cada hora. Cada voto cuenta una vez por tipo (▲ o ▼) dentro de tu límite por hora.',
   privacy: 'Privacy',
-  privacyLastUpdated: 'Last updated: April 29, 2026',
+  privacyLastUpdated: 'Last updated: April 30, 2026',
   privacyOperatorTitle: 'Operator',
   privacyOperatorName: 'Josef Jadrny, Czechia',
   privacyOperatorBody: 'Operator and data controller: {operator}. Contact: {email}.',
@@ -516,12 +518,14 @@ const es: Strings = {
   privacyDataVoteBody: 'your IP address, the country we detect from it, and your account ID.',
   privacyDataPrefsTitle: 'Your preferences',
   privacyDataPrefsBody: 'the language you have chosen and the country you have manually set (if any).',
+  privacyDataSubscriptionTitle: 'When you subscribe',
+  privacyDataSubscriptionBody: 'a Stripe customer ID, subscription ID, status, and the current period end date. Card numbers and billing details are handled and stored by Stripe — we never see or store them.',
   privacyWhyTitle: 'Why we collect it',
-  privacyWhyBody: 'We collect this data only for the platform to function: to identify your account, prevent duplicate sign-ins, limit how many votes a single person or IP can cast per hour, show country breakdowns, and default your country and language correctly.',
+  privacyWhyBody: 'We collect this data only for the platform to function: to identify your account, prevent duplicate sign-ins, limit how many votes a single person or IP can cast per hour, show country breakdowns, default your country and language correctly, and keep paid Supporter subscriptions in sync.',
   privacyCookiesTitle: 'Cookies',
   privacyCookiesBody: 'We set a single signed cookie that keeps you signed in. We do not use any analytics, advertising, or tracking cookies.',
   privacyThirdPartiesTitle: 'Third parties',
-  privacyThirdPartiesBody: 'We do not sell, rent, or share your data. Servers run on Amazon Web Services. Sign-in is handled by Google as identity provider - Google\'s privacy policy applies for that step. Cloudflare proxies traffic and detects your country from your IP.',
+  privacyThirdPartiesBody: 'We do not sell, rent, or share your data. Servers run on Amazon Web Services. Sign-in is handled by Google as identity provider — Google\'s privacy policy applies for that step. Payments are processed by Stripe — when you subscribe, your card and billing details are collected and stored by Stripe under their privacy policy. Cloudflare proxies traffic and detects your country from your IP.',
   privacyRetentionTitle: 'Retention',
   privacyRetentionVotes: 'Votes are deleted after 24 hours.',
   privacyRetentionProfiles: 'Profiles with no votes after 3 days are deleted automatically.',

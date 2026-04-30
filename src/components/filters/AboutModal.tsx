@@ -56,13 +56,8 @@ export function AboutModal({ onClose }: AboutModalProps) {
               <span className="text-sm text-white/60">{t.aboutTierAnonymous}</span>
               <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/50">1 {t.aboutVotesPerHour}</span>
             </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="flex items-center gap-2 text-sm text-white/60 min-w-0">
-                <span className="shrink-0">{t.aboutTierRegistered}</span>
-                <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-white/10 text-white/40 border border-white/10 shrink-0">
-                  {t.aboutTierAddsOpinions}
-                </span>
-              </span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-white/60">{t.aboutTierRegistered}</span>
               <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-accent/20 text-accent shrink-0">3 {t.aboutVotesPerHour}</span>
             </div>
             <div className="flex items-center justify-between gap-2">
