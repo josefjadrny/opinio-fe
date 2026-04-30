@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ModalShell } from '../common/ModalShell';
+import { SelectField } from '../common/SelectField';
 import { useI18n } from '../../i18n/I18nContext';
 import { useTopVoters } from '../../hooks/useTopVoters';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
@@ -72,19 +73,14 @@ function StatsContent({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
       <p className="text-sm text-white/40 leading-relaxed">{t.statsOverview}</p>
       <div>
         <label className="block text-xs font-medium text-white/50 mb-1.5">{t.country}</label>
-        <select
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
-          className="w-full text-white text-sm rounded-lg border border-border px-3 py-2 focus:outline-none focus:border-accent"
-          style={{ backgroundColor: '#1a1a2e' }}
-        >
+        <SelectField value={country} onChange={(e) => setCountry(e.target.value)}>
           <option value="" style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{t.allCountries}</option>
           {ALL_COUNTRIES.map(({ code, name }) => (
             <option key={code} value={code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
               {getCountryFlag(code)} {name}
             </option>
           ))}
-        </select>
+        </SelectField>
       </div>
 
       {isLoading ? (
