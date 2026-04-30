@@ -27,14 +27,11 @@ export function Avatar({ name, imageUrl, className = '', isAnonymous = false }: 
 
   const color = colorFromName(name);
 
-  // Anonymous users get mask icon from S3
-  const anonymousMaskUrl = 'https://opinio-images-dev.s3.eu-central-1.amazonaws.com/icons/anonymous-mask.png';
-
   if (!imageUrl) {
     if (isAnonymous) {
       return (
         <img
-          src={anonymousMaskUrl}
+          src="/icons/anonymous-mask.png"
           alt="anonymous"
           className={`rounded-full object-cover shrink-0 ${className}`}
           style={{ background: '#718096', padding: '2px' }}
