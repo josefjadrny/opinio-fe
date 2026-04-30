@@ -31,3 +31,7 @@ scripts/
 
 # local env (do not commit)
 .env
+
+# Cloudflare Wrangler local state and secrets
+.wrangler/
+.dev.vars
