@@ -109,6 +109,9 @@ export interface Strings {
   displayNameFormat: string;
   displayNameTaken: string;
   noCountryWarning: string;
+  viewerMode: string;
+  viewerModeBody: string;
+  viewerModeSignIn: string;
   supportSignIn: string;
   supportTitleLabel: string;
   supportTitlePlaceholder: string;
@@ -242,7 +245,10 @@ const en: Strings = {
   supportOverview: 'Have a question, found a bug, or want to request a feature? Open a ticket and we\'ll get back to you.',
   displayNameFormat: 'Only lowercase letters, numbers, and underscores (3-30 characters)',
   displayNameTaken: 'This handle is already taken',
-  noCountryWarning: "We couldn't detect your country. Voting is disabled.",
+  noCountryWarning: 'Viewer mode — sign in to vote.',
+  viewerMode: 'Viewer mode',
+  viewerModeBody: "We couldn't determine your country, so voting is currently unavailable. Sign in to confirm your location and access all features.",
+  viewerModeSignIn: 'Sign in with Google',
   supportSignIn: 'Sign in to access support',
   supportTitleLabel: 'Subject',
   supportTitlePlaceholder: 'Short description of the issue',
@@ -395,7 +401,10 @@ const cs: Strings = {
   supportOverview: 'Máte otázku, našli jste chybu nebo chcete navrhnout funkci? Otevřete požadavek a ozveme se vám.',
   displayNameFormat: 'Pouze malá písmena, číslice a podtržítka (3-30 znaků)',
   displayNameTaken: 'Toto jméno je již obsazeno',
-  noCountryWarning: 'Nepodařilo se nám zjistit vaši zemi. Hlasování je zakázáno.',
+  noCountryWarning: 'Režim diváka — pro hlasování se přihlaste.',
+  viewerMode: 'Režim diváka',
+  viewerModeBody: 'Nepodařilo se nám určit vaši zemi, hlasování je proto momentálně nedostupné. Přihlaste se pro ověření polohy a přístup ke všem funkcím.',
+  viewerModeSignIn: 'Přihlásit se přes Google',
   supportSignIn: 'Přihlaste se pro přístup k podpoře',
   supportTitleLabel: 'Předmět',
   supportTitlePlaceholder: 'Krátký popis problému',
@@ -548,7 +557,10 @@ const es: Strings = {
   supportOverview: '¿Tienes una pregunta, encontraste un error o quieres sugerir una función? Abre un ticket y te responderemos.',
   displayNameFormat: 'Solo letras minúsculas, números y guiones bajos (3-30 caracteres)',
   displayNameTaken: 'Este nombre ya está en uso',
-  noCountryWarning: 'No pudimos detectar tu país. La votación está deshabilitada.',
+  noCountryWarning: 'Modo espectador — inicia sesión para votar.',
+  viewerMode: 'Modo espectador',
+  viewerModeBody: 'No hemos podido determinar tu país, por lo que la votación no está disponible en este momento. Inicia sesión para confirmar tu ubicación y acceder a todas las funciones.',
+  viewerModeSignIn: 'Iniciar sesión con Google',
   supportSignIn: 'Inicia sesión para acceder al soporte',
   supportTitleLabel: 'Asunto',
   supportTitlePlaceholder: 'Breve descripción del problema',

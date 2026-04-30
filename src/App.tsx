@@ -23,6 +23,8 @@ import { AboutModal } from './components/filters/AboutModal';
 import { PrivacyModal } from './components/filters/PrivacyModal';
 import { StatsModal } from './components/filters/StatsModal';
 import { SupportModal } from './components/filters/SupportModal';
+import { ViewerModeModal } from './components/filters/ViewerModeModal';
+import { useMe } from './hooks/useMe';
 
 const SIDEBAR_KEY = 'opinio_sidebar_widths_v3';
 const DEFAULT_LEFT = 520;
@@ -310,6 +312,8 @@ function AppLayout() {
         </div>
       )}
 
+      <ViewerModeAutoOpen />
+
       {/* Modal routes render here */}
       <Outlet />
 
@@ -351,6 +355,37 @@ function StatsRoute() {
 function SupportRoute() {
   const navigate = useNavigate();
   return <SupportModal onClose={() => navigate(-1)} />;
+}
+
+const VIEWER_MODE_DISMISSED_KEY = 'opinio_viewer_mode_dismissed_v1';
+
+function ViewerModeRoute() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const handleClose = () => {
+    sessionStorage.setItem(VIEWER_MODE_DISMISSED_KEY, '1');
+    navigate('/' + location.search, { replace: true });
+  };
+  return <ViewerModeModal onClose={handleClose} />;
+}
+
+function ViewerModeAutoOpen() {
+  const { data: me } = useMe();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!me) return;
+    const isAnonymous = !me.user || me.user.tier === 'anonymous';
+    const hasCountry = !!me.user?.countryCode;
+    if (!isAnonymous || hasCountry) return;
+    if (sessionStorage.getItem(VIEWER_MODE_DISMISSED_KEY) === '1') return;
+    if (location.pathname === '/viewer-mode') return;
+    navigate('/viewer-mode' + location.search);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [me]);
+
+  return null;
 }
 
 function ProfileDetailRoute() {
@@ -399,6 +434,7 @@ function AppContent() {
         <Route path="privacy" element={<PrivacyRoute />} />
         <Route path="stats" element={<StatsRoute />} />
         <Route path="support" element={<SupportRoute />} />
+        <Route path="viewer-mode" element={<ViewerModeRoute />} />
         <Route path="p/:id" element={<ProfileDetailRoute />} />
       </Route>
     </Routes>
