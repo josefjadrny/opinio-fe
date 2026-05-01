@@ -79,6 +79,27 @@ function removeMetaTag(html, attrPattern) {
   return html.replace(re, '');
 }
 
+// Pick a reasonable square size + content-type for avatar-style images, so we
+// can emit accurate og:image:width / og:image:height / og:image:type instead of
+// leaving them off. WhatsApp in particular skips the preview image entirely
+// when the dimensions are missing or contradicted by the URL.
+function avatarDims(imageUrl) {
+  if (!imageUrl) return null;
+  // Google avatar URLs are upscaled to =s400-c JPEG by upscaleAvatarUrl()
+  if (/lh\d+\.googleusercontent\.com/.test(imageUrl)) {
+    return { width: 400, height: 400, type: 'image/jpeg' };
+  }
+  // Uploaded avatars are 128x128 JPEGs (canvas resize on the FE)
+  if (/images\.opinio\.live\//.test(imageUrl) || /opinio-images(?:-dev)?\.s3\./.test(imageUrl)) {
+    return { width: 128, height: 128, type: 'image/jpeg' };
+  }
+  // Anonymous-mask fallback (100x100 PNG)
+  if (imageUrl.endsWith('/icons/anonymous-mask.png')) {
+    return { width: 100, height: 100, type: 'image/png' };
+  }
+  return null;
+}
+
 function injectProfileMeta(html, meta) {
   const title = escapeHtml(meta.title);
   const description = escapeHtml(meta.description);
@@ -98,14 +119,21 @@ function injectProfileMeta(html, meta) {
   out = replaceMetaContent(out, 'name="twitter:image"', image);
   out = replaceMetaContent(out, 'name="twitter:image:alt"', imageAlt);
 
-  // Avatars are 128x128 squares — strip the default 1200x630 PNG hints
-  // and switch the Twitter card to the small "summary" layout. Without this
-  // WhatsApp / Twitter / iMessage see the size mismatch and either reject the
-  // image or fall back to the default site OG.
+  // For avatar-style square images (Google, uploaded, anonymous mask) override
+  // the default 1200x630/PNG hints with the actual dimensions, and switch the
+  // Twitter card to the small "summary" layout. Default is left untouched
+  // when we can't recognise the source so the shell defaults still win.
   if (meta.isAvatar) {
-    out = removeMetaTag(out, 'property="og:image:type"');
-    out = removeMetaTag(out, 'property="og:image:width"');
-    out = removeMetaTag(out, 'property="og:image:height"');
+    const dims = avatarDims(meta.image);
+    if (dims) {
+      out = replaceMetaContent(out, 'property="og:image:type"', dims.type);
+      out = replaceMetaContent(out, 'property="og:image:width"', String(dims.width));
+      out = replaceMetaContent(out, 'property="og:image:height"', String(dims.height));
+    } else {
+      out = removeMetaTag(out, 'property="og:image:type"');
+      out = removeMetaTag(out, 'property="og:image:width"');
+      out = removeMetaTag(out, 'property="og:image:height"');
+    }
     out = replaceMetaContent(out, 'name="twitter:card"', 'summary');
   }
 
