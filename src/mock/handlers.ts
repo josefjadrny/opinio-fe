@@ -148,6 +148,6 @@ export async function addNewProfile(data: {
   addedBy: string;
 }): Promise<Profile> {
   await delay();
-  const profile = storageAddProfile(data as Parameters<typeof storageAddProfile>[0]);
+  const profile = storageAddProfile({ ...data, addedById: null } as Parameters<typeof storageAddProfile>[0]);
   return applyVotesToProfile(profile);
 }

@@ -13,6 +13,7 @@ function p(
     countryCode,
     description,
     addedBy: 'system',
+    addedById: null,
     createdAt: new Date(Date.now() - (hoursAgo ?? Math.random() * 72) * 3600000).toISOString(),
     likes,
     dislikes,
