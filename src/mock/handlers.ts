@@ -94,6 +94,7 @@ export async function getMe(): Promise<MeResponse> {
       tier: 'anonymous',
       canChangeCountry: false,
       language: null,
+      blockedUntil: null,
     },
     voteAllowance: getVoteAllowance(),
   };

@@ -30,6 +30,7 @@ export interface MeUser {
   tier: 'anonymous' | 'registered' | 'supporter' | 'admin';
   canChangeCountry: boolean;
   language: string | null;
+  blockedUntil: string | null;
 }
 
 export interface MeResponse {

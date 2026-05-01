@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ModalShell } from '../common/ModalShell';
 import { addNewProfile, uploadImage } from '../../api/client';
 import { ALL_COUNTRIES, getCountryFlag } from '../../utils/countries';
@@ -71,13 +72,26 @@ interface AddProfileModalProps {
   onClose: () => void;
 }
 
+function renderTokens(text: string, tokens: Record<string, ReactNode>) {
+  const parts = text.split(/(\{[a-z]+\})/g);
+  return parts.map((part, i) => {
+    const m = part.match(/^\{([a-z]+)\}$/);
+    if (m && tokens[m[1]] !== undefined) return <span key={i}>{tokens[m[1]]}</span>;
+    return <span key={i}>{part}</span>;
+  });
+}
+
 export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const queryClient = useQueryClient();
   const { t } = useI18n();
   const { data: me } = useMe();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const user = me?.user;
   const isAnonymous = !user || user.tier === 'anonymous';
+  const blockedUntilDate = user?.blockedUntil ? new Date(user.blockedUntil) : null;
+  const isBlocked = !!blockedUntilDate && blockedUntilDate.getTime() > Date.now();
 
   const [name, setName] = useState('');
   const [role, setRole] = useState<Role>('politics');
@@ -163,6 +177,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !description.trim()) return;
+    if (isBlocked) return;
     mutation.mutate({ name: name.trim(), role, countryCode, description: description.trim() });
   };
 
@@ -333,6 +348,36 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
             <button type="button" onClick={loginWithGoogle} className="shrink-0 text-sm font-medium text-accent hover:text-accent/80 transition-colors">
               {t.login}
             </button>
+          </div>
+        ) : isBlocked ? (
+          <div className="rounded-lg border border-accent/30 bg-accent/10 px-4 py-3 flex items-start gap-3">
+            <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
+              <path stroke="#ef4444" strokeLinecap="round" strokeLinejoin="round" d="M2.697 16.126c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" />
+              <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75M12 15.75h.008v.008H12v-.008z" />
+            </svg>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-white">{t.blockedTitle}</p>
+              <p className="text-sm text-white/60 mt-0.5">{t.blockedBody}</p>
+              <p className="text-xs text-white/50 mt-2">
+                <span className="text-white/40">{t.blockedUntilLabel}:</span>{' '}
+                <span className="text-white/80 font-medium">
+                  {blockedUntilDate!.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
+                </span>
+              </p>
+              <p className="text-xs text-white/40 mt-1.5">
+                {renderTokens(t.blockedFooterNote, {
+                  support: (
+                    <button
+                      type="button"
+                      onClick={() => navigate('/support' + location.search)}
+                      className="text-accent hover:text-accent/80 transition-colors"
+                    >
+                      {t.blockedFooterNoteSupportLabel}
+                    </button>
+                  ),
+                })}
+              </p>
+            </div>
           </div>
         ) : (
           <button

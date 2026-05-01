@@ -45,6 +45,8 @@ The API URL is configured via `OPINIO_API_URL` in `.env` — copy `.env.example`
 - **Vote lock** — list order frozen for 5 s after casting a vote to prevent accidental misclicks during reorder
 - **Share button** — profile detail modals expose a share button that uses the Web Share API on devices that support it (mobile, macOS Safari) and falls back to clipboard copy elsewhere
 - **Per-profile social previews** — `opinio.live/p/<id>` URLs return profile-specific OG meta (title, description, avatar) via a Cloudflare Worker so social cards on WhatsApp, Twitter, iMessage, etc. show the actual profile, not the site default
+- **Terms & Privacy** — `/terms` and `/privacy` modal routes, linked from the About modal footer; Terms cover posting rules (no violent, aggressive, rude, or nude content), voting, subscriptions, and posting suspensions
+- **Posting block notice** — when an account is temporarily blocked from posting, the Drop-an-opinion modal shows a warning panel with the unblock date and a link to support; voting stays enabled
 
 ## Project Structure
 
@@ -54,7 +56,7 @@ src/
 ├── components/
 │   ├── common/       # CountryFlag, RoleBadge
 │   ├── filters/      # FilterBar, ProfileMenu, SettingsModal, AboutModal,
-│   │                 #   StatsModal, SupportModal
+│   │                 #   PrivacyModal, TermsModal, StatsModal, SupportModal
 │   ├── layout/       # Sidebar (desktop), MobileFeed (mobile)
 │   ├── map/          # WorldMap, CountryTooltip
 │   ├── profile/      # ProfileCard, Avatar, PersonTooltip, NewBadge,

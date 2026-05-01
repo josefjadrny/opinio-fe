@@ -137,7 +137,15 @@ export function AboutModal({ onClose }: AboutModalProps) {
             <span>·</span>
             <span>🇪🇺 {t.aboutEuOrigin}</span>
           </div>
-          <div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => navigate('/terms' + location.search)}
+              className="text-accent hover:text-accent/80 transition-colors"
+            >
+              {t.terms}
+            </button>
+            <span className="text-white/25">·</span>
             <button
               type="button"
               onClick={() => navigate('/privacy' + location.search)}

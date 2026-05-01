@@ -93,6 +93,43 @@ export interface Strings {
   privacyRightsTitle: string;
   privacyRightsBody: string;
   privacyOpenSupport: string;
+  terms: string;
+  termsLastUpdated: string;
+  termsOperatorTitle: string;
+  termsOperatorBody: string;
+  termsAcceptTitle: string;
+  termsAcceptBody: string;
+  termsRulesTitle: string;
+  termsRulesIntro: string;
+  termsRuleViolentTitle: string;
+  termsRuleViolentBody: string;
+  termsRuleHarassmentTitle: string;
+  termsRuleHarassmentBody: string;
+  termsRuleNudityTitle: string;
+  termsRuleNudityBody: string;
+  termsRuleImpersonationTitle: string;
+  termsRuleImpersonationBody: string;
+  termsRuleIllegalTitle: string;
+  termsRuleIllegalBody: string;
+  termsRuleSpamTitle: string;
+  termsRuleSpamBody: string;
+  termsBlockTitle: string;
+  termsBlockBody: string;
+  termsVotingTitle: string;
+  termsVotingBody: string;
+  termsSubscriptionTitle: string;
+  termsSubscriptionBody: string;
+  termsLiabilityTitle: string;
+  termsLiabilityBody: string;
+  termsChangesTitle: string;
+  termsChangesBody: string;
+  termsContactTitle: string;
+  termsContactBody: string;
+  blockedTitle: string;
+  blockedBody: string;
+  blockedFooterNote: string;
+  blockedFooterNoteSupportLabel: string;
+  blockedUntilLabel: string;
   buyUsCoffee: string;
   stats: string;
   statsTitle: string;
@@ -208,7 +245,7 @@ const en: Strings = {
   privacy: 'Privacy',
   privacyLastUpdated: 'Last updated: April 30, 2026',
   privacyOperatorTitle: 'Operator',
-  privacyOperatorName: 'Josef Jadrny, Czechia',
+  privacyOperatorName: 'Josef Jadrny, Prague, Czech Republic 🇨🇿',
   privacyOperatorBody: 'Operator and data controller: {operator}. Contact: {email}.',
   privacyDataTitle: 'What we collect',
   privacyDataSignInTitle: 'When you sign in',
@@ -232,6 +269,43 @@ const en: Strings = {
   privacyRightsTitle: 'Your rights',
   privacyRightsBody: 'Under GDPR you have the right to access, correct, or delete your data, or to object to processing. Contact us through {support} or by email at {email}. We respond within 7 days.',
   privacyOpenSupport: 'Open support',
+  terms: 'Terms',
+  termsLastUpdated: 'Last updated: May 1, 2026',
+  termsOperatorTitle: 'Operator',
+  termsOperatorBody: 'Operator: {operator}. Contact: {email}.',
+  termsAcceptTitle: 'Using Opinio',
+  termsAcceptBody: 'Opinio is a public voting platform. By using it you agree to these terms. Keep it simple: be civil, be honest, and respect other people.',
+  termsRulesTitle: 'Posting rules',
+  termsRulesIntro: 'When you submit a statement, profile, photo, or description, the following are not allowed:',
+  termsRuleViolentTitle: 'No violence',
+  termsRuleViolentBody: 'no threats, calls for violence, or content that glorifies harming people.',
+  termsRuleHarassmentTitle: 'No aggression or harassment',
+  termsRuleHarassmentBody: 'no insults, slurs, hate speech, or rude personal attacks against any individual or group.',
+  termsRuleNudityTitle: 'No nudity or sexual content',
+  termsRuleNudityBody: 'no nude photos, sexually explicit imagery, or pornographic material.',
+  termsRuleImpersonationTitle: 'No impersonation',
+  termsRuleImpersonationBody: 'do not pretend to be someone else, and do not submit profiles designed to deceive.',
+  termsRuleIllegalTitle: 'No illegal content',
+  termsRuleIllegalBody: 'no content that breaks the law in the EU or your country, including doxxing or private personal data.',
+  termsRuleSpamTitle: 'No spam',
+  termsRuleSpamBody: 'no advertising, link spam, scams, or duplicate submissions intended to manipulate rankings.',
+  termsBlockTitle: 'When rules are broken',
+  termsBlockBody: "If something you posted breaks these rules, we may delete it and temporarily block your account from posting new opinions. You can still vote during a posting block. The block automatically expires on the date shown in your account; we don't keep permanent black marks.",
+  termsVotingTitle: 'Voting',
+  termsVotingBody: 'Each tier has an hourly vote allowance. Votes expire after 24 hours. We do not refund or reissue votes that were used in error.',
+  termsSubscriptionTitle: 'Supporter subscription',
+  termsSubscriptionBody: 'The Supporter subscription is €2.99/month, billed by Stripe. You can cancel at any time from the Stripe customer portal. Your supporter benefits remain active until the end of the paid period. EU consumer law refund rights still apply through Stripe.',
+  termsLiabilityTitle: 'No warranty',
+  termsLiabilityBody: 'Opinio is provided as-is, without any warranty. Rankings reflect public votes and are not statements of fact about the people, events, or topics shown. We are not liable for content posted by users.',
+  termsChangesTitle: 'Changes',
+  termsChangesBody: 'We may update these terms occasionally. The "last updated" date above always shows when. Continuing to use Opinio after a change means you accept the new terms.',
+  termsContactTitle: 'Contact',
+  termsContactBody: 'Questions about these terms or content you saw? Reach us at {email} or through {support}.',
+  blockedTitle: 'Posting suspended',
+  blockedBody: 'Your account is currently blocked from posting new opinions because of a rules violation. You can still vote — the block only affects new submissions.',
+  blockedFooterNote: 'If you believe this is a mistake, contact {support}.',
+  blockedFooterNoteSupportLabel: 'support',
+  blockedUntilLabel: 'Block expires',
   buyUsCoffee: 'Buy us a coffee',
   stats: 'Stats',
   statsTitle: 'Community Stats',
@@ -366,7 +440,7 @@ const cs: Strings = {
   privacy: 'Ochrana osobních údajů',
   privacyLastUpdated: 'Aktualizováno: 30. dubna 2026',
   privacyOperatorTitle: 'Provozovatel',
-  privacyOperatorName: 'Josef Jadrny, Česko',
+  privacyOperatorName: 'Josef Jadrny, Praha, Česká republika 🇨🇿',
   privacyOperatorBody: 'Provozovatel a správce údajů: {operator}. Kontakt: {email}.',
   privacyDataTitle: 'Co sbíráme',
   privacyDataSignInTitle: 'Při přihlášení',
@@ -390,6 +464,43 @@ const cs: Strings = {
   privacyRightsTitle: 'Vaše práva',
   privacyRightsBody: 'Podle GDPR máte právo na přístup ke svým údajům, jejich opravu nebo smazání, případně proti jejich zpracování vznést námitku. Pište přes {support} nebo e-mailem na {email}. Odpovídáme do 7 dnů.',
   privacyOpenSupport: 'Otevřít podporu',
+  terms: 'Podmínky',
+  termsLastUpdated: 'Aktualizováno: 1. května 2026',
+  termsOperatorTitle: 'Provozovatel',
+  termsOperatorBody: 'Provozovatel: {operator}. Kontakt: {email}.',
+  termsAcceptTitle: 'Používání Opinia',
+  termsAcceptBody: 'Opinio je veřejná hlasovací platforma. Používáním souhlasíte s těmito podmínkami. Jednoduše: chovejte se slušně, upřímně a s respektem k ostatním.',
+  termsRulesTitle: 'Pravidla pro příspěvky',
+  termsRulesIntro: 'Když přidáváte výrok, profil, fotku nebo popis, není dovoleno následující:',
+  termsRuleViolentTitle: 'Žádné násilí',
+  termsRuleViolentBody: 'žádné výhrůžky, výzvy k násilí ani obsah oslavující ubližování lidem.',
+  termsRuleHarassmentTitle: 'Žádná agrese ani obtěžování',
+  termsRuleHarassmentBody: 'žádné urážky, nadávky, nenávistné projevy ani hrubé osobní útoky vůči jednotlivcům nebo skupinám.',
+  termsRuleNudityTitle: 'Žádná nahota ani sexuální obsah',
+  termsRuleNudityBody: 'žádné nahé fotky, sexuálně explicitní materiály ani pornografický obsah.',
+  termsRuleImpersonationTitle: 'Žádné vydávání se za někoho jiného',
+  termsRuleImpersonationBody: 'nevydávejte se za jiné osoby a nevytvářejte profily určené k oklamání ostatních.',
+  termsRuleIllegalTitle: 'Žádný nelegální obsah',
+  termsRuleIllegalBody: 'žádný obsah, který porušuje zákony v EU nebo ve vaší zemi, včetně zveřejňování osobních údajů jiných lidí.',
+  termsRuleSpamTitle: 'Žádný spam',
+  termsRuleSpamBody: 'žádná reklama, spamování odkazů, podvody ani duplicitní příspěvky určené k manipulaci žebříčků.',
+  termsBlockTitle: 'Když dojde k porušení pravidel',
+  termsBlockBody: 'Pokud váš příspěvek porušuje tato pravidla, můžeme ho smazat a dočasně vám zablokovat přidávání nových názorů. Hlasovat můžete dál — blokace se týká jen nových příspěvků. Blokace automaticky vyprší v datu uvedeném u vašeho účtu; trvalé záznamy si nevedeme.',
+  termsVotingTitle: 'Hlasování',
+  termsVotingBody: 'Každá úroveň má hodinový limit hlasů. Hlasy vyprší po 24 hodinách. Hlasy použité omylem nevracíme ani nedoplňujeme.',
+  termsSubscriptionTitle: 'Předplatné Supporter',
+  termsSubscriptionBody: 'Předplatné Supporter stojí 2,99 € měsíčně a fakturuje ho Stripe. Můžete ho kdykoli zrušit přes zákaznický portál Stripu. Výhody zůstávají aktivní do konce zaplaceného období. Práva spotřebitelů na vrácení peněz podle EU práva platí prostřednictvím Stripu.',
+  termsLiabilityTitle: 'Bez záruk',
+  termsLiabilityBody: 'Opinio je poskytováno tak, jak je, bez jakýchkoli záruk. Žebříčky odrážejí veřejné hlasování a nejsou věcným tvrzením o zobrazených osobách, událostech nebo tématech. Neneseme odpovědnost za obsah přidaný uživateli.',
+  termsChangesTitle: 'Změny',
+  termsChangesBody: 'Tyto podmínky můžeme čas od času upravit. Datum "aktualizováno" výše vždy ukazuje kdy. Pokračováním v používání po změně podmínek s nimi souhlasíte.',
+  termsContactTitle: 'Kontakt',
+  termsContactBody: 'Máte otázky k těmto podmínkám nebo k obsahu, který jste viděli? Pište na {email} nebo přes {support}.',
+  blockedTitle: 'Přidávání pozastaveno',
+  blockedBody: 'Váš účet má dočasně zablokované přidávání nových názorů kvůli porušení pravidel. Hlasovat můžete dál — blokace se týká jen nových příspěvků.',
+  blockedFooterNote: 'Pokud si myslíte, že jde o omyl, kontaktujte {support}.',
+  blockedFooterNoteSupportLabel: 'podporu',
+  blockedUntilLabel: 'Blokace končí',
   buyUsCoffee: 'Kup nám kafe',
   stats: 'Statistiky',
   statsTitle: 'Komunitní statistiky',
@@ -524,7 +635,7 @@ const es: Strings = {
   privacy: 'Privacidad',
   privacyLastUpdated: 'Actualizado: 30 de abril de 2026',
   privacyOperatorTitle: 'Responsable',
-  privacyOperatorName: 'Josef Jadrny, Chequia',
+  privacyOperatorName: 'Josef Jadrny, Praga, República Checa 🇨🇿',
   privacyOperatorBody: 'Responsable y encargado del tratamiento de datos: {operator}. Contacto: {email}.',
   privacyDataTitle: 'Qué recopilamos',
   privacyDataSignInTitle: 'Al iniciar sesión',
@@ -548,6 +659,43 @@ const es: Strings = {
   privacyRightsTitle: 'Tus derechos',
   privacyRightsBody: 'Conforme al RGPD, tienes derecho a acceder a tus datos, rectificarlos, suprimirlos u oponerte a su tratamiento. Contáctanos a través de {support} o por correo electrónico en {email}. Respondemos en un plazo de 7 días.',
   privacyOpenSupport: 'Abrir soporte',
+  terms: 'Términos',
+  termsLastUpdated: 'Actualizado: 1 de mayo de 2026',
+  termsOperatorTitle: 'Responsable',
+  termsOperatorBody: 'Responsable: {operator}. Contacto: {email}.',
+  termsAcceptTitle: 'Uso de Opinio',
+  termsAcceptBody: 'Opinio es una plataforma pública de votación. Al usarla aceptas estos términos. En resumen: sé respetuoso, honesto y considerado con los demás.',
+  termsRulesTitle: 'Reglas para publicar',
+  termsRulesIntro: 'Cuando envías una afirmación, un perfil, una foto o una descripción, lo siguiente no está permitido:',
+  termsRuleViolentTitle: 'Sin violencia',
+  termsRuleViolentBody: 'sin amenazas, llamamientos a la violencia ni contenido que glorifique hacer daño a las personas.',
+  termsRuleHarassmentTitle: 'Sin agresión ni acoso',
+  termsRuleHarassmentBody: 'sin insultos, descalificaciones, discurso de odio ni ataques personales groseros contra ninguna persona o grupo.',
+  termsRuleNudityTitle: 'Sin desnudos ni contenido sexual',
+  termsRuleNudityBody: 'sin fotos de desnudos, imágenes sexualmente explícitas ni material pornográfico.',
+  termsRuleImpersonationTitle: 'Sin suplantación',
+  termsRuleImpersonationBody: 'no te hagas pasar por otra persona ni crees perfiles diseñados para engañar.',
+  termsRuleIllegalTitle: 'Sin contenido ilegal',
+  termsRuleIllegalBody: 'sin contenido que infrinja la ley en la UE o en tu país, incluyendo doxxing o datos personales privados.',
+  termsRuleSpamTitle: 'Sin spam',
+  termsRuleSpamBody: 'sin publicidad, spam de enlaces, estafas ni publicaciones duplicadas para manipular los rankings.',
+  termsBlockTitle: 'Cuando se infringen las reglas',
+  termsBlockBody: 'Si lo que has publicado infringe estas reglas, podemos eliminarlo y bloquear temporalmente la creación de nuevas opiniones desde tu cuenta. Puedes seguir votando durante el bloqueo. El bloqueo expira automáticamente en la fecha indicada en tu cuenta; no mantenemos sanciones permanentes.',
+  termsVotingTitle: 'Votación',
+  termsVotingBody: 'Cada nivel tiene un límite de votos por hora. Los votos caducan a las 24 horas. No reembolsamos ni reponemos votos usados por error.',
+  termsSubscriptionTitle: 'Suscripción Supporter',
+  termsSubscriptionBody: 'La suscripción Supporter cuesta 2,99 €/mes y la factura Stripe. Puedes cancelarla en cualquier momento desde el portal de cliente de Stripe. Los beneficios se mantienen hasta el final del período pagado. Los derechos de reembolso del consumidor de la UE siguen aplicándose a través de Stripe.',
+  termsLiabilityTitle: 'Sin garantías',
+  termsLiabilityBody: 'Opinio se ofrece tal cual, sin ninguna garantía. Los rankings reflejan votos del público y no son afirmaciones de hecho sobre las personas, eventos o temas mostrados. No somos responsables del contenido publicado por los usuarios.',
+  termsChangesTitle: 'Cambios',
+  termsChangesBody: 'Podemos actualizar estos términos de vez en cuando. La fecha "actualizado" arriba siempre indica cuándo. Si sigues usando Opinio tras un cambio, aceptas los nuevos términos.',
+  termsContactTitle: 'Contacto',
+  termsContactBody: '¿Tienes preguntas sobre estos términos o sobre algún contenido? Escríbenos a {email} o a través de {support}.',
+  blockedTitle: 'Publicación suspendida',
+  blockedBody: 'Tu cuenta tiene temporalmente bloqueada la creación de nuevas opiniones por una infracción de las reglas. Puedes seguir votando — el bloqueo solo afecta a nuevas publicaciones.',
+  blockedFooterNote: 'Si crees que se trata de un error, contacta con {support}.',
+  blockedFooterNoteSupportLabel: 'soporte',
+  blockedUntilLabel: 'El bloqueo termina',
   buyUsCoffee: 'Invítanos a un café',
   stats: 'Estadísticas',
   statsTitle: 'Estadísticas de la comunidad',

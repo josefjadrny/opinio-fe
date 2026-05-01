@@ -21,6 +21,7 @@ import { VoteBanner } from './components/voting/VoteBanner';
 import { SettingsModal } from './components/filters/SettingsModal';
 import { AboutModal } from './components/filters/AboutModal';
 import { PrivacyModal } from './components/filters/PrivacyModal';
+import { TermsModal } from './components/filters/TermsModal';
 import { StatsModal } from './components/filters/StatsModal';
 import { SupportModal } from './components/filters/SupportModal';
 import { ViewerModeModal } from './components/filters/ViewerModeModal';
@@ -82,6 +83,13 @@ function getSeoMeta(pathname: string): SeoMeta {
       title: `Privacy notice — ${BRAND}`,
       description: 'Opinio privacy notice: what we collect, why, retention, and your rights under GDPR.',
       canonicalPath: '/privacy',
+    };
+  }
+  if (pathname === '/terms') {
+    return {
+      title: `Terms of use — ${BRAND}`,
+      description: 'Opinio terms of use: posting rules, voting, subscriptions, and account suspensions.',
+      canonicalPath: '/terms',
     };
   }
   if (pathname === '/support') {
@@ -348,6 +356,11 @@ function PrivacyRoute() {
   return <PrivacyModal onClose={() => navigate(-1)} />;
 }
 
+function TermsRoute() {
+  const navigate = useNavigate();
+  return <TermsModal onClose={() => navigate(-1)} />;
+}
+
 function StatsRoute() {
   const navigate = useNavigate();
   return <StatsModal onClose={() => navigate(-1)} />;
@@ -433,6 +446,7 @@ function AppContent() {
         <Route path="settings" element={<SettingsRoute />} />
         <Route path="about" element={<AboutRoute />} />
         <Route path="privacy" element={<PrivacyRoute />} />
+        <Route path="terms" element={<TermsRoute />} />
         <Route path="stats" element={<StatsRoute />} />
         <Route path="support" element={<SupportRoute />} />
         <Route path="viewer-mode" element={<ViewerModeRoute />} />
