@@ -53,6 +53,22 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
           <>
             {/* Header */}
             <div className="flex items-center gap-3 px-6 py-4 border-b border-border shrink-0">
+              {(() => {
+                const state = location.state as { fromUserId?: string; fromUserName?: string } | null;
+                if (!state?.fromUserId) return null;
+                return (
+                  <Link
+                    to={`/u/${state.fromUserId}${location.search}`}
+                    title={state.fromUserName ? `← @${state.fromUserName}` : 'Back'}
+                    className="flex items-center gap-1 px-2 py-1 -ml-2 rounded-md text-xs text-white/60 hover:text-white hover:bg-white/5 transition-colors shrink-0"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    {state.fromUserName && <span className="font-medium truncate max-w-[120px]">@{state.fromUserName}</span>}
+                  </Link>
+                );
+              })()}
               <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-11 h-11 shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap mb-0.5">

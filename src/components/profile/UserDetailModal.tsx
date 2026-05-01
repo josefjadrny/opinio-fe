@@ -91,7 +91,9 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   const { data: user, isLoading, error } = useUser(userId);
 
   const close = () => navigate('/' + location.search);
-  const openProfile = (profileId: string) => navigate('/p/' + profileId + location.search);
+  const openProfile = (profileId: string) => navigate('/p/' + profileId + location.search, {
+    state: { fromUserId: userId, fromUserName: user?.displayName ?? null },
+  });
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
