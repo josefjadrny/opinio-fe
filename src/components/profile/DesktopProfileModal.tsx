@@ -4,6 +4,7 @@ import { useProfile } from '../../hooks/useProfile';
 import { usePersonBreakdown } from '../../hooks/usePersonBreakdown';
 import { useVote } from '../../hooks/useVote';
 import { useMe } from '../../hooks/useMe';
+import { useCountdown } from '../../hooks/useCountdown';
 import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from './Avatar';
 import { ShareButton } from './ShareButton';
@@ -32,6 +33,8 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
   const hasCountry = me === undefined || !!me.user.countryCode;
   const canLike = hasCountry && (me?.voteAllowance.like.remaining ?? 0) > 0;
   const canDislike = hasCountry && (me?.voteAllowance.dislike.remaining ?? 0) > 0;
+  const likeCountdown = useCountdown(!canLike && hasCountry ? me?.voteAllowance.like.nextAt ?? null : null);
+  const dislikeCountdown = useCountdown(!canDislike && hasCountry ? me?.voteAllowance.dislike.nextAt ?? null : null);
 
   const close = () => navigate('/' + location.search);
 
@@ -147,21 +150,41 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                 onClick={() => voteMutation.mutate({ profileId: profile.id, type: 'like' })}
                 disabled={!canLike}
                 title={!hasCountry ? t.noCountryWarning : undefined}
-                className="flex-1 flex items-center justify-center gap-2.5 py-4 text-base font-semibold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed bg-positive/10 hover:enabled:bg-positive/20 text-positive border-r border-border rounded-none"
+                className={`flex-1 flex items-center justify-center gap-2.5 py-4 text-base font-semibold transition-colors border-r border-border rounded-none ${
+                  canLike
+                    ? 'cursor-pointer bg-positive/10 hover:bg-positive/20 text-positive'
+                    : 'cursor-not-allowed bg-white/[0.02] text-white/25'
+                }`}
               >
                 <span>▲</span>
-                <span>{t.agree}</span>
-                <span className="text-sm font-normal opacity-60 tabular-nums">{formatNumber(profile.likes)}</span>
+                {!canLike && likeCountdown ? (
+                  <span className="text-sm font-medium tabular-nums">{t.nextVote} {likeCountdown}</span>
+                ) : (
+                  <>
+                    <span>{t.agree}</span>
+                    <span className="text-sm font-normal opacity-60 tabular-nums">{formatNumber(profile.likes)}</span>
+                  </>
+                )}
               </button>
               <button
                 onClick={() => voteMutation.mutate({ profileId: profile.id, type: 'dislike' })}
                 disabled={!canDislike}
                 title={!hasCountry ? t.noCountryWarning : undefined}
-                className="flex-1 flex items-center justify-center gap-2.5 py-4 text-base font-semibold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed bg-negative/10 hover:enabled:bg-negative/20 text-negative rounded-none"
+                className={`flex-1 flex items-center justify-center gap-2.5 py-4 text-base font-semibold transition-colors rounded-none ${
+                  canDislike
+                    ? 'cursor-pointer bg-negative/10 hover:bg-negative/20 text-negative'
+                    : 'cursor-not-allowed bg-white/[0.02] text-white/25'
+                }`}
               >
                 <span>▼</span>
-                <span>{t.disagree}</span>
-                <span className="text-sm font-normal opacity-60 tabular-nums">{formatNumber(profile.dislikes)}</span>
+                {!canDislike && dislikeCountdown ? (
+                  <span className="text-sm font-medium tabular-nums">{t.nextVote} {dislikeCountdown}</span>
+                ) : (
+                  <>
+                    <span>{t.disagree}</span>
+                    <span className="text-sm font-normal opacity-60 tabular-nums">{formatNumber(profile.dislikes)}</span>
+                  </>
+                )}
               </button>
             </div>
           </>

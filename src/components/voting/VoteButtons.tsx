@@ -2,6 +2,7 @@ import { useRef, useState, useCallback } from 'react';
 import { formatNumber } from '../../utils/formatNumber';
 import { useVote } from '../../hooks/useVote';
 import { useMe } from '../../hooks/useMe';
+import { useCountdown } from '../../hooks/useCountdown';
 import { useAnimatedValue } from '../../hooks/useAnimatedValue';
 import { useI18n } from '../../i18n/I18nContext';
 
@@ -65,6 +66,8 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
   const hasCountry = me === undefined || !!me.user.countryCode;
   const canLike = hasCountry && (me?.voteAllowance.like.remaining ?? 0) > 0;
   const canDislike = hasCountry && (me?.voteAllowance.dislike.remaining ?? 0) > 0;
+  const likeCountdown = useCountdown(!canLike && hasCountry ? me?.voteAllowance.like.nextAt ?? null : null);
+  const dislikeCountdown = useCountdown(!canDislike && hasCountry ? me?.voteAllowance.dislike.nextAt ?? null : null);
 
   const handleVote = (e: React.MouseEvent, type: 'like' | 'dislike') => {
     e.stopPropagation();
@@ -76,6 +79,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
   const btnBase = compact
     ? 'flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium transition-all'
     : 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-medium transition-all';
+  const disabledClass = 'bg-white/[0.03] text-white/30 ring-1 ring-white/5 cursor-not-allowed';
 
   const likeBtn = (!showOnly || showOnly === 'like') && (
     <div className="relative">
@@ -96,15 +100,15 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
         key={likeAnim.bumpKey}
         onClick={(e) => handleVote(e, 'like')}
         disabled={!canLike}
-        title={!hasCountry ? t.noCountryWarning : undefined}
+        title={!hasCountry ? t.noCountryWarning : (likeCountdown ? `${t.nextVote} ${likeCountdown}` : undefined)}
         className={`vote-bump ${btnBase} ${
           canLike
             ? 'bg-positive/20 text-positive hover:bg-positive/30 cursor-pointer'
-            : 'bg-positive/15 text-positive/60 cursor-not-allowed'
+            : disabledClass
         }`}
       >
         <span>&#9650;&#xFE0E;</span>
-        <span className="tabular-nums">{formatNumber(animatedLikes)}</span>
+        <span className="tabular-nums">{!canLike && likeCountdown ? likeCountdown : formatNumber(animatedLikes)}</span>
       </button>
     </div>
   );
@@ -127,15 +131,15 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
         key={dislikeAnim.bumpKey}
         onClick={(e) => handleVote(e, 'dislike')}
         disabled={!canDislike}
-        title={!hasCountry ? t.noCountryWarning : undefined}
+        title={!hasCountry ? t.noCountryWarning : (dislikeCountdown ? `${t.nextVote} ${dislikeCountdown}` : undefined)}
         className={`vote-bump ${btnBase} ${
           canDislike
             ? 'bg-negative/20 text-negative hover:bg-negative/30 cursor-pointer'
-            : 'bg-negative/15 text-negative/60 cursor-not-allowed'
+            : disabledClass
         }`}
       >
         <span>&#9660;&#xFE0E;</span>
-        <span className="tabular-nums">{formatNumber(animatedDislikes)}</span>
+        <span className="tabular-nums">{!canDislike && dislikeCountdown ? dislikeCountdown : formatNumber(animatedDislikes)}</span>
       </button>
     </div>
   );
