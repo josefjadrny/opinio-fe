@@ -175,6 +175,7 @@ export interface Strings {
   userJoined: string;
   userLikesCast: string;
   userDislikesCast: string;
+  userVotesCast: string;
   userReportedProfiles: string;
   userNoProfiles: string;
   userNotFoundLabel: string;
@@ -380,6 +381,7 @@ const en: Strings = {
   userJoined: 'Joined {date}',
   userLikesCast: 'likes cast',
   userDislikesCast: 'dislikes cast',
+  userVotesCast: 'Votes cast',
   userReportedProfiles: 'Recent opinions',
   userNoProfiles: 'No active opinions',
   userNotFoundLabel: 'Not found',
@@ -585,6 +587,7 @@ const cs: Strings = {
   userJoined: 'Účet od {date}',
   userLikesCast: 'kladných hlasů',
   userDislikesCast: 'záporných hlasů',
+  userVotesCast: 'Hlasování',
   userReportedProfiles: 'Nedávné názory',
   userNoProfiles: 'Žádné aktivní názory',
   userNotFoundLabel: 'Nenalezeno',
@@ -790,6 +793,7 @@ const es: Strings = {
   userJoined: 'Se unió el {date}',
   userLikesCast: 'votos positivos',
   userDislikesCast: 'votos negativos',
+  userVotesCast: 'Votos emitidos',
   userReportedProfiles: 'Opiniones recientes',
   userNoProfiles: 'Sin opiniones activas',
   userNotFoundLabel: 'No encontrado',

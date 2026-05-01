@@ -6,6 +6,7 @@ import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from './Avatar';
 import { CountryFlag } from '../common/CountryFlag';
 import { RoleBadge } from '../common/RoleBadge';
+import { VoteButtons } from '../voting/VoteButtons';
 import { formatNumber } from '../../utils/formatNumber';
 import type { UserProfileSummary } from '../../types/api';
 
@@ -59,9 +60,12 @@ function ShareUserButton({ userId, displayName }: { userId: string; displayName:
 
 function ProfileRow({ profile, onOpen }: { profile: UserProfileSummary; onOpen: () => void }) {
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onOpen}
-      className="w-full text-left flex items-start gap-3 px-3 py-2.5 rounded-lg ring-1 ring-transparent hover:bg-surface-light hover:ring-white/10 transition-all duration-150"
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
+      className="w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-lg ring-1 ring-transparent hover:bg-surface-light hover:ring-white/10 transition-all duration-150 cursor-pointer"
     >
       <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-9 h-9 shrink-0" />
       <div className="flex-1 min-w-0">
@@ -72,11 +76,10 @@ function ProfileRow({ profile, onOpen }: { profile: UserProfileSummary; onOpen: 
         </div>
         <p className="text-[13px] text-text-secondary truncate">{profile.description}</p>
       </div>
-      <div className="flex flex-col items-end gap-0.5 shrink-0 text-xs tabular-nums pt-0.5">
-        <span className="text-positive">▲ {formatNumber(profile.likes)}</span>
-        <span className="text-negative">▼ {formatNumber(profile.dislikes)}</span>
+      <div className="shrink-0">
+        <VoteButtons profileId={profile.id} likes={profile.likes} dislikes={profile.dislikes} compact />
       </div>
-    </button>
+    </div>
   );
 }
 
@@ -100,6 +103,27 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   const notFound = !!error;
   const hasAvatar = !!user?.avatarUrl;
 
+  const StatsBlock = user && (
+    <div
+      className="shrink-0 flex flex-col items-end gap-0.5"
+      title={`${t.userLikesCast} · ${t.userDislikesCast}`}
+    >
+      <div className="flex items-center gap-2 text-sm tabular-nums leading-none">
+        <span className="inline-flex items-baseline gap-1 text-positive font-semibold">
+          <span className="text-[11px]">▲</span>
+          {formatNumber(user.totalLikesCast)}
+        </span>
+        <span className="inline-flex items-baseline gap-1 text-negative font-semibold">
+          <span className="text-[11px]">▼</span>
+          {formatNumber(user.totalDislikesCast)}
+        </span>
+      </div>
+      <span className="text-[9px] uppercase tracking-[0.08em] font-semibold text-white/40 leading-none">
+        {t.userVotesCast}
+      </span>
+    </div>
+  );
+
   const Header = user && (
     <>
       <Avatar
@@ -115,22 +139,8 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
         </div>
         <p className="text-[11px] text-white/30">{t.userJoined.replace('{date}', formatJoinDate(user.createdAt, locale))}</p>
       </div>
+      {StatsBlock}
     </>
-  );
-
-  const Stats = user && (
-    <div className="flex items-center gap-3">
-      <div className="flex-1 flex items-center justify-center gap-2 py-3 bg-positive/10 rounded-lg">
-        <span className="text-positive text-base">▲</span>
-        <span className="text-positive font-semibold tabular-nums">{formatNumber(user.totalLikesCast)}</span>
-        <span className="text-positive/70 text-xs">{t.userLikesCast}</span>
-      </div>
-      <div className="flex-1 flex items-center justify-center gap-2 py-3 bg-negative/10 rounded-lg">
-        <span className="text-negative text-base">▼</span>
-        <span className="text-negative font-semibold tabular-nums">{formatNumber(user.totalDislikesCast)}</span>
-        <span className="text-negative/70 text-xs">{t.userDislikesCast}</span>
-      </div>
-    </div>
   );
 
   const ProfilesList = user && (
@@ -194,10 +204,9 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
               </button>
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+          <div className="flex-1 overflow-y-auto px-6 pt-4 pb-14 space-y-4">
             {isLoading && LoadingView}
             {notFound && NotFoundView}
-            {user && Stats}
             {user && ProfilesList}
           </div>
         </div>
@@ -223,14 +232,9 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
         {isLoading && LoadingView}
         {notFound && NotFoundView}
         {user && (
-          <>
-            <div className="px-6 py-4 border-b border-border shrink-0">
-              {Stats}
-            </div>
-            <div className="flex-1 overflow-y-auto px-6 py-4">
-              {ProfilesList}
-            </div>
-          </>
+          <div className="flex-1 overflow-y-auto px-6 py-4">
+            {ProfilesList}
+          </div>
         )}
       </div>
     </div>
