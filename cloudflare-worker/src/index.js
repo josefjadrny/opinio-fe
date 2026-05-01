@@ -21,6 +21,18 @@ function truncate(value, max) {
   return s.slice(0, max - 1).trimEnd() + '…';
 }
 
+// Google profile photos come back from OAuth as `=s96-c` (96×96), which
+// social crawlers (WhatsApp, iMessage, Slack) reject as too small for a card
+// preview. Bump Google CDN avatars up to 400×400 so the preview actually renders.
+function upscaleAvatarUrl(url) {
+  if (!url) return url;
+  if (/lh\d+\.googleusercontent\.com/.test(url)) {
+    if (/=s\d+-c/.test(url)) return url.replace(/=s\d+-c/, '=s400-c');
+    if (!/[?=]/.test(url)) return url + '=s400-c';
+  }
+  return url;
+}
+
 async function fetchProfile(id) {
   try {
     const res = await fetch(`${API_BASE}/api/profiles/${id}`, {
@@ -124,7 +136,7 @@ async function handleProfile(request, id) {
   const descSource = profile.description || `${profile.name} on Opinio - vote like or dislike.`;
   const description = truncate(descSource, 200);
   const hasAvatar = !!profile.imageUrl;
-  const image = profile.imageUrl || DEFAULT_OG_IMAGE;
+  const image = hasAvatar ? upscaleAvatarUrl(profile.imageUrl) : DEFAULT_OG_IMAGE;
   const imageAlt = hasAvatar ? profile.name : 'Opinio live global social voting';
   const canonicalUrl = `${SITE_BASE}/p/${id}`;
 
@@ -164,7 +176,7 @@ async function handleUser(request, id) {
     200,
   );
   const hasAvatar = !!user.avatarUrl;
-  const image = user.avatarUrl || ANON_OG_IMAGE;
+  const image = hasAvatar ? upscaleAvatarUrl(user.avatarUrl) : ANON_OG_IMAGE;
   const imageAlt = hasAvatar ? user.displayName : 'Anonymous Opinio user';
   const canonicalUrl = `${SITE_BASE}/u/${id}`;
 
