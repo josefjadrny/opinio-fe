@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from 'react';
 import type { CountryProfilesResponse } from '../../types/api';
 import { getCountryName, getCountryFlag } from '../../utils/countries';
 import { useI18n } from '../../i18n/I18nContext';
@@ -10,30 +11,49 @@ interface CountryTooltipProps {
   position: { x: number; y: number };
 }
 
+const TOOLTIP_WIDTH = 380;
+const TOOLTIP_MAX_HEIGHT = 520;
+const PADDING = 12;
+
 export function CountryTooltip({ countryCode, data, isLoading, position }: CountryTooltipProps) {
   const { t } = useI18n();
-  const tooltipWidth = 320;
-  const tooltipHeight = 520;
-  const padding = 12;
+  const tipRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState<{ left: number; top: number } | null>(null);
 
-  let left = position.x + padding;
-  let top = position.y + padding;
+  useLayoutEffect(() => {
+    const tip = tipRef.current;
+    if (!tip) return;
+    const w = tip.offsetWidth;
+    const h = tip.offsetHeight;
 
-  if (left + tooltipWidth > window.innerWidth - padding) {
-    left = position.x - tooltipWidth - padding;
-  }
-  if (top + tooltipHeight > window.innerHeight - padding) {
-    top = position.y - tooltipHeight - padding;
-  }
+    let left = position.x + PADDING;
+    let top = position.y + PADDING;
 
-  // Clamp to viewport so the tooltip is never off-screen regardless of cursor position
-  left = Math.max(padding, Math.min(left, window.innerWidth - tooltipWidth - padding));
-  top = Math.max(padding, Math.min(top, window.innerHeight - tooltipHeight - padding));
+    if (left + w > window.innerWidth - PADDING) {
+      left = position.x - w - PADDING;
+    }
+    if (top + h > window.innerHeight - PADDING) {
+      top = position.y - h - PADDING;
+    }
+
+    left = Math.max(PADDING, Math.min(left, window.innerWidth - w - PADDING));
+    top = Math.max(PADDING, Math.min(top, window.innerHeight - h - PADDING));
+
+    setCoords({ left, top });
+  }, [position.x, position.y, data, isLoading]);
 
   return (
     <div
+      ref={tipRef}
       className="fixed z-50 bg-surface-light border border-border rounded-xl shadow-2xl p-3 pointer-events-none"
-      style={{ left, top, width: tooltipWidth, maxHeight: tooltipHeight, overflow: 'auto' }}
+      style={{
+        left: coords?.left ?? position.x + PADDING,
+        top: coords?.top ?? position.y + PADDING,
+        width: TOOLTIP_WIDTH,
+        maxHeight: TOOLTIP_MAX_HEIGHT,
+        overflow: 'auto',
+        visibility: coords ? 'visible' : 'hidden',
+      }}
     >
       <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border">
         <span className="text-lg">{getCountryFlag(countryCode)}</span>
