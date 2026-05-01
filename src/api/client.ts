@@ -1,7 +1,7 @@
 import type {
   ProfilesResponse, CountryProfilesResponse, MeResponse,
   VoteResponse, ProfileFilters, VoteType, PersonBreakdownResponse,
-  SupportTicket,
+  SupportTicket, UserDetailResponse,
 } from '../types/api';
 
 const API_URL = import.meta.env.OPINIO_API_URL as string;
@@ -87,6 +87,10 @@ export function getProfile(profileId: string): Promise<import('../types/profile'
 
 export function getPersonBreakdown(profileId: string): Promise<PersonBreakdownResponse> {
   return apiFetch(`/api/profiles/${profileId}/breakdown`);
+}
+
+export function getUser(userId: string): Promise<UserDetailResponse> {
+  return apiFetch(`/api/users/${userId}`);
 }
 
 export function getTopVoters(country?: string): Promise<import('../types/api').TopVotersResponse> {

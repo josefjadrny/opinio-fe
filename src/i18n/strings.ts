@@ -172,6 +172,16 @@ export interface Strings {
   disagree: string;
   share: string;
   linkCopied: string;
+  userJoined: string;
+  userLikesCast: string;
+  userDislikesCast: string;
+  userReportedProfiles: string;
+  userNoProfiles: string;
+  userNotFoundLabel: string;
+  userNotFoundTitle: string;
+  userNotFoundBody: string;
+  userNotFoundCta: string;
+  reportedBy: string;
 }
 
 const en: Strings = {
@@ -367,6 +377,16 @@ const en: Strings = {
   disagree: 'Dislike',
   share: 'Share',
   linkCopied: 'Link copied',
+  userJoined: 'Joined {date}',
+  userLikesCast: 'likes cast',
+  userDislikesCast: 'dislikes cast',
+  userReportedProfiles: 'Recent opinions',
+  userNoProfiles: 'No active opinions',
+  userNotFoundLabel: 'Not found',
+  userNotFoundTitle: 'This person has left the building',
+  userNotFoundBody: 'Their account is no longer here — maybe they took a break, or the link is a little off.',
+  userNotFoundCta: 'Back to feed',
+  reportedBy: 'reported by',
 };
 
 const cs: Strings = {
@@ -562,6 +582,16 @@ const cs: Strings = {
   disagree: 'Nelíbí',
   share: 'Sdílet',
   linkCopied: 'Odkaz zkopírován',
+  userJoined: 'Účet od {date}',
+  userLikesCast: 'kladných hlasů',
+  userDislikesCast: 'záporných hlasů',
+  userReportedProfiles: 'Nedávné názory',
+  userNoProfiles: 'Žádné aktivní názory',
+  userNotFoundLabel: 'Nenalezeno',
+  userNotFoundTitle: 'Tento člověk tu už není',
+  userNotFoundBody: 'Tento účet už neexistuje — třeba si dal pauzu, nebo je odkaz mírně přepsaný.',
+  userNotFoundCta: 'Zpět na hlavní stranu',
+  reportedBy: 'přidal',
 };
 
 const es: Strings = {
@@ -757,6 +787,16 @@ const es: Strings = {
   disagree: 'No me gusta',
   share: 'Compartir',
   linkCopied: 'Enlace copiado',
+  userJoined: 'Se unió el {date}',
+  userLikesCast: 'votos positivos',
+  userDislikesCast: 'votos negativos',
+  userReportedProfiles: 'Opiniones recientes',
+  userNoProfiles: 'Sin opiniones activas',
+  userNotFoundLabel: 'No encontrado',
+  userNotFoundTitle: 'Esta persona ha salido del edificio',
+  userNotFoundBody: 'Esta cuenta ya no está aquí — puede que se haya tomado un descanso o que el enlace no sea del todo correcto.',
+  userNotFoundCta: 'Volver al inicio',
+  reportedBy: 'publicado por',
 };
 
 export const LANGUAGES = {

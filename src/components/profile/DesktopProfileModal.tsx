@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useProfile } from '../../hooks/useProfile';
 import { usePersonBreakdown } from '../../hooks/usePersonBreakdown';
 import { useVote } from '../../hooks/useVote';
@@ -60,7 +60,16 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                   <CountryFlag code={profile.countryCode} />
                   <RoleBadge role={profile.role} />
                 </div>
-                <p className="text-[11px] text-white/30">@{profile.addedBy} · {formatDate(profile.createdAt)}</p>
+                <p className="text-[11px] text-white/30">
+                  {profile.addedById ? (
+                    <Link to={`/u/${profile.addedById}${location.search}`} className="hover:text-white/60 transition-colors">
+                      @{profile.addedBy}
+                    </Link>
+                  ) : (
+                    <span>@{profile.addedBy}</span>
+                  )}
+                  {' · '}{formatDate(profile.createdAt)}
+                </p>
               </div>
               <div className="flex items-center gap-1 shrink-0">
                 <ShareButton profileId={profile.id} profileName={profile.name} />

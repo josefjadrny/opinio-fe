@@ -1,8 +1,10 @@
 const API_BASE = 'https://api.opinio.live';
 const SITE_BASE = 'https://opinio.live';
 const DEFAULT_OG_IMAGE = `${SITE_BASE}/og-image.png`;
+const ANON_OG_IMAGE = `${SITE_BASE}/icons/anonymous-mask.png`;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PROFILE_PATH_RE = /^\/p\/([^\/]+)\/?$/;
+const USER_PATH_RE = /^\/u\/([^\/]+)\/?$/;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -22,6 +24,19 @@ function truncate(value, max) {
 async function fetchProfile(id) {
   try {
     const res = await fetch(`${API_BASE}/api/profiles/${id}`, {
+      headers: { accept: 'application/json' },
+      cf: { cacheTtl: 300, cacheEverything: true },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+async function fetchUser(id) {
+  try {
+    const res = await fetch(`${API_BASE}/api/users/${id}`, {
       headers: { accept: 'application/json' },
       cf: { cacheTtl: 300, cacheEverything: true },
     });
@@ -89,47 +104,100 @@ function injectProfileMeta(html, meta) {
   return out;
 }
 
+async function handleProfile(request, id) {
+  const [profile, shellRes] = await Promise.all([
+    fetchProfile(id),
+    fetchShellHtml(request),
+  ]);
+
+  const shellText = await shellRes.text();
+  const headers = new Headers();
+  headers.set('content-type', 'text/html; charset=utf-8');
+  headers.set('cache-control', 'public, max-age=300, s-maxage=300');
+  headers.set('x-opinio-og', profile ? 'profile' : 'fallback');
+
+  if (!profile) {
+    return new Response(shellText, { status: 200, headers });
+  }
+
+  const title = `${profile.name} - Opinio`;
+  const descSource = profile.description || `${profile.name} on Opinio - vote like or dislike.`;
+  const description = truncate(descSource, 200);
+  const hasAvatar = !!profile.imageUrl;
+  const image = profile.imageUrl || DEFAULT_OG_IMAGE;
+  const imageAlt = hasAvatar ? profile.name : 'Opinio live global social voting';
+  const canonicalUrl = `${SITE_BASE}/p/${id}`;
+
+  const html = injectProfileMeta(shellText, {
+    title,
+    description,
+    image,
+    imageAlt,
+    url: canonicalUrl,
+    isAvatar: hasAvatar,
+  });
+
+  return new Response(html, { status: 200, headers });
+}
+
+async function handleUser(request, id) {
+  const [user, shellRes] = await Promise.all([
+    fetchUser(id),
+    fetchShellHtml(request),
+  ]);
+
+  const shellText = await shellRes.text();
+  const headers = new Headers();
+  headers.set('content-type', 'text/html; charset=utf-8');
+  headers.set('cache-control', 'public, max-age=300, s-maxage=300');
+  headers.set('x-opinio-og', user ? 'user' : 'fallback');
+
+  if (!user) {
+    return new Response(shellText, { status: 200, headers });
+  }
+
+  const title = `@${user.displayName} - Opinio`;
+  const profileCount = Array.isArray(user.profiles) ? user.profiles.length : 0;
+  const description = truncate(
+    `@${user.displayName} on Opinio — ${profileCount} reported profile${profileCount === 1 ? '' : 's'}, ` +
+    `${user.totalLikesCast || 0} likes and ${user.totalDislikesCast || 0} dislikes cast.`,
+    200,
+  );
+  const hasAvatar = !!user.avatarUrl;
+  const image = user.avatarUrl || ANON_OG_IMAGE;
+  const imageAlt = hasAvatar ? user.displayName : 'Anonymous Opinio user';
+  const canonicalUrl = `${SITE_BASE}/u/${id}`;
+
+  const html = injectProfileMeta(shellText, {
+    title,
+    description,
+    image,
+    imageAlt,
+    url: canonicalUrl,
+    isAvatar: true, // both avatar and anon mask are square — use small twitter card
+  });
+
+  return new Response(html, { status: 200, headers });
+}
+
 export default {
   async fetch(request) {
     const url = new URL(request.url);
-    const match = url.pathname.match(PROFILE_PATH_RE);
-    if (!match) return fetch(request);
 
-    const id = match[1].toLowerCase();
-    if (!UUID_RE.test(id)) return fetch(request);
-
-    const [profile, shellRes] = await Promise.all([
-      fetchProfile(id),
-      fetchShellHtml(request),
-    ]);
-
-    const shellText = await shellRes.text();
-    const headers = new Headers();
-    headers.set('content-type', 'text/html; charset=utf-8');
-    headers.set('cache-control', 'public, max-age=300, s-maxage=300');
-    headers.set('x-opinio-og', profile ? 'profile' : 'fallback');
-
-    if (!profile) {
-      return new Response(shellText, { status: 200, headers });
+    const profileMatch = url.pathname.match(PROFILE_PATH_RE);
+    if (profileMatch) {
+      const id = profileMatch[1].toLowerCase();
+      if (!UUID_RE.test(id)) return fetch(request);
+      return handleProfile(request, id);
     }
 
-    const title = `${profile.name} - Opinio`;
-    const descSource = profile.description || `${profile.name} on Opinio - vote like or dislike.`;
-    const description = truncate(descSource, 200);
-    const hasAvatar = !!profile.imageUrl;
-    const image = profile.imageUrl || DEFAULT_OG_IMAGE;
-    const imageAlt = hasAvatar ? profile.name : 'Opinio live global social voting';
-    const canonicalUrl = `${SITE_BASE}/p/${id}`;
+    const userMatch = url.pathname.match(USER_PATH_RE);
+    if (userMatch) {
+      const id = userMatch[1].toLowerCase();
+      if (!UUID_RE.test(id)) return fetch(request);
+      return handleUser(request, id);
+    }
 
-    const html = injectProfileMeta(shellText, {
-      title,
-      description,
-      image,
-      imageAlt,
-      url: canonicalUrl,
-      isAvatar: hasAvatar,
-    });
-
-    return new Response(html, { status: 200, headers });
+    return fetch(request);
   },
 };

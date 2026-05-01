@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { ModalShell } from '../common/ModalShell';
 import { SelectField } from '../common/SelectField';
 import { useI18n } from '../../i18n/I18nContext';
@@ -32,6 +33,7 @@ function LeaderboardTable({
   noDataLabel: string;
   votesLabel: string;
 }) {
+  const location = useLocation();
   return (
     <div className="flex-1 min-w-0">
       <h3 className={`text-xs font-semibold uppercase tracking-wider mb-3 ${accentClass}`}>{title}</h3>
@@ -40,7 +42,11 @@ function LeaderboardTable({
       ) : (
         <div className="space-y-1">
           {rows.map((voter, i) => (
-            <div key={i} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors">
+            <Link
+              key={voter.id ?? i}
+              to={`/u/${voter.id}${location.search}`}
+              className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
+            >
               <span className="text-sm w-5 shrink-0 text-center">
                 {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : <span className="text-xs text-white/30">{i + 1}</span>}
               </span>
@@ -56,7 +62,7 @@ function LeaderboardTable({
               <span className={`text-xs font-medium tabular-nums shrink-0 ${accentClass}`}>
                 {(voter[valueKey] ?? 0).toLocaleString()} {votesLabel}
               </span>
-            </div>
+            </Link>
           ))}
         </div>
       )}

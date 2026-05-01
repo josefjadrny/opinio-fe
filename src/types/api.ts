@@ -62,6 +62,7 @@ export interface PersonBreakdownResponse {
 }
 
 export interface TopVoter {
+  id: string;
   displayName: string;
   countryCode: string | null;
   totalLikesCast?: number;
@@ -71,6 +72,29 @@ export interface TopVoter {
 export interface TopVotersResponse {
   topLikers: TopVoter[];
   topDislikers: TopVoter[];
+}
+
+export interface UserProfileSummary {
+  id: string;
+  name: string;
+  role: import('./profile').Role;
+  imageUrl: string | null;
+  countryCode: string;
+  description: string;
+  createdAt: string;
+  likes: number;
+  dislikes: number;
+}
+
+export interface UserDetailResponse {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  countryCode: string | null;
+  createdAt: string;
+  totalLikesCast: number;
+  totalDislikesCast: number;
+  profiles: UserProfileSummary[];
 }
 
 export type SupportTicketStatus = 'new' | 'investigating' | 'waiting' | 'done';

@@ -15,6 +15,7 @@ export interface Profile {
   countryCode: string;
   description: string;
   addedBy: string;
+  addedById: string | null;
   createdAt: string;
   likes: number;
   dislikes: number;

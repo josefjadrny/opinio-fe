@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom';
+import { Link, useLocation } from 'react-router-dom';
 import type { Profile } from '../../types/profile';
 import type { PersonBreakdownResponse } from '../../types/api';
 import { getCountryFlag, getCountryName } from '../../utils/countries';
@@ -22,6 +23,7 @@ const PADDING = 14;
 
 export function PersonTooltip({ profile, breakdown, isLoading, position, onMouseEnter, onMouseLeave }: PersonTooltipProps) {
   const { t } = useI18n();
+  const location = useLocation();
   let left = position.x + PADDING;
   let top = position.y + PADDING;
   if (left + WIDTH > window.innerWidth) left = position.x - WIDTH - PADDING;
@@ -52,7 +54,20 @@ export function PersonTooltip({ profile, breakdown, isLoading, position, onMouse
       <div className="px-3 py-2 border-b border-border">
         <p className="text-xs text-text-secondary line-clamp-3">{profile.description}</p>
         {profile.addedBy && (
-          <p className="text-[10px] text-text-secondary/50 mt-1">reported by @{profile.addedBy}</p>
+          <p className="text-[10px] text-text-secondary/50 mt-1">
+            {t.reportedBy}{' '}
+            {profile.addedById ? (
+              <Link
+                to={`/u/${profile.addedById}${location.search}`}
+                onClick={(e) => e.stopPropagation()}
+                className="hover:text-white/60 transition-colors"
+              >
+                @{profile.addedBy}
+              </Link>
+            ) : (
+              <span>@{profile.addedBy}</span>
+            )}
+          </p>
         )}
       </div>
 

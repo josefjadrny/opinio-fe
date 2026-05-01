@@ -37,14 +37,15 @@ The API URL is configured via `OPINIO_API_URL` in `.env` — copy `.env.example`
 - **Person breakdown** — hover a card to see top fan/critic countries
 - **Google OAuth** — sign in to unlock higher vote allowance and settings
 - **Settings modal** — display name, country override, language preference; subtle Upgrade link redirects registered users to Stripe Checkout, supporters get a Manage subscription link to the Stripe Customer Portal
-- **Stats page** — community leaderboard (top likers + dislikers), country filter
+- **Stats page** — community leaderboard (top likers + dislikers), country filter; each `@user` row links through to that voter's public profile
+- **User detail page** — `/u/<id>` shows a registered user's public stats: avatar (or anonymous-mask fallback), `@handle`, country, join date, lifetime likes/dislikes cast, and a scrollable list of their recent opinions, newest first. Clickable from any `@user` mention in the app (profile detail, hover tooltip, stats leaderboard). Anonymous accounts have no detail page (404 with friendly "this person has left the building" message); the FE skips the link automatically when the reporter is anonymous or has been deleted.
 - **Support page** — submit tickets, track status; admin sees all tickets with user info
 - **i18n** — English, Czech, Spanish; language synced server-side for registered users
 - **Animated vote counters** — smooth animation toward new value over 10 s poll window
 - **10 s profile polling** — standalone interval immune to realtime cache resets
 - **Vote lock** — list order frozen for 5 s after casting a vote to prevent accidental misclicks during reorder
 - **Share button** — profile detail modals expose a share button that uses the Web Share API on devices that support it (mobile, macOS Safari) and falls back to clipboard copy elsewhere
-- **Per-profile social previews** — `opinio.live/p/<id>` URLs return profile-specific OG meta (title, description, avatar) via a Cloudflare Worker so social cards on WhatsApp, Twitter, iMessage, etc. show the actual profile, not the site default
+- **Per-profile and per-user social previews** — `opinio.live/p/<id>` and `opinio.live/u/<id>` URLs return record-specific OG meta (title, description, avatar / anonymous-mask) via a Cloudflare Worker so social cards on WhatsApp, Twitter, iMessage, etc. show the actual profile or user, not the site default
 - **Terms & Privacy** — `/terms` and `/privacy` modal routes, linked from the About modal footer; Terms cover posting rules (no violent, aggressive, rude, or nude content), voting, subscriptions, and posting suspensions
 - **Posting block notice** — when an account is temporarily blocked from posting, the Drop-an-opinion modal shows a warning panel with the unblock date and a link to support; voting stays enabled
 
@@ -60,7 +61,7 @@ src/
 │   ├── layout/       # Sidebar (desktop), MobileFeed (mobile)
 │   ├── map/          # WorldMap, CountryTooltip
 │   ├── profile/      # ProfileCard, Avatar, PersonTooltip, NewBadge,
-│   │                 #   ProfileDetailModal
+│   │                 #   ProfileDetailModal, UserDetailModal
 │   ├── profile-form/ # AddProfileModal (avatar upload + role picker)
 │   └── voting/       # VoteButtons, VoteBanner
 ├── context/          # FilterContext — country + role filter via URL search params
@@ -71,8 +72,9 @@ src/
 └── utils/            # countries, roles, formatNumber
 
 cloudflare-worker/   # Cloudflare Worker that rewrites OG meta tags for
-                     # /p/<uuid> URLs so social previews show the profile
-                     # instead of the site default. See its README.
+                     # /p/<uuid> and /u/<uuid> URLs so social previews
+                     # show the profile / user instead of the site default.
+                     # See its README.
 ```
 
 ## Deployment

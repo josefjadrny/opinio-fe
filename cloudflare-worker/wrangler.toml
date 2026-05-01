@@ -3,5 +3,6 @@ main = "src/index.js"
 compatibility_date = "2025-01-01"
 
 routes = [
-  { pattern = "opinio.live/p/*", zone_name = "opinio.live" }
+  { pattern = "opinio.live/p/*", zone_name = "opinio.live" },
+  { pattern = "opinio.live/u/*", zone_name = "opinio.live" }
 ]

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import type { Profile } from '../../types/profile';
 import type { PersonBreakdownResponse } from '../../types/api';
 import { Avatar } from './Avatar';
@@ -8,6 +9,7 @@ import { CountryFlag } from '../common/CountryFlag';
 import { VoteButtons } from '../voting/VoteButtons';
 import { getCountryFlag, getCountryName } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
+import { useI18n } from '../../i18n/I18nContext';
 
 interface ProfileDetailModalProps {
   profile: Profile;
@@ -17,6 +19,8 @@ interface ProfileDetailModalProps {
 }
 
 export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: ProfileDetailModalProps) {
+  const location = useLocation();
+  const { t } = useI18n();
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
@@ -59,7 +63,16 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
         <div className="px-6 py-5 space-y-4">
           <p className="text-sm text-white/70 leading-relaxed">{profile.description}</p>
           {profile.addedBy && (
-            <p className="text-xs text-white/30">reported by @{profile.addedBy}</p>
+            <p className="text-xs text-white/30">
+              {t.reportedBy}{' '}
+              {profile.addedById ? (
+                <Link to={`/u/${profile.addedById}${location.search}`} className="hover:text-white/60 transition-colors">
+                  @{profile.addedBy}
+                </Link>
+              ) : (
+                <span>@{profile.addedBy}</span>
+              )}
+            </p>
           )}
 
           <VoteButtons key={profile.id} profileId={profile.id} likes={profile.likes} dislikes={profile.dislikes} />

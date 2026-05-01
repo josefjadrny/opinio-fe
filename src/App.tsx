@@ -16,6 +16,7 @@ import { MobileFeed } from './components/layout/MobileFeed';
 import { WorldMap } from './components/map/WorldMap';
 import { DesktopProfileModal } from './components/profile/DesktopProfileModal';
 import { ProfileDetailModal } from './components/profile/ProfileDetailModal';
+import { UserDetailModal } from './components/profile/UserDetailModal';
 import { AddProfileModal } from './components/profile-form/AddProfileModal';
 import { VoteBanner } from './components/voting/VoteBanner';
 import { SettingsModal } from './components/filters/SettingsModal';
@@ -26,6 +27,7 @@ import { StatsModal } from './components/filters/StatsModal';
 import { SupportModal } from './components/filters/SupportModal';
 import { ViewerModeModal } from './components/filters/ViewerModeModal';
 import { useMe } from './hooks/useMe';
+import { useUser } from './hooks/useUser';
 
 const SIDEBAR_KEY = 'opinio_sidebar_widths_v3';
 const DEFAULT_LEFT = 520;
@@ -122,6 +124,20 @@ function applySeo(pathname: string) {
 function applyProfileSeo(name: string, description: string, id: string) {
   const title = `${name} — ${BRAND}`;
   const canonicalUrl = `${BASE_URL}/p/${id}`;
+  document.title = title;
+  upsertMeta('meta[name="description"]', { name: 'description', content: description });
+  upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title });
+  upsertMeta('meta[property="og:description"]', { property: 'og:description', content: description });
+  upsertMeta('meta[property="og:url"]', { property: 'og:url', content: canonicalUrl });
+  upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title });
+  upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
+  upsertCanonical(canonicalUrl);
+}
+
+function applyUserSeo(displayName: string, id: string) {
+  const title = `@${displayName} — ${BRAND}`;
+  const description = `${displayName}'s reported profiles and votes on Opinio.`;
+  const canonicalUrl = `${BASE_URL}/u/${id}`;
   document.title = title;
   upsertMeta('meta[name="description"]', { name: 'description', content: description });
   upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title });
@@ -429,12 +445,21 @@ function ProfileDetailRoute() {
   return <DesktopProfileModal profileId={id ?? ''} />;
 }
 
+function UserDetailRoute() {
+  const { id } = useParams<{ id: string }>();
+  const { data: user } = useUser(id ?? null);
+  useEffect(() => {
+    if (user) applyUserSeo(user.displayName, user.id);
+  }, [user]);
+  return <UserDetailModal userId={id ?? ''} />;
+}
+
 function AppContent() {
   const location = useLocation();
 
   useEffect(() => {
-    // Don't override SEO for profile pages - ProfileDetailRoute handles that
-    if (!location.pathname.startsWith('/p/')) {
+    // Don't override SEO for profile/user pages - their routes handle that
+    if (!location.pathname.startsWith('/p/') && !location.pathname.startsWith('/u/')) {
       applySeo(location.pathname);
     }
   }, [location.pathname]);
@@ -451,6 +476,7 @@ function AppContent() {
         <Route path="support" element={<SupportRoute />} />
         <Route path="viewer-mode" element={<ViewerModeRoute />} />
         <Route path="p/:id" element={<ProfileDetailRoute />} />
+        <Route path="u/:id" element={<UserDetailRoute />} />
       </Route>
     </Routes>
   );
