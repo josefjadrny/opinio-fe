@@ -76,8 +76,8 @@ function ProfileRow({ profile, onOpen }: { profile: UserProfileSummary; onOpen: 
         </div>
         <p className="text-[13px] text-text-secondary truncate">{profile.description}</p>
       </div>
-      <div className="shrink-0">
-        <VoteButtons profileId={profile.id} likes={profile.likes} dislikes={profile.dislikes} compact />
+      <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+        <VoteButtons profileId={profile.id} likes={profile.likes} dislikes={profile.dislikes} />
       </div>
     </div>
   );
