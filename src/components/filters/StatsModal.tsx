@@ -4,15 +4,15 @@ import { ModalShell } from '../common/ModalShell';
 import { SelectField } from '../common/SelectField';
 import { Avatar } from '../profile/Avatar';
 import { useI18n } from '../../i18n/I18nContext';
-import { useTopProfiles, useTopVoters } from '../../hooks/useTopVoters';
+import { useOnFireUsers, useTopVoters } from '../../hooks/useTopVoters';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
-import type { TopProfile, TopVoter } from '../../types/api';
+import type { OnFireUser, TopVoter } from '../../types/api';
 
 interface StatsModalProps {
   onClose: () => void;
 }
 
-type Category = 'voters' | 'profiles';
+type Category = 'voters' | 'onFire';
 
 const StatsIcon = () => (
   <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
@@ -52,25 +52,26 @@ function VoterRow({ voter, rank, votesLabel }: { voter: TopVoter; rank: number; 
   );
 }
 
-function ProfileRow({ profile, rank, votesLabel }: { profile: TopProfile; rank: number; votesLabel: string }) {
+function OnFireRow({ user, rank, votesLabel, postsLabel }: { user: OnFireUser; rank: number; votesLabel: string; postsLabel: string }) {
   const location = useLocation();
   return (
     <Link
-      to={`/p/${profile.id}${location.search}`}
+      to={`/u/${user.id}${location.search}`}
       className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors"
     >
       <span className="w-5 shrink-0 text-center">{rankCell(rank)}</span>
-      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-7 h-7" />
+      <Avatar name={user.displayName} imageUrl={user.avatarUrl} className="w-7 h-7" />
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-white truncate">{profile.name}</p>
-        {profile.countryCode && (
-          <p className="text-[11px] text-white/30 truncate leading-tight">
-            {getCountryFlag(profile.countryCode)} {getCountryName(profile.countryCode)}
-          </p>
-        )}
+        <p className="text-sm text-white truncate">
+          @{user.displayName}
+          {user.countryCode && <span className="ml-1.5">{getCountryFlag(user.countryCode)}</span>}
+        </p>
+        <p className="text-[11px] text-white/30 truncate leading-tight">
+          {user.activeProfiles} {postsLabel}
+        </p>
       </div>
       <span className="text-xs font-medium tabular-nums shrink-0 text-white/80">
-        {profile.totalVotes.toLocaleString()} <span className="text-white/40">{votesLabel}</span>
+        {user.totalVotes.toLocaleString()} <span className="text-white/40">{votesLabel}</span>
       </span>
     </Link>
   );
@@ -94,7 +95,7 @@ function CategoryTabs({ category, onChange, t }: { category: Category; onChange:
   };
   return (
     <div className="flex gap-1 p-1 bg-black/20 border border-border rounded-lg">
-      {tab('profiles', t.statsCategoryProfiles)}
+      {tab('onFire', t.statsCategoryProfiles)}
       {tab('voters', t.statsCategoryVoters)}
     </div>
   );
@@ -102,15 +103,15 @@ function CategoryTabs({ category, onChange, t }: { category: Category; onChange:
 
 function StatsContent({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
   const [country, setCountry] = useState<string>('');
-  const [category, setCategory] = useState<Category>('profiles');
+  const [category, setCategory] = useState<Category>('onFire');
   const isVoters = category === 'voters';
   const voters = useTopVoters(isVoters ? country || undefined : undefined);
-  const profiles = useTopProfiles(!isVoters ? country || undefined : undefined);
+  const onFire = useOnFireUsers(!isVoters ? country || undefined : undefined);
 
-  const isLoading = isVoters ? voters.isLoading : profiles.isLoading;
+  const isLoading = isVoters ? voters.isLoading : onFire.isLoading;
   const voterRows = voters.data?.topVoters ?? [];
-  const profileRows = profiles.data?.topProfiles ?? [];
-  const isEmpty = isVoters ? voterRows.length === 0 : profileRows.length === 0;
+  const onFireRows = onFire.data?.onFire ?? [];
+  const isEmpty = isVoters ? voterRows.length === 0 : onFireRows.length === 0;
   const description = isVoters ? t.statsVotersDescription : t.statsProfilesDescription;
 
   return (
@@ -139,7 +140,9 @@ function StatsContent({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
         <div className="space-y-0.5">
           {isVoters
             ? voterRows.map((v, i) => <VoterRow key={v.id} voter={v} rank={i} votesLabel={t.statsVotes} />)
-            : profileRows.map((p, i) => <ProfileRow key={p.id} profile={p} rank={i} votesLabel={t.statsVotes} />)}
+            : onFireRows.map((u, i) => (
+                <OnFireRow key={u.id} user={u} rank={i} votesLabel={t.statsVotes} postsLabel={t.statsPostsLabel} />
+              ))}
         </div>
       )}
     </div>

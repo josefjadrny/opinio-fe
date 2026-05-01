@@ -72,19 +72,17 @@ export interface TopVotersResponse {
   topVoters: TopVoter[];
 }
 
-export interface TopProfile {
+export interface OnFireUser {
   id: string;
-  name: string;
-  role: import('./profile').Role;
-  imageUrl: string | null;
+  displayName: string;
+  avatarUrl: string | null;
   countryCode: string | null;
-  likes: number;
-  dislikes: number;
+  activeProfiles: number;
   totalVotes: number;
 }
 
-export interface TopProfilesResponse {
-  topProfiles: TopProfile[];
+export interface OnFireResponse {
+  onFire: OnFireUser[];
 }
 
 export interface UserProfileSummary {

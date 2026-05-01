@@ -100,11 +100,11 @@ export function getTopVoters(country?: string): Promise<import('../types/api').T
   return apiFetch(`/api/stats/top-voters${qs ? `?${qs}` : ''}`);
 }
 
-export function getTopProfiles(country?: string): Promise<import('../types/api').TopProfilesResponse> {
+export function getOnFireUsers(country?: string): Promise<import('../types/api').OnFireResponse> {
   const params = new URLSearchParams();
   if (country) params.set('country', country);
   const qs = params.toString();
-  return apiFetch(`/api/stats/top-profiles${qs ? `?${qs}` : ''}`);
+  return apiFetch(`/api/stats/on-fire${qs ? `?${qs}` : ''}`);
 }
 
 export function getSupportTickets(): Promise<SupportTicket[]> {

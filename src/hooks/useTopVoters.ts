@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getTopProfiles, getTopVoters } from '../api/client';
+import { getOnFireUsers, getTopVoters } from '../api/client';
 
 export function useTopVoters(country?: string) {
   return useQuery({
@@ -9,10 +9,10 @@ export function useTopVoters(country?: string) {
   });
 }
 
-export function useTopProfiles(country?: string) {
+export function useOnFireUsers(country?: string) {
   return useQuery({
-    queryKey: ['top-profiles', country ?? null],
-    queryFn: () => getTopProfiles(country),
+    queryKey: ['on-fire', country ?? null],
+    queryFn: () => getOnFireUsers(country),
     staleTime: 60_000,
   });
 }

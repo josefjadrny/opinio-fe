@@ -138,6 +138,7 @@ export interface Strings {
   statsVotersDescription: string;
   statsProfilesDescription: string;
   statsVotes: string;
+  statsPostsLabel: string;
   statsNoData: string;
   statsOverview: string;
   support: string;
@@ -325,8 +326,9 @@ const en: Strings = {
   statsCategoryVoters: '🏆 Top Voters',
   statsCategoryProfiles: '🔥 On Fire',
   statsVotersDescription: 'Most active community members ranked by total votes cast (likes and dislikes combined, lifetime).',
-  statsProfilesDescription: 'Opinions getting the most reactions right now — total votes received in the last 24 hours, likes and dislikes combined.',
+  statsProfilesDescription: 'Members whose opinions are getting the most reactions right now — total votes received on their active posts in the last 24 hours, likes and dislikes combined.',
   statsVotes: 'votes',
+  statsPostsLabel: 'active posts',
   statsNoData: 'No data yet',
   statsOverview: 'See where the community is most active. Switch between top voters and what’s on fire right now.',
   support: 'Support',
@@ -533,8 +535,9 @@ const cs: Strings = {
   statsCategoryVoters: '🏆 Top hlasující',
   statsCategoryProfiles: '🔥 V plamenech',
   statsVotersDescription: 'Nejaktivnější členové komunity podle celkového počtu hlasů (kladné i záporné dohromady, za celou dobu).',
-  statsProfilesDescription: 'Názory, které právě teď nejvíce baví ostatní — celkový počet hlasů za posledních 24 hodin, kladné i záporné dohromady.',
+  statsProfilesDescription: 'Členové, jejichž názory právě teď nejvíce baví ostatní — celkový počet hlasů na jejich aktivních příspěvcích za posledních 24 hodin, kladné i záporné dohromady.',
   statsVotes: 'hlasů',
+  statsPostsLabel: 'aktivních příspěvků',
   statsNoData: 'Zatím žádná data',
   statsOverview: 'Podívejte se, kde je komunita nejaktivnější. Přepínejte mezi top hlasujícími a tím, co právě hoří.',
   support: 'Podpora',
@@ -741,8 +744,9 @@ const es: Strings = {
   statsCategoryVoters: '🏆 Top votantes',
   statsCategoryProfiles: '🔥 En llamas',
   statsVotersDescription: 'Miembros más activos de la comunidad clasificados por el total de votos emitidos (positivos y negativos combinados, histórico).',
-  statsProfilesDescription: 'Las opiniones que más reacciones están recibiendo ahora mismo — total de votos en las últimas 24 horas, positivos y negativos combinados.',
+  statsProfilesDescription: 'Miembros cuyas opiniones están recibiendo más reacciones ahora mismo — total de votos en sus publicaciones activas durante las últimas 24 horas, positivos y negativos combinados.',
   statsVotes: 'votos',
+  statsPostsLabel: 'publicaciones activas',
   statsNoData: 'Sin datos aún',
   statsOverview: 'Mira dónde la comunidad está más activa. Alterna entre los top votantes y lo que está en llamas ahora.',
   support: 'Soporte',
