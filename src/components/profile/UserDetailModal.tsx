@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useUser } from '../../hooks/useUser';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useI18n } from '../../i18n/I18nContext';
@@ -105,6 +105,20 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   const notFound = !!error;
   const hasAvatar = !!user?.avatarUrl;
 
+  const fromProfileState = location.state as { fromProfileId?: string; fromProfileName?: string } | null;
+  const BackToProfile = fromProfileState?.fromProfileId ? (
+    <Link
+      to={`/p/${fromProfileState.fromProfileId}${location.search}`}
+      title={fromProfileState.fromProfileName ? `← ${fromProfileState.fromProfileName}` : 'Back'}
+      aria-label={fromProfileState.fromProfileName ? `Back to ${fromProfileState.fromProfileName}` : 'Back'}
+      className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0"
+    >
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </Link>
+  ) : null;
+
   const StatsBlock = user && (
     <div
       className="shrink-0 flex flex-col items-end gap-0.5"
@@ -195,6 +209,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
           </div>
           <div className="flex items-center justify-between px-6 py-3 border-b border-border shrink-0">
             <div className="flex items-center gap-3 min-w-0 flex-1">
+              {BackToProfile}
               {user ? Header : <span className="text-sm font-semibold text-white/60">{notFound ? t.userNotFoundLabel : ''}</span>}
             </div>
             <div className="flex items-center gap-1 shrink-0 ml-3">
@@ -221,6 +236,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
       <div className="absolute bottom-0 left-0 right-0 h-[55vh] bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
       <div className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto">
         <div className="flex items-center gap-3 px-6 py-4 border-b border-border shrink-0">
+          {BackToProfile}
           {user ? Header : <span className="text-sm font-semibold text-white/60 flex-1">{notFound ? t.userNotFoundLabel : isLoading ? t.loading : ''}</span>}
           <div className="flex items-center gap-1 shrink-0">
             {user && <ShareUserButton userId={user.id} displayName={user.displayName} />}

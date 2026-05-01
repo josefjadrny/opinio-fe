@@ -84,6 +84,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
               {profile.addedById ? (
                 <Link
                   to={`/u/${profile.addedById}${location.search}`}
+                  state={{ fromProfileId: profile.id, fromProfileName: profile.name }}
                   className="text-white/55 hover:text-white/85 hover:underline underline-offset-2 decoration-white/30 transition-colors"
                 >
                   @{profile.addedBy}

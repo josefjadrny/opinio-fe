@@ -133,8 +133,10 @@ export interface Strings {
   buyUsCoffee: string;
   stats: string;
   statsTitle: string;
-  statsTopLikers: string;
-  statsTopDislikers: string;
+  statsCategoryVoters: string;
+  statsCategoryProfiles: string;
+  statsVotersDescription: string;
+  statsProfilesDescription: string;
   statsVotes: string;
   statsNoData: string;
   statsOverview: string;
@@ -320,11 +322,13 @@ const en: Strings = {
   buyUsCoffee: 'Buy us a coffee',
   stats: 'Stats',
   statsTitle: 'Community Stats',
-  statsTopLikers: 'Top Likers',
-  statsTopDislikers: 'Top Dislikers',
+  statsCategoryVoters: 'Top Voters',
+  statsCategoryProfiles: 'Hottest Opinions',
+  statsVotersDescription: 'Most active community members ranked by total votes cast (likes and dislikes combined, lifetime).',
+  statsProfilesDescription: 'Opinions getting the most reactions right now — total votes received in the last 24 hours, likes and dislikes combined.',
   statsVotes: 'votes',
   statsNoData: 'No data yet',
-  statsOverview: 'See who has been voting the most. Top 10 likers and dislikers from the community, updated every minute.',
+  statsOverview: 'See where the community is most active. Switch between top voters and the hottest opinions.',
   support: 'Support',
   supportTitle: 'Support',
   supportNewTicket: 'New ticket',
@@ -526,11 +530,13 @@ const cs: Strings = {
   buyUsCoffee: 'Kup nám kafe',
   stats: 'Statistiky',
   statsTitle: 'Komunitní statistiky',
-  statsTopLikers: 'Top hlasující (kladně)',
-  statsTopDislikers: 'Top hlasující (záporně)',
+  statsCategoryVoters: 'Top hlasující',
+  statsCategoryProfiles: 'Nejžhavější názory',
+  statsVotersDescription: 'Nejaktivnější členové komunity podle celkového počtu hlasů (kladné i záporné dohromady, za celou dobu).',
+  statsProfilesDescription: 'Názory, které právě teď nejvíce baví ostatní — celkový počet hlasů za posledních 24 hodin, kladné i záporné dohromady.',
   statsVotes: 'hlasů',
   statsNoData: 'Zatím žádná data',
-  statsOverview: 'Zjistěte, kdo hlasuje nejvíce. Top 10 pozitivních a negativních hlasujících z komunity, aktualizováno každou minutu.',
+  statsOverview: 'Podívejte se, kde je komunita nejaktivnější. Přepínejte mezi top hlasujícími a nejžhavějšími názory.',
   support: 'Podpora',
   supportTitle: 'Podpora',
   supportNewTicket: 'Nový požadavek',
@@ -732,11 +738,13 @@ const es: Strings = {
   buyUsCoffee: 'Invítanos a un café',
   stats: 'Estadísticas',
   statsTitle: 'Estadísticas de la comunidad',
-  statsTopLikers: 'Top votantes positivos',
-  statsTopDislikers: 'Top votantes negativos',
+  statsCategoryVoters: 'Top votantes',
+  statsCategoryProfiles: 'Opiniones más calientes',
+  statsVotersDescription: 'Miembros más activos de la comunidad clasificados por el total de votos emitidos (positivos y negativos combinados, histórico).',
+  statsProfilesDescription: 'Las opiniones que más reacciones están recibiendo ahora mismo — total de votos en las últimas 24 horas, positivos y negativos combinados.',
   statsVotes: 'votos',
   statsNoData: 'Sin datos aún',
-  statsOverview: 'Descubre quién ha votado más. Los 10 principales votantes positivos y negativos de la comunidad, actualizado cada minuto.',
+  statsOverview: 'Mira dónde la comunidad está más activa. Alterna entre los top votantes y las opiniones más calientes.',
   support: 'Soporte',
   supportTitle: 'Soporte',
   supportNewTicket: 'Nuevo ticket',
