@@ -234,7 +234,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end items-center pointer-events-none">
       <div className="absolute bottom-0 left-0 right-0 h-[55vh] bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-      <div className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto">
+      <div className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto">
         <div className="flex items-center gap-3 px-6 py-4 border-b border-border shrink-0">
           {BackToProfile}
           {user ? Header : <span className="text-sm font-semibold text-white/60 flex-1">{notFound ? t.userNotFoundLabel : isLoading ? t.loading : ''}</span>}
