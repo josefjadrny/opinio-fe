@@ -60,7 +60,7 @@ export function PersonTooltip({ profile, breakdown, isLoading, position, onMouse
               <Link
                 to={`/u/${profile.addedById}${location.search}`}
                 onClick={(e) => e.stopPropagation()}
-                className="hover:text-white/60 transition-colors"
+                className="text-white/70 hover:text-white hover:underline underline-offset-2 decoration-white/30 transition-colors"
               >
                 @{profile.addedBy}
               </Link>

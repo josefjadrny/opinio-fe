@@ -62,7 +62,10 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                 </div>
                 <p className="text-[11px] text-white/30">
                   {profile.addedById ? (
-                    <Link to={`/u/${profile.addedById}${location.search}`} className="hover:text-white/60 transition-colors">
+                    <Link
+                      to={`/u/${profile.addedById}${location.search}`}
+                      className="text-white/55 hover:text-white/85 hover:underline underline-offset-2 decoration-white/30 transition-colors"
+                    >
                       @{profile.addedBy}
                     </Link>
                   ) : (
