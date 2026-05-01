@@ -1,11 +1,11 @@
 export type Role =
   | 'politics'
-  | 'culture'
+  | 'entertainment'
   | 'sports'
   | 'business'
   | 'media'
   | 'health'
-  | 'tech';
+  | 'science';
 
 export interface Profile {
   id: string;
