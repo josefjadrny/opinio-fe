@@ -21,14 +21,18 @@ function truncate(value, max) {
   return s.slice(0, max - 1).trimEnd() + '…';
 }
 
+const GOOGLE_AVATAR_SIZE = 256;
+
 // Google profile photos come back from OAuth as `=s96-c` (96×96), which
-// social crawlers (WhatsApp, iMessage, Slack) reject as too small for a card
-// preview. Bump Google CDN avatars up to 400×400 so the preview actually renders.
+// social crawlers reject as too small for a card preview. Bump them to a
+// mid-size square that's high enough for WhatsApp/Twitter to accept but
+// small enough that they render as a compact inline thumbnail rather than
+// a full-width hero image (≥300px tends to trip the big-preview heuristic).
 function upscaleAvatarUrl(url) {
   if (!url) return url;
   if (/lh\d+\.googleusercontent\.com/.test(url)) {
-    if (/=s\d+-c/.test(url)) return url.replace(/=s\d+-c/, '=s400-c');
-    if (!/[?=]/.test(url)) return url + '=s400-c';
+    if (/=s\d+-c/.test(url)) return url.replace(/=s\d+-c/, `=s${GOOGLE_AVATAR_SIZE}-c`);
+    if (!/[?=]/.test(url)) return `${url}=s${GOOGLE_AVATAR_SIZE}-c`;
   }
   return url;
 }
@@ -85,9 +89,9 @@ function removeMetaTag(html, attrPattern) {
 // when the dimensions are missing or contradicted by the URL.
 function avatarDims(imageUrl) {
   if (!imageUrl) return null;
-  // Google avatar URLs are upscaled to =s400-c JPEG by upscaleAvatarUrl()
+  // Google avatar URLs are upscaled to =sN-c JPEG by upscaleAvatarUrl()
   if (/lh\d+\.googleusercontent\.com/.test(imageUrl)) {
-    return { width: 400, height: 400, type: 'image/jpeg' };
+    return { width: GOOGLE_AVATAR_SIZE, height: GOOGLE_AVATAR_SIZE, type: 'image/jpeg' };
   }
   // Uploaded avatars are 128x128 JPEGs (canvas resize on the FE)
   if (/images\.opinio\.live\//.test(imageUrl) || /opinio-images(?:-dev)?\.s3\./.test(imageUrl)) {
