@@ -65,13 +65,26 @@ export interface TopVoter {
   id: string;
   displayName: string;
   countryCode: string | null;
-  totalLikesCast?: number;
-  totalDislikesCast?: number;
+  totalVotesCast: number;
 }
 
 export interface TopVotersResponse {
-  topLikers: TopVoter[];
-  topDislikers: TopVoter[];
+  topVoters: TopVoter[];
+}
+
+export interface TopProfile {
+  id: string;
+  name: string;
+  role: import('./profile').Role;
+  imageUrl: string | null;
+  countryCode: string | null;
+  likes: number;
+  dislikes: number;
+  totalVotes: number;
+}
+
+export interface TopProfilesResponse {
+  topProfiles: TopProfile[];
 }
 
 export interface UserProfileSummary {
