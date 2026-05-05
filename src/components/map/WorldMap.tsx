@@ -1,9 +1,10 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { geoNaturalEarth1, geoPath } from 'd3-geo';
 import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import { useCountryProfiles } from '../../hooks/useCountryProfiles';
+import { useCountries } from '../../hooks/useCountries';
 import { numericToAlpha2 } from '../../utils/countries';
 import { CountryTooltip } from './CountryTooltip';
 import { useFilters } from '../../context/useFilters';
@@ -13,6 +14,22 @@ const WIDTH = 800;
 const HEIGHT = 500;
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 2.5;
+const DEFAULT_FILL = '#3a3a6a';
+
+// Tint a country by like/dislike skew. Pct = (max - min) / min — i.e. how much
+// the leading side outweighs the trailing side. Sub-25% stays neutral so noisy
+// near-ties don't flicker; tiers brighten with skew but stay dark on purpose.
+function colorForCountry(likes: number, dislikes: number): string {
+  if (likes === dislikes) return DEFAULT_FILL;
+  const hi = Math.max(likes, dislikes);
+  const lo = Math.min(likes, dislikes);
+  const pct = lo === 0 ? Infinity : (hi - lo) / lo;
+  if (pct <= 0.25) return DEFAULT_FILL;
+  const positive = likes > dislikes;
+  if (pct <= 0.5) return positive ? '#2c4a38' : '#4a2c38';
+  if (pct <= 1.0) return positive ? '#2e6042' : '#5e2e44';
+  return positive ? '#36784f' : '#763852';
+}
 
 function clampTranslate(tx: number, ty: number, scale: number) {
   return {
@@ -53,6 +70,12 @@ export function WorldMap() {
   const didDragRef = useRef(false);
 
   const { data, isLoading } = useCountryProfiles(debouncedCountry);
+  const { data: countriesData } = useCountries();
+  const countryColors = useMemo(() => {
+    const map = new Map<string, string>();
+    countriesData?.countries.forEach((c) => map.set(c.code, colorForCountry(c.likes, c.dislikes)));
+    return map;
+  }, [countriesData]);
 
   useEffect(() => {
     fetch(GEO_URL)
@@ -157,11 +180,12 @@ export function WorldMap() {
             const d = pathGenerator(geo);
             if (!d) return null;
 
+            const baseFill = (alpha2 && countryColors.get(alpha2)) || DEFAULT_FILL;
             return (
               <path
                 key={`${id}-${i}`}
                 d={d}
-                fill={isHovered ? '#e94560' : '#3a3a6a'}
+                fill={isHovered ? '#e94560' : baseFill}
                 stroke={isHovered ? '#f1f1f1' : '#5a5a8a'}
                 strokeWidth={(isHovered ? 0.75 : 0.5) / zoom.scale}
                 style={{ outline: 'none', cursor: alpha2 ? 'pointer' : 'default' }}
