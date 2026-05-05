@@ -64,7 +64,9 @@ export interface PersonBreakdownResponse {
 export interface TopVoter {
   id: string;
   displayName: string;
+  avatarUrl: string | null;
   countryCode: string | null;
+  activeProfiles: number;
   totalVotesCast: number;
 }
 

@@ -535,7 +535,7 @@ const cs: Strings = {
   statsCategoryVoters: '🏆 Top hlasující',
   statsCategoryProfiles: '🔥 Trendující názory',
   statsVotersDescription: 'Nejaktivnější členové komunity podle celkového počtu hlasů (kladné i záporné dohromady, za celou dobu).',
-  statsProfilesDescription: 'Členové stojící za nejvíce hlasovanými názory — řazeno podle celkového počtu hlasů na jejich aktivních příspěvcích za posledních 24 hodin, kladné i záporné dohromady.',
+  statsProfilesDescription: 'Uživatelé s nejaktivnějšími názory — řazeno podle celkového počtu hlasů na jejich aktivních příspěvcích za posledních 24 hodin, kladné i záporné dohromady.',
   statsVotes: 'hlasů',
   statsPostsLabel: 'aktivních příspěvků',
   statsNoData: 'Zatím žádná data',

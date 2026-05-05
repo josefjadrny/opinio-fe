@@ -5,8 +5,7 @@ import { SelectField } from '../common/SelectField';
 import { Avatar } from '../profile/Avatar';
 import { useI18n } from '../../i18n/I18nContext';
 import { useOnFireUsers, useTopVoters } from '../../hooks/useTopVoters';
-import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
-import type { OnFireUser, TopVoter } from '../../types/api';
+import { getCountryFlag, ALL_COUNTRIES } from '../../utils/countries';
 
 interface StatsModalProps {
   onClose: () => void;
@@ -28,50 +27,37 @@ function rankCell(i: number) {
   return <span className="text-xs text-white/30">{i + 1}</span>;
 }
 
-function VoterRow({ voter, rank, votesLabel }: { voter: TopVoter; rank: number; votesLabel: string }) {
+interface StatsRowProps {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  countryCode: string | null;
+  rank: number;
+  subtitle: string | null;
+  value: number;
+  valueLabel: string;
+}
+
+function StatsRow({ id, displayName, avatarUrl, countryCode, rank, subtitle, value, valueLabel }: StatsRowProps) {
   const location = useLocation();
   return (
     <Link
-      to={`/u/${voter.id}${location.search}`}
+      to={`/u/${id}${location.search}`}
       className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors"
     >
       <span className="w-5 shrink-0 text-center">{rankCell(rank)}</span>
-      <span className="text-base leading-none shrink-0">
-        {voter.countryCode ? getCountryFlag(voter.countryCode) : '🌍'}
-      </span>
+      <Avatar name={displayName} imageUrl={avatarUrl} className="w-7 h-7" />
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-white truncate">@{voter.displayName}</p>
-        {voter.countryCode && (
-          <p className="text-[11px] text-white/30 truncate leading-tight">{getCountryName(voter.countryCode)}</p>
+        <p className="text-sm text-white truncate">
+          @{displayName}
+          {countryCode && <span className="ml-1.5">{getCountryFlag(countryCode)}</span>}
+        </p>
+        {subtitle && (
+          <p className="text-[11px] text-white/30 truncate leading-tight">{subtitle}</p>
         )}
       </div>
       <span className="text-xs font-medium tabular-nums shrink-0 text-white/80">
-        {voter.totalVotesCast.toLocaleString()} <span className="text-white/40">{votesLabel}</span>
-      </span>
-    </Link>
-  );
-}
-
-function OnFireRow({ user, rank, votesLabel, postsLabel }: { user: OnFireUser; rank: number; votesLabel: string; postsLabel: string }) {
-  const location = useLocation();
-  return (
-    <Link
-      to={`/u/${user.id}${location.search}`}
-      className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors"
-    >
-      <span className="w-5 shrink-0 text-center">{rankCell(rank)}</span>
-      <Avatar name={user.displayName} imageUrl={user.avatarUrl} className="w-7 h-7" />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm text-white truncate">
-          @{user.displayName}
-          {user.countryCode && <span className="ml-1.5">{getCountryFlag(user.countryCode)}</span>}
-        </p>
-        <p className="text-[11px] text-white/30 truncate leading-tight">
-          {user.activeProfiles} {postsLabel}
-        </p>
-      </div>
-      <span className="text-xs font-medium tabular-nums shrink-0 text-white/80">
-        {user.totalVotes.toLocaleString()} <span className="text-white/40">{votesLabel}</span>
+        {value.toLocaleString()} <span className="text-white/40">{valueLabel}</span>
       </span>
     </Link>
   );
@@ -139,9 +125,31 @@ function StatsContent({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
       ) : (
         <div className="space-y-0.5">
           {isVoters
-            ? voterRows.map((v, i) => <VoterRow key={v.id} voter={v} rank={i} votesLabel={t.statsVotes} />)
+            ? voterRows.map((v, i) => (
+                <StatsRow
+                  key={v.id}
+                  id={v.id}
+                  displayName={v.displayName}
+                  avatarUrl={v.avatarUrl}
+                  countryCode={v.countryCode}
+                  rank={i}
+                  subtitle={`${v.activeProfiles} ${t.statsPostsLabel}`}
+                  value={v.totalVotesCast}
+                  valueLabel={t.statsVotes}
+                />
+              ))
             : onFireRows.map((u, i) => (
-                <OnFireRow key={u.id} user={u} rank={i} votesLabel={t.statsVotes} postsLabel={t.statsPostsLabel} />
+                <StatsRow
+                  key={u.id}
+                  id={u.id}
+                  displayName={u.displayName}
+                  avatarUrl={u.avatarUrl}
+                  countryCode={u.countryCode}
+                  rank={i}
+                  subtitle={`${u.activeProfiles} ${t.statsPostsLabel}`}
+                  value={u.totalVotes}
+                  valueLabel={t.statsVotes}
+                />
               ))}
         </div>
       )}
