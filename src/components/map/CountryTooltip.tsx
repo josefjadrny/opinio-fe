@@ -2,6 +2,8 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import type { CountryProfilesResponse } from '../../types/api';
 import { getCountryName, getCountryFlag } from '../../utils/countries';
 import { useI18n } from '../../i18n/I18nContext';
+import { useCountries } from '../../hooks/useCountries';
+import { formatNumber } from '../../utils/formatNumber';
 import { ProfileCard } from '../profile/ProfileCard';
 
 interface CountryTooltipProps {
@@ -19,6 +21,8 @@ export function CountryTooltip({ countryCode, data, isLoading, position }: Count
   const { t } = useI18n();
   const tipRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState<{ left: number; top: number } | null>(null);
+  const { data: countriesData } = useCountries();
+  const counts = countriesData?.countries.find((c) => c.code === countryCode) ?? { likes: 0, dislikes: 0 };
 
   useLayoutEffect(() => {
     const tip = tipRef.current;
@@ -57,7 +61,17 @@ export function CountryTooltip({ countryCode, data, isLoading, position }: Count
     >
       <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border">
         <span className="text-lg">{getCountryFlag(countryCode)}</span>
-        <span className="font-bold text-white">{getCountryName(countryCode)}</span>
+        <span className="font-bold text-white flex-1 min-w-0 truncate">{getCountryName(countryCode)}</span>
+        <div className="shrink-0 flex items-center gap-2 text-sm tabular-nums leading-none">
+          <span className="inline-flex items-baseline gap-1 text-positive font-semibold">
+            <span className="text-[11px]">▲</span>
+            {formatNumber(counts.likes)}
+          </span>
+          <span className="inline-flex items-baseline gap-1 text-negative font-semibold">
+            <span className="text-[11px]">▼</span>
+            {formatNumber(counts.dislikes)}
+          </span>
+        </div>
       </div>
 
       {isLoading && (
