@@ -61,8 +61,12 @@ export async function getCountryProfiles(countryCode: string): Promise<CountryPr
 
   const positive = [...profiles].sort((a, b) => b.likes - a.likes).slice(0, TOOLTIP_SIZE);
   const negative = [...profiles].sort((a, b) => b.dislikes - a.dislikes).slice(0, TOOLTIP_SIZE);
+  const topVoted = [...profiles]
+    .filter((p) => p.likes + p.dislikes > 0)
+    .sort((a, b) => (b.likes + b.dislikes) - (a.likes + a.dislikes))
+    .slice(0, 15);
 
-  return { positive, negative };
+  return { positive, negative, topVoted };
 }
 
 export async function vote(profileId: string, type: VoteType): Promise<VoteResponse> {
