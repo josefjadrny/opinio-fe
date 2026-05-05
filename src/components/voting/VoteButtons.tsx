@@ -79,7 +79,10 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
   const btnBase = compact
     ? 'flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium transition-all'
     : 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-medium transition-all';
-  const disabledClass = 'bg-white/[0.03] text-white/30 ring-1 ring-white/5 cursor-not-allowed';
+  // Disabled keeps the like/dislike color identity (just dimmed) so users can
+  // still tell ▲ from ▼ at a glance even when they can't currently cast.
+  const likeDisabledClass = 'bg-positive/5 text-positive/50 ring-1 ring-positive/10 cursor-not-allowed';
+  const dislikeDisabledClass = 'bg-negative/5 text-negative/50 ring-1 ring-negative/10 cursor-not-allowed';
 
   const likeBtn = (!showOnly || showOnly === 'like') && (
     <div className="relative">
@@ -104,7 +107,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
         className={`vote-bump ${btnBase} ${
           canLike
             ? 'bg-positive/20 text-positive hover:bg-positive/30 cursor-pointer'
-            : disabledClass
+            : likeDisabledClass
         }`}
       >
         <span>&#9650;&#xFE0E;</span>
@@ -135,7 +138,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
         className={`vote-bump ${btnBase} ${
           canDislike
             ? 'bg-negative/20 text-negative hover:bg-negative/30 cursor-pointer'
-            : disabledClass
+            : dislikeDisabledClass
         }`}
       >
         <span>&#9660;&#xFE0E;</span>

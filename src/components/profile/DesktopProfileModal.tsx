@@ -58,20 +58,39 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
             {/* Header */}
             <div className="flex items-center gap-3 px-6 py-4 border-b border-border shrink-0">
               {(() => {
-                const state = location.state as { fromUserId?: string; fromUserName?: string } | null;
-                if (!state?.fromUserId) return null;
-                return (
-                  <Link
-                    to={`/u/${state.fromUserId}${location.search}`}
-                    title={state.fromUserName ? `← @${state.fromUserName}` : 'Back'}
-                    aria-label={state.fromUserName ? `Back to @${state.fromUserName}` : 'Back'}
-                    className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0"
-                  >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </Link>
-                );
+                const state = location.state as {
+                  fromUserId?: string; fromUserName?: string;
+                  fromCountryCode?: string; fromCountryName?: string;
+                } | null;
+                if (state?.fromUserId) {
+                  return (
+                    <Link
+                      to={`/u/${state.fromUserId}${location.search}`}
+                      title={state.fromUserName ? `← @${state.fromUserName}` : 'Back'}
+                      aria-label={state.fromUserName ? `Back to @${state.fromUserName}` : 'Back'}
+                      className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0"
+                    >
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </Link>
+                  );
+                }
+                if (state?.fromCountryCode) {
+                  return (
+                    <Link
+                      to={`/c/${state.fromCountryCode}${location.search}`}
+                      title={state.fromCountryName ? `← ${state.fromCountryName}` : 'Back'}
+                      aria-label={state.fromCountryName ? `Back to ${state.fromCountryName}` : 'Back'}
+                      className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0"
+                    >
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </Link>
+                  );
+                }
+                return null;
               })()}
               <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-11 h-11 shrink-0" />
               <div className="flex-1 min-w-0">

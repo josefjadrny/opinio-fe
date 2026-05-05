@@ -8,6 +8,7 @@ export interface ProfilesResponse {
 export interface CountryProfilesResponse {
   positive: Profile[];
   negative: Profile[];
+  topVoted: Profile[];
 }
 
 export interface VoteAllowance {

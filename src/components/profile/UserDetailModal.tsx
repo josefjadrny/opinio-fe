@@ -77,7 +77,12 @@ function ProfileRow({ profile, onOpen }: { profile: UserProfileSummary; onOpen: 
         <p className="text-[13px] text-text-secondary truncate">{profile.description}</p>
       </div>
       <div className="shrink-0">
-        <VoteButtons profileId={profile.id} likes={profile.likes} dislikes={profile.dislikes} />
+        <VoteButtons
+          profileId={profile.id}
+          likes={profile.likes}
+          dislikes={profile.dislikes}
+          reverseVotes={profile.dislikes > profile.likes}
+        />
       </div>
     </div>
   );
