@@ -104,6 +104,16 @@ export function getUser(userId: string): Promise<UserDetailResponse> {
   return apiFetch(`/api/users/${userId}`);
 }
 
+export interface CountryCounts {
+  code: string;
+  likes: number;
+  dislikes: number;
+}
+
+export function getCountries(): Promise<{ countries: CountryCounts[] }> {
+  return apiFetch('/api/countries');
+}
+
 export function getTopVoters(country?: string): Promise<import('../types/api').TopVotersResponse> {
   const params = new URLSearchParams();
   if (country) params.set('country', country);

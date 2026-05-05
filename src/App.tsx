@@ -17,6 +17,8 @@ import { WorldMap } from './components/map/WorldMap';
 import { DesktopProfileModal } from './components/profile/DesktopProfileModal';
 import { ProfileDetailModal } from './components/profile/ProfileDetailModal';
 import { UserDetailModal } from './components/profile/UserDetailModal';
+import { CountryDetailModal } from './components/country/CountryDetailModal';
+import { getCountryName } from './utils/countries';
 import { AddProfileModal } from './components/profile-form/AddProfileModal';
 import { VoteBanner } from './components/voting/VoteBanner';
 import { SettingsModal } from './components/filters/SettingsModal';
@@ -124,6 +126,21 @@ function applySeo(pathname: string) {
 function applyProfileSeo(name: string, description: string, id: string) {
   const title = `${name} — ${BRAND}`;
   const canonicalUrl = `${BASE_URL}/p/${id}`;
+  document.title = title;
+  upsertMeta('meta[name="description"]', { name: 'description', content: description });
+  upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title });
+  upsertMeta('meta[property="og:description"]', { property: 'og:description', content: description });
+  upsertMeta('meta[property="og:url"]', { property: 'og:url', content: canonicalUrl });
+  upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title });
+  upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
+  upsertCanonical(canonicalUrl);
+}
+
+function applyCountrySeo(code: string) {
+  const name = getCountryName(code);
+  const title = `${name} — ${BRAND}`;
+  const description = `Live rankings and votes from ${name} on Opinio.`;
+  const canonicalUrl = `${BASE_URL}/c/${code}`;
   document.title = title;
   upsertMeta('meta[name="description"]', { name: 'description', content: description });
   upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title });
@@ -454,12 +471,25 @@ function UserDetailRoute() {
   return <UserDetailModal userId={id ?? ''} />;
 }
 
+function CountryDetailRoute() {
+  const { code } = useParams<{ code: string }>();
+  const upper = (code ?? '').toUpperCase();
+  useEffect(() => {
+    if (upper) applyCountrySeo(upper);
+  }, [upper]);
+  return <CountryDetailModal countryCode={upper} />;
+}
+
 function AppContent() {
   const location = useLocation();
 
   useEffect(() => {
-    // Don't override SEO for profile/user pages - their routes handle that
-    if (!location.pathname.startsWith('/p/') && !location.pathname.startsWith('/u/')) {
+    // Don't override SEO for profile/user/country pages - their routes handle that
+    if (
+      !location.pathname.startsWith('/p/') &&
+      !location.pathname.startsWith('/u/') &&
+      !location.pathname.startsWith('/c/')
+    ) {
       applySeo(location.pathname);
     }
   }, [location.pathname]);
@@ -477,6 +507,7 @@ function AppContent() {
         <Route path="viewer-mode" element={<ViewerModeRoute />} />
         <Route path="p/:id" element={<ProfileDetailRoute />} />
         <Route path="u/:id" element={<UserDetailRoute />} />
+        <Route path="c/:code" element={<CountryDetailRoute />} />
       </Route>
     </Routes>
   );

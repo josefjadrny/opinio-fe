@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { geoNaturalEarth1, geoPath } from 'd3-geo';
 import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
@@ -36,6 +37,8 @@ interface ZoomState {
 }
 
 export function WorldMap() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { hoveredProfileCountry } = useFilters();
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -45,6 +48,9 @@ export function WorldMap() {
   const [debouncedCountry, setDebouncedCountry] = useState<string | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const dragRef = useRef<{ startX: number; startY: number; tx: number; ty: number } | null>(null);
+  // Track whether the user actually dragged (>4px) so we can suppress the click-to-open
+  // behavior after a pan and only treat real clicks as country navigations.
+  const didDragRef = useRef(false);
 
   const { data, isLoading } = useCountryProfiles(debouncedCountry);
 
@@ -84,6 +90,7 @@ export function WorldMap() {
 
   const handleMouseDown = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
     dragRef.current = { startX: e.clientX, startY: e.clientY, tx: zoom.tx, ty: zoom.ty };
+    didDragRef.current = false;
   }, [zoom.tx, zoom.ty]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -98,6 +105,9 @@ export function WorldMap() {
       const scaleY = HEIGHT / rect.height;
       const dx = (e.clientX - drag.startX) * scaleX;
       const dy = (e.clientY - drag.startY) * scaleY;
+      if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > 4) {
+        didDragRef.current = true;
+      }
       setZoom((prev) => {
         const { tx, ty } = clampTranslate(drag.tx + dx, drag.ty + dy, prev.scale);
         return { ...prev, tx, ty };
@@ -108,6 +118,11 @@ export function WorldMap() {
   const handleMouseUp = useCallback(() => {
     dragRef.current = null;
   }, []);
+
+  const handleCountryClick = useCallback((alpha2: string) => {
+    if (didDragRef.current) return;
+    navigate('/c/' + alpha2 + location.search);
+  }, [navigate, location.search]);
 
   const handleMouseEnter = useCallback((alpha2: string) => {
     setHoveredCountry(alpha2);
@@ -149,9 +164,10 @@ export function WorldMap() {
                 fill={isHovered ? '#e94560' : '#3a3a6a'}
                 stroke={isHovered ? '#f1f1f1' : '#5a5a8a'}
                 strokeWidth={(isHovered ? 0.75 : 0.5) / zoom.scale}
-                style={{ outline: 'none' }}
+                style={{ outline: 'none', cursor: alpha2 ? 'pointer' : 'default' }}
                 onMouseEnter={() => alpha2 && handleMouseEnter(alpha2)}
                 onMouseLeave={handleMouseLeave}
+                onClick={() => alpha2 && handleCountryClick(alpha2)}
               />
             );
           })}

@@ -5,6 +5,54 @@ const ANON_OG_IMAGE = `${SITE_BASE}/icons/anonymous-mask.png`;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PROFILE_PATH_RE = /^\/p\/([^\/]+)\/?$/;
 const USER_PATH_RE = /^\/u\/([^\/]+)\/?$/;
+const COUNTRY_PATH_RE = /^\/c\/([^\/]+)\/?$/;
+const COUNTRY_CODE_RE = /^[A-Z]{2}$/;
+
+// Mirrors opinio-fe/src/utils/countries.ts ALL_COUNTRY_NAMES — used to render
+// country OG cards server-side without an API round-trip. Keep the two in sync.
+const COUNTRY_NAMES = {
+  AF: 'Afghanistan', AL: 'Albania', DZ: 'Algeria', AR: 'Argentina', AU: 'Australia',
+  AT: 'Austria', BD: 'Bangladesh', BE: 'Belgium', BR: 'Brazil', BG: 'Bulgaria',
+  CA: 'Canada', CL: 'Chile', CN: 'China', CO: 'Colombia', HR: 'Croatia',
+  CU: 'Cuba', CZ: 'Czechia', DK: 'Denmark', EG: 'Egypt', FI: 'Finland',
+  FR: 'France', DE: 'Germany', GR: 'Greece', HU: 'Hungary', IN: 'India',
+  ID: 'Indonesia', IR: 'Iran', IQ: 'Iraq', IE: 'Ireland', IL: 'Israel',
+  IT: 'Italy', JP: 'Japan', KE: 'Kenya', KR: 'South Korea', KP: 'North Korea',
+  MX: 'Mexico', MA: 'Morocco', NL: 'Netherlands', NZ: 'New Zealand', NG: 'Nigeria',
+  NO: 'Norway', PK: 'Pakistan', PE: 'Peru', PH: 'Philippines', PL: 'Poland',
+  PT: 'Portugal', RO: 'Romania', RU: 'Russia', SA: 'Saudi Arabia', RS: 'Serbia',
+  SG: 'Singapore', ZA: 'South Africa', ES: 'Spain', SE: 'Sweden', CH: 'Switzerland',
+  TW: 'Taiwan', TH: 'Thailand', TR: 'Turkey', UA: 'Ukraine', AE: 'UAE',
+  GB: 'United Kingdom', US: 'United States', VE: 'Venezuela', VN: 'Vietnam',
+  AM: 'Armenia', AO: 'Angola', AZ: 'Azerbaijan', BA: 'Bosnia and Herzegovina',
+  BF: 'Burkina Faso', BJ: 'Benin', BO: 'Bolivia',
+  BS: 'Bahamas', BT: 'Bhutan', BW: 'Botswana', BN: 'Brunei',
+  BI: 'Burundi', BZ: 'Belize', BY: 'Belarus', CD: 'DR Congo',
+  CF: 'Central African Republic', CG: 'Republic of Congo', CI: "Côte d'Ivoire",
+  CM: 'Cameroon', CR: 'Costa Rica', CY: 'Cyprus', DJ: 'Djibouti',
+  DO: 'Dominican Republic', EC: 'Ecuador', EE: 'Estonia', EH: 'Western Sahara',
+  ER: 'Eritrea', ET: 'Ethiopia', FJ: 'Fiji', FK: 'Falkland Islands',
+  GA: 'Gabon', GE: 'Georgia', GH: 'Ghana', GL: 'Greenland',
+  GM: 'Gambia', GN: 'Guinea', GQ: 'Equatorial Guinea', GT: 'Guatemala',
+  GW: 'Guinea-Bissau', GY: 'Guyana', HN: 'Honduras', HT: 'Haiti',
+  IS: 'Iceland', JM: 'Jamaica', JO: 'Jordan', KG: 'Kyrgyzstan',
+  KH: 'Cambodia', KW: 'Kuwait', KZ: 'Kazakhstan', LA: 'Laos',
+  LB: 'Lebanon', LK: 'Sri Lanka', LR: 'Liberia', LS: 'Lesotho',
+  LT: 'Lithuania', LU: 'Luxembourg', LV: 'Latvia', LY: 'Libya',
+  MD: 'Moldova', ME: 'Montenegro', MG: 'Madagascar', MK: 'North Macedonia',
+  ML: 'Mali', MM: 'Myanmar', MN: 'Mongolia', MR: 'Mauritania',
+  MW: 'Malawi', MY: 'Malaysia', MZ: 'Mozambique', NA: 'Namibia',
+  NC: 'New Caledonia', NE: 'Niger', NI: 'Nicaragua', NP: 'Nepal',
+  OM: 'Oman', PA: 'Panama', PG: 'Papua New Guinea', PS: 'Palestine',
+  PY: 'Paraguay', QA: 'Qatar', RW: 'Rwanda', SB: 'Solomon Islands',
+  SD: 'Sudan', SL: 'Sierra Leone', SK: 'Slovakia', SI: 'Slovenia',
+  SN: 'Senegal', SO: 'Somalia', SR: 'Suriname', SS: 'South Sudan',
+  SV: 'El Salvador', SY: 'Syria', SZ: 'Eswatini', TD: 'Chad',
+  TJ: 'Tajikistan', TL: 'Timor-Leste', TG: 'Togo', TM: 'Turkmenistan',
+  TT: 'Trinidad and Tobago', TN: 'Tunisia', TZ: 'Tanzania', UG: 'Uganda',
+  UY: 'Uruguay', UZ: 'Uzbekistan', VU: 'Vanuatu', YE: 'Yemen',
+  ZM: 'Zambia', ZW: 'Zimbabwe',
+};
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -58,6 +106,22 @@ async function fetchUser(id) {
     });
     if (!res.ok) return null;
     return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+async function fetchCountryCounts(code) {
+  try {
+    // 60s edge cache matches the BE in-process cache, so we don't fan out behind it.
+    const res = await fetch(`${API_BASE}/api/countries`, {
+      headers: { accept: 'application/json' },
+      cf: { cacheTtl: 60, cacheEverything: true },
+    });
+    if (!res.ok) return null;
+    const body = await res.json();
+    if (!body || !Array.isArray(body.countries)) return null;
+    return body.countries.find((c) => c.code === code) ?? { code, likes: 0, dislikes: 0 };
   } catch {
     return null;
   }
@@ -224,6 +288,47 @@ async function handleUser(request, id) {
   return new Response(html, { status: 200, headers });
 }
 
+function formatCountForOg(n) {
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10_000 ? 0 : 1).replace(/\.0$/, '')}k`;
+  return String(n);
+}
+
+async function handleCountry(request, code) {
+  const [counts, shellRes] = await Promise.all([
+    fetchCountryCounts(code),
+    fetchShellHtml(request),
+  ]);
+  const shellText = await shellRes.text();
+  const headers = new Headers();
+  headers.set('content-type', 'text/html; charset=utf-8');
+  headers.set('cache-control', 'public, max-age=300, s-maxage=300');
+
+  const name = COUNTRY_NAMES[code];
+  if (!name) {
+    headers.set('x-opinio-og', 'fallback');
+    return new Response(shellText, { status: 200, headers });
+  }
+
+  headers.set('x-opinio-og', 'country');
+  const title = `${name} - Opinio`;
+  const likes = counts?.likes ?? 0;
+  const dislikes = counts?.dislikes ?? 0;
+  const description = (likes || dislikes)
+    ? `${name} on Opinio — ${formatCountForOg(likes)} likes, ${formatCountForOg(dislikes)} dislikes in the last 24h.`
+    : `Live rankings and votes from ${name} on Opinio.`;
+  const canonicalUrl = `${SITE_BASE}/c/${code}`;
+
+  const html = injectProfileMeta(shellText, {
+    title,
+    description,
+    image: DEFAULT_OG_IMAGE,
+    imageAlt: `Opinio · ${name}`,
+    url: canonicalUrl,
+    isAvatar: false,
+  });
+  return new Response(html, { status: 200, headers });
+}
+
 export default {
   async fetch(request) {
     const url = new URL(request.url);
@@ -240,6 +345,13 @@ export default {
       const id = userMatch[1].toLowerCase();
       if (!UUID_RE.test(id)) return fetch(request);
       return handleUser(request, id);
+    }
+
+    const countryMatch = url.pathname.match(COUNTRY_PATH_RE);
+    if (countryMatch) {
+      const code = countryMatch[1].toUpperCase();
+      if (!COUNTRY_CODE_RE.test(code)) return fetch(request);
+      return handleCountry(request, code);
     }
 
     return fetch(request);
