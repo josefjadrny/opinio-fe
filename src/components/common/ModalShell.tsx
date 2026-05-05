@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { useI18n } from '../../i18n/I18nContext';
 
 interface ModalShellProps {
   onClose: () => void;
@@ -9,6 +10,7 @@ interface ModalShellProps {
   footer?: ReactNode;
   maxWidth?: string;
   desktopScrollable?: boolean;
+  centered?: boolean;
 }
 
 export function ModalShell({
@@ -19,8 +21,10 @@ export function ModalShell({
   footer,
   maxWidth = 'max-w-sm',
   desktopScrollable = false,
+  centered = false,
 }: ModalShellProps) {
   const isMobile = useIsMobile();
+  const { t } = useI18n();
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -31,7 +35,12 @@ export function ModalShell({
   }, [onClose]);
 
   const closeBtn = (
-    <button onClick={onClose} className="text-white/40 hover:text-white/80 transition-colors p-1">
+    <button
+      onClick={onClose}
+      title={t.close}
+      aria-label={t.close}
+      className="text-white/40 hover:text-white/80 transition-colors p-1"
+    >
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
@@ -41,7 +50,7 @@ export function ModalShell({
   if (isMobile) {
     return (
       <div
-        className="fixed inset-x-0 bottom-0 top-[63px] z-[70] flex flex-col justify-end"
+        className="fixed inset-x-0 bottom-0 top-[63px] z-[80] flex flex-col justify-end"
         onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       >
         <div className="absolute inset-0 bg-black/60" onClick={onClose} />
@@ -71,7 +80,7 @@ export function ModalShell({
 
   return (
     <div
-      className="fixed inset-0 z-20 flex items-start justify-center pt-12 bg-black/50"
+      className={`fixed inset-0 z-[80] flex justify-center bg-black/50 ${centered ? 'items-center' : 'items-start pt-12'}`}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className={`bg-surface border border-border rounded-2xl shadow-2xl w-full ${maxWidth} mx-4 ${desktopScrollable ? 'max-h-[80vh] flex flex-col' : ''}`}>

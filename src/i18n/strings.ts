@@ -186,9 +186,13 @@ export interface Strings {
   userNotFoundBody: string;
   userNotFoundCta: string;
   reportedBy: string;
+  delete: string;
   deleteProfile: string;
   deleteProfileConfirm: string;
+  deleteProfileConfirmOneVote: string;
+  deleteProfileConfirmManyVotes: string;
   deleting: string;
+  close: string;
 }
 
 const en: Strings = {
@@ -398,9 +402,13 @@ const en: Strings = {
   userNotFoundBody: 'Their account is no longer here — maybe they took a break, or the link is a little off.',
   userNotFoundCta: 'Back to feed',
   reportedBy: 'reported by',
+  delete: 'Delete',
   deleteProfile: 'Delete opinion',
-  deleteProfileConfirm: 'Delete this opinion permanently? This cannot be undone.',
+  deleteProfileConfirm: 'Delete this opinion permanently?',
+  deleteProfileConfirmOneVote: 'Delete this opinion and discard 1 vote?',
+  deleteProfileConfirmManyVotes: 'Delete this opinion and discard {count} votes?',
   deleting: 'Deleting…',
+  close: 'Close',
 };
 
 const cs: Strings = {
@@ -610,9 +618,13 @@ const cs: Strings = {
   userNotFoundBody: 'Tento účet už neexistuje — třeba si dal pauzu, nebo je odkaz mírně přepsaný.',
   userNotFoundCta: 'Zpět na hlavní stranu',
   reportedBy: 'přidal',
+  delete: 'Smazat',
   deleteProfile: 'Smazat názor',
-  deleteProfileConfirm: 'Opravdu trvale smazat tento názor? Akci nelze vrátit zpět.',
+  deleteProfileConfirm: 'Opravdu trvale smazat tento názor?',
+  deleteProfileConfirmOneVote: 'Smazat tento názor a zahodit 1 hlas?',
+  deleteProfileConfirmManyVotes: 'Smazat tento názor a zahodit všech {count} hlasů?',
   deleting: 'Mazání…',
+  close: 'Zavřít',
 };
 
 const es: Strings = {
@@ -822,9 +834,13 @@ const es: Strings = {
   userNotFoundBody: 'Esta cuenta ya no está aquí — puede que se haya tomado un descanso o que el enlace no sea del todo correcto.',
   userNotFoundCta: 'Volver al inicio',
   reportedBy: 'publicado por',
+  delete: 'Eliminar',
   deleteProfile: 'Eliminar opinión',
-  deleteProfileConfirm: '¿Eliminar esta opinión permanentemente? Esta acción no se puede deshacer.',
+  deleteProfileConfirm: '¿Eliminar esta opinión permanentemente?',
+  deleteProfileConfirmOneVote: '¿Eliminar esta opinión y descartar 1 voto?',
+  deleteProfileConfirmManyVotes: '¿Eliminar esta opinión y descartar {count} votos?',
   deleting: 'Eliminando…',
+  close: 'Cerrar',
 };
 
 export const LANGUAGES = {
