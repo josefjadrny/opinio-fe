@@ -186,6 +186,9 @@ export interface Strings {
   userNotFoundBody: string;
   userNotFoundCta: string;
   reportedBy: string;
+  deleteProfile: string;
+  deleteProfileConfirm: string;
+  deleting: string;
 }
 
 const en: Strings = {
@@ -395,6 +398,9 @@ const en: Strings = {
   userNotFoundBody: 'Their account is no longer here — maybe they took a break, or the link is a little off.',
   userNotFoundCta: 'Back to feed',
   reportedBy: 'reported by',
+  deleteProfile: 'Delete opinion',
+  deleteProfileConfirm: 'Delete this opinion permanently? This cannot be undone.',
+  deleting: 'Deleting…',
 };
 
 const cs: Strings = {
@@ -604,6 +610,9 @@ const cs: Strings = {
   userNotFoundBody: 'Tento účet už neexistuje — třeba si dal pauzu, nebo je odkaz mírně přepsaný.',
   userNotFoundCta: 'Zpět na hlavní stranu',
   reportedBy: 'přidal',
+  deleteProfile: 'Smazat názor',
+  deleteProfileConfirm: 'Opravdu trvale smazat tento názor? Akci nelze vrátit zpět.',
+  deleting: 'Mazání…',
 };
 
 const es: Strings = {
@@ -813,6 +822,9 @@ const es: Strings = {
   userNotFoundBody: 'Esta cuenta ya no está aquí — puede que se haya tomado un descanso o que el enlace no sea del todo correcto.',
   userNotFoundCta: 'Volver al inicio',
   reportedBy: 'publicado por',
+  deleteProfile: 'Eliminar opinión',
+  deleteProfileConfirm: '¿Eliminar esta opinión permanentemente? Esta acción no se puede deshacer.',
+  deleting: 'Eliminando…',
 };
 
 export const LANGUAGES = {

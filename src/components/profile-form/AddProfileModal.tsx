@@ -154,7 +154,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
 
   const mutation = useMutation({
     mutationFn: async (fields: { name: string; role: Role; countryCode: string; description: string }) => {
-      let finalImageUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fields.name)}&size=128&background=random`;
+      let finalImageUrl = '';
       let finalImageKey: string | undefined;
       if (imageBlob) {
         const { url, key } = await uploadImage(imageBlob);

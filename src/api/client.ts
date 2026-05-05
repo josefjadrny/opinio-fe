@@ -85,6 +85,17 @@ export function getProfile(profileId: string): Promise<import('../types/profile'
   return apiFetch(`/api/profiles/${profileId}`);
 }
 
+export async function deleteProfile(profileId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/api/profiles/${profileId}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok && res.status !== 204) {
+    const body = await res.json().catch(() => ({}));
+    throw Object.assign(new Error(body.error ?? res.statusText), { status: res.status });
+  }
+}
+
 export function getPersonBreakdown(profileId: string): Promise<PersonBreakdownResponse> {
   return apiFetch(`/api/profiles/${profileId}/breakdown`);
 }

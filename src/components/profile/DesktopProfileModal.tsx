@@ -8,6 +8,7 @@ import { useCountdown } from '../../hooks/useCountdown';
 import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from './Avatar';
 import { ShareButton } from './ShareButton';
+import { DeleteProfileButton } from './DeleteProfileButton';
 import { RoleBadge } from '../common/RoleBadge';
 import { CountryFlag } from '../common/CountryFlag';
 import { getCountryFlag, getCountryName } from '../../utils/countries';
@@ -95,6 +96,9 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                 </p>
               </div>
               <div className="flex items-center gap-1 shrink-0">
+                {me?.user.id && profile.addedById === me.user.id && (
+                  <DeleteProfileButton profileId={profile.id} onDeleted={close} />
+                )}
                 <ShareButton profileId={profile.id} profileName={profile.name} />
                 <button onClick={close} className="text-white/40 hover:text-white/80 transition-colors p-1">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
