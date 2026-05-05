@@ -111,7 +111,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
         }`}
       >
         <span>&#9650;&#xFE0E;</span>
-        <span className="tabular-nums">{formatNumber(animatedLikes)}</span>
+        <span className="tabular-nums inline-block text-right min-w-[3ch]">{formatNumber(animatedLikes)}</span>
       </button>
     </div>
   );
@@ -142,7 +142,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
         }`}
       >
         <span>&#9660;&#xFE0E;</span>
-        <span className="tabular-nums">{formatNumber(animatedDislikes)}</span>
+        <span className="tabular-nums inline-block text-right min-w-[3ch]">{formatNumber(animatedDislikes)}</span>
       </button>
     </div>
   );
