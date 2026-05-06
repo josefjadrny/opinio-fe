@@ -53,6 +53,7 @@ export function MobileFeed({
               key={profile.id}
               profile={profile}
               variant="compact"
+              reverseVotes
             />
           ))}
         </div>
