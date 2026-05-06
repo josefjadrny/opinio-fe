@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import type { Profile } from '../../types/profile';
 import { useI18n } from '../../i18n/I18nContext';
 import { ProfileCard } from '../profile/ProfileCard';
@@ -16,8 +16,14 @@ export function Sidebar({ title, profiles, accentColor, onLoadMore, isLoadingMor
   const borderClass = accentColor === 'positive' ? 'border-l-2 border-positive' : 'border-r-2 border-negative';
   const textColor = accentColor === 'positive' ? 'text-positive' : 'text-negative';
 
+  // Browsers restore scroll position on F5, which fires onScroll right after
+  // the list mounts and would otherwise immediately trip load-more. Only honor
+  // scroll once the user has actually interacted with the pane.
+  const userScrolledRef = useRef(false);
+  const markUserScrolled = useCallback(() => { userScrolledRef.current = true; }, []);
+
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    if (!onLoadMore) return;
+    if (!onLoadMore || !userScrolledRef.current) return;
     const el = e.currentTarget;
     if (el.scrollTop + el.clientHeight >= el.scrollHeight - 120) {
       onLoadMore();
@@ -40,7 +46,13 @@ export function Sidebar({ title, profiles, accentColor, onLoadMore, isLoadingMor
           {title}
         </h2>
       </div>
-      <div onScroll={handleScroll} className="flex-1 overflow-y-auto no-scrollbar px-1 py-1.5 space-y-1">
+      <div
+        onScroll={handleScroll}
+        onWheel={markUserScrolled}
+        onTouchStart={markUserScrolled}
+        onKeyDown={markUserScrolled}
+        className="flex-1 overflow-y-auto no-scrollbar px-1 py-1.5 space-y-1"
+      >
         {profiles.map((profile) => (
           <ProfileCard
             key={profile.id}
