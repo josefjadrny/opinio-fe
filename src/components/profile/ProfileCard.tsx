@@ -93,7 +93,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   if (variant === 'compact') {
     return (
       <div
-        className="flex items-center gap-3 px-3 py-2 bg-surface-light/50 rounded-lg ring-1 ring-transparent hover:bg-surface-light hover:ring-white/10 transition-all duration-150 select-none"
+        className="flex items-center gap-3 px-2 py-2 bg-surface-light/50 rounded-lg ring-1 ring-transparent hover:bg-surface-light hover:ring-white/10 transition-all duration-150 select-none"
         onMouseEnter={handleMouseEnter}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
