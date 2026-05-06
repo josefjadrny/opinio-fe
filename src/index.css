@@ -48,6 +48,15 @@ body {
   display: none;
 }
 
+@keyframes new-glow {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+
+.animate-new-glow {
+  animation: new-glow 3s ease-in-out infinite;
+}
+
 @keyframes vote-particle {
   0%   { transform: translateY(0) scale(1);   opacity: 1; }
   60%  { opacity: 1; }

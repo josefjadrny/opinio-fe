@@ -27,6 +27,7 @@ export function getProfiles(filters: ProfileFilters): Promise<ProfilesResponse> 
   const params = new URLSearchParams({ type: filters.type });
   if (filters.country) params.set('country', filters.country);
   if (filters.roles?.length) params.set('roles', filters.roles.join(','));
+  if (filters.limit != null) params.set('limit', String(filters.limit));
   return apiFetch(`/api/profiles?${params}`);
 }
 

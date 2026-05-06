@@ -261,8 +261,27 @@ function AppLayout() {
     }
   }, [queryClient]);
 
-  const positiveQuery = useProfiles({ type: 'positive', country, roles });
-  const negativeQuery = useProfiles({ type: 'negative', country, roles });
+  const SIDEBAR_INITIAL_LIMIT = 15;
+  const SIDEBAR_MAX_LIMIT = 30;
+  const [positiveLimit, setPositiveLimit] = useState(SIDEBAR_INITIAL_LIMIT);
+  const [negativeLimit, setNegativeLimit] = useState(SIDEBAR_INITIAL_LIMIT);
+  const rolesKey = roles.join(',');
+  useEffect(() => {
+    setPositiveLimit(SIDEBAR_INITIAL_LIMIT);
+    setNegativeLimit(SIDEBAR_INITIAL_LIMIT);
+  }, [country, rolesKey]);
+
+  const positiveQuery = useProfiles({ type: 'positive', country, roles, limit: positiveLimit });
+  const negativeQuery = useProfiles({ type: 'negative', country, roles, limit: negativeLimit });
+
+  const expandPositive = useCallback(() => {
+    setPositiveLimit((prev) => (prev < SIDEBAR_MAX_LIMIT ? SIDEBAR_MAX_LIMIT : prev));
+  }, []);
+  const expandNegative = useCallback(() => {
+    setNegativeLimit((prev) => (prev < SIDEBAR_MAX_LIMIT ? SIDEBAR_MAX_LIMIT : prev));
+  }, []);
+  const onLoadMorePositive = isMobile ? undefined : expandPositive;
+  const onLoadMoreNegative = isMobile ? undefined : expandNegative;
 
   useRealtimeUpdates();
 
@@ -304,6 +323,8 @@ function AppLayout() {
                 title={t.trending}
                 profiles={positiveQuery.data?.profiles ?? []}
                 accentColor="positive"
+                onLoadMore={onLoadMorePositive}
+                isLoadingMore={positiveQuery.isPlaceholderData}
               />
             </div>
             <div className="w-px bg-border shrink-0" />
@@ -312,6 +333,8 @@ function AppLayout() {
                 title={t.falling}
                 profiles={negativeQuery.data?.profiles ?? []}
                 accentColor="negative"
+                onLoadMore={onLoadMoreNegative}
+                isLoadingMore={negativeQuery.isPlaceholderData}
               />
             </div>
           </div>
@@ -327,6 +350,8 @@ function AppLayout() {
               title={t.trending}
               profiles={positiveQuery.data?.profiles ?? []}
               accentColor="positive"
+              onLoadMore={onLoadMorePositive}
+              isLoadingMore={positiveQuery.isPlaceholderData}
             />
           </div>
           <ResizeHandle side="left" onDrag={handleLeftDrag} />
@@ -343,6 +368,8 @@ function AppLayout() {
               title={t.falling}
               profiles={negativeQuery.data?.profiles ?? []}
               accentColor="negative"
+              onLoadMore={onLoadMoreNegative}
+              isLoadingMore={negativeQuery.isPlaceholderData}
             />
           </div>
         </div>
