@@ -14,7 +14,7 @@ export function useVote() {
       // Immediately patch counts - order stays frozen for 5s, then unlock triggers invalidation
       const patch = (p: Profile) => p.id === data.profile.id ? data.profile : p;
       queryClient.setQueriesData<ProfilesResponse>({ queryKey: ['profiles'] }, (old) =>
-        old ? { ...old, profiles: old.profiles.map(patch), recentlyAdded: old.recentlyAdded.map(patch) } : old
+        old ? { ...old, profiles: old.profiles.map(patch) } : old
       );
       queryClient.setQueryData<Profile>(['profile', data.profile.id], data.profile);
       const myId = queryClient.getQueryData<MeResponse>(['me'])?.user?.id ?? null;

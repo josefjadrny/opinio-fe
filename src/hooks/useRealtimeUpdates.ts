@@ -25,15 +25,6 @@ export function useRealtimeUpdates() {
                     }
                   : p,
               ),
-              recentlyAdded: old.recentlyAdded.map((p) =>
-                p.id === event.profileId
-                  ? {
-                      ...p,
-                      likes: p.likes + (event.data.likes ?? 0),
-                      dislikes: p.dislikes + (event.data.dislikes ?? 0),
-                    }
-                  : p,
-              ),
             };
           },
         );

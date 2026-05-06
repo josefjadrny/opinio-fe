@@ -4,16 +4,12 @@ import { ProfileCard } from '../profile/ProfileCard';
 
 interface MobileFeedProps {
   positiveProfiles: Profile[];
-  positiveRecent: Profile[];
   negativeProfiles: Profile[];
-  negativeRecent: Profile[];
 }
 
 export function MobileFeed({
   positiveProfiles,
-  positiveRecent,
   negativeProfiles,
-  negativeRecent,
 }: MobileFeedProps) {
   const { t } = useI18n();
 
@@ -28,7 +24,7 @@ export function MobileFeed({
           {t.trending}
         </h2>
         <div className="space-y-1.5">
-          {[...positiveProfiles.slice(0, 10), ...positiveRecent].map((profile) => (
+          {positiveProfiles.map((profile) => (
             <ProfileCard
               key={profile.id}
               profile={profile}
@@ -48,7 +44,7 @@ export function MobileFeed({
           {t.falling}
         </h2>
         <div className="space-y-1.5">
-          {[...negativeProfiles.slice(0, 10), ...negativeRecent].map((profile) => (
+          {negativeProfiles.map((profile) => (
             <ProfileCard
               key={profile.id}
               profile={profile}

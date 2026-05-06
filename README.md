@@ -27,7 +27,7 @@ The API URL is configured via `OPINIO_API_URL` in `.env` — copy `.env.example`
 ## Features
 
 - **World map** (desktop) / **ranked feed** (mobile) of statements, events, and public figures
-- **Rising** sidebar — top net positive scores; **Falling** sidebar — most disliked
+- **Rising** sidebar — most liked; **Falling** sidebar — most disliked
 - **Like / Dislike** voting with per-tier hourly allowances (requires country detection; warning shown if unknown)
 - **Nominate** — submit a statement or event with category, long description, and avatar
 - **Country filter** — searchable dropdown with flags, type to filter by name

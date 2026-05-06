@@ -5,30 +5,11 @@ import { ProfileCard } from '../profile/ProfileCard';
 interface SidebarProps {
   title: string;
   profiles: Profile[];
-  recentlyAdded: Profile[];
   accentColor: 'positive' | 'negative';
 }
 
-function interleave(
-  ranked: Profile[],
-  recent: Profile[],
-): Array<{ profile: Profile; isNew: boolean }> {
-  const result = ranked.map((p) => ({ profile: p, isNew: false }));
-  const insertPositions = [2, 6];
-
-  recent.forEach((profile, i) => {
-    const pos = insertPositions[i];
-    if (pos !== undefined && pos <= result.length) {
-      result.splice(pos, 0, { profile, isNew: true });
-    }
-  });
-
-  return result;
-}
-
-export function Sidebar({ title, profiles, recentlyAdded, accentColor }: SidebarProps) {
+export function Sidebar({ title, profiles, accentColor }: SidebarProps) {
   const { t } = useI18n();
-  const items = interleave(profiles, recentlyAdded);
   const borderClass = accentColor === 'positive' ? 'border-l-2 border-positive' : 'border-r-2 border-negative';
   const textColor = accentColor === 'positive' ? 'text-positive' : 'text-negative';
 
@@ -49,7 +30,7 @@ export function Sidebar({ title, profiles, recentlyAdded, accentColor }: Sidebar
         </h2>
       </div>
       <div className="flex-1 overflow-y-auto no-scrollbar px-1 py-1.5 space-y-1">
-        {items.map(({ profile }) => (
+        {profiles.map((profile) => (
           <ProfileCard
             key={profile.id}
             profile={profile}
@@ -57,7 +38,7 @@ export function Sidebar({ title, profiles, recentlyAdded, accentColor }: Sidebar
             reverseVotes={accentColor === 'negative'}
           />
         ))}
-        {items.length === 0 && (
+        {profiles.length === 0 && (
           <p className="text-center text-text-secondary text-sm py-8">{t.noProfiles}</p>
         )}
       </div>

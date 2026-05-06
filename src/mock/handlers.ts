@@ -9,7 +9,6 @@ import {
   getVoteAllowance, addProfile as storageAddProfile,
 } from './storage';
 
-const RECENTLY_ADDED_HOURS = 24;
 const SIDEBAR_SIZE = 15;
 const TOOLTIP_SIZE = 4;
 
@@ -19,11 +18,6 @@ function delay(ms = 200 + Math.random() * 200): Promise<void> {
 
 function enrichProfiles(profiles: Profile[]): Profile[] {
   return profiles.map(applyVotesToProfile);
-}
-
-function isRecentlyAdded(profile: Profile): boolean {
-  const hoursAgo = (Date.now() - new Date(profile.createdAt).getTime()) / 3600000;
-  return hoursAgo <= RECENTLY_ADDED_HOURS;
 }
 
 export async function getProfiles(filters: ProfileFilters): Promise<ProfilesResponse> {
@@ -45,12 +39,7 @@ export async function getProfiles(filters: ProfileFilters): Promise<ProfilesResp
 
   const topProfiles = sorted.slice(0, SIDEBAR_SIZE);
 
-  const recentlyAdded = profiles
-    .filter((p) => isRecentlyAdded(p) && !topProfiles.some((tp) => tp.id === p.id))
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 3);
-
-  return { profiles: topProfiles, recentlyAdded };
+  return { profiles: topProfiles };
 }
 
 export async function getCountryProfiles(countryCode: string): Promise<CountryProfilesResponse> {

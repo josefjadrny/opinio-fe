@@ -294,9 +294,7 @@ function AppLayout() {
       {isMobile ? (
         <MobileFeed
           positiveProfiles={positiveQuery.data?.profiles ?? []}
-          positiveRecent={positiveQuery.data?.recentlyAdded ?? []}
           negativeProfiles={negativeQuery.data?.profiles ?? []}
-          negativeRecent={negativeQuery.data?.recentlyAdded ?? []}
         />
       ) : isCompact ? (
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -305,7 +303,6 @@ function AppLayout() {
               <Sidebar
                 title={t.trending}
                 profiles={positiveQuery.data?.profiles ?? []}
-                recentlyAdded={positiveQuery.data?.recentlyAdded ?? []}
                 accentColor="positive"
               />
             </div>
@@ -314,7 +311,6 @@ function AppLayout() {
               <Sidebar
                 title={t.falling}
                 profiles={negativeQuery.data?.profiles ?? []}
-                recentlyAdded={negativeQuery.data?.recentlyAdded ?? []}
                 accentColor="negative"
               />
             </div>
@@ -330,7 +326,6 @@ function AppLayout() {
             <Sidebar
               title={t.trending}
               profiles={positiveQuery.data?.profiles ?? []}
-              recentlyAdded={positiveQuery.data?.recentlyAdded ?? []}
               accentColor="positive"
             />
           </div>
@@ -347,7 +342,6 @@ function AppLayout() {
             <Sidebar
               title={t.falling}
               profiles={negativeQuery.data?.profiles ?? []}
-              recentlyAdded={negativeQuery.data?.recentlyAdded ?? []}
               accentColor="negative"
             />
           </div>

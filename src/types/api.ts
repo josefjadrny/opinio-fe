@@ -2,7 +2,6 @@ import type { Profile } from './profile';
 
 export interface ProfilesResponse {
   profiles: Profile[];
-  recentlyAdded: Profile[];
 }
 
 export interface CountryProfilesResponse {
