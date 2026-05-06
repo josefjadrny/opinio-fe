@@ -104,7 +104,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
             {rank}
           </span>
         )}
-        <div className="flex items-center gap-3 flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
           <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-8 h-8 shrink-0" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
