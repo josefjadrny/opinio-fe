@@ -324,7 +324,7 @@ function AppLayout() {
                 profiles={positiveQuery.data?.profiles ?? []}
                 accentColor="positive"
                 onLoadMore={onLoadMorePositive}
-                isLoadingMore={positiveQuery.isPlaceholderData || positiveQuery.isLoading}
+                isLoadingMore={positiveQuery.isPlaceholderData || !positiveQuery.data}
               />
             </div>
             <div className="w-px bg-border shrink-0" />
@@ -334,7 +334,7 @@ function AppLayout() {
                 profiles={negativeQuery.data?.profiles ?? []}
                 accentColor="negative"
                 onLoadMore={onLoadMoreNegative}
-                isLoadingMore={negativeQuery.isPlaceholderData || negativeQuery.isLoading}
+                isLoadingMore={negativeQuery.isPlaceholderData || !negativeQuery.data}
               />
             </div>
           </div>
@@ -351,7 +351,7 @@ function AppLayout() {
               profiles={positiveQuery.data?.profiles ?? []}
               accentColor="positive"
               onLoadMore={onLoadMorePositive}
-              isLoadingMore={positiveQuery.isPlaceholderData}
+              isLoadingMore={positiveQuery.isPlaceholderData || !positiveQuery.data}
             />
           </div>
           <ResizeHandle side="left" onDrag={handleLeftDrag} />
@@ -369,7 +369,7 @@ function AppLayout() {
               profiles={negativeQuery.data?.profiles ?? []}
               accentColor="negative"
               onLoadMore={onLoadMoreNegative}
-              isLoadingMore={negativeQuery.isPlaceholderData}
+              isLoadingMore={negativeQuery.isPlaceholderData || !negativeQuery.data}
             />
           </div>
         </div>
