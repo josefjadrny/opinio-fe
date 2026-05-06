@@ -127,6 +127,25 @@ async function fetchCountryCounts(code) {
   }
 }
 
+async function handleSitemap() {
+  // Proxy the API-built sitemap so opinio.live/sitemap.xml stays on the canonical
+  // host (Google ignores cross-host sitemaps unless both hosts are verified).
+  // 10-min edge cache mirrors the in-process cache on the API side.
+  try {
+    const res = await fetch(`${API_BASE}/sitemap.xml`, {
+      cf: { cacheTtl: 600, cacheEverything: true },
+    });
+    if (!res.ok) return new Response('sitemap unavailable', { status: 502 });
+    const headers = new Headers();
+    headers.set('content-type', 'application/xml; charset=utf-8');
+    headers.set('cache-control', 'public, max-age=600, s-maxage=600');
+    headers.set('x-opinio-og', 'sitemap');
+    return new Response(res.body, { status: 200, headers });
+  } catch {
+    return new Response('sitemap unavailable', { status: 502 });
+  }
+}
+
 async function fetchShellHtml(request) {
   const url = new URL(request.url);
   url.pathname = '/index.html';
@@ -332,6 +351,10 @@ async function handleCountry(request, code) {
 export default {
   async fetch(request) {
     const url = new URL(request.url);
+
+    if (url.pathname === '/sitemap.xml') {
+      return handleSitemap();
+    }
 
     const profileMatch = url.pathname.match(PROFILE_PATH_RE);
     if (profileMatch) {
