@@ -1,5 +1,7 @@
 # Opinio — Frontend
 
+Live at **[https://opinio.live](https://opinio.live)**.
+
 React frontend for [Opinio](https://opinio.live) — a global social voting platform where anyone can browse and vote on statements, events, and public figures from around the world, organized by country on an interactive world map. Rankings refresh every 24 hours as votes expire, keeping results a live snapshot of current sentiment.
 
 ## Tech Stack
