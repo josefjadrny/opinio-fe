@@ -130,10 +130,13 @@ async function fetchCountryCounts(code) {
 async function handleSitemap() {
   // Proxy the API-built sitemap so opinio.live/sitemap.xml stays on the canonical
   // host (Google ignores cross-host sitemaps unless both hosts are verified).
-  // 10-min edge cache mirrors the in-process cache on the API side.
+  // 10-min edge cache mirrors the in-process cache on the API side. We let CF
+  // honour the upstream Cache-Control (only set on 200s) instead of forcing
+  // cacheEverything — otherwise a transient API failure caches the bad response
+  // and locks the worker out for the full TTL.
   try {
     const res = await fetch(`${API_BASE}/sitemap.xml`, {
-      cf: { cacheTtl: 600, cacheEverything: true },
+      cf: { cacheTtl: 600 },
     });
     if (!res.ok) return new Response('sitemap unavailable', { status: 502 });
     const headers = new Headers();
