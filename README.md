@@ -24,7 +24,7 @@ You see **current sentiment, not history** — every vote expires after 24 hours
 
 ## How it works
 
-- **Rising / Falling sidebars** — top 10 by 24-hour vote count, plus up to 5 freshness slots: `NEW` for just-added profiles, `RISING` / `FALLING` for ones gaining votes in the last 2 hours.
+- **Rising / Falling sidebars** — top 10 by 24-hour vote count, plus up to 5 freshness slots: `NEW` for just-added profiles, `RISING` / `FALLING` for ones gaining votes in the last 6 hours.
 - **World map** — hover any country to see its top 4 ▲ and top 4 ▼.
 - **24-hour vote expiry** — votes age out after a day, so rankings keep moving.
 - **Country breakdown** — see top fans and critics for any profile.
