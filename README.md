@@ -50,6 +50,12 @@ npm run dev       # http://localhost:5173
 
 Requires the API (`opinio-api`) running locally.
 
+## Contributing
+
+Bug-fix PRs are very welcome — keep them small and focused, and mention the issue or behaviour you're addressing.
+
+Feature direction is set by the Opinio team. Before opening a PR for new functionality (new components, UX changes, larger refactors), please open an issue first so we can discuss fit with the roadmap. We may decline feature PRs that arrive without prior discussion, even when the implementation is clean — this isn't about the code, it's about keeping the product coherent.
+
 ## License
 
 Source-available, not open-source. Viewing and PRs welcome; copying, forking, or redistributing is not permitted.
