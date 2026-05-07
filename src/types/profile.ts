@@ -19,4 +19,5 @@ export interface Profile {
   createdAt: string;
   likes: number;
   dislikes: number;
+  label?: 'new' | 'rising' | 'falling';
 }

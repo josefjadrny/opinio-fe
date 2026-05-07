@@ -5,14 +5,12 @@ import type { Profile } from '../../types/profile';
 import { RoleBadge } from '../common/RoleBadge';
 import { CountryFlag } from '../common/CountryFlag';
 import { VoteButtons } from '../voting/VoteButtons';
-import { NewBadge } from './NewBadge';
+import { LabelBadge } from './LabelBadge';
 import { PersonTooltip } from './PersonTooltip';
 import { usePersonBreakdown } from '../../hooks/usePersonBreakdown';
 import { useFilters } from '../../context/useFilters';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { Avatar } from './Avatar';
-
-const ONE_HOUR_MS = 3_600_000;
 
 interface ProfileCardProps {
   profile: Profile;
@@ -34,8 +32,6 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   const isMobile = useIsMobile();
   const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(hoveredId);
   const { setHoveredProfileCountry } = useFilters();
-
-  const isNew = Date.now() - new Date(profile.createdAt).getTime() < ONE_HOUR_MS;
 
   const openDetail = useCallback(() => {
     queryClient.setQueryData(['profile', profile.id], profile);
@@ -112,7 +108,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
               <div className="flex items-center gap-1.5 shrink-0">
                 <CountryFlag code={profile.countryCode} />
                 <RoleBadge role={profile.role} />
-                {isNew && <NewBadge />}
+                {profile.label && <LabelBadge label={profile.label} />}
               </div>
             </div>
           </div>
@@ -162,7 +158,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
           <div className="flex items-center gap-1.5 shrink-0">
             <CountryFlag code={profile.countryCode} />
             <RoleBadge role={profile.role} />
-            {isNew && <NewBadge />}
+            {profile.label && <LabelBadge label={profile.label} />}
           </div>
         </div>
         <p className="text-[13px] text-text-secondary mb-0.5">{profile.description}</p>
