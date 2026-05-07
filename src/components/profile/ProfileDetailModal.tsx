@@ -8,7 +8,6 @@ import { DeleteProfileButton } from './DeleteProfileButton';
 import { useMe } from '../../hooks/useMe';
 import { RoleBadge } from '../common/RoleBadge';
 import { CountryFlag } from '../common/CountryFlag';
-import { VoteButtons } from '../voting/VoteButtons';
 import { getCountryFlag, getCountryName } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
 import { useI18n } from '../../i18n/I18nContext';
@@ -122,8 +121,6 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
               )}
             </p>
           )}
-
-          <VoteButtons key={profile.id} profileId={profile.id} likes={profile.likes} dislikes={profile.dislikes} />
 
           {isLoading && (
             <p className="text-xs text-white/30 pt-1">Loading...</p>
