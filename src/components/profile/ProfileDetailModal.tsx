@@ -19,6 +19,10 @@ interface ProfileDetailModalProps {
   onClose: () => void;
 }
 
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: ProfileDetailModalProps) {
   const location = useLocation();
   const { t } = useI18n();
@@ -119,6 +123,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
               ) : (
                 <span>@{profile.addedBy}</span>
               )}
+              {' · '}{formatDate(profile.createdAt)}
             </p>
           )}
 
