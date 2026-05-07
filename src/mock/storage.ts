@@ -53,13 +53,6 @@ export function getVoteCounts(profileId: string): { likes: number; dislikes: num
   };
 }
 
-export function getMyVote(profileId: string): 'like' | 'dislike' | null {
-  const data = load();
-  const votes = activeVotes(data.votes);
-  const myVote = votes.find((v) => v.profileId === profileId);
-  return myVote?.type ?? null;
-}
-
 export function castVote(profileId: string, type: 'like' | 'dislike'): boolean {
   const data = load();
   data.votes = activeVotes(data.votes);
@@ -106,7 +99,7 @@ export function getVoteAllowance(): VoteAllowance {
   };
 }
 
-export function addProfile(profile: Omit<Profile, 'id' | 'createdAt' | 'likes' | 'dislikes' | 'myVote'>): Profile {
+export function addProfile(profile: Omit<Profile, 'id' | 'createdAt' | 'likes' | 'dislikes'>): Profile {
   const data = load();
   const newProfile: Profile = {
     ...profile,
@@ -114,7 +107,6 @@ export function addProfile(profile: Omit<Profile, 'id' | 'createdAt' | 'likes' |
     createdAt: new Date().toISOString(),
     likes: 0,
     dislikes: 0,
-    myVote: null,
   };
   data.addedProfiles.push(newProfile);
   save(data);
@@ -127,6 +119,5 @@ export function applyVotesToProfile(profile: Profile): Profile {
     ...profile,
     likes: profile.likes + extra.likes,
     dislikes: profile.dislikes + extra.dislikes,
-    myVote: getMyVote(profile.id),
   };
 }

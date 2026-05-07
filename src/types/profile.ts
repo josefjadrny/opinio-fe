@@ -19,5 +19,4 @@ export interface Profile {
   createdAt: string;
   likes: number;
   dislikes: number;
-  myVote: 'like' | 'dislike' | null;
 }

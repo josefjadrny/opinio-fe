@@ -17,7 +17,6 @@ function p(
     createdAt: new Date(Date.now() - (hoursAgo ?? Math.random() * 72) * 3600000).toISOString(),
     likes,
     dislikes,
-    myVote: null,
   };
 }
 
