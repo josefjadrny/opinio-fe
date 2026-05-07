@@ -69,6 +69,19 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
               <RoleBadge role={profile.role} />
             </div>
           </div>
+          <div
+            className="shrink-0 flex items-center gap-2 text-sm tabular-nums leading-none"
+            title={`${formatNumber(profile.likes)} likes · ${formatNumber(profile.dislikes)} dislikes`}
+          >
+            <span className="inline-flex items-baseline gap-1 text-positive font-semibold">
+              <span className="text-[11px]">▲</span>
+              {formatNumber(profile.likes)}
+            </span>
+            <span className="inline-flex items-baseline gap-1 text-negative font-semibold">
+              <span className="text-[11px]">▼</span>
+              {formatNumber(profile.dislikes)}
+            </span>
+          </div>
           <div className="flex items-center gap-1 shrink-0 ml-auto">
             {me?.user.id && profile.addedById === me.user.id && (
               <DeleteProfileButton
