@@ -7,7 +7,7 @@ import { ALL_COUNTRIES, getCountryFlag } from '../../utils/countries';
 import { ALL_ROLES, ROLE_COLORS } from '../../utils/roles';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
-import { loginWithGoogle } from '../../api/client';
+import { useSignIn } from '../auth/SignInContext';
 import type { Role } from '../../types/profile';
 
 const SIZE = 128;
@@ -87,6 +87,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const { data: me } = useMe();
   const navigate = useNavigate();
   const location = useLocation();
+  const { promptSignIn } = useSignIn();
 
   const user = me?.user;
   const isAnonymous = !user || user.tier === 'anonymous';
@@ -345,7 +346,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
         {isAnonymous ? (
           <div className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 flex items-center justify-between gap-3">
             <p className="text-sm text-white/60">{t.nominateTooltip}</p>
-            <button type="button" onClick={loginWithGoogle} className="shrink-0 text-sm font-medium text-accent hover:text-accent/80 transition-colors">
+            <button type="button" onClick={promptSignIn} className="shrink-0 text-sm font-medium text-accent hover:text-accent/80 transition-colors">
               {t.login}
             </button>
           </div>

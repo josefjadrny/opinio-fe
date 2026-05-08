@@ -5,7 +5,8 @@ import { ActionChip } from '../common/ActionChip';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
 import { useBillingRedirect } from '../../hooks/useBillingRedirect';
-import { createCheckoutSession, loginWithGoogle } from '../../api/client';
+import { createCheckoutSession } from '../../api/client';
+import { useSignIn } from '../auth/SignInContext';
 
 interface AboutModalProps {
   onClose: () => void;
@@ -167,6 +168,7 @@ function SupporterCta() {
   const isAlreadySupporter = tier === 'supporter' || tier === 'admin';
   const isAnonymous = !tier || tier === 'anonymous';
   const { loading, handleClick: handleCheckout } = useBillingRedirect(createCheckoutSession);
+  const { promptSignIn } = useSignIn();
 
   if (isAlreadySupporter) {
     return (
@@ -177,7 +179,7 @@ function SupporterCta() {
   }
 
   return (
-    <ActionChip onClick={isAnonymous ? loginWithGoogle : handleCheckout} disabled={loading} className="shrink-0">
+    <ActionChip onClick={isAnonymous ? promptSignIn : handleCheckout} disabled={loading} className="shrink-0">
       <span aria-hidden className="text-red-400">❤</span>
       <span>{t.buyUsCoffee} · {t.aboutSupporterPriceNote}</span>
     </ActionChip>

@@ -3,13 +3,14 @@ import { ModalShell } from '../common/ModalShell';
 import { SelectField } from '../common/SelectField';
 import { Avatar } from '../profile/Avatar';
 import { ActionChip } from '../common/ActionChip';
-import { GoogleLogo } from '../common/GoogleLogo';
 import { useBillingRedirect } from '../../hooks/useBillingRedirect';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
 import { LANGUAGES, type Locale } from '../../i18n/strings';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
-import { loginWithGoogle, updateMe, createCheckoutSession, createPortalSession } from '../../api/client';
+import { updateMe, createCheckoutSession, createPortalSession } from '../../api/client';
+import { useSignIn } from '../auth/SignInContext';
+import { SignInIcon } from '../auth/SignInIcon';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface SettingsModalProps {
@@ -66,6 +67,7 @@ function SettingsContent({
   const [nameValue, setNameValue] = useState(displayName);
   const [nameSaving, setNameSaving] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
+  const { promptSignIn } = useSignIn();
 
   useEffect(() => {
     setNameValue(displayName);
@@ -131,8 +133,8 @@ function SettingsContent({
             {user?.tier === 'admin' && <span className="text-red-400 text-xs leading-none">❤</span>}
           </div>
           {isAnonymous && (
-            <ActionChip onClick={loginWithGoogle} className="mt-1">
-              <GoogleLogo className="w-3.5 h-3.5" />
+            <ActionChip onClick={promptSignIn} className="mt-1">
+              <SignInIcon className="w-3.5 h-3.5" />
               <span>{t.login}</span>
             </ActionChip>
           )}

@@ -50,6 +50,10 @@ export function loginWithGoogle(): void {
   window.location.href = `${API_URL}/auth/google`;
 }
 
+export function loginWithMicrosoft(): void {
+  window.location.href = `${API_URL}/auth/microsoft`;
+}
+
 export function logout(): Promise<{ ok: boolean }> {
   return apiFetch('/auth/logout', { method: 'POST' });
 }

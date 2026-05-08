@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/reac
 import { FilterProvider } from './context/FilterContext';
 import { useFilters } from './context/useFilters';
 import { I18nProvider, useI18n } from './i18n/I18nContext';
+import { SignInProvider } from './components/auth/SignInContext';
 import { useProfiles } from './hooks/useProfiles';
 import { useProfile } from './hooks/useProfile';
 import { usePersonBreakdown } from './hooks/usePersonBreakdown';
@@ -538,9 +539,11 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-        <FilterProvider>
-          <AppContent />
-        </FilterProvider>
+        <SignInProvider>
+          <FilterProvider>
+            <AppContent />
+          </FilterProvider>
+        </SignInProvider>
       </I18nProvider>
     </QueryClientProvider>
   );

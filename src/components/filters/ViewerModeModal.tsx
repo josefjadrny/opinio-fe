@@ -1,8 +1,8 @@
 import { ModalShell } from '../common/ModalShell';
 import { ActionChip } from '../common/ActionChip';
-import { GoogleLogo } from '../common/GoogleLogo';
 import { useI18n } from '../../i18n/I18nContext';
-import { loginWithGoogle } from '../../api/client';
+import { useSignIn } from '../auth/SignInContext';
+import { SignInIcon } from '../auth/SignInIcon';
 
 interface ViewerModeModalProps {
   onClose: () => void;
@@ -17,14 +17,15 @@ const ViewerModeIcon = () => (
 
 export function ViewerModeModal({ onClose }: ViewerModeModalProps) {
   const { t } = useI18n();
+  const { promptSignIn } = useSignIn();
 
   return (
     <ModalShell onClose={onClose} title={t.viewerMode} icon={<ViewerModeIcon />} maxWidth="max-w-sm">
       <div className="px-6 py-5 space-y-4">
         <p className="text-sm text-white/70 leading-relaxed">{t.viewerModeBody}</p>
         <div className="flex justify-center pt-1">
-          <ActionChip onClick={loginWithGoogle}>
-            <GoogleLogo className="w-3.5 h-3.5" />
+          <ActionChip onClick={() => { onClose(); promptSignIn(); }}>
+            <SignInIcon className="w-3.5 h-3.5" />
             <span>{t.viewerModeSignIn}</span>
           </ActionChip>
         </div>

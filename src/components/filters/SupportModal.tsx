@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { ModalShell } from '../common/ModalShell';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
-import { loginWithGoogle } from '../../api/client';
 import { ActionChip } from '../common/ActionChip';
-import { GoogleLogo } from '../common/GoogleLogo';
+import { useSignIn } from '../auth/SignInContext';
+import { SignInIcon } from '../auth/SignInIcon';
 import { Avatar } from '../profile/Avatar';
 import { getCountryFlag } from '../../utils/countries';
 import {
@@ -394,6 +394,7 @@ function SupportContent() {
   const { data: me } = useMe();
   const { data: tickets = [], isLoading } = useSupportTickets();
   const [view, setView] = useState<View>('list');
+  const { promptSignIn } = useSignIn();
 
   const isAnonymous = !me?.user || me.user.tier === 'anonymous';
   const isAdmin = me?.user?.tier === 'admin';
@@ -403,8 +404,8 @@ function SupportContent() {
       <div className="px-6 py-10 flex flex-col items-center gap-3 text-center">
         <span className="text-4xl">🔒</span>
         <p className="text-sm text-white/50">{t.supportSignIn}</p>
-        <ActionChip onClick={loginWithGoogle} className="mt-1">
-          <GoogleLogo className="w-3.5 h-3.5" />
+        <ActionChip onClick={promptSignIn} className="mt-1">
+          <SignInIcon className="w-3.5 h-3.5" />
           <span>{t.login}</span>
         </ActionChip>
       </div>

@@ -3,11 +3,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Avatar } from '../profile/Avatar';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
-import { logout, loginWithGoogle } from '../../api/client';
+import { logout } from '../../api/client';
 import { getCountryFlag } from '../../utils/countries';
 import { useQueryClient } from '@tanstack/react-query';
 import { HeaderButton } from '../ui/HeaderButton';
-import { GoogleLogo } from '../common/GoogleLogo';
+import { useSignIn } from '../auth/SignInContext';
+import { SignInIcon } from '../auth/SignInIcon';
 
 interface ProfileMenuProps {
   onOpen?: () => void;
@@ -21,6 +22,7 @@ export function ProfileMenu({ onOpen }: ProfileMenuProps) {
   const { data: me, isLoading: meLoading } = useMe();
   const { t } = useI18n();
   const queryClient = useQueryClient();
+  const { promptSignIn } = useSignIn();
 
   const handleLogout = async () => {
     setOpen(false);
@@ -141,10 +143,10 @@ export function ProfileMenu({ onOpen }: ProfileMenuProps) {
 
           {isAnonymous ? (
             <button
-              onClick={() => { setOpen(false); loginWithGoogle(); }}
+              onClick={() => { setOpen(false); promptSignIn(); }}
               className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/5 transition-colors flex items-center gap-2.5"
             >
-              <GoogleLogo className="w-4 h-4" />
+              <SignInIcon />
               {t.login}
             </button>
           ) : (
