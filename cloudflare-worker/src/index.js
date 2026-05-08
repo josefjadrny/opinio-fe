@@ -340,6 +340,10 @@ const STATIC_PAGES = {
     title: 'Add an opinio - Opinio',
     description: 'Submit a new statement, person, or idea to vote on.',
   },
+  '/sign-in': {
+    title: 'Sign in - Opinio',
+    description: 'Sign in to Opinio with Google or Microsoft to vote, post profiles, and track your activity.',
+  },
 };
 
 async function handleStatic(request, page, path) {

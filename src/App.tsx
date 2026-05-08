@@ -6,6 +6,7 @@ import { FilterProvider } from './context/FilterContext';
 import { useFilters } from './context/useFilters';
 import { I18nProvider, useI18n } from './i18n/I18nContext';
 import { SignInProvider } from './components/auth/SignInContext';
+import { SignInModal } from './components/auth/SignInModal';
 import { useProfiles } from './hooks/useProfiles';
 import { useProfile } from './hooks/useProfile';
 import { usePersonBreakdown } from './hooks/usePersonBreakdown';
@@ -102,6 +103,13 @@ function getSeoMeta(pathname: string): SeoMeta {
       title: `Support — ${BRAND}`,
       description: 'Contact Opinio support, manage your tickets, and get help with voting, profiles, and account settings.',
       canonicalPath: '/support',
+    };
+  }
+  if (pathname === '/sign-in') {
+    return {
+      title: `Sign in — ${BRAND}`,
+      description: 'Sign in to Opinio with Google or Microsoft to vote, post profiles, and track your activity.',
+      canonicalPath: '/sign-in',
     };
   }
   return {
@@ -426,6 +434,13 @@ function SupportRoute() {
   return <SupportModal onClose={() => navigate(-1)} />;
 }
 
+function SignInRoute() {
+  const navigate = useNavigate();
+  // navigate('/') instead of navigate(-1) so direct visitors from search /
+  // shares land on home, not the previous tab in browser history.
+  return <SignInModal onClose={() => navigate('/', { replace: true })} />;
+}
+
 const VIEWER_MODE_DISMISSED_KEY = 'opinio_viewer_mode_dismissed_v1';
 
 function ViewerModeRoute() {
@@ -526,6 +541,7 @@ function AppContent() {
         <Route path="terms" element={<TermsRoute />} />
         <Route path="stats" element={<StatsRoute />} />
         <Route path="support" element={<SupportRoute />} />
+        <Route path="sign-in" element={<SignInRoute />} />
         <Route path="viewer-mode" element={<ViewerModeRoute />} />
         <Route path="p/:id" element={<ProfileDetailRoute />} />
         <Route path="u/:id" element={<UserDetailRoute />} />
