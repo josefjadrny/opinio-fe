@@ -310,6 +310,56 @@ async function handleUser(request, id) {
   return new Response(html, { status: 200, headers });
 }
 
+// SPA routes that the React Router knows about but S3 doesn't have files for.
+// Without these the bucket returns 404, the SPA still renders client-side, but
+// crawlers see the 404 and skip indexing. Each entry is invoked through the
+// matching wrangler.toml route, served as /index.html with a 200 status, and
+// gets a per-page title/description for SEO and social previews.
+const STATIC_PAGES = {
+  '/about': {
+    title: 'About - Opinio',
+    description: 'About Opinio — live world rankings of people, statements, and ideas, voted on by country.',
+  },
+  '/privacy': {
+    title: 'Privacy - Opinio',
+    description: 'Opinio privacy policy: what data we store, how it is used, and how to delete it.',
+  },
+  '/terms': {
+    title: 'Terms - Opinio',
+    description: 'Opinio terms of use: posting rules, voting rules, and account terms.',
+  },
+  '/stats': {
+    title: 'Stats - Opinio',
+    description: 'Top likers and dislikers worldwide and by country on Opinio.',
+  },
+  '/support': {
+    title: 'Support - Opinio',
+    description: 'Get support and report issues on Opinio.',
+  },
+  '/add': {
+    title: 'Add an opinio - Opinio',
+    description: 'Submit a new statement, person, or idea to vote on.',
+  },
+};
+
+async function handleStatic(request, page, path) {
+  const shellRes = await fetchShellHtml(request);
+  const shellText = await shellRes.text();
+  const headers = new Headers();
+  headers.set('content-type', 'text/html; charset=utf-8');
+  headers.set('cache-control', 'public, max-age=300, s-maxage=300');
+  headers.set('x-opinio-og', 'static');
+  const html = injectProfileMeta(shellText, {
+    title: page.title,
+    description: page.description,
+    image: DEFAULT_OG_IMAGE,
+    imageAlt: 'Opinio',
+    url: `${SITE_BASE}${path}`,
+    isAvatar: false,
+  });
+  return new Response(html, { status: 200, headers });
+}
+
 function formatCountForOg(n) {
   if (n >= 1000) return `${(n / 1000).toFixed(n >= 10_000 ? 0 : 1).replace(/\.0$/, '')}k`;
   return String(n);
@@ -357,6 +407,11 @@ export default {
 
     if (url.pathname === '/sitemap.xml') {
       return handleSitemap();
+    }
+
+    const staticPage = STATIC_PAGES[url.pathname];
+    if (staticPage) {
+      return handleStatic(request, staticPage, url.pathname);
     }
 
     const profileMatch = url.pathname.match(PROFILE_PATH_RE);
