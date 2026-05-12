@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 interface AvatarProps {
   name: string;
   imageUrl: string | null;
@@ -18,6 +20,11 @@ function colorFromName(name: string): string {
 }
 
 export function Avatar({ name, imageUrl, className = '', isAnonymous = false }: AvatarProps) {
+  const [errored, setErrored] = useState(false);
+
+  // Reset the error flag whenever the source changes so a new URL gets a fresh chance.
+  useEffect(() => { setErrored(false); }, [imageUrl]);
+
   const initials = name
     .split(' ')
     .map((w) => w[0])
@@ -27,8 +34,8 @@ export function Avatar({ name, imageUrl, className = '', isAnonymous = false }: 
 
   const color = colorFromName(name);
 
-  if (!imageUrl) {
-    if (isAnonymous) {
+  if (!imageUrl || errored) {
+    if (isAnonymous && !imageUrl) {
       return (
         <img
           src="/icons/anonymous-mask.png"
@@ -54,15 +61,7 @@ export function Avatar({ name, imageUrl, className = '', isAnonymous = false }: 
       src={imageUrl}
       alt={name}
       className={`rounded-full object-cover shrink-0 ${className}`}
-      onError={(e) => {
-        const target = e.currentTarget;
-        target.style.display = 'none';
-        const fallback = document.createElement('div');
-        fallback.className = target.className.replace('object-cover', '');
-        fallback.textContent = initials;
-        fallback.style.cssText = `display:flex;align-items:center;justify-content:center;background:${color};color:white;font-size:0.75rem;font-weight:600;border-radius:9999px;flex-shrink:0`;
-        target.parentNode?.insertBefore(fallback, target);
-      }}
+      onError={() => setErrored(true)}
     />
   );
 }

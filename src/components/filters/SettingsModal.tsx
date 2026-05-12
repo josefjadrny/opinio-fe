@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ModalShell } from '../common/ModalShell';
 import { SelectField } from '../common/SelectField';
 import { Avatar } from '../profile/Avatar';
@@ -8,7 +8,8 @@ import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
 import { LANGUAGES, type Locale } from '../../i18n/strings';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
-import { updateMe, createCheckoutSession, createPortalSession } from '../../api/client';
+import { resizeImage } from '../../utils/resizeImage';
+import { updateMe, createCheckoutSession, createPortalSession, uploadAvatar, resetAvatar } from '../../api/client';
 import { useSignIn } from '../auth/SignInContext';
 import { SignInIcon } from '../auth/SignInIcon';
 import { useQueryClient } from '@tanstack/react-query';
@@ -116,7 +117,12 @@ function SettingsContent({
     <div className="px-6 py-5 space-y-5">
       {/* Avatar + identity */}
       <div className="flex items-center gap-4">
-        <Avatar name={displayName} imageUrl={user?.avatarUrl ?? null} className="w-16 h-16" isAnonymous={isAnonymous} />
+        <AvatarEditor
+          displayName={displayName}
+          avatarUrl={user?.avatarUrl ?? null}
+          isAnonymous={isAnonymous}
+          t={t}
+        />
         <div className="min-w-0 flex flex-col gap-0.5 items-start">
           <p className="text-sm font-medium text-white truncate">{isAnonymous ? displayName : `@${displayName}`}</p>
           <div className="flex items-center gap-1">
@@ -218,6 +224,101 @@ function SettingsContent({
           ))}
         </SelectField>
       </div>
+    </div>
+  );
+}
+
+function AvatarEditor({
+  displayName,
+  avatarUrl,
+  isAnonymous,
+  t,
+}: {
+  displayName: string;
+  avatarUrl: string | null;
+  isAnonymous: boolean;
+  t: ReturnType<typeof useI18n>['t'];
+}) {
+  const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handlePick = () => {
+    if (isAnonymous || busy) return;
+    fileInputRef.current?.click();
+  };
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file');
+      return;
+    }
+    setError(null);
+    setBusy(true);
+    try {
+      const blob = await resizeImage(file);
+      await uploadAvatar(blob);
+      await queryClient.invalidateQueries({ queryKey: ['me'] });
+    } catch (err: any) {
+      setError(err?.message || 'Upload failed');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleReset = async () => {
+    if (isAnonymous || busy || !avatarUrl) return;
+    setError(null);
+    setBusy(true);
+    try {
+      await resetAvatar();
+      await queryClient.invalidateQueries({ queryKey: ['me'] });
+    } catch (err: any) {
+      setError(err?.message || 'Failed to reset');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <button
+        type="button"
+        onClick={handlePick}
+        disabled={isAnonymous || busy}
+        className="relative w-16 h-16 rounded-full group disabled:cursor-not-allowed"
+        title={isAnonymous ? undefined : t.photoChange}
+      >
+        <Avatar name={displayName} imageUrl={avatarUrl} className="w-16 h-16" isAnonymous={isAnonymous} />
+        {!isAnonymous && (
+          <span className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+            </svg>
+          </span>
+        )}
+        {busy && (
+          <span className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center">
+            <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+          </span>
+        )}
+      </button>
+      {!isAnonymous && avatarUrl && (
+        <button
+          type="button"
+          onClick={handleReset}
+          disabled={busy}
+          className="text-[11px] text-white/40 hover:text-white/70 transition-colors disabled:opacity-40"
+        >
+          {t.photoRemove}
+        </button>
+      )}
+      {error && <p className="text-[11px] text-red-400 text-center max-w-[5rem]">{error}</p>}
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
     </div>
   );
 }

@@ -71,6 +71,16 @@ export function uploadImage(blob: Blob): Promise<{ url: string; key: string }> {
   return apiFetch('/api/images', { method: 'POST', body: form });
 }
 
+export function uploadAvatar(blob: Blob): Promise<{ url: string }> {
+  const form = new FormData();
+  form.append('file', blob, 'avatar.jpg');
+  return apiFetch('/api/me/avatar', { method: 'POST', body: form });
+}
+
+export function resetAvatar(): Promise<{ ok: boolean }> {
+  return apiFetch('/api/me/avatar', { method: 'DELETE' });
+}
+
 export function addNewProfile(data: {
   name: string;
   role: string;
