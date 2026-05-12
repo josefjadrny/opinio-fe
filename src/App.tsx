@@ -443,11 +443,16 @@ function SignInRoute() {
 
 const VIEWER_MODE_DISMISSED_KEY = 'opinio_viewer_mode_dismissed_v1';
 
+function dismissedKeyFor(userId: string | null | undefined): string {
+  return `${VIEWER_MODE_DISMISSED_KEY}:${userId ?? 'none'}`;
+}
+
 function ViewerModeRoute() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: me } = useMe();
   const handleClose = () => {
-    sessionStorage.setItem(VIEWER_MODE_DISMISSED_KEY, '1');
+    sessionStorage.setItem(dismissedKeyFor(me?.user?.id), '1');
     navigate('/' + location.search, { replace: true });
   };
   return <ViewerModeModal onClose={handleClose} />;
@@ -460,10 +465,8 @@ function ViewerModeAutoOpen() {
 
   useEffect(() => {
     if (!me) return;
-    const isAnonymous = !me.user || me.user.tier === 'anonymous';
-    const hasCountry = !!me.user?.countryCode;
-    if (!isAnonymous || hasCountry) return;
-    if (sessionStorage.getItem(VIEWER_MODE_DISMISSED_KEY) === '1') return;
+    if (me.user?.countryCode) return;
+    if (sessionStorage.getItem(dismissedKeyFor(me.user?.id)) === '1') return;
     if (location.pathname === '/viewer-mode') return;
     navigate('/viewer-mode' + location.search);
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -6,6 +6,7 @@ import { getCountryFlag, getCountryName } from '../../utils/countries';
 import { RoleBadge } from '../common/RoleBadge';
 import { Avatar } from './Avatar';
 import { formatNumber } from '../../utils/formatNumber';
+import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useI18n } from '../../i18n/I18nContext';
 
 interface PersonTooltipProps {
@@ -22,7 +23,7 @@ const HEIGHT = 420;
 const PADDING = 14;
 
 export function PersonTooltip({ profile, breakdown, isLoading, position, onMouseEnter, onMouseLeave }: PersonTooltipProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const location = useLocation();
   let left = position.x + PADDING;
   let top = position.y + PADDING;
@@ -67,6 +68,7 @@ export function PersonTooltip({ profile, breakdown, isLoading, position, onMouse
             ) : (
               <span>@{profile.addedBy}</span>
             )}
+            {' · '}{formatRelativeTime(profile.createdAt, locale, t.justNow)}
           </p>
         )}
       </div>

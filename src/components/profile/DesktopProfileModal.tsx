@@ -97,6 +97,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                   <RoleBadge role={profile.role} />
                 </div>
                 <p className="text-[11px] text-white/30">
+                  {t.reportedBy}{' '}
                   {profile.addedById ? (
                     <Link
                       to={`/u/${profile.addedById}${location.search}`}

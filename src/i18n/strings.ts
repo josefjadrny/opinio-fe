@@ -155,6 +155,8 @@ export interface Strings {
   viewerMode: string;
   viewerModeBody: string;
   viewerModeSignIn: string;
+  viewerModeNoCountryBody: string;
+  viewerModeSetCountry: string;
   supportSignIn: string;
   supportTitleLabel: string;
   supportTitlePlaceholder: string;
@@ -356,6 +358,8 @@ const en: Strings = {
   viewerMode: 'Viewer mode',
   viewerModeBody: "We couldn't determine your country, so voting is currently unavailable. Sign in to confirm your location and access all features.",
   viewerModeSignIn: 'Sign in',
+  viewerModeNoCountryBody: "You're signed in but your country isn't set, so voting is unavailable. Set it in settings to start voting.",
+  viewerModeSetCountry: 'Open settings',
   supportSignIn: 'Sign in to access support',
   supportTitleLabel: 'Subject',
   supportTitlePlaceholder: 'Short description of the issue',
@@ -576,6 +580,8 @@ const cs: Strings = {
   viewerMode: 'Režim diváka',
   viewerModeBody: 'Nepodařilo se nám určit vaši zemi, hlasování je proto momentálně nedostupné. Přihlaste se pro ověření polohy a přístup ke všem funkcím.',
   viewerModeSignIn: 'Přihlásit se',
+  viewerModeNoCountryBody: 'Jste přihlášeni, ale nemáte nastavenou zemi, takže hlasování není dostupné. Nastavte ji v nastavení a začněte hlasovat.',
+  viewerModeSetCountry: 'Otevřít nastavení',
   supportSignIn: 'Přihlaste se pro přístup k podpoře',
   supportTitleLabel: 'Předmět',
   supportTitlePlaceholder: 'Krátký popis problému',
@@ -796,6 +802,8 @@ const es: Strings = {
   viewerMode: 'Modo espectador',
   viewerModeBody: 'No hemos podido determinar tu país, por lo que la votación no está disponible en este momento. Inicia sesión para confirmar tu ubicación y acceder a todas las funciones.',
   viewerModeSignIn: 'Iniciar sesión',
+  viewerModeNoCountryBody: 'Has iniciado sesión pero no tienes país establecido, por lo que la votación no está disponible. Configúralo en ajustes para empezar a votar.',
+  viewerModeSetCountry: 'Abrir ajustes',
   supportSignIn: 'Inicia sesión para acceder al soporte',
   supportTitleLabel: 'Asunto',
   supportTitlePlaceholder: 'Breve descripción del problema',
