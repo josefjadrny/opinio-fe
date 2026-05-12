@@ -11,12 +11,15 @@ export function useVote() {
     mutationFn: ({ profileId, type }: { profileId: string; type: VoteType }) =>
       vote(profileId, type),
     onSuccess: (data: VoteResponse, vars) => {
-      // Immediately patch counts - order stays frozen for 5s, then unlock triggers invalidation
-      const patch = (p: Profile) => p.id === data.profile.id ? data.profile : p;
+      // Immediately patch counts - order stays frozen for 5s, then unlock triggers invalidation.
+      // Merge rather than replace so list-only fields (e.g. `label`) survive until reinvalidation.
+      const patch = (p: Profile) => p.id === data.profile.id ? { ...p, ...data.profile } : p;
       queryClient.setQueriesData<ProfilesResponse>({ queryKey: ['profiles'] }, (old) =>
         old ? { ...old, profiles: old.profiles.map(patch) } : old
       );
-      queryClient.setQueryData<Profile>(['profile', data.profile.id], data.profile);
+      queryClient.setQueryData<Profile>(['profile', data.profile.id], (old) =>
+        old ? { ...old, ...data.profile } : data.profile
+      );
       const myId = queryClient.getQueryData<MeResponse>(['me'])?.user?.id ?? null;
       queryClient.setQueriesData<UserDetailResponse>({ queryKey: ['user'] }, (old) => {
         if (!old) return old;
