@@ -152,6 +152,7 @@ export interface Strings {
   displayNameFormat: string;
   displayNameTaken: string;
   noCountryWarning: string;
+  noCountryWarningRegistered: string;
   viewerMode: string;
   viewerModeBody: string;
   viewerModeSignIn: string;
@@ -355,6 +356,7 @@ const en: Strings = {
   displayNameFormat: 'Only lowercase letters, numbers, and underscores (3-30 characters)',
   displayNameTaken: 'This handle is already taken',
   noCountryWarning: 'Viewer mode — sign in to vote.',
+  noCountryWarningRegistered: 'Viewer mode — select country to vote.',
   viewerMode: 'Viewer mode',
   viewerModeBody: "We couldn't determine your country, so voting is currently unavailable. Sign in to confirm your location and access all features.",
   viewerModeSignIn: 'Sign in',
@@ -577,6 +579,7 @@ const cs: Strings = {
   displayNameFormat: 'Pouze malá písmena, číslice a podtržítka (3-30 znaků)',
   displayNameTaken: 'Toto jméno je již obsazeno',
   noCountryWarning: 'Režim diváka — pro hlasování se přihlaste.',
+  noCountryWarningRegistered: 'Režim diváka — pro hlasování vyberte zemi.',
   viewerMode: 'Režim diváka',
   viewerModeBody: 'Nepodařilo se nám určit vaši zemi, hlasování je proto momentálně nedostupné. Přihlaste se pro ověření polohy a přístup ke všem funkcím.',
   viewerModeSignIn: 'Přihlásit se',
@@ -799,6 +802,7 @@ const es: Strings = {
   displayNameFormat: 'Solo letras minúsculas, números y guiones bajos (3-30 caracteres)',
   displayNameTaken: 'Este nombre ya está en uso',
   noCountryWarning: 'Modo espectador — inicia sesión para votar.',
+  noCountryWarningRegistered: 'Modo espectador — selecciona país para votar.',
   viewerMode: 'Modo espectador',
   viewerModeBody: 'No hemos podido determinar tu país, por lo que la votación no está disponible en este momento. Inicia sesión para confirmar tu ubicación y acceder a todas las funciones.',
   viewerModeSignIn: 'Iniciar sesión',

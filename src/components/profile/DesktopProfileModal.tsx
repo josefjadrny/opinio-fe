@@ -29,6 +29,8 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
   const { data: me } = useMe();
 
   const hasCountry = me === undefined || !!me.user.countryCode;
+  const isRegistered = !!me?.user && me.user.tier !== 'anonymous';
+  const noCountryMsg = isRegistered ? t.noCountryWarningRegistered : t.noCountryWarning;
   const canLike = hasCountry && (me?.voteAllowance.like.remaining ?? 0) > 0;
   const canDislike = hasCountry && (me?.voteAllowance.dislike.remaining ?? 0) > 0;
   const likeCountdown = useCountdown(!canLike && hasCountry ? me?.voteAllowance.like.nextAt ?? null : null);
@@ -192,7 +194,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
               <button
                 onClick={() => voteMutation.mutate({ profileId: profile.id, type: 'like' })}
                 disabled={!canLike}
-                title={!hasCountry ? t.noCountryWarning : undefined}
+                title={!hasCountry ? noCountryMsg : undefined}
                 className={`flex-1 flex items-center justify-center gap-2.5 py-4 text-base font-semibold transition-colors border-r border-border rounded-none ${
                   canLike
                     ? 'cursor-pointer bg-positive/10 hover:bg-positive/20 text-positive'
@@ -209,7 +211,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
               <button
                 onClick={() => voteMutation.mutate({ profileId: profile.id, type: 'dislike' })}
                 disabled={!canDislike}
-                title={!hasCountry ? t.noCountryWarning : undefined}
+                title={!hasCountry ? noCountryMsg : undefined}
                 className={`flex-1 flex items-center justify-center gap-2.5 py-4 text-base font-semibold transition-colors rounded-none ${
                   canDislike
                     ? 'cursor-pointer bg-negative/10 hover:bg-negative/20 text-negative'

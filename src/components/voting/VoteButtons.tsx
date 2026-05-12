@@ -64,6 +64,8 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
   const dislikeAnim = useVoteAnimation();
 
   const hasCountry = me === undefined || !!me.user.countryCode;
+  const isRegistered = !!me?.user && me.user.tier !== 'anonymous';
+  const noCountryMsg = isRegistered ? t.noCountryWarningRegistered : t.noCountryWarning;
   const canLike = hasCountry && (me?.voteAllowance.like.remaining ?? 0) > 0;
   const canDislike = hasCountry && (me?.voteAllowance.dislike.remaining ?? 0) > 0;
   const likeCountdown = useCountdown(!canLike && hasCountry ? me?.voteAllowance.like.nextAt ?? null : null);
@@ -103,7 +105,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
         key={likeAnim.bumpKey}
         onClick={(e) => handleVote(e, 'like')}
         disabled={!canLike}
-        title={!hasCountry ? t.noCountryWarning : (likeCountdown ? `${t.nextVote} ${likeCountdown}` : undefined)}
+        title={!hasCountry ? noCountryMsg : (likeCountdown ? `${t.nextVote} ${likeCountdown}` : undefined)}
         className={`vote-bump ${btnBase} ${
           canLike
             ? 'bg-positive/20 text-positive hover:bg-positive/30 cursor-pointer'
@@ -134,7 +136,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
         key={dislikeAnim.bumpKey}
         onClick={(e) => handleVote(e, 'dislike')}
         disabled={!canDislike}
-        title={!hasCountry ? t.noCountryWarning : (dislikeCountdown ? `${t.nextVote} ${dislikeCountdown}` : undefined)}
+        title={!hasCountry ? noCountryMsg : (dislikeCountdown ? `${t.nextVote} ${dislikeCountdown}` : undefined)}
         className={`vote-bump ${btnBase} ${
           canDislike
             ? 'bg-negative/20 text-negative hover:bg-negative/30 cursor-pointer'
