@@ -203,10 +203,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                 {!canLike && likeCountdown ? (
                   <span className="text-sm font-medium tabular-nums">{t.nextVote} {likeCountdown}</span>
                 ) : (
-                  <>
-                    <span>{t.agree}</span>
-                    <span className="text-sm font-normal opacity-60 tabular-nums">{formatNumber(profile.likes)}</span>
-                  </>
+                  <span>{t.agree}</span>
                 )}
               </button>
               <button
@@ -223,10 +220,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                 {!canDislike && dislikeCountdown ? (
                   <span className="text-sm font-medium tabular-nums">{t.nextVote} {dislikeCountdown}</span>
                 ) : (
-                  <>
-                    <span>{t.disagree}</span>
-                    <span className="text-sm font-normal opacity-60 tabular-nums">{formatNumber(profile.dislikes)}</span>
-                  </>
+                  <span>{t.disagree}</span>
                 )}
               </button>
             </div>
