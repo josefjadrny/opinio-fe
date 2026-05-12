@@ -130,24 +130,28 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
           {breakdown && (breakdown.topLiking.length > 0 || breakdown.topDisliking.length > 0) && (
             <div className="grid grid-cols-2 gap-4 pt-1 border-t border-border">
               <div className="pt-3">
-                <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-2">▲ Top fans</p>
-                {breakdown.topLiking.map(({ countryCode, count }) => (
-                  <div key={countryCode} className="flex items-center gap-1.5 mb-1">
-                    <span className="text-sm">{getCountryFlag(countryCode)}</span>
-                    <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
-                    <span className="text-xs text-positive font-medium tabular-nums">{formatNumber(count)}</span>
-                  </div>
-                ))}
+                <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-2">▲ {t.breakdownLiking}</p>
+                <div className="max-h-[140px] overflow-y-auto pr-1 subtle-scrollbar">
+                  {breakdown.topLiking.map(({ countryCode, count }) => (
+                    <div key={countryCode} className="flex items-center gap-1.5 mb-1">
+                      <span className="text-sm">{getCountryFlag(countryCode)}</span>
+                      <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
+                      <span className="text-xs text-positive font-medium tabular-nums">{formatNumber(count)}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="pt-3">
-                <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-2">▼ Critics</p>
-                {breakdown.topDisliking.map(({ countryCode, count }) => (
-                  <div key={countryCode} className="flex items-center gap-1.5 mb-1">
-                    <span className="text-sm">{getCountryFlag(countryCode)}</span>
-                    <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
-                    <span className="text-xs text-negative font-medium tabular-nums">{formatNumber(count)}</span>
-                  </div>
-                ))}
+                <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-2">▼ {t.breakdownDisliking}</p>
+                <div className="max-h-[140px] overflow-y-auto pr-1 subtle-scrollbar">
+                  {breakdown.topDisliking.map(({ countryCode, count }) => (
+                    <div key={countryCode} className="flex items-center gap-1.5 mb-1">
+                      <span className="text-sm">{getCountryFlag(countryCode)}</span>
+                      <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
+                      <span className="text-xs text-negative font-medium tabular-nums">{formatNumber(count)}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}

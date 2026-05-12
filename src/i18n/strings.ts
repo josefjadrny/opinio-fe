@@ -179,6 +179,8 @@ export interface Strings {
   nextVote: string;
   agree: string;
   disagree: string;
+  breakdownLiking: string;
+  breakdownDisliking: string;
   share: string;
   linkCopied: string;
   userJoined: string;
@@ -402,6 +404,8 @@ const en: Strings = {
   nextVote: 'next vote',
   agree: 'Like',
   disagree: 'Dislike',
+  breakdownLiking: 'Liking',
+  breakdownDisliking: 'Disliking',
   share: 'Share',
   linkCopied: 'Link copied',
   userJoined: 'Joined {date}',
@@ -625,6 +629,8 @@ const cs: Strings = {
   nextVote: 'příští hlas',
   agree: 'Líbí',
   disagree: 'Nelíbí',
+  breakdownLiking: 'Líbí se',
+  breakdownDisliking: 'Nelíbí se',
   share: 'Sdílet',
   linkCopied: 'Odkaz zkopírován',
   userJoined: 'Účet od {date}',
@@ -848,6 +854,8 @@ const es: Strings = {
   nextVote: 'próximo voto',
   agree: 'Me gusta',
   disagree: 'No me gusta',
+  breakdownLiking: 'A favor',
+  breakdownDisliking: 'En contra',
   share: 'Compartir',
   linkCopied: 'Enlace copiado',
   userJoined: 'Se unió el {date}',

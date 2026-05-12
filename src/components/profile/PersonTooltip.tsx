@@ -97,9 +97,9 @@ export function PersonTooltip({ profile, breakdown, isLoading, position, onMouse
           {/* Top liking */}
           <div>
             <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-1">
-              ▲ Top fans
+              ▲ {t.breakdownLiking}
             </p>
-            {breakdown.topLiking.map(({ countryCode, count }) => (
+            {breakdown.topLiking.slice(0, 5).map(({ countryCode, count }) => (
               <div key={countryCode} className="flex items-center gap-1 mb-0.5">
                 <span className="text-xs">{getCountryFlag(countryCode)}</span>
                 <span className="text-[11px] text-text-secondary truncate flex-1">
@@ -115,9 +115,9 @@ export function PersonTooltip({ profile, breakdown, isLoading, position, onMouse
           {/* Top disliking */}
           <div>
             <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-1">
-              ▼ Critics
+              ▼ {t.breakdownDisliking}
             </p>
-            {breakdown.topDisliking.map(({ countryCode, count }) => (
+            {breakdown.topDisliking.slice(0, 5).map(({ countryCode, count }) => (
               <div key={countryCode} className="flex items-center gap-1 mb-0.5">
                 <span className="text-xs">{getCountryFlag(countryCode)}</span>
                 <span className="text-[11px] text-text-secondary truncate flex-1">
