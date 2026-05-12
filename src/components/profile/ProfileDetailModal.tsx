@@ -10,6 +10,7 @@ import { RoleBadge } from '../common/RoleBadge';
 import { CountryFlag } from '../common/CountryFlag';
 import { getCountryFlag, getCountryName } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
+import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useI18n } from '../../i18n/I18nContext';
 
 interface ProfileDetailModalProps {
@@ -19,13 +20,9 @@ interface ProfileDetailModalProps {
   onClose: () => void;
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
 export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: ProfileDetailModalProps) {
   const location = useLocation();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { data: me } = useMe();
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -123,7 +120,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
               ) : (
                 <span>@{profile.addedBy}</span>
               )}
-              {' · '}{formatDate(profile.createdAt)}
+              {' · '}{formatRelativeTime(profile.createdAt, locale, t.justNow)}
             </p>
           )}
 

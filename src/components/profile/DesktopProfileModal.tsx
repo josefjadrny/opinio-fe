@@ -13,19 +13,16 @@ import { RoleBadge } from '../common/RoleBadge';
 import { CountryFlag } from '../common/CountryFlag';
 import { getCountryFlag, getCountryName } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
+import { formatRelativeTime } from '../../utils/formatRelativeTime';
 
 interface DesktopProfileModalProps {
   profileId: string;
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
 export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { data: profile, isLoading } = useProfile(profileId);
   const { data: breakdown } = usePersonBreakdown(profileId);
   const voteMutation = useVote();
@@ -111,7 +108,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                   ) : (
                     <span>@{profile.addedBy}</span>
                   )}
-                  {' · '}{formatDate(profile.createdAt)}
+                  {' · '}{formatRelativeTime(profile.createdAt, locale, t.justNow)}
                 </p>
               </div>
               <div
