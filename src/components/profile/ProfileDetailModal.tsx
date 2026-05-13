@@ -42,8 +42,8 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 bg-white/20 rounded-full" />
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-y-2 px-6 py-3 border-b border-border">
-          <div className="flex items-center gap-3 min-w-0 max-w-full">
+        <div className="px-6 py-3 border-b border-border">
+          <div className="flex items-center gap-3 min-w-0">
             {(() => {
               const state = location.state as { fromUserId?: string; fromUserName?: string } | null;
               if (!state?.fromUserId) return null;
@@ -61,7 +61,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
               );
             })()}
             <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-12 h-12 shrink-0" />
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
                 <CountryFlag code={profile.countryCode} />
                 <span className="font-semibold text-white truncate">{profile.name}</span>
@@ -69,38 +69,40 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
               <RoleBadge role={profile.role} />
             </div>
           </div>
-          <div
-            className="shrink-0 flex items-center gap-2 text-sm tabular-nums leading-none"
-            title={`${formatNumber(profile.likes)} likes · ${formatNumber(profile.dislikes)} dislikes`}
-          >
-            <span className="inline-flex items-baseline gap-1 text-positive font-semibold">
-              <span className="text-[11px]">▲</span>
-              {formatNumber(profile.likes)}
-            </span>
-            <span className="inline-flex items-baseline gap-1 text-negative font-semibold">
-              <span className="text-[11px]">▼</span>
-              {formatNumber(profile.dislikes)}
-            </span>
-          </div>
-          <div className="flex items-center gap-1 shrink-0 ml-auto">
-            {me?.user.id && profile.addedById === me.user.id && (
-              <DeleteProfileButton
-                profileId={profile.id}
-                voteCount={profile.likes + profile.dislikes}
-                onDeleted={onClose}
-              />
-            )}
-            <ShareButton profileId={profile.id} profileName={profile.name} />
-            <button
-              onClick={onClose}
-              title={t.close}
-              aria-label={t.close}
-              className="text-white/40 hover:text-white/80 transition-colors p-1"
+          <div className="flex items-center justify-between gap-3 mt-2">
+            <div
+              className="flex items-center gap-2 text-sm tabular-nums leading-none"
+              title={`${formatNumber(profile.likes)} likes · ${formatNumber(profile.dislikes)} dislikes`}
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+              <span className="inline-flex items-baseline gap-1 text-positive font-semibold">
+                <span className="text-[11px]">▲</span>
+                {formatNumber(profile.likes)}
+              </span>
+              <span className="inline-flex items-baseline gap-1 text-negative font-semibold">
+                <span className="text-[11px]">▼</span>
+                {formatNumber(profile.dislikes)}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 shrink-0">
+              {me?.user.id && profile.addedById === me.user.id && (
+                <DeleteProfileButton
+                  profileId={profile.id}
+                  voteCount={profile.likes + profile.dislikes}
+                  onDeleted={onClose}
+                />
+              )}
+              <ShareButton profileId={profile.id} profileName={profile.name} />
+              <button
+                onClick={onClose}
+                title={t.close}
+                aria-label={t.close}
+                className="text-white/40 hover:text-white/80 transition-colors p-1"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
