@@ -91,7 +91,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                 }
                 return null;
               })()}
-              <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-11 h-11 shrink-0" />
+              <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-14 h-14 shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
                   <span className="font-semibold text-white truncate">{profile.name}</span>

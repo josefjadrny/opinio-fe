@@ -60,7 +60,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 </Link>
               );
             })()}
-            <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-10 h-10" />
+            <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-12 h-12 shrink-0" />
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
                 <CountryFlag code={profile.countryCode} />
