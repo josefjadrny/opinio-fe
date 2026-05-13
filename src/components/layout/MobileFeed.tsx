@@ -1,6 +1,7 @@
 import type { Profile } from '../../types/profile';
 import { useI18n } from '../../i18n/I18nContext';
 import { ProfileCard } from '../profile/ProfileCard';
+import { useFlipReorder } from '../../hooks/useFlipReorder';
 
 interface MobileFeedProps {
   positiveProfiles: Profile[];
@@ -12,6 +13,8 @@ export function MobileFeed({
   negativeProfiles,
 }: MobileFeedProps) {
   const { t } = useI18n();
+  const positiveFlipRef = useFlipReorder();
+  const negativeFlipRef = useFlipReorder();
 
   return (
     <div className="flex-1 flex flex-col min-h-0">
@@ -23,13 +26,14 @@ export function MobileFeed({
           </svg>
           {t.trending}
         </h2>
-        <div className="space-y-1.5">
+        <div ref={positiveFlipRef} className="space-y-1.5">
           {positiveProfiles.map((profile) => (
-            <ProfileCard
-              key={profile.id}
-              profile={profile}
-              variant="compact"
-            />
+            <div key={profile.id} data-flip-key={profile.id}>
+              <ProfileCard
+                profile={profile}
+                variant="compact"
+              />
+            </div>
           ))}
         </div>
       </section>
@@ -43,14 +47,15 @@ export function MobileFeed({
           </svg>
           {t.falling}
         </h2>
-        <div className="space-y-1.5">
+        <div ref={negativeFlipRef} className="space-y-1.5">
           {negativeProfiles.map((profile) => (
-            <ProfileCard
-              key={profile.id}
-              profile={profile}
-              variant="compact"
-              reverseVotes
-            />
+            <div key={profile.id} data-flip-key={profile.id}>
+              <ProfileCard
+                profile={profile}
+                variant="compact"
+                reverseVotes
+              />
+            </div>
           ))}
         </div>
       </section>

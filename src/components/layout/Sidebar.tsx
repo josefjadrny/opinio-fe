@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react';
 import type { Profile } from '../../types/profile';
 import { useI18n } from '../../i18n/I18nContext';
 import { ProfileCard } from '../profile/ProfileCard';
+import { useFlipReorder } from '../../hooks/useFlipReorder';
 
 interface SidebarProps {
   title: string;
@@ -21,6 +22,7 @@ export function Sidebar({ title, profiles, accentColor, onLoadMore, isLoadingMor
   // scroll once the user has actually interacted with the pane.
   const userScrolledRef = useRef(false);
   const markUserScrolled = useCallback(() => { userScrolledRef.current = true; }, []);
+  const flipRef = useFlipReorder();
 
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     if (!onLoadMore || !userScrolledRef.current) return;
@@ -51,16 +53,19 @@ export function Sidebar({ title, profiles, accentColor, onLoadMore, isLoadingMor
         onWheel={markUserScrolled}
         onTouchStart={markUserScrolled}
         onKeyDown={markUserScrolled}
-        className="flex-1 overflow-y-auto no-scrollbar px-1 py-1.5 space-y-1"
+        className="flex-1 overflow-y-auto no-scrollbar px-1 py-1.5"
       >
-        {profiles.map((profile) => (
-          <ProfileCard
-            key={profile.id}
-            profile={profile}
-            variant="default"
-            reverseVotes={accentColor === 'negative'}
-          />
-        ))}
+        <div ref={flipRef} className="space-y-1">
+          {profiles.map((profile) => (
+            <div key={profile.id} data-flip-key={profile.id}>
+              <ProfileCard
+                profile={profile}
+                variant="default"
+                reverseVotes={accentColor === 'negative'}
+              />
+            </div>
+          ))}
+        </div>
         {profiles.length === 0 && !isLoadingMore && (
           <p className="text-center text-text-secondary text-sm py-8">{t.noProfiles}</p>
         )}
