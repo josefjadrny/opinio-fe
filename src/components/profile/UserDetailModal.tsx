@@ -150,7 +150,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
       <Avatar
         name={user.displayName}
         imageUrl={user.avatarUrl}
-        className="w-11 h-11 shrink-0"
+        className={`${isMobile ? 'w-12 h-12' : 'w-14 h-14'} shrink-0`}
         isAnonymous={!hasAvatar}
       />
       <div className="flex-1 min-w-0">
