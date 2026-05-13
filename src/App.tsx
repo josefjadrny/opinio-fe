@@ -23,6 +23,7 @@ import { CountryDetailModal } from './components/country/CountryDetailModal';
 import { getCountryName } from './utils/countries';
 import { AddProfileModal } from './components/profile-form/AddProfileModal';
 import { VoteBanner } from './components/voting/VoteBanner';
+import { HotBanner } from './components/banner/HotBanner';
 import { SettingsModal } from './components/filters/SettingsModal';
 import { AboutModal } from './components/filters/AboutModal';
 import { PrivacyModal } from './components/filters/PrivacyModal';
@@ -364,7 +365,8 @@ function AppLayout() {
             />
           </div>
           <ResizeHandle side="left" onDrag={handleLeftDrag} />
-          <div className="flex-1 min-w-0 flex flex-col min-h-0">
+          <div className="flex-1 min-w-0 flex flex-col min-h-0 relative">
+            <HotBanner enabled={!isMobile && !isCompact} />
             <WorldMap />
             <VoteBanner />
           </div>
