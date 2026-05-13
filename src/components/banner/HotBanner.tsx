@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Avatar } from '../profile/Avatar';
+import { LabelBadge } from '../profile/LabelBadge';
+import { RoleBadge } from '../common/RoleBadge';
 import { useRealtimeProfiles } from '../../hooks/useRealtimeProfiles';
 import { getCountryFlag } from '../../utils/countries';
 
@@ -61,14 +63,22 @@ export function HotBanner({ enabled }: { enabled: boolean }) {
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }}
         data-testid="hot-banner"
         className="cursor-pointer bg-surface/85 backdrop-blur-md
-                   border border-border rounded-2xl shadow-2xl
+                   border border-orange-500/70 rounded-2xl
                    flex items-center gap-3 px-4 py-3 select-none
                    hover:bg-surface/95 transition-colors pointer-events-auto"
-        style={{ animation, opacity: phase === 'hold' ? 1 : undefined }}
+        style={{
+          animation,
+          opacity: phase === 'hold' ? 1 : undefined,
+          boxShadow: '0 0 0 1px rgba(249,115,22,0.35), 0 10px 30px -10px rgba(249,115,22,0.55), 0 18px 50px -20px rgba(0,0,0,0.6)',
+        }}
       >
         <Avatar name={next.name} imageUrl={next.imageUrl} className="w-12 h-12" />
         <div className="min-w-0 flex-1">
-          <div className="text-white text-sm font-semibold truncate">{next.name}</div>
+          <div className="flex items-center gap-2 mb-0.5">
+            <RoleBadge role={next.role} />
+            <LabelBadge label="new" />
+            <span className="text-white text-sm font-semibold truncate">{next.name}</span>
+          </div>
           <div className="text-white/60 text-xs line-clamp-2">{next.description}</div>
         </div>
         <span className="text-2xl shrink-0" title={next.countryCode}>{getCountryFlag(next.countryCode)}</span>
