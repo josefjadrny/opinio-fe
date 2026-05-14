@@ -195,6 +195,7 @@ export interface Strings {
   userNotFoundCta: string;
   reportedBy: string;
   justNow: string;
+  justReported: string;
   delete: string;
   deleteProfile: string;
   deleteProfileConfirm: string;
@@ -420,6 +421,7 @@ const en: Strings = {
   userNotFoundCta: 'Back to feed',
   reportedBy: 'reported by',
   justNow: 'just now',
+  justReported: 'New opinion just dropped',
   delete: 'Delete',
   deleteProfile: 'Delete opinion',
   deleteProfileConfirm: 'Delete this opinion permanently?',
@@ -645,6 +647,7 @@ const cs: Strings = {
   userNotFoundCta: 'Zpět na hlavní stranu',
   reportedBy: 'přidal',
   justNow: 'právě teď',
+  justReported: 'Padl nový názor',
   delete: 'Smazat',
   deleteProfile: 'Smazat názor',
   deleteProfileConfirm: 'Opravdu trvale smazat tento názor?',
@@ -870,6 +873,7 @@ const es: Strings = {
   userNotFoundCta: 'Volver al inicio',
   reportedBy: 'publicado por',
   justNow: 'justo ahora',
+  justReported: 'Acaba de caer una opinión',
   delete: 'Eliminar',
   deleteProfile: 'Eliminar opinión',
   deleteProfileConfirm: '¿Eliminar esta opinión permanentemente?',

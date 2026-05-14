@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Avatar } from '../profile/Avatar';
-import { LabelBadge } from '../profile/LabelBadge';
 import { RoleBadge } from '../common/RoleBadge';
 import { useRealtimeProfiles } from '../../hooks/useRealtimeProfiles';
+import { useI18n } from '../../i18n/I18nContext';
 import { getCountryFlag } from '../../utils/countries';
 
 const FADE_IN_MS = 500;
@@ -17,6 +17,7 @@ export function HotBanner({ enabled }: { enabled: boolean }) {
   const { next, dequeue } = useRealtimeProfiles(enabled);
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useI18n();
   const [phase, setPhase] = useState<Phase>('in');
 
   useEffect(() => {
@@ -74,9 +75,12 @@ export function HotBanner({ enabled }: { enabled: boolean }) {
       >
         <Avatar name={next.name} imageUrl={next.imageUrl} className="w-12 h-12" />
         <div className="min-w-0 flex-1">
+          <div className="text-[10px] uppercase font-bold tracking-widest text-orange-400 mb-1">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-orange-400 mr-1.5 align-middle animate-pulse" />
+            {t.justReported}
+          </div>
           <div className="flex items-center gap-2 mb-0.5">
             <RoleBadge role={next.role} />
-            <LabelBadge label="new" />
             <span className="text-white text-sm font-semibold truncate">{next.name}</span>
           </div>
           <div className="text-white/60 text-xs line-clamp-2">{next.description}</div>

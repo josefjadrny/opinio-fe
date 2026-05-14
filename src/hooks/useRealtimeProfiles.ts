@@ -4,7 +4,7 @@ import type { Profile } from '../types/profile';
 const API_URL = import.meta.env.OPINIO_API_URL as string;
 const WS_URL = API_URL.replace(/^http/, 'ws') + '/ws';
 
-const QUEUE_CAP = 10;
+const QUEUE_CAP = 6;
 const RECONNECT_INITIAL_MS = 1_000;
 const RECONNECT_MAX_MS = 30_000;
 const VISIBILITY_GRACE_MS = 60_000;
