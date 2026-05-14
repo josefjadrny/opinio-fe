@@ -41,7 +41,15 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
-  }, []);
+    // Only reset the open-delay while the tooltip isn't shown yet — once
+    // it's open, mouse movement should not re-arm the timer.
+    if (hoveredId == null) {
+      clearTimeout(hoverTimer.current);
+      hoverTimer.current = setTimeout(() => {
+        setHoveredId(profile.id);
+      }, 750);
+    }
+  }, [hoveredId, profile.id]);
 
   const handleMouseEnter = useCallback(() => {
     clearTimeout(leaveTimer.current);
@@ -49,7 +57,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
     setHoveredProfileCountry(profile.countryCode);
     hoverTimer.current = setTimeout(() => {
       setHoveredId(profile.id);
-    }, 500);
+    }, 750);
   }, [profile.id, profile.countryCode, setHoveredProfileCountry]);
 
   const handleMouseLeave = useCallback(() => {

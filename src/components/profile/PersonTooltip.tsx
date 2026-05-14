@@ -40,14 +40,16 @@ export function PersonTooltip({ profile, breakdown, isLoading, position, onMouse
       style={{ left, top, width: WIDTH }}
     >
       {/* Header */}
-      <div className="flex items-center gap-3 p-3 border-b border-border">
-        <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-12 h-12" />
+      <div className="flex items-center gap-2.5 p-2.5 border-b border-border">
+        <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-10 h-10 shrink-0" />
         <div className="min-w-0">
-          <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+          <div className="flex items-center gap-1.5 flex-wrap leading-tight">
             <span className="text-sm">{getCountryFlag(profile.countryCode)}</span>
             <span className="font-semibold text-white text-sm truncate">{profile.name}</span>
           </div>
-          <RoleBadge role={profile.role} />
+          <div className="mt-1">
+            <RoleBadge role={profile.role} />
+          </div>
         </div>
       </div>
 
