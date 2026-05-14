@@ -1,15 +1,10 @@
-import { useRef, useState, useCallback } from 'react';
 import { formatNumber } from '../../utils/formatNumber';
 import { useVote } from '../../hooks/useVote';
 import { useMe } from '../../hooks/useMe';
 import { useCountdown } from '../../hooks/useCountdown';
 import { useAnimatedValue } from '../../hooks/useAnimatedValue';
+import { useVoteAnimation } from '../../hooks/useVoteAnimation';
 import { useI18n } from '../../i18n/I18nContext';
-
-interface Particle {
-  id: number;
-  streak: number; // how many rapid clicks in a row
-}
 
 interface VoteButtonsProps {
   profileId: string;
@@ -18,39 +13,6 @@ interface VoteButtonsProps {
   compact?: boolean;
   showOnly?: 'like' | 'dislike';
   reverseVotes?: boolean;
-}
-
-let particleId = 0;
-const STREAK_WINDOW_MS = 800; // clicks within this window count as a streak
-
-function useVoteAnimation() {
-  const [particles, setParticles] = useState<Particle[]>([]);
-  const streakRef = useRef(0);
-  const lastClickRef = useRef(0);
-  const bumpKeyRef = useRef(0);
-  const [bumpKey, setBumpKey] = useState(0);
-
-  const trigger = useCallback(() => {
-    const now = Date.now();
-    if (now - lastClickRef.current < STREAK_WINDOW_MS) {
-      streakRef.current += 1;
-    } else {
-      streakRef.current = 1;
-    }
-    lastClickRef.current = now;
-
-    const id = ++particleId;
-    const streak = streakRef.current;
-
-    setParticles((prev) => [...prev, { id, streak }]);
-    setTimeout(() => setParticles((prev) => prev.filter((p) => p.id !== id)), 750);
-
-    // Re-trigger bump animation on every click by changing the key
-    bumpKeyRef.current += 1;
-    setBumpKey(bumpKeyRef.current);
-  }, []);
-
-  return { particles, bumpKey, trigger };
 }
 
 export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, reverseVotes }: VoteButtonsProps) {
