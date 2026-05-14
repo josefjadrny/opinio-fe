@@ -11,6 +11,7 @@ import { usePersonBreakdown } from '../../hooks/usePersonBreakdown';
 import { useFilters } from '../../context/useFilters';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { Avatar } from './Avatar';
+import { formatNumber } from '../../utils/formatNumber';
 
 interface ProfileCardProps {
   profile: Profile;
@@ -70,18 +71,31 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   }, []);
 
   if (variant === 'tooltip') {
+    // Tooltip wrapper has pointer-events-none, so vote buttons here would be
+    // misleading. Render read-only arrow + count instead. Pepper icon when
+    // the row is the trending slot (label='rising'/'falling').
+    const pepperSrc = profile.label === 'rising'
+      ? '/icons/pepper-rising.png'
+      : profile.label === 'falling'
+        ? '/icons/pepper-falling.png'
+        : null;
     return (
       <div className="flex items-center gap-2 py-1">
         <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-6 h-6" />
-        <span className="text-xs font-medium text-white truncate flex-1">{profile.name}</span>
-        <VoteButtons
-          profileId={profile.id}
-          likes={profile.likes}
-          dislikes={profile.dislikes}
-          compact
-          showOnly={showOnly}
-          reverseVotes={reverseVotes}
-        />
+        <span className="text-xs font-medium text-white truncate flex-1 inline-flex items-center gap-1 min-w-0">
+          <span className="truncate">{profile.name}</span>
+          {pepperSrc && <img src={pepperSrc} alt="" className="h-3 w-auto inline-block shrink-0" />}
+        </span>
+        <div className="flex items-center gap-2 text-xs font-semibold tabular-nums shrink-0">
+          <span className="inline-flex items-baseline gap-1 text-positive">
+            <span className="text-[10px]">▲</span>
+            {formatNumber(profile.likes)}
+          </span>
+          <span className="inline-flex items-baseline gap-1 text-negative">
+            <span className="text-[10px]">▼</span>
+            {formatNumber(profile.dislikes)}
+          </span>
+        </div>
       </div>
     );
   }

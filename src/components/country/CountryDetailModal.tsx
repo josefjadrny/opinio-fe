@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useI18n } from '../../i18n/I18nContext';
 import { useCountries } from '../../hooks/useCountries';
-import { useCountryProfiles } from '../../hooks/useCountryProfiles';
+import { useCountryDiscussed } from '../../hooks/useCountryDiscussed';
 import { getCountryFlag, getCountryName } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
 import { Avatar } from '../profile/Avatar';
@@ -120,8 +120,8 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const flag = getCountryFlag(code);
   const { data } = useCountries();
   const counts = data?.countries.find((c) => c.code === code) ?? { likes: 0, dislikes: 0 };
-  const { data: countryData, isLoading: profilesLoading } = useCountryProfiles(code);
-  const profiles = countryData?.topVoted ?? [];
+  const { data: countryData, isLoading: profilesLoading } = useCountryDiscussed(code);
+  const profiles = countryData?.profiles ?? [];
 
   const close = () => navigate('/' + location.search);
   const openProfile = (profileId: string) => navigate('/p/' + profileId + location.search, {

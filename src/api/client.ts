@@ -1,5 +1,5 @@
 import type {
-  ProfilesResponse, CountryProfilesResponse, MeResponse,
+  ProfilesResponse, CountryProfilesResponse, CountryDiscussedResponse, MeResponse,
   VoteResponse, ProfileFilters, VoteType, PersonBreakdownResponse,
   SupportTicket, UserDetailResponse,
 } from '../types/api';
@@ -33,6 +33,10 @@ export function getProfiles(filters: ProfileFilters): Promise<ProfilesResponse> 
 
 export function getCountryProfiles(countryCode: string): Promise<CountryProfilesResponse> {
   return apiFetch(`/api/profiles/country/${countryCode}`);
+}
+
+export function getCountryDiscussed(countryCode: string): Promise<CountryDiscussedResponse> {
+  return apiFetch(`/api/profiles/country/${countryCode}/discussed`);
 }
 
 export function vote(profileId: string, type: VoteType): Promise<VoteResponse> {
