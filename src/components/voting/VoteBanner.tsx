@@ -2,6 +2,7 @@ import { useMatch } from 'react-router-dom';
 import { useMe } from '../../hooks/useMe';
 import { useCountdown } from '../../hooks/useCountdown';
 import { useVote } from '../../hooks/useVote';
+import { useVoteAnimation } from '../../hooks/useVoteAnimation';
 import { useI18n } from '../../i18n/I18nContext';
 
 function VoteSlot({ type, remaining, nextAt, voteOnProfileId }: {
@@ -12,49 +13,68 @@ function VoteSlot({ type, remaining, nextAt, voteOnProfileId }: {
 }) {
   const countdown = useCountdown(remaining === 0 ? nextAt : null);
   const voteMutation = useVote();
+  const anim = useVoteAnimation();
   const isLike = type === 'like';
   const arrow = isLike ? '▲' : '▼';
   const color = isLike ? 'text-positive' : 'text-negative';
   const bgActive = isLike ? 'bg-positive/15' : 'bg-negative/15';
+  const baseClasses = `flex items-center gap-2 px-4 py-1.5 rounded-lg text-base font-medium`;
 
+  // Wrapper is always rendered so the particles span survives the
+  // remaining=0 transition right after a successful vote — otherwise the
+  // ` +1` would unmount before its 750ms float-up animation finishes.
+  let body;
   if (remaining === 0 && countdown) {
-    return (
-      <div className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-white/5 text-white/40 text-base">
+    body = (
+      <div className={`${baseClasses} bg-white/5 text-white/40`}>
         <span>{arrow}</span>
         <span className="tabular-nums">{countdown}</span>
       </div>
     );
-  }
-
-  if (remaining === 0) {
-    return (
-      <div className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-white/5 text-white/20 text-base">
+  } else if (remaining === 0) {
+    body = (
+      <div className={`${baseClasses} bg-white/5 text-white/20`}>
         <span>{arrow}</span>
         <span>0</span>
       </div>
     );
-  }
-
-  const baseClasses = `flex items-center gap-2 px-4 py-1.5 rounded-lg ${bgActive} ${color} text-base font-medium`;
-
-  if (voteOnProfileId) {
-    return (
+  } else if (voteOnProfileId) {
+    body = (
       <button
+        key={anim.bumpKey}
         type="button"
-        onClick={() => voteMutation.mutate({ profileId: voteOnProfileId, type })}
+        onClick={() => {
+          voteMutation.mutate({ profileId: voteOnProfileId, type });
+          anim.trigger();
+        }}
         disabled={voteMutation.isPending}
-        className={`${baseClasses} active:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity`}
+        className={`vote-bump ${baseClasses} ${bgActive} ${color} active:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity`}
       >
         <span>{arrow}</span>
         <span className="tabular-nums">{remaining}</span>
       </button>
     );
+  } else {
+    body = (
+      <div className={`${baseClasses} ${bgActive} ${color}`}>
+        <span>{arrow}</span>
+        <span className="tabular-nums">{remaining}</span>
+      </div>
+    );
   }
 
   return (
-    <div className={baseClasses}>
-      <span>{arrow}</span>
-      <span className="tabular-nums">{remaining}</span>
+    <div className="relative">
+      {anim.particles.map((p) => (
+        <span
+          key={p.id}
+          className={`vote-particle ${color}`}
+          style={{ fontSize: Math.min(0.7 + p.streak * 0.12, 1.3) + 'rem', marginBottom: 4 }}
+        >
+          {p.streak >= 5 ? (isLike ? '🔥' : '💥') : p.streak >= 3 ? `+${p.streak}` : '+1'}
+        </span>
+      ))}
+      {body}
     </div>
   );
 }
