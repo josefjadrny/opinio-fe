@@ -72,19 +72,12 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
 
   if (variant === 'tooltip') {
     // Tooltip wrapper has pointer-events-none, so vote buttons here would be
-    // misleading. Render read-only arrow + count instead. Pepper icon when
-    // the row is the trending slot (label='rising'/'falling').
-    const pepperSrc = profile.label === 'rising'
-      ? '/icons/pepper-rising.png'
-      : profile.label === 'falling'
-        ? '/icons/pepper-falling.png'
-        : null;
+    // misleading. Render read-only arrow + count instead.
     return (
       <div className="flex items-center gap-2 py-1">
         <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-6 h-6" />
-        <span className="text-xs font-medium text-white truncate flex-1 inline-flex items-center gap-1 min-w-0">
-          <span className="truncate">{profile.name}</span>
-          {pepperSrc && <img src={pepperSrc} alt="" className="h-3 w-auto inline-block shrink-0" />}
+        <span className="text-xs font-medium text-white truncate flex-1 min-w-0">
+          {profile.name}
         </span>
         <div className="flex items-center gap-2 text-xs font-semibold tabular-nums shrink-0">
           <span className="inline-flex items-baseline gap-1 text-positive">
