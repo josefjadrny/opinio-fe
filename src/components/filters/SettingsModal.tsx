@@ -223,6 +223,7 @@ function SettingsContent({
             <option key={key} value={key} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{label}</option>
           ))}
         </SelectField>
+        <p className="text-xs text-white/30 mt-1.5">{t.languageHint}</p>
       </div>
     </div>
   );

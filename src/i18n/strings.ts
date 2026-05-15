@@ -43,6 +43,7 @@ export interface Strings {
   anonymousUser: string;
   notLoggedIn: string;
   language: string;
+  languageHint: string;
   upgradeBanner: string;
   manageSubscription: string;
   aboutHero: string;
@@ -250,6 +251,7 @@ const en: Strings = {
   anonymousUser: 'Anonymous',
   notLoggedIn: 'Not logged in',
   language: 'Language',
+  languageHint: 'Changes the interface only, not the opinions',
   upgradeBanner: 'Become a supporter',
   manageSubscription: 'Manage subscription',
   aboutHero: 'Vote on the stories shaping the world today.',
@@ -478,6 +480,7 @@ const cs: Strings = {
   upgradeBanner: 'Stát se podporovatelem',
   manageSubscription: 'Spravovat předplatné',
   language: 'Jazyk',
+  languageHint: 'Mění jen rozhraní, ne názory',
   aboutHero: 'Hlasujte o názorech, které utvářejí dnešní svět.',
   aboutFreshness: 'Vidíte aktuální náladu, ne historii. Každý hlas vyprší po 24 hodinách.',
   aboutPrinciplesTitle: 'Naše principy',
@@ -704,6 +707,7 @@ const es: Strings = {
   upgradeBanner: 'Conviértete en supporter',
   manageSubscription: 'Gestionar suscripción',
   language: 'Idioma',
+  languageHint: 'Cambia solo la interfaz, no las opiniones',
   aboutHero: 'Vote on the stories shaping the world today.',
   aboutFreshness: 'You see current sentiment, not history. Every vote expires after 24 hours.',
   aboutPrinciplesTitle: 'Nuestros principios',
