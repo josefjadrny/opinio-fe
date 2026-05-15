@@ -7,5 +7,6 @@ export function usePersonBreakdown(profileId: string | null) {
     queryFn: () => getPersonBreakdown(profileId!),
     enabled: profileId !== null,
     staleTime: 30_000,
+    refetchInterval: 30_000,
   });
 }

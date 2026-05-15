@@ -7,5 +7,6 @@ export function useProfile(profileId: string | null) {
     queryFn: () => getProfile(profileId!),
     enabled: profileId !== null,
     staleTime: 10_000,
+    refetchInterval: 10_000,
   });
 }
