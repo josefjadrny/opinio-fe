@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Avatar } from '../profile/Avatar';
 import { RoleBadge } from '../common/RoleBadge';
@@ -13,13 +13,15 @@ const GAP_MS = 3_000;
 
 type Phase = 'in' | 'hold' | 'out' | 'gap';
 
-export function HotBanner({ enabled }: { enabled: boolean }) {
-  const { next, dequeue } = useRealtimeProfiles(enabled);
+export function HotBanner({ enabled, mobile = false }: { enabled: boolean; mobile?: boolean }) {
+  const { next, dequeue, queueLength } = useRealtimeProfiles(enabled);
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useI18n();
   const [phase, setPhase] = useState<Phase>('in');
   const [paused, setPaused] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+  const prevQueueLen = useRef(queueLength);
 
   // Reset to fade-in (and unpause) whenever a new profile arrives.
   useEffect(() => {
@@ -27,6 +29,14 @@ export function HotBanner({ enabled }: { enabled: boolean }) {
     setPhase('in');
     setPaused(false);
   }, [next]);
+
+  // Mobile tap-to-dismiss hides the banner; bring it back only when a
+  // genuinely new profile arrives (queue grows). Advancing the queue head via
+  // dequeue shrinks the queue, so it must not clear the dismissal.
+  useEffect(() => {
+    if (queueLength > prevQueueLen.current) setDismissed(false);
+    prevQueueLen.current = queueLength;
+  }, [queueLength]);
 
   // One timer per phase. Pausing freezes the chain; resuming continues from
   // wherever we left off. Hovering during 'out' snaps back to 'hold' so the
@@ -38,14 +48,32 @@ export function HotBanner({ enabled }: { enabled: boolean }) {
       phase === 'hold' ? HOLD_MS :
       phase === 'out' ? FADE_OUT_MS :
       GAP_MS;
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       if (phase === 'in') setPhase('hold');
       else if (phase === 'hold') setPhase('out');
       else if (phase === 'out') setPhase('gap');
       else dequeue();
     }, ms);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [next, phase, paused, dequeue]);
+
+  // During the 3s gap the banner must not exist in DOM — otherwise its
+  // (invisible at opacity 0) hitbox would capture clicks and navigate to the
+  // profile that just faded out.
+  const showBanner = !!(enabled && next && phase !== 'gap' && !dismissed);
+
+  // Mobile-only: any tap dismisses the banner. A tap on the card also opens
+  // the profile via its own onClick; a tap anywhere else just clears it.
+  // Drop it from the queue too, so a backlog item doesn't pop straight back up.
+  useEffect(() => {
+    if (!mobile || !showBanner) return;
+    const onDocClick = () => {
+      setDismissed(true);
+      dequeue();
+    };
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, [mobile, showBanner, dequeue]);
 
   const onHoverStart = () => {
     setPaused(true);
@@ -53,22 +81,25 @@ export function HotBanner({ enabled }: { enabled: boolean }) {
   };
   const onHoverEnd = () => setPaused(false);
 
-  // During the 3s gap the banner must not exist in DOM — otherwise its
-  // (invisible at opacity 0) hitbox would capture clicks and navigate to the
-  // profile that just faded out.
-  if (!enabled || !next || phase === 'gap') return null;
+  if (!enabled || !next || phase === 'gap' || dismissed) return null;
 
   const go = () => navigate('/p/' + next.id + location.search);
+  const inAnim = mobile ? 'hot-banner-in-up' : 'hot-banner-in';
+  const outAnim = mobile ? 'hot-banner-out-down' : 'hot-banner-out';
   const animation =
     phase === 'in'
-      ? `hot-banner-in ${FADE_IN_MS}ms ease-out forwards`
+      ? `${inAnim} ${FADE_IN_MS}ms ease-out forwards`
       : phase === 'out'
-        ? `hot-banner-out ${FADE_OUT_MS}ms ease-in forwards`
+        ? `${outAnim} ${FADE_OUT_MS}ms ease-in forwards`
         : undefined;
 
   return (
     <div
-      className="absolute left-1/2 -translate-x-1/2 top-2 z-20 w-[min(700px,90vw)] pointer-events-none"
+      className={
+        mobile
+          ? 'px-2 pb-2 pointer-events-none'
+          : 'absolute left-1/2 -translate-x-1/2 top-2 z-20 w-[min(700px,90vw)] pointer-events-none'
+      }
       data-testid="hot-banner-wrapper"
     >
       <div
@@ -77,13 +108,16 @@ export function HotBanner({ enabled }: { enabled: boolean }) {
         aria-label={`Open ${next.name}`}
         onClick={go}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }}
-        onMouseEnter={onHoverStart}
-        onMouseLeave={onHoverEnd}
+        onMouseEnter={mobile ? undefined : onHoverStart}
+        onMouseLeave={mobile ? undefined : onHoverEnd}
         data-testid="hot-banner"
-        className="cursor-pointer bg-surface/85 backdrop-blur-md
-                   border border-orange-500/70 rounded-2xl
+        className={`cursor-pointer border border-orange-500/70 rounded-2xl
                    flex items-center gap-3 px-4 py-3 select-none
-                   hover:bg-surface/95 transition-colors pointer-events-auto"
+                   transition-colors pointer-events-auto ${
+                     mobile
+                       ? 'bg-surface/70 backdrop-blur-sm hover:bg-surface/80'
+                       : 'bg-surface/85 backdrop-blur-md hover:bg-surface/95'
+                   }`}
         style={{
           animation,
           opacity: phase === 'hold' ? 1 : undefined,

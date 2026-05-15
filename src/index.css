@@ -115,3 +115,15 @@ body {
   from { opacity: 1; transform: translateY(0); }
   to   { opacity: 0; transform: translateY(-8px); }
 }
+
+/* Mobile variant — banner is anchored to the bottom, so it slides up in
+   and down out (mirrors the desktop top-anchored keyframes above). */
+@keyframes hot-banner-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hot-banner-out-down {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(8px); }
+}

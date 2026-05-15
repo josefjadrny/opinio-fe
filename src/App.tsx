@@ -391,10 +391,15 @@ function AppLayout() {
       {/* Modal routes render here */}
       <Outlet />
 
-      {/* Vote allowance bar - mobile only (desktop renders inside map column) */}
+      {/* Vote allowance bar - mobile only (desktop renders inside map column).
+          HotBanner sits just above it; the container is click-through so taps
+          on the feed behind the banner's padding still register. */}
       {isMobile && (
-        <div className="fixed bottom-0 left-0 right-0 z-[60]">
-          <VoteBanner />
+        <div className="fixed bottom-0 left-0 right-0 z-[60] pointer-events-none">
+          <HotBanner enabled={isMobile} mobile />
+          <div className="pointer-events-auto">
+            <VoteBanner />
+          </div>
         </div>
       )}
     </div>
