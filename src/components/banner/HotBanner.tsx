@@ -19,24 +19,39 @@ export function HotBanner({ enabled }: { enabled: boolean }) {
   const location = useLocation();
   const { t } = useI18n();
   const [phase, setPhase] = useState<Phase>('in');
+  const [paused, setPaused] = useState(false);
 
+  // Reset to fade-in (and unpause) whenever a new profile arrives.
   useEffect(() => {
     if (!next) return;
     setPhase('in');
-    const toHold = window.setTimeout(() => setPhase('hold'), FADE_IN_MS);
-    const toOut = window.setTimeout(() => setPhase('out'), FADE_IN_MS + HOLD_MS);
-    const toGap = window.setTimeout(() => setPhase('gap'), FADE_IN_MS + HOLD_MS + FADE_OUT_MS);
-    const toNext = window.setTimeout(() => {
-      dequeue();
-    }, FADE_IN_MS + HOLD_MS + FADE_OUT_MS + GAP_MS);
+    setPaused(false);
+  }, [next]);
 
-    return () => {
-      clearTimeout(toHold);
-      clearTimeout(toOut);
-      clearTimeout(toGap);
-      clearTimeout(toNext);
-    };
-  }, [next, dequeue]);
+  // One timer per phase. Pausing freezes the chain; resuming continues from
+  // wherever we left off. Hovering during 'out' snaps back to 'hold' so the
+  // banner is fully opaque while the cursor is on it.
+  useEffect(() => {
+    if (!next || paused) return;
+    const ms =
+      phase === 'in' ? FADE_IN_MS :
+      phase === 'hold' ? HOLD_MS :
+      phase === 'out' ? FADE_OUT_MS :
+      GAP_MS;
+    const t = window.setTimeout(() => {
+      if (phase === 'in') setPhase('hold');
+      else if (phase === 'hold') setPhase('out');
+      else if (phase === 'out') setPhase('gap');
+      else dequeue();
+    }, ms);
+    return () => clearTimeout(t);
+  }, [next, phase, paused, dequeue]);
+
+  const onHoverStart = () => {
+    setPaused(true);
+    if (phase === 'out') setPhase('hold');
+  };
+  const onHoverEnd = () => setPaused(false);
 
   // During the 3s gap the banner must not exist in DOM — otherwise its
   // (invisible at opacity 0) hitbox would capture clicks and navigate to the
@@ -62,6 +77,8 @@ export function HotBanner({ enabled }: { enabled: boolean }) {
         aria-label={`Open ${next.name}`}
         onClick={go}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }}
+        onMouseEnter={onHoverStart}
+        onMouseLeave={onHoverEnd}
         data-testid="hot-banner"
         className="cursor-pointer bg-surface/85 backdrop-blur-md
                    border border-orange-500/70 rounded-2xl
