@@ -38,13 +38,13 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
             <CountryFilter />
             <RoleFilter />
             <SearchFilter />
-            <HeaderButton
+            <button
               onClick={clearFilters}
               disabled={!hasFilters}
-              className="text-sm font-medium px-4 py-1.5 text-white whitespace-nowrap"
+              className="bg-surface-light text-text-primary/70 text-sm rounded-lg border border-border px-3 py-1.5 whitespace-nowrap focus:outline-none focus:border-accent disabled:opacity-30 disabled:cursor-not-allowed"
             >
               {t.clearFilters}
-            </HeaderButton>
+            </button>
           </div>
         </div>
         <div className="flex items-center gap-2">
