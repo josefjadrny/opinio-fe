@@ -203,7 +203,7 @@ function SettingsContent({
           </div>
         )}
         {user?.countryCode ? (
-          <p className="text-xs text-white/30 mt-1.5">{t.detectedFromIp}</p>
+          !canChangeCountry && <p className="text-xs text-white/30 mt-1.5">{t.detectedFromIp}</p>
         ) : (
           <p className="flex items-center gap-1.5 text-xs text-accent/80 mt-1.5">
             <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
