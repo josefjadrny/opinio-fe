@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ModalShell } from '../common/ModalShell';
-import { ActionChip } from '../common/ActionChip';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
 import { useBillingRedirect } from '../../hooks/useBillingRedirect';
@@ -57,67 +56,156 @@ function withCoffeeIcon(text: string): React.ReactNode[] {
   );
 }
 
+type TierTone = 'muted' | 'accent' | 'positive';
+
+const TIER_TONES: Record<TierTone, { border: string; bg: string; hoverBg: string; label: string; count: string; activeRing: string; activeBg: string; activeBadge: string }> = {
+  muted:    { border: 'border-white/10',    bg: 'bg-white/[0.03]',    hoverBg: 'hover:bg-white/[0.08]',    label: 'text-white/50',  count: 'text-white/90', activeRing: 'ring-white/40',    activeBg: 'bg-white/[0.08]',    activeBadge: 'bg-white/70 text-black' },
+  accent:   { border: 'border-accent/30',   bg: 'bg-accent/[0.06]',   hoverBg: 'hover:bg-accent/[0.12]',   label: 'text-accent',    count: 'text-white',     activeRing: 'ring-accent/60',   activeBg: 'bg-accent/[0.15]',   activeBadge: 'bg-accent text-white' },
+  positive: { border: 'border-positive/30', bg: 'bg-positive/[0.06]', hoverBg: 'hover:bg-positive/[0.12]', label: 'text-positive',  count: 'text-white',     activeRing: 'ring-positive/60', activeBg: 'bg-positive/[0.15]', activeBadge: 'bg-positive text-white' },
+};
+
+function TierCard({ label, count, unit, subline, tone, active, onClick, disabled }: {
+  label: string;
+  count: number;
+  unit: string;
+  subline?: string;
+  tone: TierTone;
+  active?: boolean;
+  onClick?: () => void;
+  disabled?: boolean;
+}) {
+  const c = TIER_TONES[tone];
+  const clickable = !!onClick && !active;
+  const baseCls = `relative rounded-lg border ${c.border} ${active ? `${c.activeBg} ring-2 ${c.activeRing}` : c.bg} p-2.5 text-center transition-colors`;
+  const body = (
+    <>
+      {active && (
+        <span aria-label="Your current tier" className={`absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center shadow ${c.activeBadge}`}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </span>
+      )}
+      <p className={`text-[10px] uppercase tracking-wider font-medium ${c.label}`}>{label}</p>
+      <p className={`text-2xl font-bold leading-none mt-1.5 ${c.count}`}>{count}</p>
+      <p className="text-[10px] text-white/40 mt-1">{unit}</p>
+      {subline && <p className="text-[10px] text-white/55 mt-0.5 font-medium">{subline}</p>}
+    </>
+  );
+  if (clickable) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        className={`${baseCls} ${c.hoverBg} cursor-pointer disabled:opacity-60 disabled:cursor-wait`}
+      >
+        {body}
+      </button>
+    );
+  }
+  return <div className={baseCls}>{body}</div>;
+}
+
+// Lucide-style stroked principle icons — small, accent-tinted, fixed size for alignment.
+const principleIconCls = 'w-4 h-4 mt-0.5 shrink-0 text-positive';
+const ClockIcon = () => (
+  <svg aria-hidden viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={principleIconCls}>
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+const ShieldIcon = () => (
+  <svg aria-hidden viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={principleIconCls}>
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+  </svg>
+);
+const CodeIcon = () => (
+  <svg aria-hidden viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={principleIconCls}>
+    <polyline points="16 18 22 12 16 6" />
+    <polyline points="8 6 2 12 8 18" />
+  </svg>
+);
+
 export function AboutModal({ onClose }: AboutModalProps) {
   const { t } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: me } = useMe();
+  const { promptSignIn } = useSignIn();
+  const { loading: checkoutLoading, handleClick: handleCheckout } = useBillingRedirect(createCheckoutSession);
+  const tier = me?.user?.tier;
+  const isAnonymous = !tier || tier === 'anonymous';
+  const isAlreadySupporter = tier === 'supporter' || tier === 'admin';
+  // admin shares Supporter's 5/hr cap, so it lights up the Supporter card.
+  const activeTier: TierTone = isAnonymous
+    ? 'muted'
+    : tier === 'registered'
+      ? 'accent'
+      : 'positive';
+  // Anonymous → sign-in opens; signed-in users already cleared the registered bar.
+  const onRegisteredClick = isAnonymous ? promptSignIn : undefined;
+  // Anonymous → sign in first; registered → Stripe Checkout; supporter/admin → no action.
+  const onSupporterClick = isAlreadySupporter
+    ? undefined
+    : isAnonymous
+      ? promptSignIn
+      : handleCheckout;
 
   return (
     <ModalShell onClose={onClose} title={t.about} icon={<AboutIcon />} maxWidth="max-w-md">
-      <div className="px-6 py-5 space-y-5">
-        {/* Branding */}
-        <div className="flex items-center gap-3">
-          <img src="/favicon.svg" alt="Opinio" className="w-10 h-10" />
-          <span className="text-2xl font-bold text-accent tracking-tight">{t.appName}</span>
-        </div>
-
-        {/* Hero + freshness */}
-        <div>
-          <p className="text-sm font-semibold text-white leading-relaxed mb-2">{t.aboutHero}</p>
-          <p className="text-sm text-white/60 leading-relaxed">{t.aboutFreshness}</p>
-        </div>
-
-        <div className="border-t border-border" />
-
-        {/* Tiers */}
-        <div>
-          <p className="text-sm font-semibold text-white mb-2">{t.aboutTiersTitle}</p>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-white/60">{t.aboutTierAnonymous}</span>
-              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/50">1 {t.aboutVotesPerHour}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-white/60">{t.aboutTierRegistered}</span>
-              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-accent/20 text-accent shrink-0">3 {t.aboutVotesPerHour}</span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="flex items-center gap-2 text-sm text-white/60 min-w-0">
-                <span className="shrink-0">{t.aboutTierSupporter}</span>
-                <SupporterCta />
-              </span>
-              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-positive/20 text-positive shrink-0">5 {t.aboutVotesPerHour}</span>
-            </div>
+      <div className="px-6 pt-6 pb-4 space-y-6">
+        {/* Hero — centered brand + tagline */}
+        <div className="text-center space-y-2">
+          <div className="flex items-center justify-center gap-2.5">
+            <img src="/favicon.svg" alt="" className="w-9 h-9" />
+            <span className="text-2xl font-bold text-accent tracking-tight">{t.appName}</span>
           </div>
-          <p className="text-xs text-white/30 mt-3">{withVoteIcons(t.aboutVoteExpiry)}</p>
+          <p className="text-sm font-semibold text-white leading-snug">{t.aboutHero}</p>
+          <p className="text-xs text-white/55 leading-relaxed">{t.aboutFreshness}</p>
         </div>
 
-        <div className="border-t border-border" />
-
-        {/* Principles */}
+        {/* Tier comparison — 3-column grid */}
         <div>
-          <p className="text-sm font-semibold text-white mb-2">{t.aboutPrinciplesTitle}</p>
-          <ul className="space-y-2 text-sm text-white/60">
-            <li className="flex gap-2">
-              <span className="text-positive shrink-0 text-[10px] leading-relaxed">▶</span>
+          <p className="text-[11px] uppercase tracking-wider font-semibold text-white/40 mb-2">{t.aboutTiersTitle}</p>
+          <div className="grid grid-cols-3 gap-2">
+            <TierCard label={t.aboutTierAnonymous} count={1} unit={t.aboutVotesPerHour} tone="muted" active={activeTier === 'muted'} />
+            <TierCard
+              label={t.aboutTierRegistered}
+              count={3}
+              unit={t.aboutVotesPerHour}
+              tone="accent"
+              active={activeTier === 'accent'}
+              onClick={onRegisteredClick}
+            />
+            <TierCard
+              label={t.aboutTierSupporter}
+              count={5}
+              unit={t.aboutVotesPerHour}
+              subline={isAlreadySupporter ? undefined : t.aboutSupporterPriceNote}
+              tone="positive"
+              active={activeTier === 'positive'}
+              onClick={onSupporterClick}
+              disabled={checkoutLoading}
+            />
+          </div>
+          <p className="text-xs text-white/35 mt-3 leading-relaxed">{withVoteIcons(t.aboutVoteExpiry)}</p>
+        </div>
+
+        {/* Principles — with proper icons */}
+        <div>
+          <p className="text-sm font-semibold text-white mb-3">{t.aboutPrinciplesTitle}</p>
+          <ul className="space-y-3 text-sm text-white/65">
+            <li className="flex gap-3">
+              <ClockIcon />
               <span>
-                <span className="text-white/80">{t.aboutPrincipleTimeTitle}.</span>{' '}{t.aboutPrincipleTimeBody}
+                <span className="text-white/90 font-medium">{t.aboutPrincipleTimeTitle}.</span>{' '}{t.aboutPrincipleTimeBody}
               </span>
             </li>
-            <li className="flex gap-2">
-              <span className="text-positive shrink-0 text-[10px] leading-relaxed">▶</span>
+            <li className="flex gap-3">
+              <ShieldIcon />
               <span>
-                <span className="text-white/80">{t.aboutPrinciplePrivacyTitle}.</span>{' '}{t.aboutPrinciplePrivacyBody}{' '}
+                <span className="text-white/90 font-medium">{t.aboutPrinciplePrivacyTitle}.</span>{' '}{t.aboutPrinciplePrivacyBody}{' '}
                 {t.aboutPrinciplePrivacyContactPrefix}{' '}
                 <button
                   type="button"
@@ -129,10 +217,10 @@ export function AboutModal({ onClose }: AboutModalProps) {
                 .
               </span>
             </li>
-            <li className="flex gap-2">
-              <span className="text-positive shrink-0 text-[10px] leading-relaxed">▶</span>
+            <li className="flex gap-3">
+              <CodeIcon />
               <span>
-                <span className="text-white/80">{t.aboutPrincipleVoiceTitle}.</span>{' '}{t.aboutPrincipleVoiceBody}{' '}
+                <span className="text-white/90 font-medium">{t.aboutPrincipleVoiceTitle}.</span>{' '}{t.aboutPrincipleVoiceBody}{' '}
                 <span className="text-white/40">({t.aboutPrincipleVoiceForDevs}</span>{': '}
                 <a
                   href="https://github.com/josefjadrny/opinio-fe"
@@ -155,20 +243,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
               </span>
             </li>
           </ul>
-        </div>
-
-        <div className="border-t border-border" />
-
-        {/* Footer */}
-        <div className="space-y-1.5 text-xs">
-          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-white/40">
-            <span>🇪🇺 {t.aboutEuOrigin}</span>
-            <span>·</span>
-            <span>🇨🇿 {t.aboutMadeInCzechia}</span>
-            <span>·</span>
-            <span>🇩🇪 {t.aboutHostedInGermany}</span>
-          </div>
-          <div className="flex items-center gap-2">
+          <div className="mt-4 flex items-center justify-center gap-2 text-xs">
             <button
               type="button"
               onClick={() => navigate('/terms' + location.search)}
@@ -186,31 +261,17 @@ export function AboutModal({ onClose }: AboutModalProps) {
             </button>
           </div>
         </div>
+
+        {/* Footer tagline */}
+        <div className="!mt-3 text-center text-[10px] text-white/30">
+          <span>🇪🇺 {t.aboutEuOrigin}</span>
+          <span className="mx-1.5">·</span>
+          <span>🇨🇿 {t.aboutMadeInCzechia}</span>
+          <span className="mx-1.5">·</span>
+          <span>🇩🇪 {t.aboutHostedInGermany}</span>
+        </div>
       </div>
     </ModalShell>
   );
 }
 
-function SupporterCta() {
-  const { t } = useI18n();
-  const { data: me } = useMe();
-  const tier = me?.user?.tier;
-  const isAlreadySupporter = tier === 'supporter' || tier === 'admin';
-  const isAnonymous = !tier || tier === 'anonymous';
-  const { loading, handleClick: handleCheckout } = useBillingRedirect(createCheckoutSession);
-  const { promptSignIn } = useSignIn();
-
-  if (isAlreadySupporter) {
-    return (
-      <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-white/10 text-white/40 border border-white/10 shrink-0">
-        {t.aboutSupporterPriceNote}
-      </span>
-    );
-  }
-
-  return (
-    <ActionChip onClick={isAnonymous ? promptSignIn : handleCheckout} disabled={loading} className="shrink-0">
-      <span>{withCoffeeIcon(t.buyUsCoffee)} · {t.aboutSupporterPriceNote}</span>
-    </ActionChip>
-  );
-}
