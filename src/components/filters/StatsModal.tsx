@@ -116,7 +116,7 @@ function StatsContent({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
         </SelectField>
       </div>
 
-      <p className="text-xs text-white/50 leading-relaxed">{description}</p>
+      <p className="text-xs text-white/50 leading-snug">{description}</p>
 
       {isLoading ? (
         <p className="text-sm text-white/40 text-center py-6">{t.loading}</p>

@@ -159,11 +159,11 @@ export function AboutModal({ onClose }: AboutModalProps) {
               disabled={checkoutLoading}
             />
           </div>
-          <p className="text-xs text-white/35 mt-3 leading-relaxed">{withVoteIcons(t.aboutVoteExpiry)}</p>
+          <p className="text-xs text-white/35 mt-3 leading-snug">{withVoteIcons(t.aboutVoteExpiry)}</p>
         </div>
 
         {/* Principles — with proper icons */}
-        <div>
+        <div className="!mb-2">
           <p className="text-sm font-semibold text-white mb-3">{t.aboutPrinciplesTitle}</p>
           <ul className="space-y-3 text-sm text-white/65">
             <li className="flex gap-3">
@@ -213,7 +213,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
               </span>
             </li>
           </ul>
-          <div className="mt-4 flex items-center justify-center gap-2 text-xs">
+          <div className="mt-2 flex items-center justify-center gap-2 text-xs">
             <button
               type="button"
               onClick={() => navigate('/terms' + location.search)}
@@ -233,7 +233,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
         </div>
 
         {/* Footer tagline */}
-        <div className="!mt-3 text-center text-[10px] text-white/30">
+        <div className="!mt-2 text-center text-[10px] text-white/30">
           <span>🇪🇺 {t.aboutEuOrigin}</span>
           <span className="mx-1.5">·</span>
           <span>🇨🇿 {t.aboutMadeInCzechia}</span>
