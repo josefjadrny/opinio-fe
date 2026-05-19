@@ -3,6 +3,7 @@ import { ModalShell } from '../common/ModalShell';
 import { ALL_COUNTRIES, getCountryFlag } from '../../utils/countries';
 import { ALL_ROLES, ROLE_COLORS } from '../../utils/roles';
 import { useFilters } from '../../context/useFilters';
+import { useSearchField } from '../../hooks/useSearchField';
 import { useI18n } from '../../i18n/I18nContext';
 import type { Role } from '../../types/profile';
 
@@ -18,14 +19,15 @@ const FilterIcon = () => (
 
 export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
   const { t } = useI18n();
-  const { country, roles, setCountry, toggleRole, clearFilters } = useFilters();
+  const { country, roles, search, setCountry, toggleRole, clearFilters } = useFilters();
+  const { value: searchValue, setValue: setSearchValue } = useSearchField();
   const [query, setQuery] = useState('');
 
   const filtered = query
     ? ALL_COUNTRIES.filter(c => c.name.toLowerCase().startsWith(query.toLowerCase()))
     : ALL_COUNTRIES;
 
-  const hasFilters = !!(country || roles.length);
+  const hasFilters = !!(country || roles.length || search);
 
   const footer = (
     <div className="flex gap-3">
@@ -102,6 +104,17 @@ export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
               );
             })}
           </div>
+        </div>
+
+        {/* Search — advanced filter, kept last */}
+        <div>
+          <p className="text-xs font-medium text-white/50 mb-2">{t.searchLabel}</p>
+          <input
+            value={searchValue}
+            onChange={e => setSearchValue(e.target.value)}
+            placeholder={t.searchPlaceholder}
+            className="w-full bg-white/5 text-white text-sm rounded-lg px-3 py-2 focus:outline-none placeholder:text-white/30"
+          />
         </div>
       </div>
     </ModalShell>

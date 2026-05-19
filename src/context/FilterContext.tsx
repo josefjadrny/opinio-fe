@@ -5,10 +5,12 @@ import type { Role } from '../types/profile';
 export interface FilterState {
   country: string | undefined;
   roles: Role[];
+  search: string;
   hoveredProfileCountry: string | undefined;
   setCountry: (c: string | undefined) => void;
   setRoles: (r: Role[]) => void;
   toggleRole: (r: Role) => void;
+  setSearch: (q: string) => void;
   clearFilters: () => void;
   setHoveredProfileCountry: (c: string | undefined) => void;
 }
@@ -23,6 +25,7 @@ export function FilterProvider({ children }: { children: ReactNode }) {
   const country = searchParams.get('country') ?? undefined;
   const rolesParam = searchParams.get('roles');
   const roles = rolesParam ? (rolesParam.split(',').filter(Boolean) as Role[]) : [];
+  const search = searchParams.get('q') ?? '';
 
   const setCountry = useCallback((c: string | undefined) => {
     setSearchParams((prev) => {
@@ -52,17 +55,30 @@ export function FilterProvider({ children }: { children: ReactNode }) {
     });
   }, [setSearchParams]);
 
+  // Search is debounced upstream (useSearchField) — by the time it reaches
+  // here the value has settled. Written with replace:true so typing doesn't
+  // pile up browser-history entries. < 3 chars clears the param.
+  const setSearch = useCallback((q: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      const trimmed = q.trim();
+      if (trimmed.length >= 3) next.set('q', trimmed); else next.delete('q');
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+
   const clearFilters = useCallback(() => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
       next.delete('country');
       next.delete('roles');
+      next.delete('q');
       return next;
     });
   }, [setSearchParams]);
 
   return (
-    <FilterContext.Provider value={{ country, roles, hoveredProfileCountry, setCountry, setRoles, toggleRole, clearFilters, setHoveredProfileCountry }}>
+    <FilterContext.Provider value={{ country, roles, search, hoveredProfileCountry, setCountry, setRoles, toggleRole, setSearch, clearFilters, setHoveredProfileCountry }}>
       {children}
     </FilterContext.Provider>
   );

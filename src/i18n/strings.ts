@@ -31,6 +31,8 @@ export interface Strings {
   byAuthor: string;
   newBadge: string;
   clearFilters: string;
+  searchLabel: string;
+  searchPlaceholder: string;
   nominateTooltip: string;
   profile: string;
   settings: string;
@@ -239,6 +241,8 @@ const en: Strings = {
   byAuthor: 'by {author}',
   newBadge: 'NEW',
   clearFilters: 'Clear filters',
+  searchLabel: 'Search',
+  searchPlaceholder: 'Search opinions…',
   nominateTooltip: 'Sign in to drop an opinion',
   profile: 'Profile',
   settings: 'Settings',
@@ -466,6 +470,8 @@ const cs: Strings = {
   byAuthor: 'přidal {author}',
   newBadge: 'NOVÝ',
   clearFilters: 'Zrušit filtry',
+  searchLabel: 'Hledat',
+  searchPlaceholder: 'Hledat názory…',
   nominateTooltip: 'Přihlaste se pro přidání názoru',
   profile: 'Profil',
   settings: 'Nastavení',
@@ -693,6 +699,8 @@ const es: Strings = {
   byAuthor: 'por {author}',
   newBadge: 'NUEVO',
   clearFilters: 'Borrar filtros',
+  searchLabel: 'Buscar',
+  searchPlaceholder: 'Buscar opiniones…',
   nominateTooltip: 'Inicia sesión para dar una opinión',
   profile: 'Perfil',
   settings: 'Ajustes',

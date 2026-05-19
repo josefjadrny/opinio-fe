@@ -246,7 +246,7 @@ function AppLayout() {
   const location = useLocation();
   const isMobile = useIsMobile();
   const isCompact = useIsMobile(1366);
-  const { country, roles } = useFilters();
+  const { country, roles, search } = useFilters();
   const [sidebarWidths, setSidebarWidths] = useState(loadSidebarWidths);
   const { t } = useI18n();
   const queryClient = useQueryClient();
@@ -279,10 +279,10 @@ function AppLayout() {
   useEffect(() => {
     setPositiveLimit(SIDEBAR_INITIAL_LIMIT);
     setNegativeLimit(SIDEBAR_INITIAL_LIMIT);
-  }, [country, rolesKey]);
+  }, [country, rolesKey, search]);
 
-  const positiveQuery = useProfiles({ type: 'positive', country, roles, limit: positiveLimit });
-  const negativeQuery = useProfiles({ type: 'negative', country, roles, limit: negativeLimit });
+  const positiveQuery = useProfiles({ type: 'positive', country, roles, search, limit: positiveLimit });
+  const negativeQuery = useProfiles({ type: 'negative', country, roles, search, limit: negativeLimit });
 
   const expandPositive = useCallback(() => {
     setPositiveLimit((prev) => (prev < SIDEBAR_MAX_LIMIT ? SIDEBAR_MAX_LIMIT : prev));

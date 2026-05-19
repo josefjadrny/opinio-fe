@@ -50,6 +50,7 @@ export interface ProfileFilters {
   type: 'positive' | 'negative';
   country?: string;
   roles?: string[];
+  search?: string;
   limit?: number;
 }
 

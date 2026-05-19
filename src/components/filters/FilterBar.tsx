@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { CountryFilter } from './CountryFilter';
 import { RoleFilter } from './RoleFilter';
+import { SearchFilter } from './SearchFilter';
 import { MobileFilterSheet } from './MobileFilterSheet';
 import { useFilters } from '../../context/useFilters';
 import { ProfileMenu } from './ProfileMenu';
@@ -17,8 +18,8 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
   const navigate = useNavigate();
   const { t } = useI18n();
   const { isLoading: meLoading } = useMe();
-  const { country, roles, clearFilters } = useFilters();
-  const hasFilters = !!(country || roles.length);
+  const { country, roles, search, clearFilters } = useFilters();
+  const hasFilters = !!(country || roles.length || search);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
   return (
@@ -36,6 +37,7 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
           <div className="hidden md:flex items-center gap-3">
             <CountryFilter />
             <RoleFilter />
+            <SearchFilter />
             <HeaderButton
               onClick={clearFilters}
               disabled={!hasFilters}
