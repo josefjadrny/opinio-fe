@@ -27,6 +27,36 @@ const AboutIcon = () => (
   </svg>
 );
 
+// Monochrome silhouette matching the user's reference (freeiconspng #13662):
+// bowl-shaped cup, donut handle, three steam wisps, thin saucer below. Single
+// solid fill via currentColor so it inherits the chip's text color on dark UI.
+const CoffeeIcon = () => (
+  <svg aria-hidden xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="inline-block w-4 h-4 -translate-y-px ml-0.5">
+    {/* Steam wisps — light cream */}
+    <path d="M7.6 1.5c-.5 1 .3 1.7.3 2.4s-.8 1.2-.3 2.1" fill="none" stroke="#EADBC2" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M11 1.5c-.5 1 .3 1.7.3 2.4s-.8 1.2-.3 2.1" fill="none" stroke="#EADBC2" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M14.4 1.5c-.5 1 .3 1.7.3 2.4s-.8 1.2-.3 2.1" fill="none" stroke="#EADBC2" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+    {/* Cup top rim — full cream ellipse (back of cup opening) */}
+    <ellipse cx="9.25" cy="8" rx="6.75" ry="1.1" fill="#E8D5B0" />
+    {/* Coffee liquid surface — dark espresso ellipse inside the rim */}
+    <ellipse cx="9.25" cy="8" rx="5.5" ry="0.7" fill="#3E2A1F" />
+    {/* Crema highlight — small lighter ellipse on coffee surface */}
+    <ellipse cx="8" cy="7.8" rx="1.8" ry="0.25" fill="#6F4E37" opacity="0.8" />
+    {/* Cup body (covers everything below the rim) */}
+    <path d="M2.5 8h13.5v6.5a4 4 0 0 1-4 4H6.5a4 4 0 0 1-4-4V8z" fill="#E8D5B0" />
+    {/* Handle (donut on the right side) */}
+    <path d="M16 9.3h1.6a3 3 0 0 1 0 6H16v-1.7h1.6a1.3 1.3 0 0 0 0-2.6H16V9.3z" fill="#E8D5B0" />
+    {/* Saucer — slightly darker stone tone for separation */}
+    <ellipse cx="9.5" cy="20.8" rx="8" ry="0.9" fill="#B89A6E" />
+  </svg>
+);
+
+function withCoffeeIcon(text: string): React.ReactNode[] {
+  return text.split(/(\{coffee\})/).map((part, i) =>
+    part === '{coffee}' ? <CoffeeIcon key={i} /> : <Fragment key={i}>{part}</Fragment>,
+  );
+}
+
 export function AboutModal({ onClose }: AboutModalProps) {
   const { t } = useI18n();
   const navigate = useNavigate();
@@ -131,12 +161,12 @@ export function AboutModal({ onClose }: AboutModalProps) {
 
         {/* Footer */}
         <div className="space-y-1.5 text-xs">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-white/40">
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-white/40">
+            <span>🇪🇺 {t.aboutEuOrigin}</span>
+            <span>·</span>
             <span>🇨🇿 {t.aboutMadeInCzechia}</span>
             <span>·</span>
             <span>🇩🇪 {t.aboutHostedInGermany}</span>
-            <span>·</span>
-            <span>🇪🇺 {t.aboutEuOrigin}</span>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -180,8 +210,7 @@ function SupporterCta() {
 
   return (
     <ActionChip onClick={isAnonymous ? promptSignIn : handleCheckout} disabled={loading} className="shrink-0">
-      <span aria-hidden className="text-red-400">❤</span>
-      <span>{t.buyUsCoffee} · {t.aboutSupporterPriceNote}</span>
+      <span>{withCoffeeIcon(t.buyUsCoffee)} · {t.aboutSupporterPriceNote}</span>
     </ActionChip>
   );
 }
