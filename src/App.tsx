@@ -506,7 +506,10 @@ function ProfileDetailRoute() {
     );
   }
 
-  return <DesktopProfileModal profileId={id ?? ''} />;
+  // key={id} forces remount when switching profiles so useAnimatedValue
+  // (and friends) reset cleanly instead of animating from the previous
+  // profile's like/dislike totals to the new ones.
+  return <DesktopProfileModal key={id ?? ''} profileId={id ?? ''} />;
 }
 
 function UserDetailRoute() {
