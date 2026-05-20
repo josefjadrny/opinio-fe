@@ -45,7 +45,7 @@ const TIER_CLASSES: Record<string, string> = {
 
 function TierBadge({ tier }: { tier: string | null | undefined }) {
   if (!tier || tier === 'anonymous') return null;
-  const label = tier === 'supporter' ? 'Supporter ❤' : tier === 'admin' ? 'Admin ❤' : 'Registered';
+  const label = tier === 'supporter' ? 'Supporter ❤️' : tier === 'admin' ? 'Admin ❤️' : 'Registered';
   return <span className={`text-xs ${TIER_CLASSES[tier] ?? 'text-white/40'}`}>{label}</span>;
 }
 

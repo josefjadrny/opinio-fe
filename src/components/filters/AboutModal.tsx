@@ -168,7 +168,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
         </div>
 
         {/* Principles — with proper icons */}
-        <div className="!mb-2">
+        <div>
           <p className="text-sm font-semibold text-white mb-3">{t.aboutPrinciplesTitle}</p>
           <ul className="space-y-3 text-sm text-white/65">
             <li className="flex gap-3">
@@ -218,32 +218,34 @@ export function AboutModal({ onClose }: AboutModalProps) {
               </span>
             </li>
           </ul>
-          <div className="mt-2 flex items-center justify-center gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => navigate('/terms' + location.search)}
-              className="text-accent hover:text-accent/80 transition-colors"
-            >
-              {t.terms}
-            </button>
-            <span className="text-white/25">·</span>
-            <button
-              type="button"
-              onClick={() => navigate('/privacy' + location.search)}
-              className="text-accent hover:text-accent/80 transition-colors"
-            >
-              {t.privacy}
-            </button>
-          </div>
         </div>
 
-        {/* Footer tagline — proud of the EU origin, don't fade it out */}
-        <div className="!mt-2 text-center text-xs text-white/75 font-medium">
+        {/* EU origin / Made in CZ / Hosted in DE — moved above Terms so we lead with the proud signal */}
+        <div className="!mb-2 text-center text-xs text-white/75 font-medium">
           <span>🇪🇺 {t.aboutEuOrigin}</span>
           <span className="mx-1.5 text-white/30">·</span>
           <span>🇨🇿 {t.aboutMadeInCzechia}</span>
           <span className="mx-1.5 text-white/30">·</span>
           <span>🇩🇪 {t.aboutHostedInGermany}</span>
+        </div>
+
+        {/* Terms · Privacy — fine-print bottom row */}
+        <div className="!mt-2 flex items-center justify-center gap-2 text-xs">
+          <button
+            type="button"
+            onClick={() => navigate('/terms' + location.search)}
+            className="text-accent hover:text-accent/80 transition-colors"
+          >
+            {t.terms}
+          </button>
+          <span className="text-white/25">·</span>
+          <button
+            type="button"
+            onClick={() => navigate('/privacy' + location.search)}
+            className="text-accent hover:text-accent/80 transition-colors"
+          >
+            {t.privacy}
+          </button>
         </div>
       </div>
     </ModalShell>

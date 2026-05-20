@@ -135,8 +135,8 @@ function SettingsContent({
                 ? 'Admin'
                 : 'Registered user'}
             </p>
-            {user?.tier === 'supporter' && <span className="text-red-400 text-xs leading-none">❤</span>}
-            {user?.tier === 'admin' && <span className="text-red-400 text-xs leading-none">❤</span>}
+            {user?.tier === 'supporter' && <span aria-hidden className="text-xs leading-none">❤️</span>}
+            {user?.tier === 'admin' && <span aria-hidden className="text-xs leading-none">❤️</span>}
           </div>
           {isAnonymous && (
             <ActionChip onClick={promptSignIn} className="mt-1">
@@ -328,7 +328,7 @@ function UpgradeChip({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
   const { loading, handleClick } = useBillingRedirect(createCheckoutSession);
   return (
     <ActionChip onClick={handleClick} disabled={loading} className="mt-1">
-      <span aria-hidden className="text-red-400">❤</span>
+      <span aria-hidden>❤️</span>
       <span>{loading ? `${t.upgradeBanner}…` : t.upgradeBanner}</span>
     </ActionChip>
   );
