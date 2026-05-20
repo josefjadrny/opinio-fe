@@ -83,18 +83,23 @@ export function ModalShell({
       className={`fixed inset-0 z-[80] flex justify-center bg-black/50 ${centered ? 'items-center' : 'items-start pt-12'}`}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className={`bg-surface border border-border rounded-2xl shadow-2xl w-full ${maxWidth} mx-4 ${desktopScrollable ? 'max-h-[80vh] flex flex-col' : ''}`}>
-        <div className={`flex items-center justify-between px-6 py-4 border-b border-border ${desktopScrollable ? 'shrink-0' : ''}`}>
+      <div className={`bg-surface border border-border rounded-2xl shadow-2xl w-full ${maxWidth} mx-4 ${desktopScrollable || footer ? 'max-h-[80vh] flex flex-col' : ''}`}>
+        <div className={`flex items-center justify-between px-6 py-4 border-b border-border ${desktopScrollable || footer ? 'shrink-0' : ''}`}>
           <div className="flex items-center gap-2">
             {icon}
             <h2 className="text-base font-semibold text-white">{title}</h2>
           </div>
           {closeBtn}
         </div>
-        {desktopScrollable ? (
+        {desktopScrollable || footer ? (
           <div className="overflow-y-auto flex-1">{children}</div>
         ) : (
           children
+        )}
+        {footer && (
+          <div className="shrink-0 px-6 py-4 border-t border-border">
+            {footer}
+          </div>
         )}
       </div>
     </div>

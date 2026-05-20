@@ -31,6 +31,7 @@ import { TermsModal } from './components/filters/TermsModal';
 import { StatsModal } from './components/filters/StatsModal';
 import { SupportModal } from './components/filters/SupportModal';
 import { ViewerModeModal } from './components/filters/ViewerModeModal';
+import { WelcomeModal } from './components/filters/WelcomeModal';
 import { useMe } from './hooks/useMe';
 import { useUser } from './hooks/useUser';
 
@@ -386,6 +387,7 @@ function AppLayout() {
         </div>
       )}
 
+      <WelcomeAutoOpen />
       <ViewerModeAutoOpen />
 
       {/* Modal routes render here */}
@@ -449,9 +451,14 @@ function SignInRoute() {
 }
 
 const VIEWER_MODE_DISMISSED_KEY = 'opinio_viewer_mode_dismissed_v1';
+const WELCOME_SEEN_KEY = 'opinio_welcome_seen_v1';
 
 function dismissedKeyFor(userId: string | null | undefined): string {
   return `${VIEWER_MODE_DISMISSED_KEY}:${userId ?? 'none'}`;
+}
+
+function welcomeSeen(): boolean {
+  try { return localStorage.getItem(WELCOME_SEEN_KEY) === '1'; } catch { return true; }
 }
 
 function ViewerModeRoute() {
@@ -473,11 +480,48 @@ function ViewerModeAutoOpen() {
   useEffect(() => {
     if (!me) return;
     if (me.user?.countryCode) return;
+    const isAnon = !me.user || me.user.tier === 'anonymous';
+    // Anonymous first-time visitors see the Welcome modal first; the country
+    // picker waits until they've dismissed it. Signed-in users with no country
+    // skip this gate (Welcome wouldn't fire for them anyway).
+    if (isAnon && !welcomeSeen()) return;
     if (sessionStorage.getItem(dismissedKeyFor(me.user?.id)) === '1') return;
     if (location.pathname === '/viewer-mode') return;
+    if (location.pathname === '/welcome') return;
     navigate('/viewer-mode' + location.search);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [me]);
+  }, [me, location.pathname]);
+
+  return null;
+}
+
+function WelcomeRoute() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const handleClose = () => {
+    try { localStorage.setItem(WELCOME_SEEN_KEY, '1'); } catch { /* private mode — degrade silently */ }
+    navigate('/' + location.search, { replace: true });
+  };
+  return <WelcomeModal onClose={handleClose} />;
+}
+
+function WelcomeAutoOpen() {
+  const { data: me, isLoading } = useMe();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (isLoading || !me) return;
+    const isAnon = !me.user || me.user.tier === 'anonymous';
+    if (!isAnon) return;
+    if (welcomeSeen()) return;
+    // v1 fires only on the landing page so deeplinks (/p/:id, /u/:id, /c/:code)
+    // keep their content; the flag is then never set for those visitors, so it
+    // will show on their next plain visit. Acceptable.
+    if (location.pathname !== '/') return;
+    navigate('/welcome' + location.search);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, me, location.pathname]);
 
   return null;
 }
@@ -556,6 +600,7 @@ function AppContent() {
         <Route path="support" element={<SupportRoute />} />
         <Route path="sign-in" element={<SignInRoute />} />
         <Route path="viewer-mode" element={<ViewerModeRoute />} />
+        <Route path="welcome" element={<WelcomeRoute />} />
         <Route path="p/:id" element={<ProfileDetailRoute />} />
         <Route path="u/:id" element={<UserDetailRoute />} />
         <Route path="c/:code" element={<CountryDetailRoute />} />

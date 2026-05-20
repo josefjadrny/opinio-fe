@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ModalShell } from '../common/ModalShell';
+import { TierCard, type TierTone } from '../common/TierCard';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
 import { useBillingRedirect } from '../../hooks/useBillingRedirect';
@@ -25,61 +26,6 @@ const AboutIcon = () => (
     <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01" />
   </svg>
 );
-
-type TierTone = 'muted' | 'accent' | 'positive';
-
-const TIER_TONES: Record<TierTone, { border: string; bg: string; hoverBg: string; label: string; count: string; activeRing: string; activeBg: string; activeBadge: string }> = {
-  muted:    { border: 'border-white/10',    bg: 'bg-white/[0.03]',    hoverBg: 'hover:bg-white/[0.08]',    label: 'text-white/50',  count: 'text-white/90', activeRing: 'ring-white/40',    activeBg: 'bg-white/[0.08]',    activeBadge: 'bg-white/70 text-black' },
-  accent:   { border: 'border-accent/30',   bg: 'bg-accent/[0.06]',   hoverBg: 'hover:bg-accent/[0.12]',   label: 'text-accent',    count: 'text-white',     activeRing: 'ring-accent/60',   activeBg: 'bg-accent/[0.15]',   activeBadge: 'bg-accent text-white' },
-  positive: { border: 'border-positive/30', bg: 'bg-positive/[0.06]', hoverBg: 'hover:bg-positive/[0.12]', label: 'text-positive',  count: 'text-white',     activeRing: 'ring-positive/60', activeBg: 'bg-positive/[0.15]', activeBadge: 'bg-positive text-white' },
-};
-
-function TierCard({ label, count, unit, subline, trailingIcon, tone, active, onClick, disabled }: {
-  label: string;
-  count: number;
-  unit: string;
-  subline?: string;
-  trailingIcon?: React.ReactNode;
-  tone: TierTone;
-  active?: boolean;
-  onClick?: () => void;
-  disabled?: boolean;
-}) {
-  const c = TIER_TONES[tone];
-  const clickable = !!onClick && !active;
-  const baseCls = `relative rounded-lg border ${c.border} ${active ? `${c.activeBg} ring-2 ${c.activeRing}` : c.bg} p-2.5 text-center transition-colors`;
-  const body = (
-    <>
-      {active && (
-        <span aria-label="Your current tier" className={`absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center shadow ${c.activeBadge}`}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-        </span>
-      )}
-      <p className={`text-[10px] uppercase tracking-wider font-medium ${c.label} flex items-center justify-center gap-1`}>
-        <span>{label}</span>
-        {trailingIcon}
-      </p>
-      <p className={`text-2xl font-bold leading-none mt-1.5 ${c.count}`}>{count}</p>
-      <p className="text-[10px] text-white/40 mt-1">{unit}</p>
-      {subline && <p className="text-[10px] text-white/55 mt-0.5 font-medium">{subline}</p>}
-    </>
-  );
-  if (clickable) {
-    return (
-      <button
-        type="button"
-        onClick={onClick}
-        disabled={disabled}
-        className={`${baseCls} ${c.hoverBg} cursor-pointer disabled:opacity-60 disabled:cursor-wait`}
-      >
-        {body}
-      </button>
-    );
-  }
-  return <div className={baseCls}>{body}</div>;
-}
 
 // Lucide-style stroked principle icons — small, accent-tinted, fixed size for alignment.
 const principleIconCls = 'w-4 h-4 mt-0.5 shrink-0 text-positive';
@@ -148,21 +94,33 @@ export function AboutModal({ onClose }: AboutModalProps) {
               label={t.aboutTierRegistered}
               count={3}
               unit={t.aboutVotesPerHour}
+              promo={t.aboutTierRegisteredPromo}
               tone="accent"
               active={activeTier === 'accent'}
               onClick={onRegisteredClick}
             />
-            <TierCard
-              label={t.aboutTierSupporter}
-              count={5}
-              unit={t.aboutVotesPerHour}
-              subline={isAlreadySupporter ? undefined : t.aboutSupporterPriceNote}
-              trailingIcon={<span aria-hidden className="text-[11px] leading-none">❤️</span>}
-              tone="positive"
-              active={activeTier === 'positive'}
-              onClick={onSupporterClick}
-              disabled={checkoutLoading}
-            />
+            <div className="relative">
+              <TierCard
+                label={t.aboutTierSupporter}
+                count={5}
+                unit={t.aboutVotesPerHour}
+                promo={t.aboutTierSupporterPromo}
+                trailingIcon={<span aria-hidden className="text-[11px] leading-none">❤️</span>}
+                tone="positive"
+                active={activeTier === 'positive'}
+                onClick={onSupporterClick}
+                disabled={checkoutLoading}
+              />
+              {/* Price tag — top-right corner overhang, mirroring the active-tier
+                  badge position but only shown when the user is NOT a supporter
+                  (mutually exclusive with the active badge, so they never collide).
+                  Doesn't add to card height because it's absolutely positioned. */}
+              {!isAlreadySupporter && (
+                <span className="pointer-events-none absolute -top-[7px] -right-1 whitespace-nowrap rounded-full bg-amber-400 text-amber-950 text-[12px] font-bold px-2 py-0.5 shadow leading-none">
+                  {t.aboutSupporterPriceNote}
+                </span>
+              )}
+            </div>
           </div>
           <p className="text-xs text-white/35 mt-3 leading-snug">{withVoteIcons(t.aboutVoteExpiry)}</p>
         </div>
@@ -229,8 +187,8 @@ export function AboutModal({ onClose }: AboutModalProps) {
           <span>🇩🇪 {t.aboutHostedInGermany}</span>
         </div>
 
-        {/* Terms · Privacy — fine-print bottom row */}
-        <div className="!mt-2 flex items-center justify-center gap-2 text-xs">
+        {/* Terms · Privacy — bottom links, full text-sm body size (not fine-print) */}
+        <div className="!mt-2 flex items-center justify-center gap-2 text-sm">
           <button
             type="button"
             onClick={() => navigate('/terms' + location.search)}

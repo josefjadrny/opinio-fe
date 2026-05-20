@@ -68,10 +68,19 @@ export interface Strings {
   aboutTiersTitle: string;
   aboutTierAnonymous: string;
   aboutTierRegistered: string;
+  aboutTierRegisteredPromo: string;
   aboutTierSupporter: string;
+  aboutTierSupporterPromo: string;
   aboutSupporterPriceNote: string;
   aboutVotesPerHour: string;
   aboutVoteExpiry: string;
+  welcomeTitle: string;
+  welcomeIntro: string;
+  welcomeBulletVote: string;
+  welcomeBulletExpire: string;
+  welcomeBulletRefill: string;
+  welcomeTiersTitle: string;
+  welcomeCta: string;
   privacy: string;
   privacyLastUpdated: string;
   privacyOperatorTitle: string;
@@ -275,13 +284,22 @@ const en: Strings = {
   aboutMadeInCzechia: 'Made in Czechia',
   aboutHostedInGermany: 'Hosted in Germany',
   aboutEuOrigin: 'EU origin',
-  aboutTiersTitle: 'Voting limits (per hour)',
+  aboutTiersTitle: 'Plans',
   aboutTierAnonymous: 'Anonymous',
   aboutTierRegistered: 'Registered',
+  aboutTierRegisteredPromo: 'Posting ✓',
   aboutTierSupporter: 'Supporter',
-  aboutSupporterPriceNote: '€2.99 / month',
+  aboutTierSupporterPromo: 'Extra votes',
+  aboutSupporterPriceNote: '€2.99/month',
   aboutVotesPerHour: 'votes / hr',
   aboutVoteExpiry: 'Votes expire after 24 hours, so rankings reflect how people feel right now. You gain new votes every hour. Each vote counts once per type (▲ or ▼) within your hourly allowance.',
+  welcomeTitle: 'Welcome to Opinio',
+  welcomeIntro: 'Opinio is a live, worldwide pulse on the stories that matter. Vote on what is rising and what is falling — right now.',
+  welcomeBulletVote: 'Vote on the stories shaping the world',
+  welcomeBulletExpire: 'Votes expire after 24 hours — rankings stay alive',
+  welcomeBulletRefill: 'Each vote refills 1 hour after you cast it',
+  welcomeTiersTitle: 'Plans',
+  welcomeCta: "Let's vote",
   privacy: 'Privacy',
   privacyLastUpdated: 'Last updated: April 30, 2026',
   privacyOperatorTitle: 'Operator',
@@ -504,13 +522,22 @@ const cs: Strings = {
   aboutMadeInCzechia: 'Vytvořeno v Česku',
   aboutHostedInGermany: 'Hostováno v Německu',
   aboutEuOrigin: 'Původ v EU',
-  aboutTiersTitle: 'Limity hlasování (za hodinu)',
+  aboutTiersTitle: 'Plány',
   aboutTierAnonymous: 'Anonymní',
   aboutTierRegistered: 'Registrovaný',
+  aboutTierRegisteredPromo: 'Přidávání ✓',
   aboutTierSupporter: 'Podporovatel',
-  aboutSupporterPriceNote: '2,99 € / měsíc',
+  aboutTierSupporterPromo: 'Více hlasů',
+  aboutSupporterPriceNote: '2,99 €/měsíc',
   aboutVotesPerHour: 'hlasů / hod',
   aboutVoteExpiry: 'Hlasy vyprší po 24 hodinách, takže žebříčky ukazují, jak se lidé cítí právě teď. Nové hlasy získáváš každou hodinu. Každý hlas se počítá jednou za typ (▲ nebo ▼) v rámci hodinového limitu.',
+  welcomeTitle: 'Vítej v Opinio',
+  welcomeIntro: 'Opinio je živý světový puls názorů na témata, která hýbou světem. Hlasuj o tom, co stoupá a co klesá — právě teď.',
+  welcomeBulletVote: 'Hlasuj o tématech, která utvářejí dnešní svět',
+  welcomeBulletExpire: 'Hlasy vyprší po 24 hodinách — žebříčky žijí',
+  welcomeBulletRefill: 'Každý hlas se ti vrátí hodinu po hlasování',
+  welcomeTiersTitle: 'Plány',
+  welcomeCta: 'Pojďme hlasovat',
   privacy: 'Ochrana osobních údajů',
   privacyLastUpdated: 'Aktualizováno: 30. dubna 2026',
   privacyOperatorTitle: 'Provozovatel',
@@ -733,13 +760,22 @@ const es: Strings = {
   aboutMadeInCzechia: 'Made in Czechia',
   aboutHostedInGermany: 'Hosted in Germany',
   aboutEuOrigin: 'EU origin',
-  aboutTiersTitle: 'Voting limits (per hour)',
+  aboutTiersTitle: 'Planes',
   aboutTierAnonymous: 'Anonymous',
   aboutTierRegistered: 'Registered',
+  aboutTierRegisteredPromo: 'Publicar ✓',
   aboutTierSupporter: 'Supporter',
-  aboutSupporterPriceNote: '€2.99 / month',
+  aboutTierSupporterPromo: 'Votos extra',
+  aboutSupporterPriceNote: '2,99 €/mes',
   aboutVotesPerHour: 'votes / hr',
   aboutVoteExpiry: 'Los votos caducan a las 24 horas, así que los rankings reflejan cómo se siente la gente ahora. Ganas nuevos votos cada hora. Cada voto cuenta una vez por tipo (▲ o ▼) dentro de tu límite por hora.',
+  welcomeTitle: 'Bienvenido a Opinio',
+  welcomeIntro: 'Opinio es un pulso mundial en vivo sobre lo que importa. Vota sobre lo que sube y lo que baja — ahora mismo.',
+  welcomeBulletVote: 'Vota sobre las noticias que mueven el mundo',
+  welcomeBulletExpire: 'Los votos caducan a las 24 horas — los rankings siguen vivos',
+  welcomeBulletRefill: 'Cada voto se renueva 1 hora después de usarlo',
+  welcomeTiersTitle: 'Planes',
+  welcomeCta: 'A votar',
   privacy: 'Privacidad',
   privacyLastUpdated: 'Actualizado: 30 de abril de 2026',
   privacyOperatorTitle: 'Responsable',
