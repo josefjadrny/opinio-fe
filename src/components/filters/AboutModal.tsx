@@ -34,11 +34,12 @@ const TIER_TONES: Record<TierTone, { border: string; bg: string; hoverBg: string
   positive: { border: 'border-positive/30', bg: 'bg-positive/[0.06]', hoverBg: 'hover:bg-positive/[0.12]', label: 'text-positive',  count: 'text-white',     activeRing: 'ring-positive/60', activeBg: 'bg-positive/[0.15]', activeBadge: 'bg-positive text-white' },
 };
 
-function TierCard({ label, count, unit, subline, tone, active, onClick, disabled }: {
+function TierCard({ label, count, unit, subline, leadingIcon, tone, active, onClick, disabled }: {
   label: string;
   count: number;
   unit: string;
   subline?: string;
+  leadingIcon?: React.ReactNode;
   tone: TierTone;
   active?: boolean;
   onClick?: () => void;
@@ -56,7 +57,10 @@ function TierCard({ label, count, unit, subline, tone, active, onClick, disabled
           </svg>
         </span>
       )}
-      <p className={`text-[10px] uppercase tracking-wider font-medium ${c.label}`}>{label}</p>
+      <p className={`text-[10px] uppercase tracking-wider font-medium ${c.label} flex items-center justify-center gap-1`}>
+        {leadingIcon}
+        <span>{label}</span>
+      </p>
       <p className={`text-2xl font-bold leading-none mt-1.5 ${c.count}`}>{count}</p>
       <p className="text-[10px] text-white/40 mt-1">{unit}</p>
       {subline && <p className="text-[10px] text-white/55 mt-0.5 font-medium">{subline}</p>}
@@ -153,6 +157,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
               count={5}
               unit={t.aboutVotesPerHour}
               subline={isAlreadySupporter ? undefined : t.aboutSupporterPriceNote}
+              leadingIcon={<span aria-hidden className="text-red-400 text-[11px] leading-none">❤</span>}
               tone="positive"
               active={activeTier === 'positive'}
               onClick={onSupporterClick}
