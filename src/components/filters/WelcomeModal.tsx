@@ -1,5 +1,6 @@
 import { ModalShell } from '../common/ModalShell';
 import { TierCard } from '../common/TierCard';
+import { VoteBullets } from '../common/VoteBullets';
 import { useI18n } from '../../i18n/I18nContext';
 
 interface WelcomeModalProps {
@@ -18,27 +19,6 @@ const WelcomeIcon = () => (
       d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"
     />
     <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M12 8v4M12 16h.01" />
-  </svg>
-);
-
-// Inline bullet icons — w-4 h-4 to match the principle icons used in AboutModal.
-const bulletIconCls = 'w-4 h-4 mt-0.5 shrink-0';
-const VoteIcon = () => (
-  <svg aria-hidden viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={bulletIconCls}>
-    <polyline points="5 11 12 4 19 11" />
-    <line x1="12" y1="4" x2="12" y2="20" />
-  </svg>
-);
-const ClockIcon = () => (
-  <svg aria-hidden viewBox="0 0 24 24" fill="none" stroke="#e94560" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={bulletIconCls}>
-    <circle cx="12" cy="12" r="10" />
-    <polyline points="12 6 12 12 16 14" />
-  </svg>
-);
-const RefillIcon = () => (
-  <svg aria-hidden viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={bulletIconCls}>
-    <path d="M21 12a9 9 0 1 1-3.4-7.06" />
-    <polyline points="21 4 21 10 15 10" />
   </svg>
 );
 
@@ -77,20 +57,7 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
         </div>
 
         {/* Principle bullets — what to expect, in one glance */}
-        <ul className="space-y-3 text-sm text-white/70">
-          <li className="flex gap-3">
-            <VoteIcon />
-            <span>{t.welcomeBulletVote}</span>
-          </li>
-          <li className="flex gap-3">
-            <ClockIcon />
-            <span>{t.welcomeBulletExpire}</span>
-          </li>
-          <li className="flex gap-3">
-            <RefillIcon />
-            <span>{t.welcomeBulletRefill}</span>
-          </li>
-        </ul>
+        <VoteBullets />
 
         {/* Plans — three tier cards, display-only, anonymous highlighted */}
         <div>

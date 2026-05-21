@@ -54,8 +54,7 @@ export interface Strings {
   aboutPrincipleTimeBody: string;
   aboutPrinciplePrivacyTitle: string;
   aboutPrinciplePrivacyBody: string;
-  aboutPrinciplePrivacyContactPrefix: string;
-  aboutPrinciplePrivacyContactLink: string;
+  aboutPrinciplePrivacyContactLink: string; // also reused as the "support" link label in Terms/Privacy
   aboutPrincipleVoiceTitle: string;
   aboutPrincipleVoiceBody: string;
   aboutPrincipleVoiceForDevs: string;
@@ -72,7 +71,6 @@ export interface Strings {
   aboutTierSupporterPromo: string;
   aboutSupporterPriceNote: string;
   aboutVotesPerHour: string;
-  aboutVoteExpiry: string;
   welcomeTitle: string;
   welcomeBulletVote: string;
   welcomeBulletExpire: string;
@@ -270,11 +268,10 @@ const en: Strings = {
   aboutPrincipleTimeTitle: 'We respect your time',
   aboutPrincipleTimeBody: 'No ads, no useless clicks, just opinions.',
   aboutPrinciplePrivacyTitle: 'We respect your privacy',
-  aboutPrinciplePrivacyBody: "No tracking. We don't share your data with anyone. Inactive accounts are deleted after 6 months.",
-  aboutPrinciplePrivacyContactPrefix: 'Need it sooner? Contact',
+  aboutPrinciplePrivacyBody: "No tracking. We don't share your data with anyone.",
   aboutPrinciplePrivacyContactLink: 'support',
-  aboutPrincipleVoiceTitle: 'We respect your voice',
-  aboutPrincipleVoiceBody: 'Our ranking algorithms are open and publicly accessible',
+  aboutPrincipleVoiceTitle: 'We respect your opinion',
+  aboutPrincipleVoiceBody: 'Rankings are calculated from votes — we never adjust the order or favor any opinion',
   aboutPrincipleVoiceForDevs: 'for devs',
   aboutFrontendRepo: 'Frontend',
   aboutBackendRepo: 'Backend',
@@ -289,9 +286,8 @@ const en: Strings = {
   aboutTierSupporterPromo: 'Extra votes ✓',
   aboutSupporterPriceNote: '€2.99/month',
   aboutVotesPerHour: 'votes / hr',
-  aboutVoteExpiry: 'Votes expire after 24 hours, so rankings reflect how people feel right now. You gain new votes every hour. Each vote counts once per type (▲ or ▼) within your hourly allowance.',
   welcomeTitle: 'Welcome to Opinio',
-  welcomeBulletVote: 'Vote on statements, events, and public figures',
+  welcomeBulletVote: 'Like or dislike statements, events, and public figures',
   welcomeBulletExpire: 'Votes expire after 24 hours, so rankings stay alive',
   welcomeBulletRefill: 'Each vote refills 1 hour after you cast it',
   welcomeTiersTitle: 'Plans',
@@ -506,11 +502,10 @@ const cs: Strings = {
   aboutPrincipleTimeTitle: 'Respektujeme váš čas',
   aboutPrincipleTimeBody: 'Žádné reklamy, žádné zbytečné klikání, jen názory.',
   aboutPrinciplePrivacyTitle: 'Respektujeme vaše soukromí',
-  aboutPrinciplePrivacyBody: 'Žádné sledování. Vaše data s nikým nesdílíme. Neaktivní účty mažeme po 6 měsících.',
-  aboutPrinciplePrivacyContactPrefix: 'Chcete to dřív? Napište',
+  aboutPrinciplePrivacyBody: 'Žádné sledování. Vaše data s nikým nesdílíme.',
   aboutPrinciplePrivacyContactLink: 'podpoře',
-  aboutPrincipleVoiceTitle: 'Respektujeme váš hlas',
-  aboutPrincipleVoiceBody: 'Naše algoritmy řazení jsou otevřené a veřejně přístupné',
+  aboutPrincipleVoiceTitle: 'Respektujeme váš názor',
+  aboutPrincipleVoiceBody: 'Pořadí počítáme z hlasů — nikdy ho neupravujeme ani nezvýhodňujeme žádný názor',
   aboutPrincipleVoiceForDevs: 'pro vývojáře',
   aboutFrontendRepo: 'Frontend',
   aboutBackendRepo: 'Backend',
@@ -525,9 +520,8 @@ const cs: Strings = {
   aboutTierSupporterPromo: 'Více hlasů ✓',
   aboutSupporterPriceNote: '2,99 €/měsíc',
   aboutVotesPerHour: 'hlasů / hod',
-  aboutVoteExpiry: 'Hlasy vyprší po 24 hodinách, takže žebříčky ukazují, jak se lidé cítí právě teď. Nové hlasy získáváš každou hodinu. Každý hlas se počítá jednou za typ (▲ nebo ▼) v rámci hodinového limitu.',
   welcomeTitle: 'Vítej v Opinio',
-  welcomeBulletVote: 'Hlasuj o tématech, událostech a veřejných osobnostech',
+  welcomeBulletVote: 'Lajkuj nebo zamítni témata, události a veřejné osobnosti',
   welcomeBulletExpire: 'Hlasy vyprší po 24 hodinách, žebříčky tak žijí',
   welcomeBulletRefill: 'Každý hlas se ti vrátí hodinu po hlasování',
   welcomeTiersTitle: 'Plány',
@@ -742,11 +736,10 @@ const es: Strings = {
   aboutPrincipleTimeTitle: 'Respetamos tu tiempo',
   aboutPrincipleTimeBody: 'Sin anuncios, sin clics inútiles, solo opiniones.',
   aboutPrinciplePrivacyTitle: 'Respetamos tu privacidad',
-  aboutPrinciplePrivacyBody: 'Sin seguimiento. No compartimos tus datos con nadie. Las cuentas inactivas se eliminan tras 6 meses.',
-  aboutPrinciplePrivacyContactPrefix: '¿Lo necesitas antes? Escribe a',
+  aboutPrinciplePrivacyBody: 'Sin seguimiento. No compartimos tus datos con nadie.',
   aboutPrinciplePrivacyContactLink: 'soporte',
-  aboutPrincipleVoiceTitle: 'Respetamos tu voz',
-  aboutPrincipleVoiceBody: 'Nuestros algoritmos de ranking son abiertos y de acceso público',
+  aboutPrincipleVoiceTitle: 'Respetamos tu opinión',
+  aboutPrincipleVoiceBody: 'El ranking se calcula a partir de los votos — nunca ajustamos el orden ni favorecemos ninguna opinión',
   aboutPrincipleVoiceForDevs: 'para desarrolladores',
   aboutFrontendRepo: 'Frontend',
   aboutBackendRepo: 'Backend',
@@ -761,9 +754,8 @@ const es: Strings = {
   aboutTierSupporterPromo: 'Votos extra ✓',
   aboutSupporterPriceNote: '2,99 €/mes',
   aboutVotesPerHour: 'votes / hr',
-  aboutVoteExpiry: 'Los votos caducan a las 24 horas, así que los rankings reflejan cómo se siente la gente ahora. Ganas nuevos votos cada hora. Cada voto cuenta una vez por tipo (▲ o ▼) dentro de tu límite por hora.',
   welcomeTitle: 'Bienvenido a Opinio',
-  welcomeBulletVote: 'Vota sobre opiniones, eventos y figuras públicas',
+  welcomeBulletVote: 'Dale me gusta o no me gusta a opiniones, eventos y figuras públicas',
   welcomeBulletExpire: 'Los votos caducan a las 24 horas, así los rankings siguen vivos',
   welcomeBulletRefill: 'Cada voto se renueva 1 hora después de usarlo',
   welcomeTiersTitle: 'Planes',

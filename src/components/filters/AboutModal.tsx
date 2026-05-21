@@ -1,7 +1,7 @@
-import { Fragment } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ModalShell } from '../common/ModalShell';
 import { TierCard, type TierTone } from '../common/TierCard';
+import { VoteBullets } from '../common/VoteBullets';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
 import { useBillingRedirect } from '../../hooks/useBillingRedirect';
@@ -10,14 +10,6 @@ import { useSignIn } from '../auth/SignInContext';
 
 interface AboutModalProps {
   onClose: () => void;
-}
-
-function withVoteIcons(text: string): React.ReactNode[] {
-  return text.split(/(▲|▼)/).map((part, i) => {
-    if (part === '▲') return <span key={i} className="text-positive font-medium">▲</span>;
-    if (part === '▼') return <span key={i} className="text-negative font-medium">▼</span>;
-    return <Fragment key={i}>{part}</Fragment>;
-  });
 }
 
 const AboutIcon = () => (
@@ -84,6 +76,9 @@ export function AboutModal({ onClose }: AboutModalProps) {
           <p className="text-sm font-semibold text-white leading-snug">{t.brandTagline}</p>
         </div>
 
+        {/* Principle bullets — shared with WelcomeModal so both headers match */}
+        <VoteBullets />
+
         {/* Tier comparison — 3-column grid */}
         <div>
           <p className="text-[11px] uppercase tracking-wider font-semibold text-white/40 mb-2">{t.aboutTiersTitle}</p>
@@ -121,7 +116,6 @@ export function AboutModal({ onClose }: AboutModalProps) {
               )}
             </div>
           </div>
-          <p className="text-xs text-white/35 mt-3 leading-snug">{withVoteIcons(t.aboutVoteExpiry)}</p>
         </div>
 
         {/* Principles — with proper icons */}
@@ -137,16 +131,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
             <li className="flex gap-3">
               <ShieldIcon />
               <span>
-                <span className="text-white/90 font-medium">{t.aboutPrinciplePrivacyTitle}.</span>{' '}{t.aboutPrinciplePrivacyBody}{' '}
-                {t.aboutPrinciplePrivacyContactPrefix}{' '}
-                <button
-                  type="button"
-                  onClick={() => navigate('/support' + location.search)}
-                  className="text-accent hover:text-accent/80 transition-colors"
-                >
-                  {t.aboutPrinciplePrivacyContactLink}
-                </button>
-                .
+                <span className="text-white/90 font-medium">{t.aboutPrinciplePrivacyTitle}.</span>{' '}{t.aboutPrinciplePrivacyBody}
               </span>
             </li>
             <li className="flex gap-3">
