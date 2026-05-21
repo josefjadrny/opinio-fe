@@ -49,7 +49,6 @@ export interface Strings {
   upgradeBanner: string;
   manageSubscription: string;
   aboutHero: string;
-  aboutFreshness: string;
   aboutPrinciplesTitle: string;
   aboutPrincipleTimeTitle: string;
   aboutPrincipleTimeBody: string;
@@ -268,7 +267,6 @@ const en: Strings = {
   upgradeBanner: 'Become a supporter',
   manageSubscription: 'Manage subscription',
   aboutHero: 'Opinio is a social voting platform from Europe 🇪🇺. Vote on the stories shaping the world today.',
-  aboutFreshness: 'Every vote expires after 24 hours, so what you see is now, not history.',
   aboutPrinciplesTitle: 'Our principles',
   aboutPrincipleTimeTitle: 'We respect your time',
   aboutPrincipleTimeBody: 'No ads, no useless clicks, just opinions.',
@@ -506,7 +504,6 @@ const cs: Strings = {
   language: 'Jazyk',
   languageHint: 'Mění jen rozhraní, ne názory',
   aboutHero: 'Opinio je evropská sociální hlasovací platforma 🇪🇺. Hlasujte o tématech, která utvářejí dnešní svět.',
-  aboutFreshness: 'Každý hlas vyprší po 24 hodinách, takže vidíte to, co se děje teď, ne historii.',
   aboutPrinciplesTitle: 'Naše principy',
   aboutPrincipleTimeTitle: 'Respektujeme váš čas',
   aboutPrincipleTimeBody: 'Žádné reklamy, žádné zbytečné klikání, jen názory.',
@@ -744,7 +741,6 @@ const es: Strings = {
   language: 'Idioma',
   languageHint: 'Cambia solo la interfaz, no las opiniones',
   aboutHero: 'Opinio es una plataforma europea de votación social 🇪🇺. Vota sobre las historias que dan forma al mundo hoy.',
-  aboutFreshness: 'Cada voto caduca a las 24 horas, así que ves lo de ahora, no la historia.',
   aboutPrinciplesTitle: 'Nuestros principios',
   aboutPrincipleTimeTitle: 'Respetamos tu tiempo',
   aboutPrincipleTimeBody: 'Sin anuncios, sin clics inútiles, solo opiniones.',

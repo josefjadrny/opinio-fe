@@ -82,7 +82,6 @@ export function AboutModal({ onClose }: AboutModalProps) {
             <span className="text-2xl font-bold text-accent tracking-tight">{t.appName}</span>
           </div>
           <p className="text-sm font-semibold text-white leading-snug">{t.aboutHero}</p>
-          <p className="text-xs text-white/55 leading-relaxed">{t.aboutFreshness}</p>
         </div>
 
         {/* Tier comparison — 3-column grid */}
