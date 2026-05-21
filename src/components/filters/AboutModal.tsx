@@ -81,7 +81,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
             <img src="/favicon.svg" alt="" className="w-9 h-9" />
             <span className="text-2xl font-bold text-accent tracking-tight">{t.appName}</span>
           </div>
-          <p className="text-sm font-semibold text-white leading-snug">{t.aboutHero}</p>
+          <p className="text-sm font-semibold text-white leading-snug">{t.brandTagline}</p>
         </div>
 
         {/* Tier comparison — 3-column grid */}

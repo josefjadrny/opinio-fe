@@ -48,7 +48,7 @@ export interface Strings {
   languageHint: string;
   upgradeBanner: string;
   manageSubscription: string;
-  aboutHero: string;
+  brandTagline: string;
   aboutPrinciplesTitle: string;
   aboutPrincipleTimeTitle: string;
   aboutPrincipleTimeBody: string;
@@ -74,7 +74,6 @@ export interface Strings {
   aboutVotesPerHour: string;
   aboutVoteExpiry: string;
   welcomeTitle: string;
-  welcomeIntro: string;
   welcomeBulletVote: string;
   welcomeBulletExpire: string;
   welcomeBulletRefill: string;
@@ -266,7 +265,7 @@ const en: Strings = {
   languageHint: 'Changes the interface only, not the opinions',
   upgradeBanner: 'Become a supporter',
   manageSubscription: 'Manage subscription',
-  aboutHero: 'Opinio is a social voting platform from Europe 🇪🇺. Vote on the stories shaping the world today.',
+  brandTagline: 'Social voting platform from Europe 🇪🇺. Vote on the stories shaping the world today.',
   aboutPrinciplesTitle: 'Our principles',
   aboutPrincipleTimeTitle: 'We respect your time',
   aboutPrincipleTimeBody: 'No ads, no useless clicks, just opinions.',
@@ -292,7 +291,6 @@ const en: Strings = {
   aboutVotesPerHour: 'votes / hr',
   aboutVoteExpiry: 'Votes expire after 24 hours, so rankings reflect how people feel right now. You gain new votes every hour. Each vote counts once per type (▲ or ▼) within your hourly allowance.',
   welcomeTitle: 'Welcome to Opinio',
-  welcomeIntro: 'Opinio is a social voting platform from Europe 🇪🇺. Vote on the stories shaping the world today.',
   welcomeBulletVote: 'Vote on statements, events, and public figures',
   welcomeBulletExpire: 'Votes expire after 24 hours, so rankings stay alive',
   welcomeBulletRefill: 'Each vote refills 1 hour after you cast it',
@@ -503,7 +501,7 @@ const cs: Strings = {
   manageSubscription: 'Spravovat předplatné',
   language: 'Jazyk',
   languageHint: 'Mění jen rozhraní, ne názory',
-  aboutHero: 'Opinio je evropská sociální hlasovací platforma 🇪🇺. Hlasujte o tématech, která utvářejí dnešní svět.',
+  brandTagline: 'Evropská sociální hlasovací platforma 🇪🇺. Hlasuj o tématech, která utvářejí dnešní svět.',
   aboutPrinciplesTitle: 'Naše principy',
   aboutPrincipleTimeTitle: 'Respektujeme váš čas',
   aboutPrincipleTimeBody: 'Žádné reklamy, žádné zbytečné klikání, jen názory.',
@@ -529,7 +527,6 @@ const cs: Strings = {
   aboutVotesPerHour: 'hlasů / hod',
   aboutVoteExpiry: 'Hlasy vyprší po 24 hodinách, takže žebříčky ukazují, jak se lidé cítí právě teď. Nové hlasy získáváš každou hodinu. Každý hlas se počítá jednou za typ (▲ nebo ▼) v rámci hodinového limitu.',
   welcomeTitle: 'Vítej v Opinio',
-  welcomeIntro: 'Opinio je evropská sociální hlasovací platforma 🇪🇺. Hlasuj o tématech, která utvářejí dnešní svět.',
   welcomeBulletVote: 'Hlasuj o tématech, událostech a veřejných osobnostech',
   welcomeBulletExpire: 'Hlasy vyprší po 24 hodinách, žebříčky tak žijí',
   welcomeBulletRefill: 'Každý hlas se ti vrátí hodinu po hlasování',
@@ -740,7 +737,7 @@ const es: Strings = {
   manageSubscription: 'Gestionar suscripción',
   language: 'Idioma',
   languageHint: 'Cambia solo la interfaz, no las opiniones',
-  aboutHero: 'Opinio es una plataforma europea de votación social 🇪🇺. Vota sobre las historias que dan forma al mundo hoy.',
+  brandTagline: 'Plataforma europea de votación social 🇪🇺. Vota sobre las historias que dan forma al mundo hoy.',
   aboutPrinciplesTitle: 'Nuestros principios',
   aboutPrincipleTimeTitle: 'Respetamos tu tiempo',
   aboutPrincipleTimeBody: 'Sin anuncios, sin clics inútiles, solo opiniones.',
@@ -766,7 +763,6 @@ const es: Strings = {
   aboutVotesPerHour: 'votes / hr',
   aboutVoteExpiry: 'Los votos caducan a las 24 horas, así que los rankings reflejan cómo se siente la gente ahora. Ganas nuevos votos cada hora. Cada voto cuenta una vez por tipo (▲ o ▼) dentro de tu límite por hora.',
   welcomeTitle: 'Bienvenido a Opinio',
-  welcomeIntro: 'Opinio es una plataforma europea de votación social 🇪🇺. Vota sobre las historias que dan forma al mundo hoy.',
   welcomeBulletVote: 'Vota sobre opiniones, eventos y figuras públicas',
   welcomeBulletExpire: 'Los votos caducan a las 24 horas, así los rankings siguen vivos',
   welcomeBulletRefill: 'Cada voto se renueva 1 hora después de usarlo',

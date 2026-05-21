@@ -73,7 +73,7 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
             <img src="/favicon.svg" alt="" className="w-9 h-9" />
             <span className="text-2xl font-bold text-accent tracking-tight">{t.appName}</span>
           </div>
-          <p className="text-sm font-semibold text-white leading-snug">{t.welcomeIntro}</p>
+          <p className="text-sm font-semibold text-white leading-snug">{t.brandTagline}</p>
         </div>
 
         {/* Principle bullets — what to expect, in one glance */}
