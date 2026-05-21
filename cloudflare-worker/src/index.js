@@ -289,7 +289,7 @@ async function handleUser(request, id) {
   const title = `@${user.displayName} - Opinio`;
   const profileCount = Array.isArray(user.profiles) ? user.profiles.length : 0;
   const description = truncate(
-    `@${user.displayName} on Opinio — ${profileCount} reported profile${profileCount === 1 ? '' : 's'}, ` +
+    `@${user.displayName} on Opinio - ${profileCount} reported profile${profileCount === 1 ? '' : 's'}, ` +
     `${user.totalLikesCast || 0} likes and ${user.totalDislikesCast || 0} dislikes cast.`,
     200,
   );
@@ -318,7 +318,7 @@ async function handleUser(request, id) {
 const STATIC_PAGES = {
   '/about': {
     title: 'About - Opinio',
-    description: 'About Opinio — live world rankings of people, statements, and ideas, voted on by country.',
+    description: 'About Opinio - live world rankings of people, statements, and ideas, voted on by country.',
   },
   '/privacy': {
     title: 'Privacy - Opinio',
@@ -390,7 +390,7 @@ async function handleCountry(request, code) {
   const likes = counts?.likes ?? 0;
   const dislikes = counts?.dislikes ?? 0;
   const description = (likes || dislikes)
-    ? `${name} on Opinio — ${formatCountForOg(likes)} likes, ${formatCountForOg(dislikes)} dislikes in the last 24h.`
+    ? `${name} on Opinio - ${formatCountForOg(likes)} likes, ${formatCountForOg(dislikes)} dislikes in the last 24h.`
     : `Live rankings and votes from ${name} on Opinio.`;
   const canonicalUrl = `${SITE_BASE}/c/${code}`;
 

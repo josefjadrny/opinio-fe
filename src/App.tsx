@@ -43,8 +43,8 @@ const MAX_WIDTH = 700;
 
 const BASE_URL = 'https://opinio.live';
 const BRAND = 'Opinio';
-const DEFAULT_TITLE = 'Opinio — Live world rankings of people and statements';
-const DEFAULT_DESCRIPTION = 'Discover who is rising and falling worldwide in real time. Vote on statements and public figures, explore country trends, and see live rankings refreshed every 24 hours.';
+const DEFAULT_TITLE = 'Opinio - Vote on the stories shaping the world today';
+const DEFAULT_DESCRIPTION = 'A social voting platform from Europe. Like or dislike the statements, events & public figures shaping the world - ranked country by country, refreshed every 24h.';
 
 type SeoMeta = {
   title: string;
@@ -74,42 +74,42 @@ function upsertCanonical(href: string) {
 function getSeoMeta(pathname: string): SeoMeta {
   if (pathname === '/stats') {
     return {
-      title: `Top voters by country — ${BRAND}`,
+      title: `Top voters by country - ${BRAND}`,
       description: 'See the most active voters by likes and dislikes across countries on Opinio.',
       canonicalPath: '/stats',
     };
   }
   if (pathname === '/about') {
     return {
-      title: `About Opinio — How live voting works`,
+      title: `About Opinio - How live voting works`,
       description: 'Learn how Opinio works: fast social voting, expiring votes after 24 hours, and live world trends.',
       canonicalPath: '/about',
     };
   }
   if (pathname === '/privacy') {
     return {
-      title: `Privacy notice — ${BRAND}`,
+      title: `Privacy notice - ${BRAND}`,
       description: 'Opinio privacy notice: what we collect, why, retention, and your rights under GDPR.',
       canonicalPath: '/privacy',
     };
   }
   if (pathname === '/terms') {
     return {
-      title: `Terms of use — ${BRAND}`,
+      title: `Terms of use - ${BRAND}`,
       description: 'Opinio terms of use: posting rules, voting, subscriptions, and account suspensions.',
       canonicalPath: '/terms',
     };
   }
   if (pathname === '/support') {
     return {
-      title: `Support — ${BRAND}`,
+      title: `Support - ${BRAND}`,
       description: 'Contact Opinio support, manage your tickets, and get help with voting, profiles, and account settings.',
       canonicalPath: '/support',
     };
   }
   if (pathname === '/sign-in') {
     return {
-      title: `Sign in — ${BRAND}`,
+      title: `Sign in - ${BRAND}`,
       description: 'Sign in to Opinio with Google or Microsoft to vote, post profiles, and track your activity.',
       canonicalPath: '/sign-in',
     };
@@ -135,7 +135,7 @@ function applySeo(pathname: string) {
 }
 
 function applyProfileSeo(name: string, description: string, id: string) {
-  const title = `${name} — ${BRAND}`;
+  const title = `${name} - ${BRAND}`;
   const canonicalUrl = `${BASE_URL}/p/${id}`;
   document.title = title;
   upsertMeta('meta[name="description"]', { name: 'description', content: description });
@@ -149,7 +149,7 @@ function applyProfileSeo(name: string, description: string, id: string) {
 
 function applyCountrySeo(code: string) {
   const name = getCountryName(code);
-  const title = `${name} — ${BRAND}`;
+  const title = `${name} - ${BRAND}`;
   const description = `Live rankings and votes from ${name} on Opinio.`;
   const canonicalUrl = `${BASE_URL}/c/${code}`;
   document.title = title;
@@ -163,7 +163,7 @@ function applyCountrySeo(code: string) {
 }
 
 function applyUserSeo(displayName: string, id: string) {
-  const title = `@${displayName} — ${BRAND}`;
+  const title = `@${displayName} - ${BRAND}`;
   const description = `${displayName}'s reported profiles and votes on Opinio.`;
   const canonicalUrl = `${BASE_URL}/u/${id}`;
   document.title = title;
@@ -260,7 +260,7 @@ function AppLayout() {
     }
     const billing = params.get('billing');
     if (billing) {
-      // After Stripe redirect — webhook may land 1–3s after the browser returns. Refetch a few times.
+      // After Stripe redirect - webhook may land 1-3s after the browser returns. Refetch a few times.
       queryClient.invalidateQueries({ queryKey: ['me'] });
       if (billing === 'success') {
         const t1 = setTimeout(() => queryClient.invalidateQueries({ queryKey: ['me'] }), 2_000);
@@ -499,7 +499,7 @@ function WelcomeRoute() {
   const navigate = useNavigate();
   const location = useLocation();
   const handleClose = () => {
-    try { localStorage.setItem(WELCOME_SEEN_KEY, '1'); } catch { /* private mode — degrade silently */ }
+    try { localStorage.setItem(WELCOME_SEEN_KEY, '1'); } catch { /* private mode - degrade silently */ }
     navigate('/' + location.search, { replace: true });
   };
   return <WelcomeModal onClose={handleClose} />;
