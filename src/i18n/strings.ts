@@ -67,12 +67,14 @@ export interface Strings {
   aboutTierSupporter: string;
   aboutTierSupporterPromo: string;
   aboutSupporterPriceNote: string;
-  aboutVotesPerHour: string;
+  // votes-per-hour unit, by plural category of the count (one=1, few=2-4, many=5+)
+  aboutVotesPerHourOne: string;
+  aboutVotesPerHourFew: string;
+  aboutVotesPerHourMany: string;
   welcomeTitle: string;
   welcomeBulletVote: string;
   welcomeBulletExpire: string;
   welcomeBulletRefill: string;
-  welcomeTiersTitle: string;
   welcomeCta: string;
   privacy: string;
   privacyLastUpdated: string;
@@ -279,12 +281,13 @@ const en: Strings = {
   aboutTierSupporter: 'Supporter',
   aboutTierSupporterPromo: 'Extra votes ✓',
   aboutSupporterPriceNote: '€2.99/month',
-  aboutVotesPerHour: 'votes / hr',
+  aboutVotesPerHourOne: 'vote / hr',
+  aboutVotesPerHourFew: 'votes / hr',
+  aboutVotesPerHourMany: 'votes / hr',
   welcomeTitle: 'Welcome to Opinio',
   welcomeBulletVote: 'Like or dislike statements, events, and public figures',
   welcomeBulletExpire: 'Votes expire after 24 hours, so rankings stay alive',
   welcomeBulletRefill: 'Each vote refills 1 hour after you cast it',
-  welcomeTiersTitle: 'Plans',
   welcomeCta: "Let's vote",
   privacy: 'Privacy',
   privacyLastUpdated: 'Last updated: April 30, 2026',
@@ -510,12 +513,13 @@ const cs: Strings = {
   aboutTierSupporter: 'Podporovatel',
   aboutTierSupporterPromo: 'Více hlasů ✓',
   aboutSupporterPriceNote: '2,99 €/měsíc',
-  aboutVotesPerHour: 'hlasů / hod',
+  aboutVotesPerHourOne: 'hlas / hod',
+  aboutVotesPerHourFew: 'hlasy / hod',
+  aboutVotesPerHourMany: 'hlasů / hod',
   welcomeTitle: 'Vítej v Opinio',
   welcomeBulletVote: 'Lajkuj nebo zamítni témata, události a veřejné osobnosti',
   welcomeBulletExpire: 'Hlasy vyprší po 24 hodinách, žebříčky tak žijí',
   welcomeBulletRefill: 'Každý hlas se ti vrátí hodinu po hlasování',
-  welcomeTiersTitle: 'Plány',
   welcomeCta: 'Pojďme hlasovat',
   privacy: 'Ochrana osobních údajů',
   privacyLastUpdated: 'Aktualizováno: 30. dubna 2026',
@@ -741,12 +745,13 @@ const es: Strings = {
   aboutTierSupporter: 'Supporter',
   aboutTierSupporterPromo: 'Votos extra ✓',
   aboutSupporterPriceNote: '2,99 €/mes',
-  aboutVotesPerHour: 'votes / hr',
+  aboutVotesPerHourOne: 'voto / h',
+  aboutVotesPerHourFew: 'votos / h',
+  aboutVotesPerHourMany: 'votos / h',
   welcomeTitle: 'Bienvenido a Opinio',
   welcomeBulletVote: 'Dale me gusta o no me gusta a opiniones, eventos y figuras públicas',
   welcomeBulletExpire: 'Los votos caducan a las 24 horas, así los rankings siguen vivos',
   welcomeBulletRefill: 'Cada voto se renueva 1 hora después de usarlo',
-  welcomeTiersTitle: 'Planes',
   welcomeCta: 'A votar',
   privacy: 'Privacidad',
   privacyLastUpdated: 'Actualizado: 30 de abril de 2026',
