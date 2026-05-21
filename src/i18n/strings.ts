@@ -57,9 +57,6 @@ export interface Strings {
   aboutPrinciplePrivacyContactLink: string; // also reused as the "support" link label in Terms/Privacy
   aboutPrincipleVoiceTitle: string;
   aboutPrincipleVoiceBody: string;
-  aboutPrincipleVoiceForDevs: string;
-  aboutFrontendRepo: string;
-  aboutBackendRepo: string;
   aboutMadeInCzechia: string;
   aboutHostedInGermany: string;
   aboutEuOrigin: string;
@@ -271,10 +268,7 @@ const en: Strings = {
   aboutPrinciplePrivacyBody: "No tracking. We don't share your data with anyone.",
   aboutPrinciplePrivacyContactLink: 'support',
   aboutPrincipleVoiceTitle: 'We respect your opinion',
-  aboutPrincipleVoiceBody: 'Rankings are calculated from votes — we never adjust the order or favor any opinion',
-  aboutPrincipleVoiceForDevs: 'for devs',
-  aboutFrontendRepo: 'Frontend',
-  aboutBackendRepo: 'Backend',
+  aboutPrincipleVoiceBody: 'Rankings are calculated from votes - we never adjust the order or favor any opinion',
   aboutMadeInCzechia: 'Made in Czechia',
   aboutHostedInGermany: 'Hosted in Germany',
   aboutEuOrigin: 'EU origin',
@@ -505,10 +499,7 @@ const cs: Strings = {
   aboutPrinciplePrivacyBody: 'Žádné sledování. Vaše data s nikým nesdílíme.',
   aboutPrinciplePrivacyContactLink: 'podpoře',
   aboutPrincipleVoiceTitle: 'Respektujeme váš názor',
-  aboutPrincipleVoiceBody: 'Pořadí počítáme z hlasů — nikdy ho neupravujeme ani nezvýhodňujeme žádný názor',
-  aboutPrincipleVoiceForDevs: 'pro vývojáře',
-  aboutFrontendRepo: 'Frontend',
-  aboutBackendRepo: 'Backend',
+  aboutPrincipleVoiceBody: 'Pořadí počítáme z hlasů - nikdy ho neupravujeme ani nezvýhodňujeme žádný názor',
   aboutMadeInCzechia: 'Vytvořeno v Česku',
   aboutHostedInGermany: 'Hostováno v Německu',
   aboutEuOrigin: 'Původ v EU',
@@ -739,10 +730,7 @@ const es: Strings = {
   aboutPrinciplePrivacyBody: 'Sin seguimiento. No compartimos tus datos con nadie.',
   aboutPrinciplePrivacyContactLink: 'soporte',
   aboutPrincipleVoiceTitle: 'Respetamos tu opinión',
-  aboutPrincipleVoiceBody: 'El ranking se calcula a partir de los votos — nunca ajustamos el orden ni favorecemos ninguna opinión',
-  aboutPrincipleVoiceForDevs: 'para desarrolladores',
-  aboutFrontendRepo: 'Frontend',
-  aboutBackendRepo: 'Backend',
+  aboutPrincipleVoiceBody: 'El ranking se calcula a partir de los votos - nunca ajustamos el orden ni favorecemos ninguna opinión',
   aboutMadeInCzechia: 'Made in Czechia',
   aboutHostedInGermany: 'Hosted in Germany',
   aboutEuOrigin: 'EU origin',

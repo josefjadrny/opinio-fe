@@ -137,26 +137,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
             <li className="flex gap-3">
               <VoiceIcon />
               <span>
-                <span className="text-white/90 font-medium">{t.aboutPrincipleVoiceTitle}.</span>{' '}{t.aboutPrincipleVoiceBody}{' '}
-                <span className="text-white/40">({t.aboutPrincipleVoiceForDevs}</span>{': '}
-                <a
-                  href="https://github.com/josefjadrny/opinio-fe"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-accent hover:text-accent/80 transition-colors"
-                >
-                  {t.aboutFrontendRepo}
-                </a>
-                <span className="text-white/40">{' · '}</span>
-                <a
-                  href="https://github.com/josefjadrny/opinio-api"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-accent hover:text-accent/80 transition-colors"
-                >
-                  {t.aboutBackendRepo}
-                </a>
-                <span className="text-white/40">)</span>
+                <span className="text-white/90 font-medium">{t.aboutPrincipleVoiceTitle}.</span>{' '}{t.aboutPrincipleVoiceBody}.
               </span>
             </li>
           </ul>
