@@ -85,16 +85,24 @@ function upscaleAvatarUrl(url) {
   return url;
 }
 
+// Returns a discriminated result so callers can distinguish a genuine
+// "entity does not exist" (upstream 404 → SEO 404) from a transient API
+// outage (5xx / network / timeout → keep serving the 200 shell). A naive
+// "null means not-found" would turn an API blip into 404s for live content
+// and tell crawlers to drop real profiles.
+//   { ok: true,  data }                  — upstream 200
+//   { ok: false, notFound: true }        — upstream 404 (genuinely gone)
+//   { ok: false, notFound: false }       — 5xx / other non-200 / network / timeout
 async function fetchProfile(id) {
   try {
     const res = await fetch(`${API_BASE}/api/profiles/${id}`, {
       headers: { accept: 'application/json' },
       cf: { cacheTtl: 300, cacheEverything: true },
     });
-    if (!res.ok) return null;
-    return await res.json();
+    if (res.ok) return { ok: true, data: await res.json() };
+    return { ok: false, notFound: res.status === 404 };
   } catch {
-    return null;
+    return { ok: false, notFound: false };
   }
 }
 
@@ -104,10 +112,10 @@ async function fetchUser(id) {
       headers: { accept: 'application/json' },
       cf: { cacheTtl: 300, cacheEverything: true },
     });
-    if (!res.ok) return null;
-    return await res.json();
+    if (res.ok) return { ok: true, data: await res.json() };
+    return { ok: false, notFound: res.status === 404 };
   } catch {
-    return null;
+    return { ok: false, notFound: false };
   }
 }
 
@@ -235,7 +243,7 @@ function injectProfileMeta(html, meta) {
 }
 
 async function handleProfile(request, id) {
-  const [profile, shellRes] = await Promise.all([
+  const [result, shellRes] = await Promise.all([
     fetchProfile(id),
     fetchShellHtml(request),
   ]);
@@ -244,11 +252,18 @@ async function handleProfile(request, id) {
   const headers = new Headers();
   headers.set('content-type', 'text/html; charset=utf-8');
   headers.set('cache-control', 'public, max-age=300, s-maxage=300');
-  headers.set('x-opinio-og', profile ? 'profile' : 'fallback');
 
-  if (!profile) {
-    return new Response(shellText, { status: 200, headers });
+  if (!result.ok) {
+    // Upstream 404 → genuine not-found → SEO 404 (still serve the friendly
+    // shell so the SPA renders its client-side not-found UI). Any other
+    // failure (5xx / network / timeout) is a transient API outage and must
+    // keep returning the 200 shell so crawlers don't drop live profiles.
+    headers.set('x-opinio-og', result.notFound ? 'notfound' : 'fallback');
+    return new Response(shellText, { status: result.notFound ? 404 : 200, headers });
   }
+
+  const profile = result.data;
+  headers.set('x-opinio-og', 'profile');
 
   const title = `${profile.name} - Opinio`;
   const descSource = profile.description || `${profile.name} on Opinio - vote like or dislike.`;
@@ -271,7 +286,7 @@ async function handleProfile(request, id) {
 }
 
 async function handleUser(request, id) {
-  const [user, shellRes] = await Promise.all([
+  const [result, shellRes] = await Promise.all([
     fetchUser(id),
     fetchShellHtml(request),
   ]);
@@ -280,11 +295,18 @@ async function handleUser(request, id) {
   const headers = new Headers();
   headers.set('content-type', 'text/html; charset=utf-8');
   headers.set('cache-control', 'public, max-age=300, s-maxage=300');
-  headers.set('x-opinio-og', user ? 'user' : 'fallback');
 
-  if (!user) {
-    return new Response(shellText, { status: 200, headers });
+  if (!result.ok) {
+    // Upstream 404 → genuine not-found → SEO 404 (still serve the friendly
+    // shell so the SPA renders its client-side not-found UI). Any other
+    // failure (5xx / network / timeout) is a transient API outage and must
+    // keep returning the 200 shell so crawlers don't drop live users.
+    headers.set('x-opinio-og', result.notFound ? 'notfound' : 'fallback');
+    return new Response(shellText, { status: result.notFound ? 404 : 200, headers });
   }
+
+  const user = result.data;
+  headers.set('x-opinio-og', 'user');
 
   const title = `@${user.displayName} - Opinio`;
   const profileCount = Array.isArray(user.profiles) ? user.profiles.length : 0;
@@ -381,8 +403,11 @@ async function handleCountry(request, code) {
 
   const name = COUNTRY_NAMES[code];
   if (!name) {
-    headers.set('x-opinio-og', 'fallback');
-    return new Response(shellText, { status: 200, headers });
+    // Country list is hardcoded in COUNTRY_NAMES (no upstream call to fail),
+    // so an unknown code is a genuine not-found with no outage risk → SEO 404.
+    // Still serve the friendly shell so the SPA renders its not-found UI.
+    headers.set('x-opinio-og', 'notfound');
+    return new Response(shellText, { status: 404, headers });
   }
 
   headers.set('x-opinio-og', 'country');
