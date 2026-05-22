@@ -28,7 +28,7 @@ import { SettingsModal } from './components/filters/SettingsModal';
 import { AboutModal } from './components/filters/AboutModal';
 import { PrivacyModal } from './components/filters/PrivacyModal';
 import { TermsModal } from './components/filters/TermsModal';
-import { StatsModal } from './components/filters/StatsModal';
+import { StatsModal, slugToCategory } from './components/filters/StatsModal';
 import { SupportModal } from './components/filters/SupportModal';
 import { ViewerModeModal } from './components/filters/ViewerModeModal';
 import { WelcomeModal } from './components/filters/WelcomeModal';
@@ -74,9 +74,23 @@ function upsertCanonical(href: string) {
 function getSeoMeta(pathname: string): SeoMeta {
   if (pathname === '/stats') {
     return {
-      title: `Top voters by country - ${BRAND}`,
-      description: 'See the most active voters by likes and dislikes across countries on Opinio.',
+      title: `Trending opinions right now - ${BRAND}`,
+      description: 'The opinions, takes and ideas getting the most votes right now on Opinio - ranked live and refreshed every 24 hours.',
       canonicalPath: '/stats',
+    };
+  }
+  if (pathname === '/stats/trending-countries') {
+    return {
+      title: `Trending countries by votes - ${BRAND}`,
+      description: 'Which countries are generating the most buzz right now - ranked by votes on their active posts, refreshed every 24 hours on Opinio.',
+      canonicalPath: '/stats/trending-countries',
+    };
+  }
+  if (pathname === '/stats/top-voters') {
+    return {
+      title: `Top voters leaderboard - ${BRAND}`,
+      description: 'The most active voters worldwide and by country, ranked by likes and dislikes cast on Opinio.',
+      canonicalPath: '/stats/top-voters',
     };
   }
   if (pathname === '/about') {
@@ -435,7 +449,8 @@ function TermsRoute() {
 
 function StatsRoute() {
   const navigate = useNavigate();
-  return <StatsModal onClose={() => navigate(-1)} />;
+  const { category } = useParams();
+  return <StatsModal category={slugToCategory(category)} onClose={() => navigate(-1)} />;
 }
 
 function SupportRoute() {
@@ -597,6 +612,7 @@ function AppContent() {
         <Route path="privacy" element={<PrivacyRoute />} />
         <Route path="terms" element={<TermsRoute />} />
         <Route path="stats" element={<StatsRoute />} />
+        <Route path="stats/:category" element={<StatsRoute />} />
         <Route path="support" element={<SupportRoute />} />
         <Route path="sign-in" element={<SignInRoute />} />
         <Route path="viewer-mode" element={<ViewerModeRoute />} />

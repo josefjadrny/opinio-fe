@@ -1,18 +1,38 @@
-import { useState, type ReactElement } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { type ReactElement } from 'react';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { ModalShell } from '../common/ModalShell';
 import { SelectField } from '../common/SelectField';
 import { Avatar } from '../profile/Avatar';
 import { useI18n } from '../../i18n/I18nContext';
+import { useFilters } from '../../context/useFilters';
 import { useOnFireUsers, useTopVoters, useTrendingCountries } from '../../hooks/useTopVoters';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
 import type { CountryMetric, TrendingCountry } from '../../types/api';
 
+export type StatsCategory = 'voters' | 'onFire' | 'countries';
+type Category = StatsCategory;
+
 interface StatsModalProps {
+  category: StatsCategory;
   onClose: () => void;
 }
 
-type Category = 'voters' | 'onFire' | 'countries';
+// Category <-> URL path. /stats is the canonical Trending Opinios page; the
+// other two get their own keyword paths. Filters (country/metric) ride in query
+// params and are canonicalled away, so these 3 stay the only indexable stats URLs.
+const CATEGORY_PATH: Record<StatsCategory, string> = {
+  onFire: '/stats',
+  countries: '/stats/trending-countries',
+  voters: '/stats/top-voters',
+};
+
+export function slugToCategory(slug?: string): StatsCategory {
+  if (slug === 'trending-countries') return 'countries';
+  if (slug === 'top-voters') return 'voters';
+  return 'onFire';
+}
+
+const VALID_METRICS: CountryMetric[] = ['total', 'likes', 'dislikes', 'net'];
 
 const StatsIcon = () => (
   <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
@@ -188,15 +208,41 @@ function countryMetricValue(c: TrendingCountry, metric: CountryMetric, t: Return
   }
 }
 
-function StatsContent({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
-  const [country, setCountry] = useState<string>('');
-  const [category, setCategory] = useState<Category>('onFire');
-  const [metric, setMetric] = useState<CountryMetric>('total');
+function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<typeof useI18n>['t'] }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { country, setCountry } = useFilters();
+
   const isVoters = category === 'voters';
   const isCountries = category === 'countries';
   const isOnFire = category === 'onFire';
-  const voters = useTopVoters(isVoters ? country || undefined : undefined);
-  const onFire = useOnFireUsers(isOnFire ? country || undefined : undefined);
+
+  // Metric rides in ?metric= (countries tab only); validated, total = default.
+  const rawMetric = searchParams.get('metric');
+  const metric: CountryMetric = VALID_METRICS.includes(rawMetric as CountryMetric)
+    ? (rawMetric as CountryMetric)
+    : 'total';
+  const setMetric = (m: CountryMetric) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (m === 'total') next.delete('metric'); else next.set('metric', m);
+      return next;
+    }, { replace: true });
+  };
+
+  // Tab clicks change the path (each category is its own URL). Country rides in
+  // the global ?country= (shared with the feed); metric is dropped off the
+  // non-countries tabs to keep their URLs clean.
+  const goToCategory = (cat: StatsCategory) => {
+    const params = new URLSearchParams(location.search);
+    if (cat !== 'countries') params.delete('metric');
+    const qs = params.toString();
+    navigate(`${CATEGORY_PATH[cat]}${qs ? `?${qs}` : ''}`);
+  };
+
+  const voters = useTopVoters(isVoters ? country : undefined);
+  const onFire = useOnFireUsers(isOnFire ? country : undefined);
   const countries = useTrendingCountries(metric);
 
   const voterRows = voters.data?.topVoters ?? [];
@@ -217,7 +263,7 @@ function StatsContent({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
 
   return (
     <div className="px-6 py-5 space-y-4">
-      <CategoryTabs category={category} onChange={setCategory} t={t} />
+      <CategoryTabs category={category} onChange={goToCategory} t={t} />
 
       {/* Trending countries is itself a country ranking, so a country filter
           is meaningless there - that tab swaps in a metric picker instead. */}
@@ -229,7 +275,7 @@ function StatsContent({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
       ) : (
         <div>
           <label className="block text-xs font-medium text-white/50 mb-1.5">{t.country}</label>
-          <SelectField value={country} onChange={(e) => setCountry(e.target.value)}>
+          <SelectField value={country ?? ''} onChange={(e) => setCountry(e.target.value || undefined)}>
             <option value="" style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{t.allCountries}</option>
             {ALL_COUNTRIES.map(({ code, name }) => (
               <option key={code} value={code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
@@ -301,12 +347,12 @@ function StatsContent({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
   );
 }
 
-export function StatsModal({ onClose }: StatsModalProps) {
+export function StatsModal({ category, onClose }: StatsModalProps) {
   const { t } = useI18n();
 
   return (
     <ModalShell onClose={onClose} title={t.statsTitle} icon={<StatsIcon />} maxWidth="max-w-lg">
-      <StatsContent t={t} />
+      <StatsContent category={category} t={t} />
     </ModalShell>
   );
 }

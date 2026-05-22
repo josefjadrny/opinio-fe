@@ -351,8 +351,16 @@ const STATIC_PAGES = {
     description: 'Opinio terms of use: posting rules, voting rules, and account terms.',
   },
   '/stats': {
-    title: 'Stats - Opinio',
-    description: 'Top likers and dislikers worldwide and by country on Opinio.',
+    title: 'Trending opinions right now - Opinio',
+    description: 'The opinions, takes and ideas getting the most votes right now on Opinio - ranked live and refreshed every 24 hours.',
+  },
+  '/stats/trending-countries': {
+    title: 'Trending countries by votes - Opinio',
+    description: 'Which countries are generating the most buzz right now - ranked by votes on their active posts, refreshed every 24 hours on Opinio.',
+  },
+  '/stats/top-voters': {
+    title: 'Top voters leaderboard - Opinio',
+    description: 'The most active voters worldwide and by country, ranked by likes and dislikes cast on Opinio.',
   },
   '/support': {
     title: 'Support - Opinio',

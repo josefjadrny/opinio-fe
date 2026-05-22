@@ -11,6 +11,8 @@ routes = [
   { pattern = "opinio.live/privacy", zone_name = "opinio.live" },
   { pattern = "opinio.live/terms", zone_name = "opinio.live" },
   { pattern = "opinio.live/stats", zone_name = "opinio.live" },
+  { pattern = "opinio.live/stats/trending-countries", zone_name = "opinio.live" },
+  { pattern = "opinio.live/stats/top-voters", zone_name = "opinio.live" },
   { pattern = "opinio.live/support", zone_name = "opinio.live" },
   { pattern = "opinio.live/add", zone_name = "opinio.live" },
   { pattern = "opinio.live/sign-in", zone_name = "opinio.live" }
