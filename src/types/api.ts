@@ -92,6 +92,19 @@ export interface OnFireResponse {
   onFire: OnFireUser[];
 }
 
+export type CountryMetric = 'total' | 'likes' | 'dislikes' | 'net';
+
+export interface TrendingCountry {
+  countryCode: string;
+  activeProfiles: number;
+  totalLikes: number;
+  totalDislikes: number;
+}
+
+export interface TrendingCountriesResponse {
+  trendingCountries: TrendingCountry[];
+}
+
 export interface UserProfileSummary {
   id: string;
   name: string;

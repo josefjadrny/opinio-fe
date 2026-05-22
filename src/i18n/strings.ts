@@ -145,9 +145,19 @@ export interface Strings {
   statsTitle: string;
   statsCategoryVoters: string;
   statsCategoryProfiles: string;
+  statsCategoryCountries: string;
   statsVotersDescription: string;
   statsProfilesDescription: string;
+  statsCountriesDescription: string;
+  statsMetricLabel: string;
+  statsMetricTotal: string;
+  statsMetricLikes: string;
+  statsMetricDislikes: string;
+  statsMetricNet: string;
   statsVotes: string;
+  statsLikes: string;
+  statsDislikes: string;
+  statsNet: string;
   statsPostsLabel: string;
   statsNoData: string;
   statsOverview: string;
@@ -358,9 +368,19 @@ const en: Strings = {
   statsTitle: 'Community Stats',
   statsCategoryVoters: '🏆 Top Voters',
   statsCategoryProfiles: '🔥 Trending Opinios',
+  statsCategoryCountries: '🌍 Trending Countries',
   statsVotersDescription: 'Most active community members ranked by total votes cast (likes and dislikes combined, lifetime).',
   statsProfilesDescription: 'Members behind the most-voted opinions right now — ranked by total votes received on their active posts in the last 24 hours, likes and dislikes combined.',
+  statsCountriesDescription: 'Countries generating the most buzz right now - ranked by votes received on their active posts in the last 24 hours.',
+  statsMetricLabel: 'Rank by',
+  statsMetricTotal: 'Total',
+  statsMetricLikes: 'Likes',
+  statsMetricDislikes: 'Dislikes',
+  statsMetricNet: 'Net',
   statsVotes: 'votes',
+  statsLikes: 'likes',
+  statsDislikes: 'dislikes',
+  statsNet: 'net',
   statsPostsLabel: 'active posts',
   statsNoData: 'No data yet',
   statsOverview: 'See where the community is most active. Switch between top voters and trending opinions.',
@@ -590,9 +610,19 @@ const cs: Strings = {
   statsTitle: 'Komunitní statistiky',
   statsCategoryVoters: '🏆 Top hlasující',
   statsCategoryProfiles: '🔥 Trendující opinio',
+  statsCategoryCountries: '🌍 Trendující země',
   statsVotersDescription: 'Nejaktivnější členové komunity podle celkového počtu hlasů (kladné i záporné dohromady, za celou dobu).',
   statsProfilesDescription: 'Uživatelé s nejaktivnějšími názory — řazeno podle celkového počtu hlasů na jejich aktivních příspěvcích za posledních 24 hodin, kladné i záporné dohromady.',
+  statsCountriesDescription: 'Země, o kterých se teď nejvíc mluví - řazeno podle hlasů na jejich aktivních příspěvcích za posledních 24 hodin.',
+  statsMetricLabel: 'Řadit podle',
+  statsMetricTotal: 'Celkem',
+  statsMetricLikes: 'Kladné',
+  statsMetricDislikes: 'Záporné',
+  statsMetricNet: 'Čisté',
   statsVotes: 'hlasů',
+  statsLikes: 'kladných',
+  statsDislikes: 'záporných',
+  statsNet: 'čistých',
   statsPostsLabel: 'aktivních příspěvků',
   statsNoData: 'Zatím žádná data',
   statsOverview: 'Podívejte se, kde je komunita nejaktivnější. Přepínejte mezi top hlasujícími a trendujícími názory.',
@@ -822,9 +852,19 @@ const es: Strings = {
   statsTitle: 'Estadísticas de la comunidad',
   statsCategoryVoters: '🏆 Top votantes',
   statsCategoryProfiles: '🔥 Opinio en tendencia',
+  statsCategoryCountries: '🌍 Países en tendencia',
   statsVotersDescription: 'Miembros más activos de la comunidad clasificados por el total de votos emitidos (positivos y negativos combinados, histórico).',
   statsProfilesDescription: 'Miembros detrás de las opiniones más votadas ahora mismo — clasificados por el total de votos en sus publicaciones activas durante las últimas 24 horas, positivos y negativos combinados.',
+  statsCountriesDescription: 'Países que generan más revuelo ahora mismo - clasificados por los votos recibidos en sus publicaciones activas durante las últimas 24 horas.',
+  statsMetricLabel: 'Ordenar por',
+  statsMetricTotal: 'Total',
+  statsMetricLikes: 'Positivos',
+  statsMetricDislikes: 'Negativos',
+  statsMetricNet: 'Neto',
   statsVotes: 'votos',
+  statsLikes: 'positivos',
+  statsDislikes: 'negativos',
+  statsNet: 'neto',
   statsPostsLabel: 'publicaciones activas',
   statsNoData: 'Sin datos aún',
   statsOverview: 'Mira dónde la comunidad está más activa. Alterna entre los top votantes y las opiniones en tendencia.',

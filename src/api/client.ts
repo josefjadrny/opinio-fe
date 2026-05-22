@@ -148,6 +148,12 @@ export function getOnFireUsers(country?: string): Promise<import('../types/api')
   return apiFetch(`/api/stats/on-fire${qs ? `?${qs}` : ''}`);
 }
 
+export function getTrendingCountries(
+  metric: import('../types/api').CountryMetric = 'total',
+): Promise<import('../types/api').TrendingCountriesResponse> {
+  return apiFetch(`/api/stats/trending-countries?metric=${metric}`);
+}
+
 export function getSupportTickets(): Promise<SupportTicket[]> {
   return apiFetch('/api/support');
 }
