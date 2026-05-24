@@ -23,6 +23,15 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json();
 }
 
+// apiFetch tags thrown errors with the HTTP status. For id-shaped endpoints a
+// 404 (no such row) and a 400 (malformed id, e.g. /p/dhehdh) both mean "this
+// isn't here" and will never succeed on retry - treat them as a terminal
+// not-found. Other statuses (5xx, network) may be a transient blip.
+export function isNotFound(error: unknown): boolean {
+  const status = (error as { status?: number } | null)?.status;
+  return status === 404 || status === 400;
+}
+
 export function getProfiles(filters: ProfileFilters): Promise<ProfilesResponse> {
   const params = new URLSearchParams({ type: filters.type });
   if (filters.country) params.set('country', filters.country);

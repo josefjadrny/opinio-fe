@@ -214,6 +214,10 @@ export interface Strings {
   countryNotFoundTitle: string;
   countryNotFoundBody: string;
   countryNotFoundCta: string;
+  profileNotFoundLabel: string;
+  profileNotFoundTitle: string;
+  profileNotFoundBody: string;
+  profileNotFoundCta: string;
   reportedBy: string;
   justNow: string;
   justReported: string;
@@ -460,6 +464,10 @@ const en: Strings = {
   countryNotFoundTitle: 'This place is off the map',
   countryNotFoundBody: 'We could not find a country at that address - the code might be a typo, or the link is a little off.',
   countryNotFoundCta: 'Back to map',
+  profileNotFoundLabel: 'Not found',
+  profileNotFoundTitle: 'This opinio is gone',
+  profileNotFoundBody: 'It may have expired with no votes, or the link is a little off. Either way, there is nothing here to vote on.',
+  profileNotFoundCta: 'Back to feed',
   reportedBy: 'reported by',
   justNow: 'just now',
   justReported: 'New opinio just dropped',
@@ -706,6 +714,10 @@ const cs: Strings = {
   countryNotFoundTitle: 'Tahle země není na mapě',
   countryNotFoundBody: 'Na této adrese jsme žádnou zemi nenašli - kód může být překlep, nebo je odkaz mírně přepsaný.',
   countryNotFoundCta: 'Zpět na mapu',
+  profileNotFoundLabel: 'Nenalezeno',
+  profileNotFoundTitle: 'Tohle opinio už neexistuje',
+  profileNotFoundBody: 'Možná vypršelo bez hlasů, nebo je odkaz mírně přepsaný. Tak či tak tu není o čem hlasovat.',
+  profileNotFoundCta: 'Zpět na hlavní stranu',
   reportedBy: 'přidal',
   justNow: 'právě teď',
   justReported: 'Padlo nové opinio',
@@ -952,6 +964,10 @@ const es: Strings = {
   countryNotFoundTitle: 'Este lugar no está en el mapa',
   countryNotFoundBody: 'No encontramos ningún país en esa dirección - puede que el código tenga una errata o que el enlace no sea del todo correcto.',
   countryNotFoundCta: 'Volver al mapa',
+  profileNotFoundLabel: 'No encontrado',
+  profileNotFoundTitle: 'Este opinio ya no está',
+  profileNotFoundBody: 'Puede que haya caducado sin votos o que el enlace no sea del todo correcto. En cualquier caso, aquí no hay nada que votar.',
+  profileNotFoundCta: 'Volver al inicio',
   reportedBy: 'publicado por',
   justNow: 'justo ahora',
   justReported: 'Acaba de caer un opinio',

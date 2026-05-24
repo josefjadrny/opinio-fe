@@ -18,6 +18,8 @@ import { MobileFeed } from './components/layout/MobileFeed';
 import { WorldMap } from './components/map/WorldMap';
 import { DesktopProfileModal } from './components/profile/DesktopProfileModal';
 import { ProfileDetailModal } from './components/profile/ProfileDetailModal';
+import { ProfileNotFoundModal } from './components/profile/ProfileNotFoundModal';
+import { isNotFound } from './api/client';
 import { UserDetailModal } from './components/profile/UserDetailModal';
 import { CountryDetailModal } from './components/country/CountryDetailModal';
 import { getCountryName, isKnownCountry } from './utils/countries';
@@ -546,12 +548,21 @@ function ProfileDetailRoute() {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
-  const { data: profile, isLoading } = useProfile(id ?? null);
+  const { data: profile, isLoading, error } = useProfile(id ?? null);
   const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(id ?? null);
+  const notFound = isNotFound(error);
 
   useEffect(() => {
     if (profile) applyProfileSeo(profile.name, profile.description, profile.id);
-  }, [profile]);
+    // Unknown id: the worker already serves a 404; don't leave the tab on the
+    // last profile's title - mark it as not found.
+    else if (notFound) document.title = `Page not found - ${BRAND}`;
+  }, [profile, notFound]);
+
+  // Genuine 404 (expired or bad link) - friendly not-found for both platforms.
+  if (notFound) {
+    return <ProfileNotFoundModal onClose={() => navigate('/' + location.search)} />;
+  }
 
   if (isMobile) {
     if (isLoading || !profile) return null;
