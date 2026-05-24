@@ -4,7 +4,7 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 import { useI18n } from '../../i18n/I18nContext';
 import { useCountries } from '../../hooks/useCountries';
 import { useCountryDiscussed } from '../../hooks/useCountryDiscussed';
-import { getCountryFlag, getCountryName } from '../../utils/countries';
+import { getCountryFlag, getCountryName, isKnownCountry } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
 import { Avatar } from '../profile/Avatar';
 import { CountryFlag } from '../common/CountryFlag';
@@ -116,11 +116,14 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const { t } = useI18n();
 
   const code = countryCode.toUpperCase();
+  const notFound = !isKnownCountry(code);
   const name = getCountryName(code);
   const flag = getCountryFlag(code);
   const { data } = useCountries();
   const counts = data?.countries.find((c) => c.code === code) ?? { likes: 0, dislikes: 0 };
-  const { data: countryData, isLoading: profilesLoading } = useCountryDiscussed(code);
+  // Skip the discussed fetch for an unknown code - there's nothing to load and
+  // the API would just 404.
+  const { data: countryData, isLoading: profilesLoading } = useCountryDiscussed(notFound ? '' : code);
   const profiles = countryData?.profiles ?? [];
 
   const close = () => navigate('/' + location.search);
@@ -158,6 +161,28 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
     </>
   );
 
+  const NotFoundLabel = (
+    <span className="text-sm font-semibold text-white/60 flex-1">{t.countryNotFoundLabel}</span>
+  );
+
+  const NotFoundView = (
+    <div className="flex flex-col items-center justify-center text-center px-6 py-10">
+      <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+        <svg className="w-8 h-8 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0 0c2.5-2.5 3.75-5.5 3.75-9S14.5 5.5 12 3m0 18c-2.5-2.5-3.75-5.5-3.75-9S9.5 5.5 12 3M3.6 9h16.8M3.6 15h16.8" />
+        </svg>
+      </div>
+      <p className="text-base font-semibold text-white mb-1">{t.countryNotFoundTitle}</p>
+      <p className="text-sm text-white/40 mb-5 max-w-xs">{t.countryNotFoundBody}</p>
+      <button
+        onClick={close}
+        className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium transition-colors"
+      >
+        {t.countryNotFoundCta}
+      </button>
+    </div>
+  );
+
   if (isMobile) {
     return (
       <div
@@ -171,10 +196,10 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
           </div>
           <div className="flex items-center justify-between px-6 py-3 border-b border-border shrink-0">
             <div className="flex items-center gap-3 min-w-0 flex-1">
-              {Header}
+              {notFound ? NotFoundLabel : Header}
             </div>
             <div className="flex items-center gap-1 shrink-0 ml-3">
-              <ShareCountryButton code={code} name={name} />
+              {!notFound && <ShareCountryButton code={code} name={name} />}
               <button onClick={close} title={t.close} aria-label={t.close} className="text-white/40 hover:text-white/80 transition-colors p-1">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -183,12 +208,14 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
             </div>
           </div>
           <div className="flex-1 overflow-y-auto px-6 pt-4 pb-14 space-y-4">
-            <ProfilesList
-              profiles={profiles}
-              loading={profilesLoading}
-              t={t}
-              onOpen={openProfile}
-            />
+            {notFound ? NotFoundView : (
+              <ProfilesList
+                profiles={profiles}
+                loading={profilesLoading}
+                t={t}
+                onOpen={openProfile}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -200,9 +227,9 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
       <div className="absolute bottom-0 left-0 right-0 h-[55vh] bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
       <div className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto">
         <div className="flex items-center gap-3 px-6 py-4 border-b border-border shrink-0">
-          {Header}
+          {notFound ? NotFoundLabel : Header}
           <div className="flex items-center gap-1 shrink-0">
-            <ShareCountryButton code={code} name={name} />
+            {!notFound && <ShareCountryButton code={code} name={name} />}
             <button onClick={close} title={t.close} aria-label={t.close} className="text-white/40 hover:text-white/80 transition-colors p-1">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -211,12 +238,14 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
           </div>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-4">
-          <ProfilesList
-            profiles={profiles}
-            loading={profilesLoading}
-            t={t}
-            onOpen={openProfile}
-          />
+          {notFound ? NotFoundView : (
+            <ProfilesList
+              profiles={profiles}
+              loading={profilesLoading}
+              t={t}
+              onOpen={openProfile}
+            />
+          )}
         </div>
       </div>
     </div>

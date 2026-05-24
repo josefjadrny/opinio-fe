@@ -46,6 +46,13 @@ export function getCountryName(code: string): string {
   return ALL_COUNTRY_NAMES[code] ?? code;
 }
 
+// True only for the 2-letter codes we actually have a country for. Used to
+// reject junk like /c/hgffhfg with a not-found view instead of rendering an
+// empty modal titled with the raw code.
+export function isKnownCountry(code: string): boolean {
+  return Object.prototype.hasOwnProperty.call(ALL_COUNTRY_NAMES, code.toUpperCase());
+}
+
 export function getCountryFlag(code: string): string {
   return code
     .toUpperCase()

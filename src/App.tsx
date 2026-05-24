@@ -20,7 +20,7 @@ import { DesktopProfileModal } from './components/profile/DesktopProfileModal';
 import { ProfileDetailModal } from './components/profile/ProfileDetailModal';
 import { UserDetailModal } from './components/profile/UserDetailModal';
 import { CountryDetailModal } from './components/country/CountryDetailModal';
-import { getCountryName } from './utils/countries';
+import { getCountryName, isKnownCountry } from './utils/countries';
 import { AddProfileModal } from './components/profile-form/AddProfileModal';
 import { VoteBanner } from './components/voting/VoteBanner';
 import { HotBanner } from './components/banner/HotBanner';
@@ -584,7 +584,11 @@ function CountryDetailRoute() {
   const { code } = useParams<{ code: string }>();
   const upper = (code ?? '').toUpperCase();
   useEffect(() => {
-    if (upper) applyCountrySeo(upper);
+    if (!upper) return;
+    // Unknown code: the worker already serves a 404; don't title the tab with
+    // the junk code - mark it as not found instead.
+    if (isKnownCountry(upper)) applyCountrySeo(upper);
+    else document.title = `Page not found - ${BRAND}`;
   }, [upper]);
   return <CountryDetailModal countryCode={upper} />;
 }

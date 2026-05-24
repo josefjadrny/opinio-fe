@@ -210,6 +210,10 @@ export interface Strings {
   userNotFoundTitle: string;
   userNotFoundBody: string;
   userNotFoundCta: string;
+  countryNotFoundLabel: string;
+  countryNotFoundTitle: string;
+  countryNotFoundBody: string;
+  countryNotFoundCta: string;
   reportedBy: string;
   justNow: string;
   justReported: string;
@@ -452,6 +456,10 @@ const en: Strings = {
   userNotFoundTitle: 'This person has left the building',
   userNotFoundBody: 'Their account is no longer here — maybe they took a break, or the link is a little off.',
   userNotFoundCta: 'Back to feed',
+  countryNotFoundLabel: 'Not found',
+  countryNotFoundTitle: 'This place is off the map',
+  countryNotFoundBody: 'We could not find a country at that address - the code might be a typo, or the link is a little off.',
+  countryNotFoundCta: 'Back to map',
   reportedBy: 'reported by',
   justNow: 'just now',
   justReported: 'New opinio just dropped',
@@ -694,6 +702,10 @@ const cs: Strings = {
   userNotFoundTitle: 'Tento člověk tu už není',
   userNotFoundBody: 'Tento účet už neexistuje — třeba si dal pauzu, nebo je odkaz mírně přepsaný.',
   userNotFoundCta: 'Zpět na hlavní stranu',
+  countryNotFoundLabel: 'Nenalezeno',
+  countryNotFoundTitle: 'Tahle země není na mapě',
+  countryNotFoundBody: 'Na této adrese jsme žádnou zemi nenašli - kód může být překlep, nebo je odkaz mírně přepsaný.',
+  countryNotFoundCta: 'Zpět na mapu',
   reportedBy: 'přidal',
   justNow: 'právě teď',
   justReported: 'Padlo nové opinio',
@@ -936,6 +948,10 @@ const es: Strings = {
   userNotFoundTitle: 'Esta persona ha salido del edificio',
   userNotFoundBody: 'Esta cuenta ya no está aquí — puede que se haya tomado un descanso o que el enlace no sea del todo correcto.',
   userNotFoundCta: 'Volver al inicio',
+  countryNotFoundLabel: 'No encontrado',
+  countryNotFoundTitle: 'Este lugar no está en el mapa',
+  countryNotFoundBody: 'No encontramos ningún país en esa dirección - puede que el código tenga una errata o que el enlace no sea del todo correcto.',
+  countryNotFoundCta: 'Volver al mapa',
   reportedBy: 'publicado por',
   justNow: 'justo ahora',
   justReported: 'Acaba de caer un opinio',
