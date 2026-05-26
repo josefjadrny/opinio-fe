@@ -238,7 +238,7 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
     const params = new URLSearchParams(location.search);
     if (cat !== 'countries') params.delete('metric');
     const qs = params.toString();
-    navigate(`${CATEGORY_PATH[cat]}${qs ? `?${qs}` : ''}`);
+    navigate(`${CATEGORY_PATH[cat]}${qs ? `?${qs}` : ''}`, { replace: true });
   };
 
   const voters = useTopVoters(isVoters ? country : undefined);
