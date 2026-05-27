@@ -60,6 +60,16 @@ const GlobeIcon = () => (
   </svg>
 );
 
+// Top Voters glyph - replaces the 🏆 emoji. Opinio-red outline
+// (cup + handles + stem + base) with the cup + base interiors filled
+// opinio-green - the brand's two colours in one winner's cup.
+const TrophyIcon = () => (
+  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
+    <path fill="#22c55e" d="M6 4h12l-1.5 5a4.5 4.5 0 01-9 0L6 4zM8.5 20h7l-1.5-3h-4l-1.5 3z" />
+    <path stroke="#e94560" strokeLinecap="round" strokeLinejoin="round" d="M6 4h12l-1.5 5a4.5 4.5 0 01-9 0L6 4zM6.5 5H5a2 2 0 000 4h1.2M17.5 5H19a2 2 0 010 4h-1.2M12 13.5V17M8.5 20h7l-1.5-3h-4l-1.5 3z" />
+  </svg>
+);
+
 // Total keeps the existing bar-chart stats glyph (same shape as StatsIcon, sized
 // down). Likes/Dislikes/Net reuse the app's ▲ / ▼ vote markers in the brand
 // green/red - the same glyphs ProfileCard, tooltips and detail modals use.
@@ -179,7 +189,7 @@ function CategoryTabs({ category, onChange, t }: { category: Category; onChange:
     <div className="flex gap-1 p-0.5 bg-black/20 border border-border rounded-lg overflow-x-auto no-scrollbar">
       {tab('onFire', t.statsCategoryProfiles, <FlameIcon />)}
       {tab('countries', t.statsCategoryCountries, <GlobeIcon />)}
-      {tab('voters', t.statsCategoryVoters)}
+      {tab('voters', t.statsCategoryVoters, <TrophyIcon />)}
     </div>
   );
 }
