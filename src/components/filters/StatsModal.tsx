@@ -51,6 +51,15 @@ const FlameIcon = () => (
   </svg>
 );
 
+// Trending Countries glyph - replaces the 🌍 emoji, same two-tone treatment.
+// Outer globe ring in dislike-red, equator + meridian grid in like-green.
+const GlobeIcon = () => (
+  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
+    <path stroke="#ef4444" strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M3 12h18M12 3a15.3 15.3 0 014 9 15.3 15.3 0 01-4 9 15.3 15.3 0 01-4-9 15.3 15.3 0 014-9z" />
+  </svg>
+);
+
 // Total keeps the existing bar-chart stats glyph (same shape as StatsIcon, sized
 // down). Likes/Dislikes/Net reuse the app's ▲ / ▼ vote markers in the brand
 // green/red - the same glyphs ProfileCard, tooltips and detail modals use.
@@ -169,7 +178,7 @@ function CategoryTabs({ category, onChange, t }: { category: Category; onChange:
   return (
     <div className="flex gap-1 p-0.5 bg-black/20 border border-border rounded-lg overflow-x-auto no-scrollbar">
       {tab('onFire', t.statsCategoryProfiles, <FlameIcon />)}
-      {tab('countries', t.statsCategoryCountries)}
+      {tab('countries', t.statsCategoryCountries, <GlobeIcon />)}
       {tab('voters', t.statsCategoryVoters)}
     </div>
   );
