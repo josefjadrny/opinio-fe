@@ -41,6 +41,16 @@ const StatsIcon = () => (
   </svg>
 );
 
+// Trending Opinios glyph - replaces the 🔥 emoji with the app's two-tone
+// outline style (same Heroicons family + brand red/green as the menu icons).
+// Outer flame in dislike-red, inner flame in like-green: a vote-coloured fire.
+const FlameIcon = () => (
+  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
+    <path stroke="#ef4444" strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z" />
+    <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z" />
+  </svg>
+);
+
 // Total keeps the existing bar-chart stats glyph (same shape as StatsIcon, sized
 // down). Likes/Dislikes/Net reuse the app's ▲ / ▼ vote markers in the brand
 // green/red - the same glyphs ProfileCard, tooltips and detail modals use.
@@ -140,24 +150,25 @@ function StatsCountryRow({ countryCode, rank, subtitle, value, valueLabel }: Sta
 }
 
 function CategoryTabs({ category, onChange, t }: { category: Category; onChange: (c: Category) => void; t: ReturnType<typeof useI18n>['t'] }) {
-  const tab = (key: Category, label: string) => {
+  const tab = (key: Category, label: string, icon?: ReactElement) => {
     const active = category === key;
     return (
       <button
         key={key}
         type="button"
         onClick={() => onChange(key)}
-        className={`flex-1 px-2 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
+        className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
           active ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'
         }`}
       >
+        {icon}
         {label}
       </button>
     );
   };
   return (
     <div className="flex gap-1 p-0.5 bg-black/20 border border-border rounded-lg overflow-x-auto no-scrollbar">
-      {tab('onFire', t.statsCategoryProfiles)}
+      {tab('onFire', t.statsCategoryProfiles, <FlameIcon />)}
       {tab('countries', t.statsCategoryCountries)}
       {tab('voters', t.statsCategoryVoters)}
     </div>
