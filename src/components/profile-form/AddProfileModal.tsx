@@ -260,6 +260,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
               </div>
             )}
           </div>
+          <p className="text-xs text-white/35 mt-1.5 leading-snug">{t.profileCountryHint}</p>
         </div>
 
         <div>
