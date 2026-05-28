@@ -4,7 +4,6 @@ export interface Strings {
   falling: string;
   addProfile: string;
   login: string;
-  loginTooltip: string;
   loginWithGoogle: string;
   loginWithMicrosoft: string;
   signInPrompt: string;
@@ -26,9 +25,6 @@ export interface Strings {
   photoChange: string;
   photoRemove: string;
   photoHint: string;
-  imageUrlPlaceholder: string;
-  yourNamePlaceholder: string;
-  byAuthor: string;
   newBadge: string;
   clearFilters: string;
   searchLabel: string;
@@ -141,7 +137,6 @@ export interface Strings {
   blockedFooterNote: string;
   blockedFooterNoteSupportLabel: string;
   blockedUntilLabel: string;
-  buyUsCoffee: string;
   stats: string;
   statsTitle: string;
   statsCategoryVoters: string;
@@ -161,7 +156,6 @@ export interface Strings {
   statsNet: string;
   statsPostsLabel: string;
   statsNoData: string;
-  statsOverview: string;
   support: string;
   supportTitle: string;
   supportNewTicket: string;
@@ -237,7 +231,6 @@ const en: Strings = {
   falling: 'Falling',
   addProfile: 'Opinio',
   login: 'Sign in',
-  loginTooltip: 'Sign in',
   loginWithGoogle: 'Continue with Google',
   loginWithMicrosoft: 'Continue with Microsoft',
   signInPrompt: 'Choose how you\'d like to sign in.',
@@ -259,9 +252,6 @@ const en: Strings = {
   photoChange: 'Change avatar',
   photoRemove: 'Remove',
   photoHint: 'Will be cropped to 128×128',
-  imageUrlPlaceholder: 'https://...',
-  yourNamePlaceholder: 'Your name *',
-  byAuthor: 'by {author}',
   newBadge: 'NEW',
   clearFilters: 'Clear filters',
   searchLabel: 'Search',
@@ -373,7 +363,6 @@ const en: Strings = {
   blockedFooterNote: 'If you believe this is a mistake, contact {support}.',
   blockedFooterNoteSupportLabel: 'support',
   blockedUntilLabel: 'Block expires',
-  buyUsCoffee: 'Buy us a {coffee}',
   stats: 'Stats',
   statsTitle: 'Community Stats',
   statsCategoryVoters: 'Top Voters',
@@ -393,7 +382,6 @@ const en: Strings = {
   statsNet: 'net',
   statsPostsLabel: 'active posts',
   statsNoData: 'No data yet',
-  statsOverview: 'See where the community is most active. Switch between top voters and trending opinions.',
   support: 'Support',
   supportTitle: 'Support',
   supportNewTicket: 'New ticket',
@@ -488,7 +476,6 @@ const cs: Strings = {
   falling: 'Klesající',
   addProfile: 'Opinio',
   login: 'Přihlásit se',
-  loginTooltip: 'Přihlásit se',
   loginWithGoogle: 'Pokračovat přes Google',
   loginWithMicrosoft: 'Pokračovat přes Microsoft',
   signInPrompt: 'Vyberte způsob přihlášení.',
@@ -510,9 +497,6 @@ const cs: Strings = {
   photoChange: 'Změnit avatar',
   photoRemove: 'Odebrat',
   photoHint: 'Bude oříznut na 128×128',
-  imageUrlPlaceholder: 'https://...',
-  yourNamePlaceholder: 'Vaše jméno *',
-  byAuthor: 'přidal {author}',
   newBadge: 'NOVÝ',
   clearFilters: 'Zrušit filtry',
   searchLabel: 'Hledat',
@@ -624,7 +608,6 @@ const cs: Strings = {
   blockedFooterNote: 'Pokud si myslíte, že jde o omyl, kontaktujte {support}.',
   blockedFooterNoteSupportLabel: 'podporu',
   blockedUntilLabel: 'Blokace končí',
-  buyUsCoffee: 'Kup nám {coffee}',
   stats: 'Statistiky',
   statsTitle: 'Komunitní statistiky',
   statsCategoryVoters: 'Top hlasující',
@@ -644,7 +627,6 @@ const cs: Strings = {
   statsNet: 'bilance',
   statsPostsLabel: 'aktivních příspěvků',
   statsNoData: 'Zatím žádná data',
-  statsOverview: 'Podívejte se, kde je komunita nejaktivnější. Přepínejte mezi top hlasujícími a trendujícími názory.',
   support: 'Podpora',
   supportTitle: 'Podpora',
   supportNewTicket: 'Nový požadavek',
@@ -739,7 +721,6 @@ const es: Strings = {
   falling: 'Bajando',
   addProfile: 'Opinio',
   login: 'Iniciar sesión',
-  loginTooltip: 'Iniciar sesión',
   loginWithGoogle: 'Continuar con Google',
   loginWithMicrosoft: 'Continuar con Microsoft',
   signInPrompt: 'Elige cómo quieres iniciar sesión.',
@@ -761,9 +742,6 @@ const es: Strings = {
   photoChange: 'Cambiar avatar',
   photoRemove: 'Eliminar',
   photoHint: 'Se recortará a 128×128',
-  imageUrlPlaceholder: 'https://...',
-  yourNamePlaceholder: 'Tu nombre *',
-  byAuthor: 'por {author}',
   newBadge: 'NUEVO',
   clearFilters: 'Borrar filtros',
   searchLabel: 'Buscar',
@@ -875,7 +853,6 @@ const es: Strings = {
   blockedFooterNote: 'Si crees que se trata de un error, contacta con {support}.',
   blockedFooterNoteSupportLabel: 'soporte',
   blockedUntilLabel: 'El bloqueo termina',
-  buyUsCoffee: 'Invítanos a un {coffee}',
   stats: 'Estadísticas',
   statsTitle: 'Estadísticas de la comunidad',
   statsCategoryVoters: 'Top votantes',
@@ -895,7 +872,6 @@ const es: Strings = {
   statsNet: 'neto',
   statsPostsLabel: 'publicaciones activas',
   statsNoData: 'Sin datos aún',
-  statsOverview: 'Mira dónde la comunidad está más activa. Alterna entre los top votantes y las opiniones en tendencia.',
   support: 'Soporte',
   supportTitle: 'Soporte',
   supportNewTicket: 'Nuevo ticket',
