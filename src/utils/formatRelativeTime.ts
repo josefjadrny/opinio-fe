@@ -4,6 +4,7 @@ const LOCALE_TO_BCP47: Record<Locale, string> = {
   en: 'en-US',
   cs: 'cs-CZ',
   es: 'es-ES',
+  de: 'de-DE',
 };
 
 export function formatRelativeTime(iso: string, locale: Locale, justNow: string): string {

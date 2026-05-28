@@ -14,7 +14,7 @@ interface UserDetailModalProps {
   userId: string;
 }
 
-const LOCALE_TO_BCP47: Record<string, string> = { en: 'en-US', cs: 'cs-CZ', es: 'es-ES' };
+const LOCALE_TO_BCP47: Record<string, string> = { en: 'en-US', cs: 'cs-CZ', es: 'es-ES', de: 'de-DE' };
 
 function formatJoinDate(iso: string, locale: string) {
   const tag = LOCALE_TO_BCP47[locale] ?? 'en-US';
