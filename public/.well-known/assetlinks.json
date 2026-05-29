@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "live.opinio.app",
+      "sha256_cert_fingerprints": [
+        "F7:B1:69:66:9F:D2:24:AF:1D:06:AB:BE:FE:A1:BA:47:CC:B6:A4:43:71:CA:A2:C0:8C:7D:79:69:F2:0C:E3:58"
+      ]
+    }
+  }
+]
