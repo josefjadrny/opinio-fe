@@ -30,27 +30,44 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
-      # Upload hashed assets with long cache
+      # Upload hashed assets with long cache.
+      # Exclude the PWA control files: the service worker and manifest must be
+      # revalidated on every load, otherwise the edge serves a year-stale sw.js
+      # and autoUpdate can never detect a new build. (workbox-<hash>.js IS
+      # content-hashed, so it stays in the immutable sync.)
       - run: |
           aws s3 sync dist/ s3://opinio.live \
             --delete \
             --exclude "index.html" \
             --exclude "favicon.svg" \
             --exclude "icon.svg" \
+            --exclude "sw.js" \
+            --exclude "registerSW.js" \
+            --exclude "manifest.webmanifest" \
             --cache-control "public, max-age=31536000, immutable"
           aws s3 sync dist/ s3://www.opinio.live \
             --delete \
             --exclude "index.html" \
             --exclude "favicon.svg" \
             --exclude "icon.svg" \
+            --exclude "sw.js" \
+            --exclude "registerSW.js" \
+            --exclude "manifest.webmanifest" \
             --cache-control "public, max-age=31536000, immutable"
 
-      # Upload index.html and root SVG assets with no-cache
+      # Upload index.html, the PWA control files, and root SVG assets with no-cache
       - run: |
-          aws s3 cp dist/index.html s3://opinio.live/index.html \
-            --cache-control "no-cache, no-store, must-revalidate"
-          aws s3 cp dist/index.html s3://www.opinio.live/index.html \
-            --cache-control "no-cache, no-store, must-revalidate"
+          for bucket in opinio.live www.opinio.live; do
+            aws s3 cp dist/index.html "s3://$bucket/index.html" \
+              --cache-control "no-cache, no-store, must-revalidate"
+            aws s3 cp dist/sw.js "s3://$bucket/sw.js" \
+              --cache-control "no-cache, no-store, must-revalidate"
+            aws s3 cp dist/registerSW.js "s3://$bucket/registerSW.js" \
+              --cache-control "no-cache, no-store, must-revalidate"
+            aws s3 cp dist/manifest.webmanifest "s3://$bucket/manifest.webmanifest" \
+              --content-type "application/manifest+json" \
+              --cache-control "no-cache, no-store, must-revalidate"
+          done
           aws s3 cp dist/favicon.svg s3://opinio.live/favicon.svg \
             --cache-control "public, max-age=86400"
           aws s3 cp dist/favicon.svg s3://www.opinio.live/favicon.svg \

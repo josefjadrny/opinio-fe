@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Full-bleed background so launcher masks (circle/squircle/rounded square) never expose transparent corners -->
+  <rect width="512" height="512" fill="#1a1a2e"/>
+  <!-- Logo scaled to ~0.8 about centre to stay inside the maskable safe zone (inner 80%) -->
+  <g transform="translate(256 256) scale(0.8) translate(-256 -256)">
+    <!-- Speech bubble body -->
+    <rect x="64" y="80" width="384" height="272" rx="56" fill="#0f3460"/>
+    <!-- Speech bubble tail -->
+    <path d="M144 352 L96 448 L256 352 Z" fill="#0f3460"/>
+    <!-- Up arrow (like) -->
+    <polygon points="256,112 176,208 336,208" fill="#22c55e"/>
+    <!-- Down arrow (dislike) -->
+    <polygon points="256,320 176,224 336,224" fill="#ef4444"/>
+  </g>
+</svg>
