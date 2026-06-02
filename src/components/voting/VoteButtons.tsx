@@ -41,7 +41,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
   };
 
   const btnBase = compact
-    ? 'flex items-center gap-1 px-1.5 py-1 rounded text-xs font-medium transition-all'
+    ? 'flex items-center gap-1 px-1.5 py-[5px] rounded text-xs font-medium transition-all'
     : 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-medium transition-all';
   // Disabled keeps the like/dislike color identity (just dimmed) so users can
   // still tell ▲ from ▼ at a glance even when they can't currently cast.
