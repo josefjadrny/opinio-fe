@@ -170,9 +170,12 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
             {/* Body - two columns */}
             <div className="flex-1 overflow-y-auto">
               <div className="grid grid-cols-2 gap-0 divide-x divide-border">
-                {/* Left: description (image, if any, sits above the text) */}
+                {/* Left: description first, optional image second as supporting context */}
                 <div className="px-6 py-4 space-y-3">
+                  <p className="text-sm text-white/80 leading-relaxed">{profile.description}</p>
                   {profile.contentImageUrl && (
+                    // 240 px cap keeps the image as supporting context, not
+                    // the focus. Click opens the full 1280 px in the lightbox.
                     <button
                       type="button"
                       onClick={() => setLightboxOpen(true)}
@@ -183,11 +186,10 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                         alt={profile.name}
                         loading="lazy"
                         decoding="async"
-                        className="w-full h-auto max-h-[420px] object-contain"
+                        className="w-full h-auto max-h-[240px] object-contain"
                       />
                     </button>
                   )}
-                  <p className="text-sm text-white/70 leading-relaxed">{profile.description}</p>
                 </div>
 
                 {/* Right: breakdown */}

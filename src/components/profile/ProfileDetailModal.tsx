@@ -111,7 +111,11 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
         </div>
 
         <div className="px-6 py-5 space-y-4">
+          <p className="text-sm text-white/80 leading-relaxed">{profile.description}</p>
           {profile.contentImageUrl && (
+            // Text first, image second — the opinion is the primary content.
+            // 220 px cap keeps the image as supporting context, not the focus;
+            // full size is one tap away via the lightbox.
             <button
               type="button"
               onClick={() => setLightboxOpen(true)}
@@ -122,11 +126,10 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 alt={profile.name}
                 loading="lazy"
                 decoding="async"
-                className="w-full h-auto max-h-[60vh] object-contain"
+                className="w-full h-auto max-h-[220px] object-contain"
               />
             </button>
           )}
-          <p className="text-sm text-white/70 leading-relaxed">{profile.description}</p>
           {profile.addedBy && (
             <p className="text-xs text-white/30">
               {t.reportedBy}{' '}
