@@ -470,7 +470,12 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           <button
             type="submit"
             disabled={mutation.isPending}
-            className="w-full bg-positive text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-positive/90 active:bg-positive/80 transition-colors disabled:opacity-50 shadow-lg shadow-positive/20"
+            // emerald-700 instead of the brand --color-positive (#22c55e). The
+            // brand green is for small accents (vote +, eyes icon); a full-width
+            // bar of it is retina-burning. Deeper emerald + no glow reads as
+            // "primary action" without screaming. Hover lightens, active pushes
+            // deeper for tactile feedback.
+            className="w-full bg-emerald-700 text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-emerald-600 active:bg-emerald-800 transition-colors disabled:opacity-50"
           >
             {mutation.isPending ? t.adding : t.dropButton}
           </button>
