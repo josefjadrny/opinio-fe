@@ -85,6 +85,14 @@ export function uploadImage(blob: Blob): Promise<{ url: string; key: string }> {
   return apiFetch('/api/images', { method: 'POST', body: form });
 }
 
+// Per-opinio content image: raw upload (any of JPEG / PNG / WebP up to 10 MB).
+// The server resizes to 720p JPEG and moderates with Rekognition in prod.
+export function uploadContentImage(file: File): Promise<{ url: string; key: string }> {
+  const form = new FormData();
+  form.append('file', file, file.name || 'image');
+  return apiFetch('/api/images/content', { method: 'POST', body: form });
+}
+
 export function uploadAvatar(blob: Blob): Promise<{ url: string }> {
   const form = new FormData();
   form.append('file', blob, 'avatar.jpg');
@@ -102,6 +110,8 @@ export function addNewProfile(data: {
   description: string;
   imageUrl: string;
   imageKey?: string;
+  contentImageUrl?: string;
+  contentImageKey?: string;
   addedBy: string;
 }): Promise<import('../types/profile').Profile> {
   return apiFetch('/api/profiles', {

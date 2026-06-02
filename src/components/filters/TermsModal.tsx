@@ -93,6 +93,10 @@ export function TermsModal({ onClose }: TermsModalProps) {
           <p>{t.termsBlockBody}</p>
         </Section>
 
+        <Section title={t.termsImageUploadsTitle}>
+          <p>{t.termsImageUploadsBody}</p>
+        </Section>
+
         <Section title={t.termsVotingTitle}>
           <p>{t.termsVotingBody}</p>
         </Section>

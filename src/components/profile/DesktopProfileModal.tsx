@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useProfile } from '../../hooks/useProfile';
+import { ContentImageLightbox } from './ContentImageLightbox';
 import { usePersonBreakdown } from '../../hooks/usePersonBreakdown';
 import { useVote } from '../../hooks/useVote';
 import { useMe } from '../../hooks/useMe';
@@ -33,6 +34,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
   const dislikeAnim = useVoteAnimation();
   const animatedLikes = useAnimatedValue(profile?.likes ?? 0);
   const animatedDislikes = useAnimatedValue(profile?.dislikes ?? 0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const hasCountry = me === undefined || !!me.user.countryCode;
   const isRegistered = !!me?.user && me.user.tier !== 'anonymous';
@@ -52,10 +54,13 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
   const close = () => navigate('/' + location.search);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+    const onKey = (e: KeyboardEvent) => {
+      // Lightbox owns ESC while open; only close the modal otherwise.
+      if (e.key === 'Escape' && !lightboxOpen) close();
+    };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [navigate, location.search]);
+  }, [navigate, location.search, lightboxOpen]);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end items-center pointer-events-none">
@@ -165,8 +170,23 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
             {/* Body - two columns */}
             <div className="flex-1 overflow-y-auto">
               <div className="grid grid-cols-2 gap-0 divide-x divide-border">
-                {/* Left: description */}
-                <div className="px-6 py-4">
+                {/* Left: description (image, if any, sits above the text) */}
+                <div className="px-6 py-4 space-y-3">
+                  {profile.contentImageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setLightboxOpen(true)}
+                      className="block w-full rounded-lg overflow-hidden bg-black/30 border border-border focus:outline-none focus:ring-2 focus:ring-accent/60"
+                    >
+                      <img
+                        src={profile.contentImageUrl}
+                        alt={profile.name}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-auto max-h-[420px] object-contain"
+                      />
+                    </button>
+                  )}
                   <p className="text-sm text-white/70 leading-relaxed">{profile.description}</p>
                 </div>
 
@@ -276,6 +296,13 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
           </>
         )}
       </div>
+      {lightboxOpen && profile?.contentImageUrl && (
+        <ContentImageLightbox
+          imageUrl={profile.contentImageUrl}
+          alt={profile.name}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 }

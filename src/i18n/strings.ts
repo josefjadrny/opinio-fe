@@ -25,6 +25,14 @@ export interface Strings {
   photoChange: string;
   photoRemove: string;
   photoHint: string;
+  contentImageLabel: string;
+  contentImageChoose: string;
+  contentImageChange: string;
+  contentImageRemove: string;
+  contentImageHint: string;
+  contentImageBlocked: string;
+  contentImageUploadError: string;
+  lightboxDownload: string;
   newBadge: string;
   clearFilters: string;
   searchLabel: string;
@@ -122,6 +130,8 @@ export interface Strings {
   termsRuleSpamBody: string;
   termsBlockTitle: string;
   termsBlockBody: string;
+  termsImageUploadsTitle: string;
+  termsImageUploadsBody: string;
   termsVotingTitle: string;
   termsVotingBody: string;
   termsSubscriptionTitle: string;
@@ -252,6 +262,14 @@ const en: Strings = {
   photoChange: 'Change avatar',
   photoRemove: 'Remove',
   photoHint: 'Will be cropped to 128×128',
+  contentImageLabel: 'Image (optional)',
+  contentImageChoose: 'Choose image',
+  contentImageChange: 'Change image',
+  contentImageRemove: 'Remove image',
+  contentImageHint: 'JPEG, PNG or WebP up to 10 MB. Resized to 720p.',
+  contentImageBlocked: 'This image cannot be uploaded - it violates our content policy.',
+  contentImageUploadError: 'Could not upload image. Please try again.',
+  lightboxDownload: 'Download',
   newBadge: 'NEW',
   clearFilters: 'Clear filters',
   searchLabel: 'Search',
@@ -327,7 +345,7 @@ const en: Strings = {
   privacyRightsBody: 'Under GDPR you have the right to access, correct, or delete your data, or to object to processing. Contact us through {support} or by email at {email}. We respond within 7 days.',
   privacyOpenSupport: 'Open support',
   terms: 'Terms',
-  termsLastUpdated: 'Last updated: May 1, 2026',
+  termsLastUpdated: 'Last updated: June 2, 2026',
   termsOperatorTitle: 'Operator',
   termsOperatorBody: 'Operator: {operator}. Contact: {email}.',
   termsAcceptTitle: 'Using Opinio',
@@ -348,6 +366,8 @@ const en: Strings = {
   termsRuleSpamBody: 'no advertising, link spam, scams, or duplicate submissions intended to manipulate rankings.',
   termsBlockTitle: 'When rules are broken',
   termsBlockBody: "If something you posted breaks these rules, we may delete it and temporarily block your account from posting new opinions. You can still vote during a posting block. The block automatically expires on the date shown in your account; we don't keep permanent black marks.",
+  termsImageUploadsTitle: 'Image uploads',
+  termsImageUploadsBody: 'One optional image per opinion: JPEG, PNG, or WebP up to 10 MB, resized server-side to 720p. Uploads are automatically scanned and rejected if flagged for explicit nudity or hate symbols. Child sexual abuse material is strictly prohibited, separately detected at serve time, and reported as required by EU law. By uploading you confirm you have the right to share the image and grant Opinio a non-exclusive license to host and display it.',
   termsVotingTitle: 'Voting',
   termsVotingBody: 'Each tier has an hourly vote allowance. Votes expire after 24 hours. We do not refund or reissue votes that were used in error.',
   termsSubscriptionTitle: 'Supporter subscription',
@@ -497,6 +517,14 @@ const cs: Strings = {
   photoChange: 'Změnit avatar',
   photoRemove: 'Odebrat',
   photoHint: 'Bude oříznut na 128×128',
+  contentImageLabel: 'Obrázek (volitelné)',
+  contentImageChoose: 'Vybrat obrázek',
+  contentImageChange: 'Změnit obrázek',
+  contentImageRemove: 'Odebrat obrázek',
+  contentImageHint: 'JPEG, PNG nebo WebP do 10 MB. Zmenší se na 720p.',
+  contentImageBlocked: 'Tento obrázek nelze nahrát - porušuje naše pravidla obsahu.',
+  contentImageUploadError: 'Obrázek se nepodařilo nahrát. Zkuste to prosím znovu.',
+  lightboxDownload: 'Stáhnout',
   newBadge: 'NOVÝ',
   clearFilters: 'Zrušit filtry',
   searchLabel: 'Hledat',
@@ -572,7 +600,7 @@ const cs: Strings = {
   privacyRightsBody: 'Podle GDPR máte právo na přístup ke svým údajům, jejich opravu nebo smazání, případně proti jejich zpracování vznést námitku. Pište přes {support} nebo e-mailem na {email}. Odpovídáme do 7 dnů.',
   privacyOpenSupport: 'Otevřít podporu',
   terms: 'Podmínky',
-  termsLastUpdated: 'Aktualizováno: 1. května 2026',
+  termsLastUpdated: 'Aktualizováno: 2. června 2026',
   termsOperatorTitle: 'Provozovatel',
   termsOperatorBody: 'Provozovatel: {operator}. Kontakt: {email}.',
   termsAcceptTitle: 'Používání Opinia',
@@ -593,6 +621,8 @@ const cs: Strings = {
   termsRuleSpamBody: 'žádná reklama, spamování odkazů, podvody ani duplicitní příspěvky určené k manipulaci žebříčků.',
   termsBlockTitle: 'Když dojde k porušení pravidel',
   termsBlockBody: 'Pokud váš příspěvek porušuje tato pravidla, můžeme ho smazat a dočasně vám zablokovat přidávání nových názorů. Hlasovat můžete dál - blokace se týká jen nových příspěvků. Blokace automaticky vyprší v datu uvedeném u vašeho účtu; trvalé záznamy si nevedeme.',
+  termsImageUploadsTitle: 'Nahrávání obrázků',
+  termsImageUploadsBody: 'Jeden volitelný obrázek na názor: JPEG, PNG nebo WebP do 10 MB, na serveru zmenšen na 720p. Nahrávky jsou automaticky kontrolovány a v případě nahoty nebo nenávistných symbolů zamítnuty. Materiál sexuálního zneužívání dětí je přísně zakázán, samostatně detekován při zobrazování a hlášen v souladu s právem EU. Nahráním potvrzujete, že máte právo obrázek sdílet, a udělujete Opinio nevýhradní licenci k jeho hostování a zobrazování.',
   termsVotingTitle: 'Hlasování',
   termsVotingBody: 'Každá úroveň má hodinový limit hlasů. Hlasy vyprší po 24 hodinách. Hlasy použité omylem nevracíme ani nedoplňujeme.',
   termsSubscriptionTitle: 'Předplatné Supporter',
@@ -742,6 +772,14 @@ const es: Strings = {
   photoChange: 'Cambiar avatar',
   photoRemove: 'Eliminar',
   photoHint: 'Se recortará a 128×128',
+  contentImageLabel: 'Imagen (opcional)',
+  contentImageChoose: 'Elegir imagen',
+  contentImageChange: 'Cambiar imagen',
+  contentImageRemove: 'Eliminar imagen',
+  contentImageHint: 'JPEG, PNG o WebP hasta 10 MB. Se redimensiona a 720p.',
+  contentImageBlocked: 'Esta imagen no puede subirse - infringe nuestra política de contenido.',
+  contentImageUploadError: 'No se pudo subir la imagen. Inténtalo de nuevo.',
+  lightboxDownload: 'Descargar',
   newBadge: 'NUEVO',
   clearFilters: 'Borrar filtros',
   searchLabel: 'Buscar',
@@ -817,7 +855,7 @@ const es: Strings = {
   privacyRightsBody: 'Conforme al RGPD, tienes derecho a acceder a tus datos, rectificarlos, suprimirlos u oponerte a su tratamiento. Contáctanos a través de {support} o por correo electrónico en {email}. Respondemos en un plazo de 7 días.',
   privacyOpenSupport: 'Abrir soporte',
   terms: 'Términos',
-  termsLastUpdated: 'Actualizado: 1 de mayo de 2026',
+  termsLastUpdated: 'Actualizado: 2 de junio de 2026',
   termsOperatorTitle: 'Responsable',
   termsOperatorBody: 'Responsable: {operator}. Contacto: {email}.',
   termsAcceptTitle: 'Uso de Opinio',
@@ -838,6 +876,8 @@ const es: Strings = {
   termsRuleSpamBody: 'sin publicidad, spam de enlaces, estafas ni publicaciones duplicadas para manipular los rankings.',
   termsBlockTitle: 'Cuando se infringen las reglas',
   termsBlockBody: 'Si lo que has publicado infringe estas reglas, podemos eliminarlo y bloquear temporalmente la creación de nuevas opiniones desde tu cuenta. Puedes seguir votando durante el bloqueo. El bloqueo expira automáticamente en la fecha indicada en tu cuenta; no mantenemos sanciones permanentes.',
+  termsImageUploadsTitle: 'Subida de imágenes',
+  termsImageUploadsBody: 'Una imagen opcional por opinión: JPEG, PNG o WebP hasta 10 MB, redimensionada en el servidor a 720p. Las subidas se analizan automáticamente y se rechazan si se marcan por desnudez explícita o símbolos de odio. El material de abuso sexual infantil está estrictamente prohibido, se detecta por separado al servirse y se denuncia conforme al derecho de la UE. Al subir confirmas que tienes derecho a compartir la imagen y otorgas a Opinio una licencia no exclusiva para alojarla y mostrarla.',
   termsVotingTitle: 'Votación',
   termsVotingBody: 'Cada nivel tiene un límite de votos por hora. Los votos caducan a las 24 horas. No reembolsamos ni reponemos votos usados por error.',
   termsSubscriptionTitle: 'Suscripción Supporter',
@@ -987,6 +1027,14 @@ const de: Strings = {
   photoChange: 'Avatar ändern',
   photoRemove: 'Entfernen',
   photoHint: 'Wird auf 128×128 zugeschnitten',
+  contentImageLabel: 'Bild (optional)',
+  contentImageChoose: 'Bild wählen',
+  contentImageChange: 'Bild ändern',
+  contentImageRemove: 'Bild entfernen',
+  contentImageHint: 'JPEG, PNG oder WebP bis 10 MB. Wird auf 720p verkleinert.',
+  contentImageBlocked: 'Dieses Bild kann nicht hochgeladen werden - es verstößt gegen unsere Inhaltsrichtlinien.',
+  contentImageUploadError: 'Bild konnte nicht hochgeladen werden. Bitte erneut versuchen.',
+  lightboxDownload: 'Herunterladen',
   newBadge: 'NEU',
   clearFilters: 'Filter zurücksetzen',
   searchLabel: 'Suche',
@@ -1062,7 +1110,7 @@ const de: Strings = {
   privacyRightsBody: 'Nach der DSGVO hast du das Recht, auf deine Daten zuzugreifen, sie zu berichtigen oder zu löschen oder der Verarbeitung zu widersprechen. Kontaktiere uns über den {support} oder per E-Mail unter {email}. Wir antworten innerhalb von 7 Tagen.',
   privacyOpenSupport: 'Support öffnen',
   terms: 'Nutzungsbedingungen',
-  termsLastUpdated: 'Zuletzt aktualisiert: 1. Mai 2026',
+  termsLastUpdated: 'Zuletzt aktualisiert: 2. Juni 2026',
   termsOperatorTitle: 'Betreiber',
   termsOperatorBody: 'Betreiber: {operator}. Kontakt: {email}.',
   termsAcceptTitle: 'Nutzung von Opinio',
@@ -1083,6 +1131,8 @@ const de: Strings = {
   termsRuleSpamBody: 'keine Werbung, Link-Spam, Betrug oder doppelte Einreichungen zur Manipulation der Rankings.',
   termsBlockTitle: 'Wenn Regeln gebrochen werden',
   termsBlockBody: 'Wenn etwas, das du gepostet hast, gegen diese Regeln verstößt, können wir es löschen und dein Konto vorübergehend für neue Meinungen sperren. Während einer Sperre kannst du weiterhin abstimmen. Die Sperre läuft automatisch an dem in deinem Konto angezeigten Datum ab; wir behalten keine dauerhaften negativen Vermerke.',
+  termsImageUploadsTitle: 'Bild-Uploads',
+  termsImageUploadsBody: 'Ein optionales Bild pro Meinung: JPEG, PNG oder WebP bis 10 MB, serverseitig auf 720p verkleinert. Uploads werden automatisch geprüft und bei expliziter Nacktheit oder Hasssymbolen abgelehnt. Material über sexuellen Kindesmissbrauch ist strikt verboten, wird beim Ausliefern separat erkannt und nach EU-Recht gemeldet. Mit dem Upload bestätigst du, dass du das Recht hast, das Bild zu teilen, und gewährst Opinio eine nicht-exklusive Lizenz, es zu hosten und anzuzeigen.',
   termsVotingTitle: 'Abstimmen',
   termsVotingBody: 'Jede Stufe hat ein stündliches Stimmkontingent. Stimmen verfallen nach 24 Stunden. Versehentlich genutzte Stimmen erstatten oder ersetzen wir nicht.',
   termsSubscriptionTitle: 'Supporter-Abo',

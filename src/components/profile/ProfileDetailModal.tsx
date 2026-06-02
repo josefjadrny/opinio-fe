@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import type { Profile } from '../../types/profile';
 import type { PersonBreakdownResponse } from '../../types/api';
 import { Avatar } from './Avatar';
 import { ShareButton } from './ShareButton';
 import { DeleteProfileButton } from './DeleteProfileButton';
+import { ContentImageLightbox } from './ContentImageLightbox';
 import { useMe } from '../../hooks/useMe';
 import { RoleBadge } from '../common/RoleBadge';
 import { CountryFlag } from '../common/CountryFlag';
@@ -24,13 +25,16 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
   const location = useLocation();
   const { t, locale } = useI18n();
   const { data: me } = useMe();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose();
+      // Lightbox handles its own ESC (and stops propagation); only close the
+      // sheet when the lightbox isn't covering it.
+      if (e.key === 'Escape' && !lightboxOpen) onClose();
     }
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [onClose, lightboxOpen]);
 
   return (
     <div
@@ -107,6 +111,21 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
         </div>
 
         <div className="px-6 py-5 space-y-4">
+          {profile.contentImageUrl && (
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(true)}
+              className="block w-full rounded-lg overflow-hidden bg-black/30 border border-border focus:outline-none focus:ring-2 focus:ring-accent/60"
+            >
+              <img
+                src={profile.contentImageUrl}
+                alt={profile.name}
+                loading="lazy"
+                decoding="async"
+                className="w-full h-auto max-h-[60vh] object-contain"
+              />
+            </button>
+          )}
           <p className="text-sm text-white/70 leading-relaxed">{profile.description}</p>
           {profile.addedBy && (
             <p className="text-xs text-white/30">
@@ -159,6 +178,13 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
           )}
         </div>
       </div>
+      {lightboxOpen && profile.contentImageUrl && (
+        <ContentImageLightbox
+          imageUrl={profile.contentImageUrl}
+          alt={profile.name}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ModalShell } from '../common/ModalShell';
-import { addNewProfile, uploadImage } from '../../api/client';
+import { addNewProfile, uploadImage, uploadContentImage } from '../../api/client';
 import { ALL_COUNTRIES, getCountryFlag } from '../../utils/countries';
 import { ALL_ROLES, ROLE_COLORS } from '../../utils/roles';
 import { useI18n } from '../../i18n/I18nContext';
@@ -75,7 +75,11 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
+  const [contentImageFile, setContentImageFile] = useState<File | null>(null);
+  const [contentPreviewUrl, setContentPreviewUrl] = useState<string | null>(null);
+  const [contentImageError, setContentImageError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const contentFileInputRef = useRef<HTMLInputElement>(null);
   const countryFieldRef = useRef<HTMLDivElement>(null);
 
   const filteredCountries = ALL_COUNTRIES.filter((country) => {
@@ -110,6 +114,10 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     return () => { if (previewUrl) URL.revokeObjectURL(previewUrl); };
   }, [previewUrl]);
 
+  useEffect(() => {
+    return () => { if (contentPreviewUrl) URL.revokeObjectURL(contentPreviewUrl); };
+  }, [contentPreviewUrl]);
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -125,6 +133,27 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     }
   };
 
+  // Content image: server handles all resizing + moderation. We just preview
+  // the raw file locally and ship it on submit. Accepted: JPEG / PNG / WebP up to 10 MB.
+  const ACCEPTED_CONTENT_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
+  const MAX_CONTENT_UPLOAD_BYTES = 10 * 1024 * 1024;
+  const handleContentFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setContentImageError(null);
+    if (!ACCEPTED_CONTENT_MIMES.includes(file.type)) {
+      setContentImageError('JPEG, PNG or WebP only');
+      return;
+    }
+    if (file.size > MAX_CONTENT_UPLOAD_BYTES) {
+      setContentImageError('Image must be under 10 MB');
+      return;
+    }
+    if (contentPreviewUrl) URL.revokeObjectURL(contentPreviewUrl);
+    setContentImageFile(file);
+    setContentPreviewUrl(URL.createObjectURL(file));
+  };
+
   const mutation = useMutation({
     mutationFn: async (fields: { name: string; role: Role; countryCode: string; description: string }) => {
       let finalImageUrl = '';
@@ -134,10 +163,27 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
         finalImageUrl = url;
         finalImageKey = key;
       }
+      let finalContentImageUrl: string | undefined;
+      let finalContentImageKey: string | undefined;
+      if (contentImageFile) {
+        try {
+          const { url, key } = await uploadContentImage(contentImageFile);
+          finalContentImageUrl = url;
+          finalContentImageKey = key;
+        } catch (err) {
+          // Surface the friendly inline error rather than blowing up the whole
+          // mutation — the avatar upload (if any) already succeeded.
+          const status = (err as { status?: number } | null)?.status;
+          setContentImageError(status === 422 ? t.contentImageBlocked : t.contentImageUploadError);
+          throw err;
+        }
+      }
       return addNewProfile({
         ...fields,
         imageUrl: finalImageUrl,
         imageKey: finalImageKey,
+        contentImageUrl: finalContentImageUrl,
+        contentImageKey: finalContentImageKey,
         addedBy: user?.displayName ?? 'Anonymous',
       });
     },
@@ -177,6 +223,43 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           <p className={`text-xs mt-1 text-right ${name.length >= 36 ? 'text-red-400' : 'text-white/25'}`}>
             {name.length} / 40
           </p>
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-white/50 mb-1.5">{t.photoLabel}</label>
+          <div className="flex items-center gap-3">
+            <div
+              className="w-14 h-14 rounded-full border border-border bg-surface shrink-0 overflow-hidden cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {previewUrl ? (
+                <img src={previewUrl} alt="preview" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-white/20">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M21 3.75H3A.75.75 0 002.25 4.5v15a.75.75 0 00.75.75h18a.75.75 0 00.75-.75v-15A.75.75 0 0021 3.75z" />
+                  </svg>
+                </div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <button type="button" onClick={() => fileInputRef.current?.click()} className="text-sm text-white/60 hover:text-white transition-colors">
+                {previewUrl ? t.photoChange : t.photoChoose}
+              </button>
+              {previewUrl && (
+                <button
+                  type="button"
+                  onClick={() => { setImageBlob(null); setPreviewUrl(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                  className="block text-xs text-white/30 hover:text-white/60 transition-colors mt-0.5"
+                >
+                  {t.photoRemove}
+                </button>
+              )}
+              {imageError && <p className="text-xs text-red-400 mt-0.5">{imageError}</p>}
+              <p className="text-xs text-white/25 mt-0.5">{t.photoHint}</p>
+            </div>
+          </div>
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
         </div>
 
         <div>
@@ -280,40 +363,49 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-white/50 mb-1.5">{t.photoLabel}</label>
-          <div className="flex items-center gap-3">
-            <div
-              className="w-14 h-14 rounded-full border border-border bg-surface shrink-0 overflow-hidden cursor-pointer"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              {previewUrl ? (
-                <img src={previewUrl} alt="preview" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-white/20">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M21 3.75H3A.75.75 0 002.25 4.5v15a.75.75 0 00.75.75h18a.75.75 0 00.75-.75v-15A.75.75 0 0021 3.75z" />
-                  </svg>
-                </div>
-              )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <button type="button" onClick={() => fileInputRef.current?.click()} className="text-sm text-white/60 hover:text-white transition-colors">
-                {previewUrl ? t.photoChange : t.photoChoose}
+          <label className="block text-xs font-medium text-white/50 mb-1.5">{t.contentImageLabel}</label>
+          {contentPreviewUrl ? (
+            <div className="relative group rounded-lg overflow-hidden border border-border bg-black/30" style={{ aspectRatio: '16 / 9' }}>
+              <img src={contentPreviewUrl} alt="" className="w-full h-full object-contain" />
+              <button
+                type="button"
+                onClick={() => contentFileInputRef.current?.click()}
+                className="absolute bottom-2 left-2 px-2.5 py-1 text-[11px] font-medium bg-black/60 hover:bg-black/80 text-white/90 rounded-md backdrop-blur-sm transition-opacity opacity-0 group-hover:opacity-100"
+              >
+                {t.contentImageChange}
               </button>
-              {previewUrl && (
-                <button
-                  type="button"
-                  onClick={() => { setImageBlob(null); setPreviewUrl(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
-                  className="block text-xs text-white/30 hover:text-white/60 transition-colors mt-0.5"
-                >
-                  {t.photoRemove}
-                </button>
-              )}
-              {imageError && <p className="text-xs text-red-400 mt-0.5">{imageError}</p>}
-              <p className="text-xs text-white/25 mt-0.5">{t.photoHint}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setContentImageFile(null);
+                  if (contentPreviewUrl) URL.revokeObjectURL(contentPreviewUrl);
+                  setContentPreviewUrl(null);
+                  setContentImageError(null);
+                  if (contentFileInputRef.current) contentFileInputRef.current.value = '';
+                }}
+                aria-label={t.contentImageRemove}
+                className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/80 text-white/90 rounded-full backdrop-blur-sm transition-opacity opacity-0 group-hover:opacity-100"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.25}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
-          </div>
-          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+          ) : (
+            <button
+              type="button"
+              onClick={() => contentFileInputRef.current?.click()}
+              className="w-full flex flex-col items-center justify-center gap-1.5 py-6 border border-dashed border-border rounded-lg text-white/40 hover:text-white/70 hover:border-white/25 hover:bg-white/[0.02] transition-colors"
+            >
+              <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+              </svg>
+              <span className="text-sm">{t.contentImageChoose}</span>
+              <span className="text-[11px] text-white/30">{t.contentImageHint}</span>
+            </button>
+          )}
+          {contentImageError && <p className="text-xs text-red-400 mt-1.5">{contentImageError}</p>}
+          <input ref={contentFileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleContentFileChange} />
         </div>
 
         {isAnonymous ? (

@@ -19,16 +19,21 @@ interface PersonTooltipProps {
 }
 
 const WIDTH = 280;
+// Approximate content-area height. Used to flip the tooltip above the cursor
+// when it would overflow the viewport bottom. Slightly larger when a content
+// image is present, since the preview thumb adds ~150 px to the panel.
 const HEIGHT = 420;
+const HEIGHT_WITH_IMAGE = 560;
 const PADDING = 14;
 
 export function PersonTooltip({ profile, breakdown, isLoading, position, onMouseEnter, onMouseLeave }: PersonTooltipProps) {
   const { t, locale } = useI18n();
   const location = useLocation();
+  const height = profile.contentImageUrl ? HEIGHT_WITH_IMAGE : HEIGHT;
   let left = position.x + PADDING;
   let top = position.y + PADDING;
   if (left + WIDTH > window.innerWidth) left = position.x - WIDTH - PADDING;
-  if (top + HEIGHT > window.innerHeight) top = position.y - HEIGHT - PADDING;
+  if (top + height > window.innerHeight) top = position.y - height - PADDING;
   if (top < 60) top = 60;
   if (left < PADDING) left = PADDING;
 
@@ -52,6 +57,19 @@ export function PersonTooltip({ profile, breakdown, isLoading, position, onMouse
           </div>
         </div>
       </div>
+
+      {/* Content image preview (desktop hover only — this tooltip is gated out on mobile) */}
+      {profile.contentImageUrl && (
+        <div className="bg-black/30">
+          <img
+            src={profile.contentImageUrl}
+            alt={profile.name}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-auto max-h-[140px] object-cover block"
+          />
+        </div>
+      )}
 
       {/* Description */}
       <div className="px-3 py-2 border-b border-border">
