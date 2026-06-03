@@ -21,7 +21,7 @@ export function ContentImageLightbox({ imageUrl, alt, onClose }: ContentImageLig
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/85 p-4"
+      className="fixed inset-0 flex items-center justify-center bg-black/85 p-4 pointer-events-auto"
       style={{ zIndex: 60 }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >

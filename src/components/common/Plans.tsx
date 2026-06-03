@@ -34,7 +34,7 @@ export function Plans({
   const { t } = useI18n();
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-wider font-semibold text-white/40 mb-2">{t.aboutTiersTitle}</p>
+      <p className="text-sm font-semibold text-white mb-3">{t.aboutTiersTitle}</p>
       <div className="grid grid-cols-3 gap-2">
         <TierCard label={t.aboutTierAnonymous} count={1} unit={votesUnit(t, 1)} tone="muted" active={activeTier === 'muted'} />
         <TierCard

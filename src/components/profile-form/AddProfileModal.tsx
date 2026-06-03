@@ -241,7 +241,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
                   </span>
                 </>
               ) : (
-                <span className="w-full h-full flex items-center justify-center text-white/30">
+                <span className="w-full h-full flex items-center justify-center text-white/50 group-hover:text-white/80 transition-colors">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M21 3.75H3A.75.75 0 002.25 4.5v15a.75.75 0 00.75.75h18a.75.75 0 00.75-.75v-15A.75.75 0 0021 3.75z" />
                   </svg>
