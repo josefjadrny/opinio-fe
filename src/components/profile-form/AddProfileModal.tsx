@@ -320,7 +320,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
                   }
                 }}
                 autoComplete="off"
-                className={`${INPUT} pl-11 pr-10`}
+                className={`${INPUT} pl-9 pr-10`}
                 placeholder={t.profileCountry}
                 style={{ backgroundColor: '#1a1a2e' }}
               />
