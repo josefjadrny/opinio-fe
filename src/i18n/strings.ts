@@ -26,6 +26,7 @@ export interface Strings {
   photoRemove: string;
   photoHint: string;
   contentImageLabel: string;
+  contentImageAdd: string;
   contentImageChoose: string;
   contentImageChange: string;
   contentImageRemove: string;
@@ -263,6 +264,7 @@ const en: Strings = {
   photoRemove: 'Remove',
   photoHint: 'Will be cropped to 128×128',
   contentImageLabel: 'Image (optional)',
+  contentImageAdd: 'Add an image',
   contentImageChoose: 'Choose image',
   contentImageChange: 'Change image',
   contentImageRemove: 'Remove image',
@@ -518,6 +520,7 @@ const cs: Strings = {
   photoRemove: 'Odebrat',
   photoHint: 'Bude oříznut na 128×128',
   contentImageLabel: 'Obrázek (volitelné)',
+  contentImageAdd: 'Přidat obrázek',
   contentImageChoose: 'Vybrat obrázek',
   contentImageChange: 'Změnit obrázek',
   contentImageRemove: 'Odebrat obrázek',
@@ -773,6 +776,7 @@ const es: Strings = {
   photoRemove: 'Eliminar',
   photoHint: 'Se recortará a 128×128',
   contentImageLabel: 'Imagen (opcional)',
+  contentImageAdd: 'Añadir imagen',
   contentImageChoose: 'Elegir imagen',
   contentImageChange: 'Cambiar imagen',
   contentImageRemove: 'Eliminar imagen',
@@ -1028,6 +1032,7 @@ const de: Strings = {
   photoRemove: 'Entfernen',
   photoHint: 'Wird auf 128×128 zugeschnitten',
   contentImageLabel: 'Bild (optional)',
+  contentImageAdd: 'Bild hinzufügen',
   contentImageChoose: 'Bild wählen',
   contentImageChange: 'Bild ändern',
   contentImageRemove: 'Bild entfernen',

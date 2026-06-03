@@ -33,17 +33,15 @@ function findCountry(value: string) {
   });
 }
 
-// Form palette — three text tiers + one error tier, used throughout so the
-// modal never drifts back into a /25-/30-/35-/40-/50-/60 mosaic. Spacing tokens
-// keep label→input→hint stacks at one consistent rhythm.
-const LABEL =
-  'block text-[11px] font-semibold uppercase tracking-wide text-white/55 mb-1.5';
+// Form palette — matches SettingsModal so the two modals read as one family
+// (label = text-xs font-medium /50; hint = text-xs /30). No uppercase micro-
+// labels, which made this modal look off next to the rest of the app.
+const LABEL = 'block text-xs font-medium text-white/50 mb-1.5';
 const INPUT =
   'w-full bg-surface text-white text-sm rounded-lg border border-border px-3 py-2 placeholder:text-white/30 focus:outline-none focus:border-accent transition-colors';
-const HINT = 'text-[11px] text-white/40 mt-1 leading-snug';
-const HINT_INLINE = 'text-[11px] text-white/40 leading-snug';
-const COUNTER = 'text-[11px] text-white/40 mt-1 text-right tabular-nums';
-const ERROR = 'text-[11px] text-red-400 mt-1';
+const HINT = 'text-xs text-white/30 mt-1.5 leading-snug';
+const COUNTER = 'text-xs text-white/30 mt-1 text-right tabular-nums';
+const ERROR = 'text-xs text-red-400 mt-1';
 
 const NominateIcon = () => (
   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.75}>
@@ -221,57 +219,62 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
       desktopScrollable
     >
       <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
-        {/* Statement */}
+        {/* Statement — avatar picker sits inline to the left, so the opinio's
+            face and headline read as one unit and we drop a whole labeled row. */}
         <div>
           <label className={LABEL}>{t.statementLabel}</label>
-          <input
-            type="text"
-            placeholder={t.statementPlaceholder}
-            value={name}
-            onChange={(e) => setName(e.target.value.slice(0, 40))}
-            maxLength={40}
-            className={INPUT}
-            required
-          />
-          <p className={`${COUNTER} ${name.length >= 36 ? 'text-red-400' : ''}`}>
-            {name.length} / 40
-          </p>
-        </div>
-
-        {/* Avatar */}
-        <div>
-          <label className={LABEL}>{t.photoLabel}</label>
-          <div className="flex items-center gap-3">
+          <div className="flex items-start gap-2.5">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="w-12 h-12 rounded-full border border-border bg-surface shrink-0 overflow-hidden hover:border-white/25 transition-colors"
+              className="relative w-11 h-11 rounded-full border border-border bg-surface shrink-0 overflow-hidden group hover:border-white/25 transition-colors"
+              title={previewUrl ? t.photoChange : t.photoChoose}
               aria-label={previewUrl ? t.photoChange : t.photoChoose}
             >
               {previewUrl ? (
-                <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                <>
+                  <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                  <span className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                    </svg>
+                  </span>
+                </>
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-white/30">
+                <span className="w-full h-full flex items-center justify-center text-white/30">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M21 3.75H3A.75.75 0 002.25 4.5v15a.75.75 0 00.75.75h18a.75.75 0 00.75-.75v-15A.75.75 0 0021 3.75z" />
                   </svg>
-                </div>
+                </span>
+              )}
+              {previewUrl && (
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => { e.stopPropagation(); setImageBlob(null); setPreviewUrl(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setImageBlob(null); setPreviewUrl(null); if (fileInputRef.current) fileInputRef.current.value = ''; } }}
+                  aria-label={t.photoRemove}
+                  className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-surface border border-border rounded-full text-white/60 hover:text-white hover:border-white/40 transition-colors"
+                >
+                  <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </span>
               )}
             </button>
-            <div className="flex-1 min-w-0 flex items-center gap-3 text-[11px]">
-              <button type="button" onClick={() => fileInputRef.current?.click()} className="text-white/70 hover:text-white transition-colors">
-                {previewUrl ? t.photoChange : t.photoChoose}
-              </button>
-              {previewUrl && (
-                <button
-                  type="button"
-                  onClick={() => { setImageBlob(null); setPreviewUrl(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
-                  className="text-white/40 hover:text-white/70 transition-colors"
-                >
-                  {t.photoRemove}
-                </button>
-              )}
-              {!previewUrl && <span className={HINT_INLINE}>{t.photoHint}</span>}
+            <div className="flex-1 min-w-0">
+              <input
+                type="text"
+                placeholder={t.statementPlaceholder}
+                value={name}
+                onChange={(e) => setName(e.target.value.slice(0, 40))}
+                maxLength={40}
+                className={INPUT}
+                required
+              />
+              <p className={`${COUNTER} ${name.length >= 36 ? 'text-red-400' : ''}`}>
+                {name.length} / 40
+              </p>
             </div>
           </div>
           {imageError && <p className={ERROR}>{imageError}</p>}
@@ -382,12 +385,13 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           </p>
         </div>
 
-        {/* Content image */}
+        {/* Optional image — collapsed to a single text affordance by default so
+            the form reads as four core fields. Clicking opens the picker; once a
+            file is chosen we show a compact preview with change / remove. */}
         <div>
-          <label className={LABEL}>{t.contentImageLabel}</label>
           {contentPreviewUrl ? (
-            <div className="relative group rounded-lg overflow-hidden border border-border bg-black/30" style={{ aspectRatio: '16 / 9' }}>
-              <img src={contentPreviewUrl} alt="" className="w-full h-full object-contain" />
+            <div className="relative group rounded-lg overflow-hidden border border-border bg-black/30">
+              <img src={contentPreviewUrl} alt="" className="w-full h-auto max-h-44 object-contain" />
               <button
                 type="button"
                 onClick={() => contentFileInputRef.current?.click()}
@@ -416,13 +420,12 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
             <button
               type="button"
               onClick={() => contentFileInputRef.current?.click()}
-              className="w-full flex flex-col items-center justify-center gap-1.5 py-5 border border-dashed border-border rounded-lg text-white/40 hover:text-white/70 hover:border-white/25 hover:bg-white/[0.02] transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-white/50 hover:text-white/80 transition-colors"
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M21 3.75H3A.75.75 0 002.25 4.5v15a.75.75 0 00.75.75h18a.75.75 0 00.75-.75v-15A.75.75 0 0021 3.75z" />
               </svg>
-              <span className="text-[13px] font-medium">{t.contentImageChoose}</span>
-              <span className="text-[11px] text-white/40 px-4 text-center">{t.contentImageHint}</span>
+              {t.contentImageAdd}
             </button>
           )}
           {contentImageError && <p className={ERROR}>{contentImageError}</p>}
