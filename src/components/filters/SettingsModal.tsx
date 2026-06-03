@@ -151,7 +151,7 @@ function SettingsContent({
 
       {/* Display name */}
       <div>
-        <label className="block text-xs font-medium text-white/50 mb-1.5">{t.displayName}</label>
+        <label className="block text-xs font-medium text-white/80 mb-1.5">{t.displayName}</label>
         <div className={`flex items-center px-3 py-2 rounded-lg border text-sm transition-colors ${
           isAnonymous
             ? 'border-border opacity-60 cursor-not-allowed'
@@ -176,7 +176,7 @@ function SettingsContent({
 
       {/* Country */}
       <div>
-        <label className="block text-xs font-medium text-white/50 mb-1.5">{t.country}</label>
+        <label className="block text-xs font-medium text-white/80 mb-1.5">{t.country}</label>
         {canChangeCountry ? (
           <SelectField
             value={user?.countryCode ?? ''}
@@ -217,7 +217,7 @@ function SettingsContent({
 
       {/* Language */}
       <div>
-        <label className="block text-xs font-medium text-white/50 mb-1.5">{t.language}</label>
+        <label className="block text-xs font-medium text-white/80 mb-1.5">{t.language}</label>
         <SelectField value={locale} onChange={(e) => setLocale(e.target.value as Locale)}>
           {Object.entries(LANGUAGES).map(([key, { label }]) => (
             <option key={key} value={key} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{label}</option>

@@ -53,7 +53,7 @@ export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
       <div className="px-6 py-4 space-y-5">
         {/* Country */}
         <div>
-          <p className="text-xs font-medium text-white/50 mb-2">{t.country}</p>
+          <p className="text-xs font-medium text-white/80 mb-2">{t.country}</p>
           <input
             value={query}
             onChange={e => setQuery(e.target.value)}
@@ -87,7 +87,7 @@ export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
 
         {/* Roles */}
         <div>
-          <p className="text-xs font-medium text-white/50 mb-2">{t.allCategories}</p>
+          <p className="text-xs font-medium text-white/80 mb-2">{t.allCategories}</p>
           <div className="flex flex-wrap gap-2">
             {ALL_ROLES.map((r: Role) => {
               const active = roles.includes(r);
@@ -108,7 +108,7 @@ export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
 
         {/* Search — advanced filter, kept last */}
         <div>
-          <p className="text-xs font-medium text-white/50 mb-2">{t.searchLabel}</p>
+          <p className="text-xs font-medium text-white/80 mb-2">{t.searchLabel}</p>
           <input
             value={searchValue}
             onChange={e => setSearchValue(e.target.value)}

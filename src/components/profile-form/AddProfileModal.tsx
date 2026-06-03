@@ -34,9 +34,9 @@ function findCountry(value: string) {
 }
 
 // Form palette — matches SettingsModal so the two modals read as one family
-// (label = text-xs font-medium /50; hint = text-xs /30). No uppercase micro-
+// (label = text-xs font-medium /80; hint = text-xs /30). No uppercase micro-
 // labels, which made this modal look off next to the rest of the app.
-const LABEL = 'block text-xs font-medium text-white/50 mb-1.5';
+const LABEL = 'block text-xs font-medium text-white/80 mb-1.5';
 const INPUT =
   'w-full bg-surface text-white text-sm rounded-lg border border-border px-3 py-2 placeholder:text-white/30 focus:outline-none focus:border-accent transition-colors';
 const HINT = 'text-xs text-white/30 mt-1.5 leading-snug';
@@ -223,7 +223,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
             face and headline read as one unit and we drop a whole labeled row. */}
         <div>
           <label className={LABEL}>{t.statementLabel}</label>
-          <div className="flex items-start gap-2.5">
+          <div className="flex items-center gap-2.5">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
@@ -262,21 +262,19 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
                 </span>
               )}
             </button>
-            <div className="flex-1 min-w-0">
-              <input
-                type="text"
-                placeholder={t.statementPlaceholder}
-                value={name}
-                onChange={(e) => setName(e.target.value.slice(0, 40))}
-                maxLength={40}
-                className={INPUT}
-                required
-              />
-              <p className={`${COUNTER} ${name.length >= 36 ? 'text-red-400' : ''}`}>
-                {name.length} / 40
-              </p>
-            </div>
+            <input
+              type="text"
+              placeholder={t.statementPlaceholder}
+              value={name}
+              onChange={(e) => setName(e.target.value.slice(0, 40))}
+              maxLength={40}
+              className={`${INPUT} flex-1 min-w-0`}
+              required
+            />
           </div>
+          <p className={`${COUNTER} ${name.length >= 36 ? 'text-red-400' : ''}`}>
+            {name.length} / 40
+          </p>
           {imageError && <p className={ERROR}>{imageError}</p>}
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
         </div>

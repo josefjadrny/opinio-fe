@@ -299,12 +299,12 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
           is meaningless there - that tab swaps in a metric picker instead. */}
       {isCountries ? (
         <div>
-          <label className="block text-xs font-medium text-white/50 mb-1.5">{t.statsMetricLabel}</label>
+          <label className="block text-xs font-medium text-white/80 mb-1.5">{t.statsMetricLabel}</label>
           <MetricTabs metric={metric} onChange={setMetric} t={t} />
         </div>
       ) : (
         <div>
-          <label className="block text-xs font-medium text-white/50 mb-1.5">{t.country}</label>
+          <label className="block text-xs font-medium text-white/80 mb-1.5">{t.country}</label>
           <SelectField value={country ?? ''} onChange={(e) => setCountry(e.target.value || undefined)}>
             <option value="" style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{t.allCountries}</option>
             {ALL_COUNTRIES.map(({ code, name }) => (

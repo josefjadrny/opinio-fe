@@ -172,7 +172,7 @@ function CreateForm({ onBack, t }: { onBack: () => void; t: ReturnType<typeof us
       <BackButton onClick={onBack} label={t.supportBack} />
 
       <div>
-        <label className="block text-xs font-medium text-white/50 mb-1.5">{t.supportCategoryLabel}</label>
+        <label className="block text-xs font-medium text-white/80 mb-1.5">{t.supportCategoryLabel}</label>
         <div className="flex gap-2 flex-wrap">
           {CATEGORIES.map((cat) => (
             <button
@@ -193,7 +193,7 @@ function CreateForm({ onBack, t }: { onBack: () => void; t: ReturnType<typeof us
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-white/50 mb-1.5">{t.supportTitleLabel}</label>
+        <label className="block text-xs font-medium text-white/80 mb-1.5">{t.supportTitleLabel}</label>
         <input
           type="text"
           value={title}
@@ -206,7 +206,7 @@ function CreateForm({ onBack, t }: { onBack: () => void; t: ReturnType<typeof us
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-white/50 mb-1.5">{t.supportDescriptionLabel}</label>
+        <label className="block text-xs font-medium text-white/80 mb-1.5">{t.supportDescriptionLabel}</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -304,7 +304,7 @@ function TicketDetail({
       {isAdmin && (
         <div className="flex flex-col gap-4 pt-1 border-t border-border">
           <div>
-            <label className="block text-xs font-medium text-white/50 mb-1.5">{t.supportStatusLabel}</label>
+            <label className="block text-xs font-medium text-white/80 mb-1.5">{t.supportStatusLabel}</label>
             <div className="flex gap-2 flex-wrap">
               {ADMIN_STATUSES.map((s) => (
                 <button
@@ -323,7 +323,7 @@ function TicketDetail({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-white/50 mb-1.5">{t.supportAdminReply}</label>
+            <label className="block text-xs font-medium text-white/80 mb-1.5">{t.supportAdminReply}</label>
             <textarea
               value={adminReply}
               onChange={(e) => setAdminReply(e.target.value)}
@@ -346,7 +346,7 @@ function TicketDetail({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-white/50 mb-1.5">
+            <label className="block text-xs font-medium text-white/80 mb-1.5">
               {t.supportAdminNote}
               <span className="ml-1 text-white/25">(internal)</span>
             </label>
