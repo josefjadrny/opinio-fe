@@ -50,7 +50,7 @@ export function ContentImageLightbox({ imageUrl, alt, onClose }: ContentImageLig
           href={downloadUrl(imageUrl)}
           download
           onClick={(e) => e.stopPropagation()}
-          className="px-3 py-1.5 text-xs font-medium bg-black/60 hover:bg-black/80 text-white rounded-lg ring-1 ring-white/15 backdrop-blur-sm transition-colors"
+          className="cursor-pointer px-3 py-1.5 text-xs font-medium bg-black/60 hover:bg-black/80 text-white rounded-lg ring-1 ring-white/15 backdrop-blur-sm transition-colors"
         >
           {t.lightboxDownload}
         </a>
@@ -59,7 +59,7 @@ export function ContentImageLightbox({ imageUrl, alt, onClose }: ContentImageLig
           onClick={onClose}
           aria-label={t.close}
           title={t.close}
-          className="p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-lg ring-1 ring-white/15 backdrop-blur-sm transition-colors"
+          className="cursor-pointer p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-lg ring-1 ring-white/15 backdrop-blur-sm transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
