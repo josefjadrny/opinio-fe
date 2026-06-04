@@ -5,7 +5,8 @@ export type Role =
   | 'business'
   | 'media'
   | 'health'
-  | 'science';
+  | 'science'
+  | 'tech';
 
 export interface Profile {
   id: string;

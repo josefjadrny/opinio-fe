@@ -8,6 +8,7 @@ export const ROLE_LABELS: Record<Role, string> = {
   media: 'Media',
   health: 'Health',
   science: 'Science',
+  tech: 'Tech',
 };
 
 export const ROLE_COLORS: Record<Role, string> = {
@@ -18,6 +19,7 @@ export const ROLE_COLORS: Record<Role, string> = {
   media: 'bg-cyan-600',
   health: 'bg-rose-600',
   science: 'bg-indigo-600',
+  tech: 'bg-slate-500',
 };
 
 export const ALL_ROLES: Role[] = Object.keys(ROLE_LABELS) as Role[];
