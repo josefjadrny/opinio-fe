@@ -12,6 +12,8 @@ import { useFilters } from '../../context/useFilters';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { Avatar } from './Avatar';
 import { formatNumber } from '../../utils/formatNumber';
+import { useProfileText } from '../../hooks/useProfileText';
+import { useI18n } from '../../i18n/I18nContext';
 
 interface ProfileCardProps {
   profile: Profile;
@@ -33,11 +35,13 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   const isMobile = useIsMobile();
   const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(hoveredId);
   const { setHoveredProfileCountry } = useFilters();
+  const { t, locale } = useI18n();
+  const { name, description, hasTranslation, showingOriginal, toggle } = useProfileText(profile);
 
   const openDetail = useCallback(() => {
-    queryClient.setQueryData(['profile', profile.id], profile);
+    queryClient.setQueryData(['profile', profile.id, locale], profile);
     navigate('/p/' + profile.id + location.search);
-  }, [navigate, profile, location.search, queryClient]);
+  }, [navigate, profile, location.search, queryClient, locale]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
@@ -85,7 +89,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
       <div className="flex items-center gap-2 py-1">
         <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-6 h-6" />
         <span className="text-xs font-medium text-white truncate flex-1 min-w-0">
-          {profile.name}
+          {name}
         </span>
         <div className="flex items-center gap-2 text-xs font-semibold tabular-nums shrink-0">
           <span className="inline-flex items-baseline gap-1 text-positive">
@@ -119,7 +123,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
           <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-8 h-8 shrink-0" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
-              <span className="text-sm font-medium text-white truncate min-w-0 flex-shrink">{profile.name}</span>
+              <span className="text-sm font-medium text-white truncate min-w-0 flex-shrink">{name}</span>
               <div className="flex items-center gap-1.5 shrink-0">
                 <CountryFlag code={profile.countryCode} />
                 <RoleBadge role={profile.role} />
@@ -169,14 +173,23 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
       <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-10 h-10" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
-          <span className="font-semibold text-white truncate min-w-0 flex-shrink">{profile.name}</span>
+          <span className="font-semibold text-white truncate min-w-0 flex-shrink">{name}</span>
           <div className="flex items-center gap-1.5 shrink-0">
             <CountryFlag code={profile.countryCode} />
             <RoleBadge role={profile.role} />
             {profile.label && <LabelBadge label={profile.label} />}
           </div>
         </div>
-        <p className="text-[13px] text-text-secondary mb-0.5">{profile.description}</p>
+        <p className="text-[13px] text-text-secondary mb-0.5">{description}</p>
+        {hasTranslation && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); toggle(); }}
+            className="text-[11px] text-text-secondary/70 hover:text-accent transition-colors mb-0.5"
+          >
+            {showingOriginal ? t.seeTranslation : t.seeOriginal}
+          </button>
+        )}
         <div onClick={(e) => e.stopPropagation()}>
           <VoteButtons
             profileId={profile.id}

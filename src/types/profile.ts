@@ -18,6 +18,13 @@ export interface Profile {
   contentImageUrl: string | null;
   countryCode: string;
   description: string;
+  // name/description above carry the translation for the requested UI language
+  // when one exists. originalName/originalDescription are the untranslated text
+  // (always present); sourceLang is the auto-detected original language. When no
+  // translation applies, name === originalName and there's nothing to toggle.
+  originalName?: string;
+  originalDescription?: string;
+  sourceLang?: string | null;
   addedBy: string;
   addedById: string | null;
   createdAt: string;

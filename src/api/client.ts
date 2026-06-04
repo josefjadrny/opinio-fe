@@ -32,21 +32,24 @@ export function isNotFound(error: unknown): boolean {
   return status === 404 || status === 400;
 }
 
-export function getProfiles(filters: ProfileFilters): Promise<ProfilesResponse> {
+export function getProfiles(filters: ProfileFilters, lang?: string): Promise<ProfilesResponse> {
   const params = new URLSearchParams({ type: filters.type });
   if (filters.country) params.set('country', filters.country);
   if (filters.roles?.length) params.set('roles', filters.roles.join(','));
   if (filters.search) params.set('q', filters.search);
   if (filters.limit != null) params.set('limit', String(filters.limit));
+  if (lang) params.set('lang', lang);
   return apiFetch(`/api/profiles?${params}`);
 }
 
-export function getCountryProfiles(countryCode: string): Promise<CountryProfilesResponse> {
-  return apiFetch(`/api/profiles/country/${countryCode}`);
+export function getCountryProfiles(countryCode: string, lang?: string): Promise<CountryProfilesResponse> {
+  const qs = lang ? `?lang=${lang}` : '';
+  return apiFetch(`/api/profiles/country/${countryCode}${qs}`);
 }
 
-export function getCountryDiscussed(countryCode: string): Promise<CountryDiscussedResponse> {
-  return apiFetch(`/api/profiles/country/${countryCode}/discussed`);
+export function getCountryDiscussed(countryCode: string, lang?: string): Promise<CountryDiscussedResponse> {
+  const qs = lang ? `?lang=${lang}` : '';
+  return apiFetch(`/api/profiles/country/${countryCode}/discussed${qs}`);
 }
 
 export function vote(profileId: string, type: VoteType): Promise<VoteResponse> {
@@ -120,8 +123,9 @@ export function addNewProfile(data: {
   });
 }
 
-export function getProfile(profileId: string): Promise<import('../types/profile').Profile> {
-  return apiFetch(`/api/profiles/${profileId}`);
+export function getProfile(profileId: string, lang?: string): Promise<import('../types/profile').Profile> {
+  const qs = lang ? `?lang=${lang}` : '';
+  return apiFetch(`/api/profiles/${profileId}${qs}`);
 }
 
 export async function deleteProfile(profileId: string): Promise<void> {

@@ -9,6 +9,7 @@ import { useCountdown } from '../../hooks/useCountdown';
 import { useAnimatedValue } from '../../hooks/useAnimatedValue';
 import { useVoteAnimation } from '../../hooks/useVoteAnimation';
 import { useI18n } from '../../i18n/I18nContext';
+import { useProfileText } from '../../hooks/useProfileText';
 import { Avatar } from './Avatar';
 import { ShareButton } from './ShareButton';
 import { DeleteProfileButton } from './DeleteProfileButton';
@@ -35,6 +36,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
   const animatedLikes = useAnimatedValue(profile?.likes ?? 0);
   const animatedDislikes = useAnimatedValue(profile?.dislikes ?? 0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const { name, description, hasTranslation, showingOriginal, toggle } = useProfileText(profile);
 
   const hasCountry = me === undefined || !!me.user.countryCode;
   const isRegistered = !!me?.user && me.user.tier !== 'anonymous';
@@ -112,7 +114,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
               <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-14 h-14 shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                  <span className="font-semibold text-white truncate">{profile.name}</span>
+                  <span className="font-semibold text-white truncate">{name}</span>
                   <CountryFlag code={profile.countryCode} />
                   <RoleBadge role={profile.role} />
                 </div>
@@ -172,7 +174,16 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
               <div className="grid grid-cols-2 gap-0 divide-x divide-border">
                 {/* Left: description first, optional image second as supporting context */}
                 <div className="px-6 py-4 space-y-3">
-                  <p className="text-sm text-white/80 leading-relaxed">{profile.description}</p>
+                  <p className="text-sm text-white/80 leading-relaxed">{description}</p>
+                  {hasTranslation && (
+                    <button
+                      type="button"
+                      onClick={toggle}
+                      className="text-xs text-text-secondary/70 hover:text-accent transition-colors"
+                    >
+                      {showingOriginal ? t.seeTranslation : t.seeOriginal}
+                    </button>
+                  )}
                   {profile.contentImageUrl && (
                     // 240 px cap keeps the image as supporting context, not
                     // the focus. Click opens the full 1280 px in the lightbox.

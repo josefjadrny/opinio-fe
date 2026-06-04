@@ -206,6 +206,8 @@ export interface Strings {
   breakdownDisliking: string;
   share: string;
   linkCopied: string;
+  seeOriginal: string;
+  seeTranslation: string;
   userJoined: string;
   userLikesCast: string;
   userDislikesCast: string;
@@ -289,7 +291,7 @@ const en: Strings = {
   anonymousUser: 'Anonymous',
   notLoggedIn: 'Not logged in',
   language: 'Language',
-  languageHint: 'Changes the interface only, not the opinions',
+  languageHint: 'We translate opinios into this language for you',
   upgradeBanner: 'Become a supporter',
   manageSubscription: 'Manage subscription',
   brandTagline: 'Social voting platform from Europe 🇪🇺. Vote on the stories shaping the world today, ranked country by country.',
@@ -463,6 +465,8 @@ const en: Strings = {
   breakdownDisliking: 'Disliking',
   share: 'Share',
   linkCopied: 'Link copied',
+  seeOriginal: 'See original',
+  seeTranslation: 'See translation',
   userJoined: 'Joined {date}',
   userLikesCast: 'likes cast',
   userDislikesCast: 'dislikes cast',
@@ -548,7 +552,7 @@ const cs: Strings = {
   upgradeBanner: 'Stát se podporovatelem',
   manageSubscription: 'Spravovat předplatné',
   language: 'Jazyk',
-  languageHint: 'Mění jen rozhraní, ne názory',
+  languageHint: 'Opinio za vás překládáme do tohoto jazyka',
   brandTagline: 'Evropská sociální hlasovací platforma 🇪🇺. Hlasuj o tématech, která utvářejí dnešní svět, seřazeno zemi po zemi.',
   aboutPrinciplesTitle: 'Naše principy',
   aboutPrincipleTimeTitle: 'Respektujeme váš čas',
@@ -720,6 +724,8 @@ const cs: Strings = {
   breakdownDisliking: 'Nelíbí se',
   share: 'Sdílet',
   linkCopied: 'Odkaz zkopírován',
+  seeOriginal: 'Zobrazit originál',
+  seeTranslation: 'Zobrazit překlad',
   userJoined: 'Účet od {date}',
   userLikesCast: 'lajků',
   userDislikesCast: 'dislajků',
@@ -805,7 +811,7 @@ const es: Strings = {
   upgradeBanner: 'Conviértete en Supporter',
   manageSubscription: 'Gestionar suscripción',
   language: 'Idioma',
-  languageHint: 'Cambia solo la interfaz, no las opiniones',
+  languageHint: 'Traducimos los opinio a este idioma por ti',
   brandTagline: 'Plataforma europea de votación social 🇪🇺. Vota sobre las historias que dan forma al mundo hoy, clasificadas país por país.',
   aboutPrinciplesTitle: 'Nuestros principios',
   aboutPrincipleTimeTitle: 'Respetamos tu tiempo',
@@ -977,6 +983,8 @@ const es: Strings = {
   breakdownDisliking: 'En contra',
   share: 'Compartir',
   linkCopied: 'Enlace copiado',
+  seeOriginal: 'Ver original',
+  seeTranslation: 'Ver traducción',
   userJoined: 'Se unió el {date}',
   userLikesCast: 'votos positivos',
   userDislikesCast: 'votos negativos',
@@ -1060,7 +1068,7 @@ const de: Strings = {
   anonymousUser: 'Anonym',
   notLoggedIn: 'Nicht angemeldet',
   language: 'Sprache',
-  languageHint: 'Ändert nur die Oberfläche, nicht die Meinungen',
+  languageHint: 'Wir übersetzen Opinio für dich in diese Sprache',
   upgradeBanner: 'Werde Supporter',
   manageSubscription: 'Abo verwalten',
   brandTagline: 'Soziale Abstimmungsplattform aus Europa 🇪🇺. Stimme über die Themen ab, die die Welt heute bewegen - sortiert Land für Land.',
@@ -1234,6 +1242,8 @@ const de: Strings = {
   breakdownDisliking: 'Dagegen',
   share: 'Teilen',
   linkCopied: 'Link kopiert',
+  seeOriginal: 'Original anzeigen',
+  seeTranslation: 'Übersetzung anzeigen',
   userJoined: 'Dabei seit {date}',
   userLikesCast: 'vergebene Likes',
   userDislikesCast: 'vergebene Dislikes',

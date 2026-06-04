@@ -13,6 +13,7 @@ import { getCountryFlag, getCountryName } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useI18n } from '../../i18n/I18nContext';
+import { useProfileText } from '../../hooks/useProfileText';
 
 interface ProfileDetailModalProps {
   profile: Profile;
@@ -26,6 +27,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
   const { t, locale } = useI18n();
   const { data: me } = useMe();
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const { name, description, hasTranslation, showingOriginal, toggle } = useProfileText(profile);
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       // Lightbox handles its own ESC (and stops propagation); only close the
@@ -68,7 +70,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
                 <CountryFlag code={profile.countryCode} />
-                <span className="font-semibold text-white truncate">{profile.name}</span>
+                <span className="font-semibold text-white truncate">{name}</span>
               </div>
               <RoleBadge role={profile.role} />
             </div>
@@ -111,7 +113,16 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
         </div>
 
         <div className="px-6 py-5 space-y-4">
-          <p className="text-sm text-white/80 leading-relaxed">{profile.description}</p>
+          <p className="text-sm text-white/80 leading-relaxed">{description}</p>
+          {hasTranslation && (
+            <button
+              type="button"
+              onClick={toggle}
+              className="text-xs text-text-secondary/70 hover:text-accent transition-colors"
+            >
+              {showingOriginal ? t.seeTranslation : t.seeOriginal}
+            </button>
+          )}
           {profile.contentImageUrl && (
             // Text first, image second — the opinion is the primary content.
             // 220 px cap keeps the image as supporting context, not the focus;
