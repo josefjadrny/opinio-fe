@@ -143,8 +143,9 @@ export function getPersonBreakdown(profileId: string): Promise<PersonBreakdownRe
   return apiFetch(`/api/profiles/${profileId}/breakdown`);
 }
 
-export function getUser(userId: string): Promise<UserDetailResponse> {
-  return apiFetch(`/api/users/${userId}`);
+export function getUser(userId: string, lang?: string): Promise<UserDetailResponse> {
+  const qs = lang ? `?lang=${lang}` : '';
+  return apiFetch(`/api/users/${userId}${qs}`);
 }
 
 export interface CountryCounts {

@@ -35,8 +35,10 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   const isMobile = useIsMobile();
   const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(hoveredId);
   const { setHoveredProfileCountry } = useFilters();
-  const { t, locale } = useI18n();
-  const { name, description, hasTranslation, showingOriginal, toggle } = useProfileText(profile);
+  const { locale } = useI18n();
+  // Cards show the translated text but no "see original" toggle — that lives
+  // only in the profile detail modal.
+  const { name, description } = useProfileText(profile);
 
   const openDetail = useCallback(() => {
     queryClient.setQueryData(['profile', profile.id, locale], profile);
@@ -181,15 +183,6 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
           </div>
         </div>
         <p className="text-[13px] text-text-secondary mb-0.5">{description}</p>
-        {hasTranslation && (
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); toggle(); }}
-            className="text-[11px] text-text-secondary/70 hover:text-accent transition-colors mb-0.5"
-          >
-            {showingOriginal ? t.seeTranslation : t.seeOriginal}
-          </button>
-        )}
         <div onClick={(e) => e.stopPropagation()}>
           <VoteButtons
             profileId={profile.id}
