@@ -15,7 +15,7 @@ const GEO_URL = '/topojson/world-110m.json';
 const WIDTH = 800;
 const HEIGHT = 500;
 const MIN_ZOOM = 1;
-const MAX_ZOOM = 3.5;
+const MAX_ZOOM = 4.5;
 const DEFAULT_FILL = '#3a3a6a';
 // City names fade in progressively as you zoom so labels never pile up: capitals
 // first, then secondary cities deeper in (where there's room). Dots are always
