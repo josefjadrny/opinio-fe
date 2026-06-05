@@ -39,6 +39,14 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me?.user?.language, me?.user?.tier]);
 
+  // Keep <html lang> in sync with the active locale so the rendered page
+  // reports its real language to crawlers (Googlebot renders JS) and assistive
+  // tech — index.html ships a static lang="en" that's wrong once the UI
+  // switches language. Purely a crawler/a11y signal, invisible to users.
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
+
   const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale);
     localStorage.setItem(LOCALE_KEY, newLocale);
