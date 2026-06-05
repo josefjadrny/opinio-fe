@@ -88,24 +88,32 @@ export function WorldMap() {
   // Label placement + decluttering. Each label tries four positions around its
   // dot (right, left, above, below) and takes the first whose box is clear, so a
   // capital crowded on one side (e.g. Vienna next to Bratislava) flips to a free
-  // side instead of overprinting. Capitals are placed first so they win contested
-  // space over secondary cities and later-processed capitals; a label whose four
-  // positions are all blocked is dropped (its dot still shows) rather than
-  // overprinted — it reappears once zoom separates the cluster. Boxes are in
-  // projected (pre-transform) space; label sizes divide by scale, so zooming in
-  // shrinks boxes and frees up positions. Returns per-key {x, y, anchor} so the
-  // render places text identically. Recomputed each zoom step.
+  // side instead of overprinting. Capitals are placed first (priority) and are
+  // always shown — if no side is fully clear they take the least-crowded one, so
+  // every capital stays visible. Secondary cities fill the remaining gaps and are
+  // dropped when no position is free. Boxes are in projected (pre-transform)
+  // space; label sizes divide by scale, so zooming in shrinks boxes and frees up
+  // positions. Returns per-key {x, y, anchor} so the render places text
+  // identically. Recomputed each zoom step.
   const cityLabelLayout = useMemo(() => {
     const scale = zoom.scale;
     type Box = { x1: number; y1: number; x2: number; y2: number };
     const placed: Box[] = [];
     const layout = new Map<string, { x: number; y: number; anchor: 'start' | 'end' | 'middle' }>();
-    const overlaps = (b: Box) =>
-      placed.some((o) => !(b.x2 < o.x1 || b.x1 > o.x2 || b.y2 < o.y1 || b.y1 > o.y2));
+    const overlapArea = (b: Box) =>
+      placed.reduce((sum, o) => {
+        const ox = Math.max(0, Math.min(b.x2, o.x2) - Math.max(b.x1, o.x1));
+        const oy = Math.max(0, Math.min(b.y2, o.y2) - Math.max(b.y1, o.y1));
+        return sum + ox * oy;
+      }, 0);
     const projected = CITIES.map((c) => ({ c, p: projection(c.coords) })).filter(
       (x): x is { c: (typeof CITIES)[number]; p: [number, number] } => !!x.p,
     );
-    const place = (c: (typeof CITIES)[number], cx: number, cy: number) => {
+    // forceShow=true (capitals): always render, picking the least-crowded of the
+    // four positions when none is fully clear — so a capital wedged against a
+    // neighbour (Bratislava next to Vienna) is still shown, just offset. forceShow
+    // =false (secondary): drop the label when every position overlaps.
+    const place = (c: (typeof CITIES)[number], cx: number, cy: number, forceShow: boolean) => {
       const fs = (c.capital ? 7 : 6.2) / scale;
       const w = cityLabel(c.name, locale).length * fs * 0.55;
       const h = fs;
@@ -117,17 +125,22 @@ export function WorldMap() {
         [cx, cy - gap - h / 2, 'middle', { x1: cx - w / 2, y1: cy - gap - h, x2: cx + w / 2, y2: cy - gap }],
         [cx, cy + gap + h / 2, 'middle', { x1: cx - w / 2, y1: cy + gap, x2: cx + w / 2, y2: cy + gap + h }],
       ];
-      const chosen = candidates.find(([, , , b]) => !overlaps(b));
-      if (!chosen) return;
+      let chosen = candidates.find(([, , , b]) => overlapArea(b) === 0);
+      if (!chosen) {
+        if (!forceShow) return;
+        chosen = candidates.reduce((best, cur) =>
+          overlapArea(cur[3]) < overlapArea(best[3]) ? cur : best,
+        );
+      }
       placed.push(chosen[3]);
       layout.set(`${c.code}:${c.name}`, { x: chosen[0], y: chosen[1], anchor: chosen[2] });
     };
-    // Capitals first (priority), then secondary cities fill remaining gaps.
+    // Capitals first (priority + always shown), then secondary cities fill gaps.
     for (const { c, p } of projected) {
-      if (c.capital && scale > CAPITAL_LABEL_ZOOM) place(c, p[0], p[1]);
+      if (c.capital && scale > CAPITAL_LABEL_ZOOM) place(c, p[0], p[1], true);
     }
     for (const { c, p } of projected) {
-      if (!c.capital && scale > CITY_LABEL_ZOOM) place(c, p[0], p[1]);
+      if (!c.capital && scale > CITY_LABEL_ZOOM) place(c, p[0], p[1], false);
     }
     return layout;
   }, [zoom.scale, locale]);
