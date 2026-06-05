@@ -277,6 +277,15 @@ const CITY_ROWS: [string, string, number, number][] = [
   ['CN', 'Jinan', 117.0, 36.65],
   ['CN', 'Xiamen', 118.09, 24.48],
   ['CN', 'Ürümqi', 87.62, 43.83],
+  // Australia
+  ['AU', 'Sydney', 151.21, -33.87],
+  ['AU', 'Melbourne', 144.96, -37.81],
+  ['AU', 'Brisbane', 153.03, -27.47],
+  ['AU', 'Perth', 115.86, -31.95],
+  ['AU', 'Adelaide', 138.6, -34.93],
+  ['AU', 'Gold Coast', 153.43, -28.02],
+  ['AU', 'Darwin', 130.84, -12.46],
+  ['AU', 'Hobart', 147.33, -42.88],
   // Major European cities (city-proper population > ~1M), excluding capitals.
   ['DE', 'Hamburg', 9.99, 53.55],
   ['DE', 'Munich', 11.58, 48.14],
