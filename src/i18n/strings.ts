@@ -31,6 +31,7 @@ export interface Strings {
   lightboxDownload: string;
   newBadge: string;
   clearFilters: string;
+  clearSelection: string;
   searchLabel: string;
   searchPlaceholder: string;
   nominateTooltip: string;
@@ -267,6 +268,7 @@ const en: Strings = {
   lightboxDownload: 'Download',
   newBadge: 'NEW',
   clearFilters: 'Clear filters',
+  clearSelection: 'Clear selection',
   searchLabel: 'Search',
   searchPlaceholder: 'Search opinios…',
   nominateTooltip: 'Sign in to drop an opinio',
@@ -522,6 +524,7 @@ const cs: Strings = {
   lightboxDownload: 'Stáhnout',
   newBadge: 'NOVÝ',
   clearFilters: 'Zrušit filtry',
+  clearSelection: 'Zrušit výběr',
   searchLabel: 'Hledat',
   searchPlaceholder: 'Hledat opinio…',
   nominateTooltip: 'Přihlaste se pro přidání opinio',
@@ -777,6 +780,7 @@ const es: Strings = {
   lightboxDownload: 'Descargar',
   newBadge: 'NUEVO',
   clearFilters: 'Borrar filtros',
+  clearSelection: 'Borrar selección',
   searchLabel: 'Buscar',
   searchPlaceholder: 'Buscar opinio…',
   nominateTooltip: 'Inicia sesión para soltar un opinio',
@@ -1032,6 +1036,7 @@ const de: Strings = {
   lightboxDownload: 'Herunterladen',
   newBadge: 'NEU',
   clearFilters: 'Filter zurücksetzen',
+  clearSelection: 'Auswahl aufheben',
   searchLabel: 'Suche',
   searchPlaceholder: 'opinio suchen…',
   nominateTooltip: 'Melde dich an, um ein opinio reinzuwerfen',
@@ -1287,6 +1292,7 @@ const fr: Strings = {
   lightboxDownload: 'Télécharger',
   newBadge: 'NOUVEAU',
   clearFilters: 'Effacer les filtres',
+  clearSelection: 'Effacer la sélection',
   searchLabel: 'Rechercher',
   searchPlaceholder: 'Rechercher des opinios…',
   nominateTooltip: 'Connectez-vous pour balancer un opinio',
