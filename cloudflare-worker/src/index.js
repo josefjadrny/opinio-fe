@@ -4,9 +4,62 @@ const DEFAULT_OG_IMAGE = `${SITE_BASE}/og-image.png`;
 const ANON_OG_IMAGE = `${SITE_BASE}/icons/anonymous-mask.png`;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PROFILE_PATH_RE = /^\/p\/([^\/]+)\/?$/;
+// Language-suffixed profile page, e.g. /p/<uuid>/fr. These are crawler-facing,
+// server-rendered translated pages (see handleProfileLang) — the SPA is NOT
+// involved and stays untouched. English lives on the bare /p/<uuid> URL and is
+// the x-default; only the four non-English locales get a suffix.
+const PROFILE_LANG_PATH_RE = /^\/p\/([^\/]+)\/(cs|es|de|fr)\/?$/;
 const USER_PATH_RE = /^\/u\/([^\/]+)\/?$/;
 const COUNTRY_PATH_RE = /^\/c\/([^\/]+)\/?$/;
 const COUNTRY_CODE_RE = /^[A-Z]{2}$/;
+
+// Locales that get their own suffixed URL. English is excluded — it stays on
+// the bare path and is emitted as hreflang="en" + x-default. Keep in sync with
+// the i18n LANGUAGES set and the API sitemap's PREFIX_LANGS.
+const PREFIX_LANGS = ['cs', 'es', 'de', 'fr'];
+
+// Per-locale chrome for the standalone translated profile page. Descriptive
+// copy uses the natural word for "opinion" per locale (not the invariable
+// "opinio" brand token, which is reserved for interactive UI); punctuation is
+// plain ASCII hyphens.
+const LANG_UI = {
+  cs: {
+    ogLocale: 'cs_CZ',
+    cta: 'Hlasovat na Opinio',
+    tagline: 'Živé světové žebříčky názorů, lidí a myšlenek - hlasované po zemích.',
+    likes: 'líbí se', dislikes: 'nelíbí se',
+    original: 'Originál:',
+    gone: 'Tento názor už není dostupný.',
+    home: 'Zpět na Opinio',
+  },
+  es: {
+    ogLocale: 'es_ES',
+    cta: 'Vota en Opinio',
+    tagline: 'Rankings mundiales en vivo de opiniones, personas e ideas - votados por país.',
+    likes: 'me gusta', dislikes: 'no me gusta',
+    original: 'Original:',
+    gone: 'Esta opinión ya no está disponible.',
+    home: 'Volver a Opinio',
+  },
+  de: {
+    ogLocale: 'de_DE',
+    cta: 'Auf Opinio abstimmen',
+    tagline: 'Live-Weltranglisten von Meinungen, Menschen und Ideen - nach Ländern abgestimmt.',
+    likes: 'Likes', dislikes: 'Dislikes',
+    original: 'Original:',
+    gone: 'Diese Meinung ist nicht mehr verfügbar.',
+    home: 'Zurück zu Opinio',
+  },
+  fr: {
+    ogLocale: 'fr_FR',
+    cta: 'Voter sur Opinio',
+    tagline: "Classements mondiaux en direct d'opinions, de personnes et d'idées - votés par pays.",
+    likes: "j'aime", dislikes: "je n'aime pas",
+    original: 'Original:',
+    gone: "Cette opinion n'est plus disponible.",
+    home: 'Retour à Opinio',
+  },
+};
 
 // Mirrors opinio-fe/src/utils/countries.ts ALL_COUNTRY_NAMES — used to render
 // country OG cards server-side without an API round-trip. Keep the two in sync.
@@ -93,9 +146,12 @@ function upscaleAvatarUrl(url) {
 //   { ok: true,  data }                  — upstream 200
 //   { ok: false, notFound: true }        — upstream 404 (genuinely gone)
 //   { ok: false, notFound: false }       — 5xx / other non-200 / network / timeout
-async function fetchProfile(id) {
+async function fetchProfile(id, lang) {
   try {
-    const res = await fetch(`${API_BASE}/api/profiles/${id}`, {
+    // ?lang= makes the API COALESCE to the translated columns (falls back to the
+    // original when a translation is missing, so this is never an error path).
+    const qs = lang ? `?lang=${lang}` : '';
+    const res = await fetch(`${API_BASE}/api/profiles/${id}${qs}`, {
       headers: { accept: 'application/json' },
       cf: { cacheTtl: 300, cacheEverything: true },
     });
@@ -198,6 +254,19 @@ function avatarDims(imageUrl) {
   return null;
 }
 
+// Build the rel=alternate hreflang set for a base path (the English/bare URL,
+// e.g. "/p/<id>"). English + x-default point at the bare URL; each non-English
+// locale points at its suffixed URL. Used on both the bare page (so it declares
+// its translations) and every suffixed page (so the return links reciprocate).
+function hreflangLinks(basePath) {
+  const lines = [`<link rel="alternate" hreflang="en" href="${SITE_BASE}${basePath}" />`];
+  for (const lang of PREFIX_LANGS) {
+    lines.push(`<link rel="alternate" hreflang="${lang}" href="${SITE_BASE}${basePath}/${lang}" />`);
+  }
+  lines.push(`<link rel="alternate" hreflang="x-default" href="${SITE_BASE}${basePath}" />`);
+  return lines.join('\n    ');
+}
+
 function injectProfileMeta(html, meta) {
   const title = escapeHtml(meta.title);
   const description = escapeHtml(meta.description);
@@ -239,6 +308,16 @@ function injectProfileMeta(html, meta) {
     /(<link\s+rel="canonical"\s+href=")[^"]*(")/i,
     `$1${url}$2`
   );
+
+  // When a base path is supplied, declare the language alternates right after
+  // the canonical so crawlers can discover the translated URLs and tie them to
+  // this page (reciprocal hreflang).
+  if (meta.alternatesBase) {
+    out = out.replace(
+      /(<link\s+rel="canonical"[^>]*>)/i,
+      `$1\n    ${hreflangLinks(meta.alternatesBase)}`
+    );
+  }
   return out;
 }
 
@@ -280,9 +359,137 @@ async function handleProfile(request, id) {
     imageAlt,
     url: canonicalUrl,
     isAvatar: hasAvatar,
+    alternatesBase: `/p/${id}`,
   });
 
   return new Response(html, { status: 200, headers });
+}
+
+// Shared <head> for the standalone language pages: translated meta, a
+// self-referencing canonical (the suffixed URL — NEVER the bare one, or Google
+// would fold the page into English), and the reciprocal hreflang set.
+function langPageHead({ lang, title, description, image, canonical, basePath }) {
+  const ui = LANG_UI[lang];
+  return [
+    `<title>${escapeHtml(title)}</title>`,
+    `<meta name="description" content="${escapeHtml(description)}" />`,
+    `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
+    `    ${hreflangLinks(basePath)}`,
+    `<meta property="og:type" content="article" />`,
+    `<meta property="og:site_name" content="Opinio" />`,
+    `<meta property="og:locale" content="${ui.ogLocale}" />`,
+    `<meta property="og:title" content="${escapeHtml(title)}" />`,
+    `<meta property="og:description" content="${escapeHtml(description)}" />`,
+    `<meta property="og:url" content="${escapeHtml(canonical)}" />`,
+    `<meta property="og:image" content="${escapeHtml(image)}" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${escapeHtml(title)}" />`,
+    `<meta name="twitter:description" content="${escapeHtml(description)}" />`,
+    `<meta name="twitter:image" content="${escapeHtml(image)}" />`,
+  ].join('\n    ');
+}
+
+const LANG_PAGE_CSS =
+  ':root{color-scheme:dark}*{box-sizing:border-box}' +
+  'body{margin:0;background:#1a1a2e;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;' +
+  'line-height:1.5;-webkit-font-smoothing:antialiased}' +
+  '.wrap{max-width:680px;margin:0 auto;padding:24px 20px 64px}' +
+  'header a{color:#fff;text-decoration:none;font-weight:700;font-size:20px;letter-spacing:-.01em}' +
+  'header a span{color:#e94560}' +
+  '.card{margin-top:24px;background:#16213e;border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden}' +
+  '.hero{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;background:#0f1830}' +
+  '.body{padding:20px 22px}' +
+  '.meta{display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,.6);margin-bottom:10px}' +
+  '.pill{background:rgba(255,255,255,.08);border-radius:999px;padding:2px 10px;font-size:12px}' +
+  'h1{font-size:24px;line-height:1.25;margin:0 0 12px}' +
+  '.desc{color:rgba(255,255,255,.82);font-size:16px;margin:0 0 16px;white-space:pre-wrap}' +
+  '.orig{color:rgba(255,255,255,.4);font-size:13px;margin:0 0 16px}' +
+  '.counts{display:flex;gap:18px;font-size:15px;margin:0 0 20px}' +
+  '.counts .up{color:#22c55e}.counts .down{color:#e94560}' +
+  '.cta{display:inline-block;background:#e94560;color:#fff;text-decoration:none;font-weight:600;' +
+  'padding:12px 22px;border-radius:999px;font-size:15px}' +
+  '.tag{margin-top:28px;color:rgba(255,255,255,.45);font-size:13px;text-align:center}';
+
+function renderLangPage({ id, lang, profile }) {
+  const ui = LANG_UI[lang];
+  const appUrl = `${SITE_BASE}/p/${id}`;
+  const canonical = `${appUrl}/${lang}`;
+  const name = profile.name || '';
+  const description = profile.description || '';
+  const translated = profile.originalName && profile.originalName !== name;
+  const country = COUNTRY_NAMES[(profile.countryCode || '').toUpperCase()] || profile.countryCode || '';
+  const image = profile.contentImageUrl
+    || (profile.imageUrl ? upscaleAvatarUrl(profile.imageUrl) : DEFAULT_OG_IMAGE);
+  const title = `${name} - Opinio`;
+  const metaDesc = truncate(description || name, 200);
+
+  const hero = profile.contentImageUrl
+    ? `<img class="hero" src="${escapeHtml(profile.contentImageUrl)}" alt="${escapeHtml(name)}" />`
+    : '';
+  const metaLine = [
+    profile.role ? `<span class="pill">${escapeHtml(profile.role)}</span>` : '',
+    country ? `<span>${escapeHtml(country)}</span>` : '',
+  ].filter(Boolean).join('');
+  const origLine = translated
+    ? `<p class="orig">${escapeHtml(ui.original)} ${escapeHtml(profile.originalName)}</p>`
+    : '';
+
+  return '<!DOCTYPE html>\n' +
+    `<html lang="${lang}">\n<head>\n    <meta charset="utf-8" />\n` +
+    '    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    ' +
+    langPageHead({ lang, title, description: metaDesc, image, canonical, basePath: `/p/${id}` }) +
+    `\n    <style>${LANG_PAGE_CSS}</style>\n</head>\n<body>\n` +
+    `  <div class="wrap">\n` +
+    `    <header><a href="${SITE_BASE}/">Opin<span>io</span></a></header>\n` +
+    `    <article class="card">\n      ${hero}\n      <div class="body">\n` +
+    (metaLine ? `        <div class="meta">${metaLine}</div>\n` : '') +
+    `        <h1>${escapeHtml(name)}</h1>\n` +
+    (description ? `        <p class="desc">${escapeHtml(description)}</p>\n` : '') +
+    origLine + '\n' +
+    `        <div class="counts"><span class="up">▲ ${profile.likes || 0} ${escapeHtml(ui.likes)}</span>` +
+    `<span class="down">▼ ${profile.dislikes || 0} ${escapeHtml(ui.dislikes)}</span></div>\n` +
+    `        <a class="cta" href="${appUrl}">${escapeHtml(ui.cta)} &rarr;</a>\n` +
+    `      </div>\n    </article>\n` +
+    `    <p class="tag">${escapeHtml(ui.tagline)}</p>\n` +
+    `  </div>\n</body>\n</html>\n`;
+}
+
+// Minimal page for a miss: 404 body when the opinio is genuinely gone, a soft
+// "view on Opinio" page on a transient API outage (served 200 so crawlers keep
+// the URL). Either way, never a redirect.
+function renderLangMiss(lang, id, notFound) {
+  const ui = LANG_UI[lang];
+  const msg = notFound ? ui.gone : ui.tagline;
+  return '<!DOCTYPE html>\n' +
+    `<html lang="${lang}">\n<head>\n    <meta charset="utf-8" />\n` +
+    '    <meta name="viewport" content="width=device-width, initial-scale=1" />\n' +
+    `    <title>Opinio</title>\n    <meta name="robots" content="${notFound ? 'noindex' : 'noindex'}" />\n` +
+    `    <style>${LANG_PAGE_CSS}</style>\n</head>\n<body>\n  <div class="wrap">\n` +
+    `    <header><a href="${SITE_BASE}/">Opin<span>io</span></a></header>\n` +
+    `    <p class="tag" style="margin-top:48px">${escapeHtml(msg)}</p>\n` +
+    `    <p style="text-align:center"><a class="cta" href="${SITE_BASE}/p/${id}">${escapeHtml(ui.home)} &rarr;</a></p>\n` +
+    `  </div>\n</body>\n</html>\n`;
+}
+
+async function handleProfileLang(request, id, lang) {
+  const result = await fetchProfile(id, lang);
+  const headers = new Headers();
+  headers.set('content-type', 'text/html; charset=utf-8');
+  headers.set('cache-control', 'public, max-age=300, s-maxage=300');
+
+  if (!result.ok) {
+    // No SPA route backs these URLs, so we can't fall back to the shell — render
+    // a small standalone miss page instead. 404 when genuinely gone; 200 on a
+    // transient outage so crawlers don't drop a live translated URL.
+    headers.set('x-opinio-og', result.notFound ? 'notfound' : 'fallback');
+    return new Response(renderLangMiss(lang, id, result.notFound), {
+      status: result.notFound ? 404 : 200,
+      headers,
+    });
+  }
+
+  headers.set('x-opinio-og', 'profile-lang');
+  return new Response(renderLangPage({ id, lang, profile: result.data }), { status: 200, headers });
 }
 
 async function handleUser(request, id) {
@@ -449,6 +656,16 @@ export default {
     const staticPage = STATIC_PAGES[url.pathname];
     if (staticPage) {
       return handleStatic(request, staticPage, url.pathname);
+    }
+
+    // /p/<id>/<lang> — server-rendered translated page (checked before the bare
+    // /p/<id> match). The wrangler "opinio.live/p/*" route already covers it.
+    const profileLangMatch = url.pathname.match(PROFILE_LANG_PATH_RE);
+    if (profileLangMatch) {
+      const id = profileLangMatch[1].toLowerCase();
+      const lang = profileLangMatch[2].toLowerCase();
+      if (!UUID_RE.test(id)) return fetch(request);
+      return handleProfileLang(request, id, lang);
     }
 
     const profileMatch = url.pathname.match(PROFILE_PATH_RE);
