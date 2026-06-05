@@ -1509,11 +1509,14 @@ const fr: Strings = {
   close: 'Fermer',
 };
 
+// Keys kept alphabetical so the language select (Object.entries order in
+// SettingsModal) reads cs, de, en, es, fr. Native labels happen to sort the
+// same way (Čeština, Deutsch, English, Español, Français).
 export const LANGUAGES = {
-  en: { label: '🇬🇧 English', strings: en },
   cs: { label: '🇨🇿 Čeština', strings: cs },
-  es: { label: '🇪🇸 Español', strings: es },
   de: { label: '🇩🇪 Deutsch', strings: de },
+  en: { label: '🇬🇧 English', strings: en },
+  es: { label: '🇪🇸 Español', strings: es },
   fr: { label: '🇫🇷 Français', strings: fr },
 } as const;
 
