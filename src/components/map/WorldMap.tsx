@@ -85,46 +85,51 @@ export function WorldMap() {
     return map;
   }, [countriesData]);
 
-  // Label visibility. Capitals are never decluttered — every capital past its
-  // zoom threshold always shows its name. Secondary cities then fill the gaps:
-  // a secondary label renders only if its box doesn't overlap an already-placed
-  // box (the capital labels, seeded first, plus earlier-placed cities), so its
-  // dot may show without a name in tight spots. Boxes are in projected
-  // (pre-transform) space — label sizes divide by scale, so zooming in shrinks
-  // them and more secondary labels surface. Recomputed each zoom step.
-  const visibleCityLabels = useMemo(() => {
+  // Label placement + decluttering. Each label tries four positions around its
+  // dot (right, left, above, below) and takes the first whose box is clear, so a
+  // capital crowded on one side (e.g. Vienna next to Bratislava) flips to a free
+  // side instead of overprinting. Capitals are placed first so they win contested
+  // space over secondary cities and later-processed capitals; a label whose four
+  // positions are all blocked is dropped (its dot still shows) rather than
+  // overprinted — it reappears once zoom separates the cluster. Boxes are in
+  // projected (pre-transform) space; label sizes divide by scale, so zooming in
+  // shrinks boxes and frees up positions. Returns per-key {x, y, anchor} so the
+  // render places text identically. Recomputed each zoom step.
+  const cityLabelLayout = useMemo(() => {
     const scale = zoom.scale;
-    const placed: { x1: number; y1: number; x2: number; y2: number }[] = [];
-    const show = new Set<string>();
-    const boxFor = (c: (typeof CITIES)[number], cx: number, cy: number) => {
-      const fs = (c.capital ? 7 : 6.2) / scale;
-      const label = cityLabel(c.name, locale);
-      const x1 = cx + ((c.capital ? 0.95 : 0.65) + 1.2) / scale;
-      const y1 = cy - fs * 0.5;
-      return { x1, y1, x2: x1 + label.length * fs * 0.55, y2: y1 + fs };
-    };
+    type Box = { x1: number; y1: number; x2: number; y2: number };
+    const placed: Box[] = [];
+    const layout = new Map<string, { x: number; y: number; anchor: 'start' | 'end' | 'middle' }>();
+    const overlaps = (b: Box) =>
+      placed.some((o) => !(b.x2 < o.x1 || b.x1 > o.x2 || b.y2 < o.y1 || b.y1 > o.y2));
     const projected = CITIES.map((c) => ({ c, p: projection(c.coords) })).filter(
       (x): x is { c: (typeof CITIES)[number]; p: [number, number] } => !!x.p,
     );
-    // Capitals: always shown past the capital threshold; seed their boxes.
+    const place = (c: (typeof CITIES)[number], cx: number, cy: number) => {
+      const fs = (c.capital ? 7 : 6.2) / scale;
+      const w = cityLabel(c.name, locale).length * fs * 0.55;
+      const h = fs;
+      const gap = ((c.capital ? 0.95 : 0.65) + 1.2) / scale;
+      // [x, y (vertical center), anchor, box] candidates: right, left, above, below.
+      const candidates: [number, number, 'start' | 'end' | 'middle', Box][] = [
+        [cx + gap, cy, 'start', { x1: cx + gap, y1: cy - h / 2, x2: cx + gap + w, y2: cy + h / 2 }],
+        [cx - gap, cy, 'end', { x1: cx - gap - w, y1: cy - h / 2, x2: cx - gap, y2: cy + h / 2 }],
+        [cx, cy - gap - h / 2, 'middle', { x1: cx - w / 2, y1: cy - gap - h, x2: cx + w / 2, y2: cy - gap }],
+        [cx, cy + gap + h / 2, 'middle', { x1: cx - w / 2, y1: cy + gap, x2: cx + w / 2, y2: cy + gap + h }],
+      ];
+      const chosen = candidates.find(([, , , b]) => !overlaps(b));
+      if (!chosen) return;
+      placed.push(chosen[3]);
+      layout.set(`${c.code}:${c.name}`, { x: chosen[0], y: chosen[1], anchor: chosen[2] });
+    };
+    // Capitals first (priority), then secondary cities fill remaining gaps.
     for (const { c, p } of projected) {
-      if (!c.capital || scale <= CAPITAL_LABEL_ZOOM) continue;
-      placed.push(boxFor(c, p[0], p[1]));
-      show.add(`${c.code}:${c.name}`);
+      if (c.capital && scale > CAPITAL_LABEL_ZOOM) place(c, p[0], p[1]);
     }
-    // Secondary cities: declutter against capitals + each other.
     for (const { c, p } of projected) {
-      if (c.capital || scale <= CITY_LABEL_ZOOM) continue;
-      const box = boxFor(c, p[0], p[1]);
-      const overlaps = placed.some(
-        (b) => !(box.x2 < b.x1 || box.x1 > b.x2 || box.y2 < b.y1 || box.y1 > b.y2),
-      );
-      if (!overlaps) {
-        placed.push(box);
-        show.add(`${c.code}:${c.name}`);
-      }
+      if (!c.capital && scale > CITY_LABEL_ZOOM) place(c, p[0], p[1]);
     }
-    return show;
+    return layout;
   }, [zoom.scale, locale]);
 
   useEffect(() => {
@@ -261,7 +266,7 @@ export function WorldMap() {
               if (!p) return null;
               const [cx, cy] = p;
               const r = (city.capital ? 0.95 : 0.65) / zoom.scale;
-              const showLabel = visibleCityLabels.has(`${city.code}:${city.name}`);
+              const label = cityLabelLayout.get(`${city.code}:${city.name}`);
               return (
                 <g key={`${city.code}:${city.name}`}>
                   {/* Dot stays muted (fillOpacity) so it reads quiet; the label
@@ -273,10 +278,12 @@ export function WorldMap() {
                     fill={city.capital ? '#aab0c6' : '#8e94ad'}
                     fillOpacity={city.capital ? 0.85 : 0.6}
                   />
-                  {showLabel && (
+                  {label && (
                     <text
-                      x={cx + r + 1.2 / zoom.scale}
-                      y={cy + (city.capital ? 2.4 : 2.1) / zoom.scale}
+                      x={label.x}
+                      y={label.y}
+                      textAnchor={label.anchor}
+                      dominantBaseline="central"
                       fontSize={(city.capital ? 7 : 6.2) / zoom.scale}
                       fontWeight={500}
                       fill="#e4e7f1"
