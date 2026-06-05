@@ -6,6 +6,8 @@ import type { Topology, GeometryCollection } from 'topojson-specification';
 import { useCountryProfiles } from '../../hooks/useCountryProfiles';
 import { useCountries } from '../../hooks/useCountries';
 import { numericToAlpha2 } from '../../utils/countries';
+import { CITIES, cityLabel } from '../../utils/cities';
+import { useI18n } from '../../i18n/I18nContext';
 import { CountryTooltip } from './CountryTooltip';
 import { useFilters } from '../../context/useFilters';
 
@@ -13,8 +15,13 @@ const GEO_URL = '/topojson/world-110m.json';
 const WIDTH = 800;
 const HEIGHT = 500;
 const MIN_ZOOM = 1;
-const MAX_ZOOM = 2.5;
+const MAX_ZOOM = 3.5;
 const DEFAULT_FILL = '#3a3a6a';
+// City names fade in progressively as you zoom so labels never pile up: capitals
+// first, then secondary cities deeper in (where there's room). Dots are always
+// drawn. Tuned with the higher MAX_ZOOM so dense regions can be pulled apart.
+const CAPITAL_LABEL_ZOOM = 1.6;
+const CITY_LABEL_ZOOM = 2.2;
 
 // Tint a country by like/dislike skew. Pct = (max - min) / min — i.e. how much
 // the leading side outweighs the trailing side. Sub-25% stays neutral so noisy
@@ -56,6 +63,7 @@ interface ZoomState {
 export function WorldMap() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { locale } = useI18n();
   const { hoveredProfileCountry } = useFilters();
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -76,6 +84,37 @@ export function WorldMap() {
     countriesData?.countries.forEach((c) => map.set(c.code, colorForCountry(c.likes, c.dislikes)));
     return map;
   }, [countriesData]);
+
+  // Greedy label decluttering: a label only renders if its box doesn't overlap
+  // one already placed. Capitals are placed first so they win contested space;
+  // overlapping secondary labels are dropped (their dot still shows). Boxes are
+  // computed in projected (pre-transform) space — label sizes divide by scale,
+  // so as you zoom in the boxes shrink and more labels fit, revealing detail
+  // progressively without ever piling up. Recomputed each zoom step.
+  const visibleCityLabels = useMemo(() => {
+    const scale = zoom.scale;
+    const placed: { x1: number; y1: number; x2: number; y2: number }[] = [];
+    const show = new Set<string>();
+    const candidates = CITIES.map((c) => ({ c, p: projection(c.coords) }))
+      .filter(({ c, p }) => p && scale > (c.capital ? CAPITAL_LABEL_ZOOM : CITY_LABEL_ZOOM))
+      .sort((a, b) => Number(b.c.capital) - Number(a.c.capital));
+    for (const { c, p } of candidates) {
+      const [cx, cy] = p as [number, number];
+      const fs = (c.capital ? 7 : 6.2) / scale;
+      const label = cityLabel(c.name, locale);
+      const x1 = cx + ((c.capital ? 0.95 : 0.65) + 1.2) / scale;
+      const y1 = cy - fs * 0.5;
+      const box = { x1, y1, x2: x1 + label.length * fs * 0.55, y2: y1 + fs };
+      const overlaps = placed.some(
+        (b) => !(box.x2 < b.x1 || box.x1 > b.x2 || box.y2 < b.y1 || box.y1 > b.y2),
+      );
+      if (!overlaps) {
+        placed.push(box);
+        show.add(`${c.code}:${c.name}`);
+      }
+    }
+    return show;
+  }, [zoom.scale, locale]);
 
   useEffect(() => {
     fetch(GEO_URL)
@@ -195,6 +234,52 @@ export function WorldMap() {
               />
             );
           })}
+
+          {/* City markers. Non-interactive (pointerEvents none) so hover/click
+              still falls through to the country path underneath. Marker + label
+              sizes divide by zoom.scale to stay a constant on-screen size, like
+              the country strokeWidth above. Muted fills + soft halo so the layer
+              reads as a quiet reference, not a glossy overlay. Capitals are a
+              touch larger and labelled earlier than secondary cities. */}
+          <g
+            style={{ pointerEvents: 'none' }}
+            fontFamily="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+          >
+            {CITIES.map((city) => {
+              const p = projection(city.coords);
+              if (!p) return null;
+              const [cx, cy] = p;
+              const r = (city.capital ? 0.95 : 0.65) / zoom.scale;
+              const showLabel = visibleCityLabels.has(`${city.code}:${city.name}`);
+              return (
+                <g key={`${city.code}:${city.name}`}>
+                  {/* Dot stays muted (fillOpacity) so it reads quiet; the label
+                      keeps full opacity + a dark halo so it stays legible. */}
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={r}
+                    fill={city.capital ? '#aab0c6' : '#8e94ad'}
+                    fillOpacity={city.capital ? 0.85 : 0.6}
+                  />
+                  {showLabel && (
+                    <text
+                      x={cx + r + 1.2 / zoom.scale}
+                      y={cy + (city.capital ? 2.4 : 2.1) / zoom.scale}
+                      fontSize={(city.capital ? 7 : 6.2) / zoom.scale}
+                      fontWeight={500}
+                      fill="#e4e7f1"
+                      stroke="#14142a"
+                      strokeWidth={1.4 / zoom.scale}
+                      paintOrder="stroke"
+                    >
+                      {cityLabel(city.name, locale)}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+          </g>
         </g>
       </svg>
 
