@@ -17,7 +17,7 @@ function votesUnit(t: Strings, count: number): string {
 //   - activeTier        which card shows the "current tier" badge
 //   - onRegisteredClick / onSupporterClick   make those cards clickable
 //   - supporterDisabled toggles the wait state during checkout redirect
-//   - showSupporterPrice renders the €2.99/mo price-tag overhang
+//   - showSupporterPrice renders the €3.49/mo price-tag overhang
 export function Plans({
   activeTier,
   onRegisteredClick,

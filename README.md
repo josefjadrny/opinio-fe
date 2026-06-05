@@ -31,7 +31,7 @@ You see **current sentiment, not history** — every vote expires after 24 hours
 - **Vote allowance per hour:**
   - Anonymous — 1 vote / hr
   - Registered — 3 votes / hr
-  - Supporter (€2.99 / month) — 5 votes / hr
+  - Supporter (€3.49 / month) — 5 votes / hr
 
 ## Our principles
 
