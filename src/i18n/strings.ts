@@ -1509,15 +1509,15 @@ const fr: Strings = {
   close: 'Fermer',
 };
 
-// Keys kept alphabetical so the language select (Object.entries order in
-// SettingsModal) reads cs, de, en, es, fr. Native labels happen to sort the
-// same way (Čeština, Deutsch, English, Español, Français).
+// Keys ordered by expected audience: English default, then the largest EU
+// markets by size, Czech (home market, small population) last. This is the
+// order the language select renders (Object.entries order in SettingsModal).
 export const LANGUAGES = {
-  cs: { label: '🇨🇿 Čeština', strings: cs },
-  de: { label: '🇩🇪 Deutsch', strings: de },
   en: { label: '🇬🇧 English', strings: en },
-  es: { label: '🇪🇸 Español', strings: es },
+  de: { label: '🇩🇪 Deutsch', strings: de },
   fr: { label: '🇫🇷 Français', strings: fr },
+  es: { label: '🇪🇸 Español', strings: es },
+  cs: { label: '🇨🇿 Čeština', strings: cs },
 } as const;
 
 export type Locale = keyof typeof LANGUAGES;
