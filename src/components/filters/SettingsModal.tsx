@@ -213,6 +213,7 @@ function SettingsContent({
             <span>{isAnonymous ? t.noCountryWarning : t.noCountryWarningRegistered}</span>
           </p>
         )}
+        <p className="text-xs text-white/30 mt-1.5">{t.countryHint}</p>
       </div>
 
       {/* Language */}

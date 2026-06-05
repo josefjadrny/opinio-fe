@@ -45,6 +45,7 @@ export interface Strings {
   logout: string;
   displayName: string;
   country: string;
+  countryHint: string;
   profileCountry: string;
   profileCountryHint: string;
   detectedFromIp: string;
@@ -285,6 +286,7 @@ const en: Strings = {
   logout: 'Log out',
   displayName: 'Display name',
   country: 'Country',
+  countryHint: 'Your votes count as coming from this country',
   profileCountry: 'Country',
   profileCountryHint: 'Likes and dislikes count toward this country\'s stats.',
   detectedFromIp: 'Detected from your IP',
@@ -544,6 +546,7 @@ const cs: Strings = {
   logout: 'Odhlásit',
   displayName: 'Zobrazované jméno',
   country: 'Země',
+  countryHint: 'Vaše hlasy se počítají, jako by byly z této země',
   profileCountry: 'Země',
   profileCountryHint: 'Lajky a dislajky se přičtou statistikám této země.',
   detectedFromIp: 'Zjištěno z vaší IP',
@@ -803,6 +806,7 @@ const es: Strings = {
   logout: 'Cerrar sesión',
   displayName: 'Nombre visible',
   country: 'País',
+  countryHint: 'Tus votos cuentan como si fueran de este país',
   profileCountry: 'País',
   profileCountryHint: 'Los me gusta y no me gusta cuentan para las estadísticas de este país.',
   detectedFromIp: 'Detectado desde tu IP',
@@ -1062,6 +1066,7 @@ const de: Strings = {
   logout: 'Abmelden',
   displayName: 'Anzeigename',
   country: 'Land',
+  countryHint: 'Deine Stimmen zählen, als kämen sie aus diesem Land',
   profileCountry: 'Land',
   profileCountryHint: 'Likes und Dislikes zählen zu den Statistiken dieses Landes.',
   detectedFromIp: 'Anhand deiner IP erkannt',
