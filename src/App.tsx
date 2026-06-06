@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/reac
 import { FilterProvider } from './context/FilterContext';
 import { useFilters } from './context/useFilters';
 import { I18nProvider, useI18n } from './i18n/I18nContext';
+import type { Locale, Strings } from './i18n/strings';
 import { SignInProvider } from './components/auth/SignInContext';
 import { SignInModal } from './components/auth/SignInModal';
 import { useProfiles } from './hooks/useProfiles';
@@ -48,6 +49,26 @@ const BRAND = 'Opinio';
 const DEFAULT_TITLE = 'Opinio - Vote on the stories shaping the world today';
 const DEFAULT_DESCRIPTION = 'A social voting platform from Europe. Like or dislike the statements, events & public figures shaping the world - ranked country by country, refreshed every 24h.';
 
+// Non-English locales that get a URL prefix (/fr/about, /de/c/CZ, ...). English
+// stays on the bare path. Mirrors the Cloudflare worker's PREFIX_LANGS and the
+// API sitemap's PREFIX_LANGS — keep all three in sync. These prefixed URLs are
+// crawler/entry-point URLs: the SPA strips the prefix for routing, sets the
+// locale from it, and internal navigation continues on bare paths (the locale
+// then persists as state, not in the URL).
+const PREFIX_LOCALES: readonly string[] = ['cs', 'es', 'de', 'fr'];
+
+// The "/<lang>" prefix on the *current* URL, or '' for a bare (English) path.
+// Used to build self-referencing canonicals so a prefixed page is never folded
+// into its English equivalent.
+function localePrefixOf(pathname: string): string {
+  const seg = pathname.split('/')[1];
+  return PREFIX_LOCALES.includes(seg) ? `/${seg}` : '';
+}
+
+function currentLocalePrefix(): string {
+  return localePrefixOf(window.location.pathname);
+}
+
 type SeoMeta = {
   title: string;
   description: string;
@@ -73,73 +94,29 @@ function upsertCanonical(href: string) {
   document.head.appendChild(link);
 }
 
-function getSeoMeta(pathname: string): SeoMeta {
-  if (pathname === '/stats') {
-    return {
-      title: `Trending opinions right now - ${BRAND}`,
-      description: 'The opinions, takes and ideas getting the most votes right now on Opinio - ranked live and refreshed every 24 hours.',
-      canonicalPath: '/stats',
-    };
-  }
-  if (pathname === '/stats/trending-countries') {
-    return {
-      title: `Trending countries by votes - ${BRAND}`,
-      description: 'Which countries are generating the most buzz right now - ranked by votes on their active posts, refreshed every 24 hours on Opinio.',
-      canonicalPath: '/stats/trending-countries',
-    };
-  }
-  if (pathname === '/stats/top-voters') {
-    return {
-      title: `Top voters leaderboard - ${BRAND}`,
-      description: 'The most active voters worldwide and by country, ranked by likes and dislikes cast on Opinio.',
-      canonicalPath: '/stats/top-voters',
-    };
-  }
-  if (pathname === '/about') {
-    return {
-      title: `About Opinio - How live voting works`,
-      description: 'Learn how Opinio works: fast social voting, expiring votes after 24 hours, and live world trends.',
-      canonicalPath: '/about',
-    };
-  }
-  if (pathname === '/privacy') {
-    return {
-      title: `Privacy notice - ${BRAND}`,
-      description: 'Opinio privacy notice: what we collect, why, retention, and your rights under GDPR.',
-      canonicalPath: '/privacy',
-    };
-  }
-  if (pathname === '/terms') {
-    return {
-      title: `Terms of use - ${BRAND}`,
-      description: 'Opinio terms of use: posting rules, voting, subscriptions, and account suspensions.',
-      canonicalPath: '/terms',
-    };
-  }
-  if (pathname === '/support') {
-    return {
-      title: `Support - ${BRAND}`,
-      description: 'Contact Opinio support, manage your tickets, and get help with voting, profiles, and account settings.',
-      canonicalPath: '/support',
-    };
-  }
-  if (pathname === '/sign-in') {
-    return {
-      title: `Sign in - ${BRAND}`,
-      description: 'Sign in to Opinio with Google or Microsoft to vote, post profiles, and track your activity.',
-      canonicalPath: '/sign-in',
-    };
-  }
-  return {
-    title: DEFAULT_TITLE,
-    description: DEFAULT_DESCRIPTION,
-    canonicalPath: '/',
-  };
+// Maps a bare pathname to its localized seo key (in i18n Strings['seo']) and
+// canonical path. Anything unmatched falls back to the home entry. Keep the keys
+// in sync with the worker's STATIC_PAGES + STATIC_I18N (server-render source).
+const SEO_PAGE_BY_PATH: Record<string, { key: string; canonicalPath: string }> = {
+  '/stats': { key: 'stats', canonicalPath: '/stats' },
+  '/stats/trending-countries': { key: 'statsTrendingCountries', canonicalPath: '/stats/trending-countries' },
+  '/stats/top-voters': { key: 'statsTopVoters', canonicalPath: '/stats/top-voters' },
+  '/about': { key: 'about', canonicalPath: '/about' },
+  '/privacy': { key: 'privacy', canonicalPath: '/privacy' },
+  '/terms': { key: 'terms', canonicalPath: '/terms' },
+  '/support': { key: 'support', canonicalPath: '/support' },
+  '/sign-in': { key: 'signIn', canonicalPath: '/sign-in' },
+};
+
+function getSeoMeta(pathname: string, seo: Strings['seo']): SeoMeta {
+  const entry = SEO_PAGE_BY_PATH[pathname] ?? { key: 'home', canonicalPath: '/' };
+  const strings = seo[entry.key] ?? { title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION };
+  return { title: strings.title, description: strings.description, canonicalPath: entry.canonicalPath };
 }
 
-function applySeo(pathname: string) {
-  const meta = getSeoMeta(pathname);
-  const canonicalUrl = `${BASE_URL}${meta.canonicalPath}`;
+function applySeo(pathname: string, seo: Strings['seo'], prefix = '') {
+  const meta = getSeoMeta(pathname, seo);
+  const canonicalUrl = `${BASE_URL}${prefix}${meta.canonicalPath}`;
   document.title = meta.title;
   upsertMeta('meta[name="description"]', { name: 'description', content: meta.description });
   upsertMeta('meta[property="og:title"]', { property: 'og:title', content: meta.title });
@@ -167,7 +144,7 @@ function applyCountrySeo(code: string) {
   const name = getCountryName(code);
   const title = `${name} - ${BRAND}`;
   const description = `Live rankings and votes from ${name} on Opinio.`;
-  const canonicalUrl = `${BASE_URL}/c/${code}`;
+  const canonicalUrl = `${BASE_URL}${currentLocalePrefix()}/c/${code}`;
   document.title = title;
   upsertMeta('meta[name="description"]', { name: 'description', content: description });
   upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title });
@@ -181,7 +158,7 @@ function applyCountrySeo(code: string) {
 function applyUserSeo(displayName: string, id: string) {
   const title = `@${displayName} - ${BRAND}`;
   const description = `${displayName}'s reported profiles and votes on Opinio.`;
-  const canonicalUrl = `${BASE_URL}/u/${id}`;
+  const canonicalUrl = `${BASE_URL}${currentLocalePrefix()}/u/${id}`;
   document.title = title;
   upsertMeta('meta[name="description"]', { name: 'description', content: description });
   upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title });
@@ -606,20 +583,36 @@ function CountryDetailRoute() {
 
 function AppContent() {
   const location = useLocation();
+  const { locale, setLocale, t } = useI18n();
+
+  // A non-English URL prefix (/fr, /de, ...) is an entry-point signal: adopt it
+  // as the active locale. Internal navigation then drops the prefix (links are
+  // bare) and the locale persists as state. Guarded so it doesn't loop.
+  const prefix = localePrefixOf(location.pathname);
+  useEffect(() => {
+    const seg = prefix.slice(1);
+    if (seg && seg !== locale) setLocale(seg as Locale);
+  }, [prefix, locale, setLocale]);
+
+  // Strip the prefix before route matching so the existing bare route tree
+  // handles /fr/about as /about, /de/c/CZ as /c/CZ, etc. The browser URL keeps
+  // the prefix; only the matched location is stripped.
+  const routedPath = prefix ? location.pathname.slice(prefix.length) || '/' : location.pathname;
+  const matchLocation = prefix ? { ...location, pathname: routedPath } : location;
 
   useEffect(() => {
     // Don't override SEO for profile/user/country pages - their routes handle that
     if (
-      !location.pathname.startsWith('/p/') &&
-      !location.pathname.startsWith('/u/') &&
-      !location.pathname.startsWith('/c/')
+      !routedPath.startsWith('/p/') &&
+      !routedPath.startsWith('/u/') &&
+      !routedPath.startsWith('/c/')
     ) {
-      applySeo(location.pathname);
+      applySeo(routedPath, t.seo, prefix);
     }
-  }, [location.pathname]);
+  }, [routedPath, prefix, t.seo]);
 
   return (
-    <Routes>
+    <Routes location={matchLocation}>
       <Route path="/" element={<AppLayout />}>
         <Route path="add" element={<AddRoute />} />
         <Route path="settings" element={<SettingsRoute />} />

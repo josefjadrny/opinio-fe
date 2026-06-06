@@ -6,6 +6,12 @@ routes = [
   { pattern = "opinio.live/p/*", zone_name = "opinio.live" },
   { pattern = "opinio.live/u/*", zone_name = "opinio.live" },
   { pattern = "opinio.live/c/*", zone_name = "opinio.live" },
+  # Language-prefixed pages (/cs/*, /es/*, /de/*, /fr/*) — profiles render
+  # standalone, everything else is the SPA shell with translated meta.
+  { pattern = "opinio.live/cs/*", zone_name = "opinio.live" },
+  { pattern = "opinio.live/es/*", zone_name = "opinio.live" },
+  { pattern = "opinio.live/de/*", zone_name = "opinio.live" },
+  { pattern = "opinio.live/fr/*", zone_name = "opinio.live" },
   { pattern = "opinio.live/sitemap.xml", zone_name = "opinio.live" },
   { pattern = "opinio.live/about", zone_name = "opinio.live" },
   { pattern = "opinio.live/privacy", zone_name = "opinio.live" },

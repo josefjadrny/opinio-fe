@@ -233,6 +233,11 @@ export interface Strings {
   deleteProfileConfirmManyVotes: string;
   deleting: string;
   close: string;
+  // Per-page SEO title + meta description, keyed by page (home, stats,
+  // statsTrendingCountries, statsTopVoters, about, privacy, terms, support,
+  // signIn). Drives applySeo so prefixed pages (/fr/about) get a localized
+  // <title>/<meta> tag, not just a translated body.
+  seo: Record<string, { title: string; description: string }>;
 }
 
 const en: Strings = {
@@ -489,6 +494,44 @@ const en: Strings = {
   deleteProfileConfirmManyVotes: 'Delete this opinio and discard {count} votes?',
   deleting: 'Deleting…',
   close: 'Close',
+  seo: {
+    home: {
+      title: 'Opinio - Vote on the stories shaping the world today',
+      description: 'A social voting platform from Europe. Like or dislike the statements, events & public figures shaping the world - ranked country by country, refreshed every 24h.',
+    },
+    stats: {
+      title: 'Trending opinions right now - Opinio',
+      description: 'The opinions, takes and ideas getting the most votes right now on Opinio - ranked live and refreshed every 24 hours.',
+    },
+    statsTrendingCountries: {
+      title: 'Trending countries by votes - Opinio',
+      description: 'Which countries are generating the most buzz right now - ranked by votes on their active posts, refreshed every 24 hours on Opinio.',
+    },
+    statsTopVoters: {
+      title: 'Top voters leaderboard - Opinio',
+      description: 'The most active voters worldwide and by country, ranked by likes and dislikes cast on Opinio.',
+    },
+    about: {
+      title: 'About Opinio - How live voting works',
+      description: 'Learn how Opinio works: fast social voting, expiring votes after 24 hours, and live world trends.',
+    },
+    privacy: {
+      title: 'Privacy notice - Opinio',
+      description: 'Opinio privacy notice: what we collect, why, retention, and your rights under GDPR.',
+    },
+    terms: {
+      title: 'Terms of use - Opinio',
+      description: 'Opinio terms of use: posting rules, voting, subscriptions, and account suspensions.',
+    },
+    support: {
+      title: 'Support - Opinio',
+      description: 'Contact Opinio support, manage your tickets, and get help with voting, profiles, and account settings.',
+    },
+    signIn: {
+      title: 'Sign in - Opinio',
+      description: 'Sign in to Opinio with Google or Microsoft to vote, post profiles, and track your activity.',
+    },
+  },
 };
 
 const cs: Strings = {
@@ -745,6 +788,44 @@ const cs: Strings = {
   deleteProfileConfirmManyVotes: 'Smazat toto opinio a zahodit všech {count} hlasů?',
   deleting: 'Mazání…',
   close: 'Zavřít',
+  seo: {
+    home: {
+      title: 'Opinio - Hlasujte o dění, které formuje svět',
+      description: 'Sociální hlasovací platforma z Evropy. Lajkujte nebo dejte palec dolů názorům, událostem a veřejně známým osobnostem, které formují svět - řazeno podle zemí, obnovováno každých 24 h.',
+    },
+    stats: {
+      title: 'Nejdiskutovanější názory právě teď - Opinio',
+      description: 'Názory, postřehy a nápady, které právě teď získávají nejvíce hlasů na Opinio - řazeno živě a obnovováno každých 24 hodin.',
+    },
+    statsTrendingCountries: {
+      title: 'Trendující země podle hlasů - Opinio',
+      description: 'Které země právě teď vzbuzují největší rozruch - řazeno podle hlasů na jejich aktivních příspěvcích, obnovováno každých 24 hodin na Opinio.',
+    },
+    statsTopVoters: {
+      title: 'Žebříček nejaktivnějších hlasujících - Opinio',
+      description: 'Nejaktivnější hlasující po celém světě i podle zemí, řazeno podle udělených lajků a palců dolů na Opinio.',
+    },
+    about: {
+      title: 'O Opinio - Jak funguje živé hlasování',
+      description: 'Zjistěte, jak Opinio funguje: rychlé sociální hlasování, hlasy vyprší po 24 hodinách a živé světové trendy.',
+    },
+    privacy: {
+      title: 'Zásady ochrany soukromí - Opinio',
+      description: 'Zásady ochrany soukromí Opinio: co shromažďujeme, proč, jak dlouho a jaká máte práva podle GDPR.',
+    },
+    terms: {
+      title: 'Podmínky použití - Opinio',
+      description: 'Podmínky použití Opinio: pravidla pro přispívání, hlasování, předplatné a pozastavení účtů.',
+    },
+    support: {
+      title: 'Podpora - Opinio',
+      description: 'Kontaktujte podporu Opinio, spravujte své tikety a získejte pomoc s hlasováním, profily a nastavením účtu.',
+    },
+    signIn: {
+      title: 'Přihlášení - Opinio',
+      description: 'Přihlaste se na Opinio přes Google nebo Microsoft, abyste mohli hlasovat, přidávat profily a sledovat svou aktivitu.',
+    },
+  },
 };
 
 const es: Strings = {
@@ -1001,6 +1082,44 @@ const es: Strings = {
   deleteProfileConfirmManyVotes: '¿Eliminar este opinio y descartar {count} votos?',
   deleting: 'Eliminando…',
   close: 'Cerrar',
+  seo: {
+    home: {
+      title: 'Opinio - Vota sobre lo que está marcando el mundo',
+      description: 'Una plataforma de voto social desde Europa. Dale me gusta o no me gusta a las opiniones, eventos y figuras públicas que marcan el mundo - clasificado país por país, actualizado cada 24 h.',
+    },
+    stats: {
+      title: 'Opiniones en tendencia ahora mismo - Opinio',
+      description: 'Las opiniones, ideas y propuestas que más votos reciben ahora mismo en Opinio - clasificadas en vivo y actualizadas cada 24 horas.',
+    },
+    statsTrendingCountries: {
+      title: 'Países en tendencia por votos - Opinio',
+      description: 'Qué países generan más revuelo ahora mismo - clasificados por votos en sus publicaciones activas, actualizado cada 24 horas en Opinio.',
+    },
+    statsTopVoters: {
+      title: 'Clasificación de los más votantes - Opinio',
+      description: 'Los votantes más activos del mundo y por país, clasificados por me gusta y no me gusta emitidos en Opinio.',
+    },
+    about: {
+      title: 'Acerca de Opinio - Cómo funciona el voto en vivo',
+      description: 'Descubre cómo funciona Opinio: voto social rápido, votos que caducan a las 24 horas y tendencias mundiales en vivo.',
+    },
+    privacy: {
+      title: 'Aviso de privacidad - Opinio',
+      description: 'Aviso de privacidad de Opinio: qué recopilamos, por qué, durante cuánto tiempo y tus derechos según el RGPD.',
+    },
+    terms: {
+      title: 'Términos de uso - Opinio',
+      description: 'Términos de uso de Opinio: reglas de publicación, votación, suscripciones y suspensiones de cuenta.',
+    },
+    support: {
+      title: 'Soporte - Opinio',
+      description: 'Contacta con el soporte de Opinio, gestiona tus tickets y obtén ayuda con la votación, los perfiles y la configuración de tu cuenta.',
+    },
+    signIn: {
+      title: 'Iniciar sesión - Opinio',
+      description: 'Inicia sesión en Opinio con Google o Microsoft para votar, publicar perfiles y seguir tu actividad.',
+    },
+  },
 };
 
 const de: Strings = {
@@ -1257,6 +1376,44 @@ const de: Strings = {
   deleteProfileConfirmManyVotes: 'Dieses opinio löschen und {count} Stimmen verwerfen?',
   deleting: 'Wird gelöscht…',
   close: 'Schließen',
+  seo: {
+    home: {
+      title: 'Opinio - Stimme über das Weltgeschehen ab',
+      description: 'Eine soziale Abstimmungsplattform aus Europa. Like oder dislike die Aussagen, Ereignisse und Personen des öffentlichen Lebens, die die Welt prägen - Land für Land gewertet, alle 24 Std. aktualisiert.',
+    },
+    stats: {
+      title: 'Angesagte Meinungen gerade jetzt - Opinio',
+      description: 'Die Meinungen, Einschätzungen und Ideen mit den meisten Stimmen gerade jetzt auf Opinio - live gewertet und alle 24 Stunden aktualisiert.',
+    },
+    statsTrendingCountries: {
+      title: 'Angesagte Länder nach Stimmen - Opinio',
+      description: 'Welche Länder gerade für den meisten Wirbel sorgen - gewertet nach Stimmen auf ihren aktiven Beiträgen, alle 24 Stunden auf Opinio aktualisiert.',
+    },
+    statsTopVoters: {
+      title: 'Bestenliste der aktivsten Abstimmenden - Opinio',
+      description: 'Die aktivsten Abstimmenden weltweit und nach Land, gewertet nach abgegebenen Likes und Dislikes auf Opinio.',
+    },
+    about: {
+      title: 'Über Opinio - So funktioniert Live-Abstimmung',
+      description: 'Erfahre, wie Opinio funktioniert: schnelles soziales Abstimmen, Stimmen verfallen nach 24 Stunden und weltweite Live-Trends.',
+    },
+    privacy: {
+      title: 'Datenschutzhinweis - Opinio',
+      description: 'Datenschutzhinweis von Opinio: was wir erheben, warum, wie lange und welche Rechte du nach der DSGVO hast.',
+    },
+    terms: {
+      title: 'Nutzungsbedingungen - Opinio',
+      description: 'Nutzungsbedingungen von Opinio: Regeln fürs Posten, Abstimmen, Abos und Kontosperren.',
+    },
+    support: {
+      title: 'Support - Opinio',
+      description: 'Kontaktiere den Opinio-Support, verwalte deine Tickets und erhalte Hilfe bei Abstimmungen, Profilen und Kontoeinstellungen.',
+    },
+    signIn: {
+      title: 'Anmelden - Opinio',
+      description: 'Melde dich bei Opinio mit Google oder Microsoft an, um abzustimmen, Profile zu posten und deine Aktivität zu verfolgen.',
+    },
+  },
 };
 
 const fr: Strings = {
@@ -1513,6 +1670,44 @@ const fr: Strings = {
   deleteProfileConfirmManyVotes: 'Supprimer cet opinio et abandonner {count} votes ?',
   deleting: 'Suppression…',
   close: 'Fermer',
+  seo: {
+    home: {
+      title: "Opinio - Votez sur l'actualité qui façonne le monde",
+      description: "Une plateforme de vote social venue d'Europe. Aimez ou rejetez les déclarations, événements et personnalités publiques qui façonnent le monde - classés pays par pays, actualisés toutes les 24 h.",
+    },
+    stats: {
+      title: 'Opinions tendance en ce moment - Opinio',
+      description: 'Les opinions, analyses et idées qui reçoivent le plus de votes en ce moment sur Opinio - classées en direct et actualisées toutes les 24 heures.',
+    },
+    statsTrendingCountries: {
+      title: 'Pays tendance par votes - Opinio',
+      description: "Quels pays font le plus parler d'eux en ce moment - classés par votes sur leurs publications actives, actualisés toutes les 24 heures sur Opinio.",
+    },
+    statsTopVoters: {
+      title: 'Classement des plus actifs - Opinio',
+      description: "Les votants les plus actifs dans le monde et par pays, classés selon les j'aime et je n'aime pas attribués sur Opinio.",
+    },
+    about: {
+      title: "À propos d'Opinio - Le vote en direct expliqué",
+      description: 'Découvrez comment fonctionne Opinio : vote social rapide, votes qui expirent au bout de 24 heures et tendances mondiales en direct.',
+    },
+    privacy: {
+      title: 'Avis de confidentialité - Opinio',
+      description: "Avis de confidentialité d'Opinio : ce que nous collectons, pourquoi, pendant combien de temps et vos droits selon le RGPD.",
+    },
+    terms: {
+      title: "Conditions d'utilisation - Opinio",
+      description: "Conditions d'utilisation d'Opinio : règles de publication, vote, abonnements et suspensions de compte.",
+    },
+    support: {
+      title: 'Assistance - Opinio',
+      description: "Contactez l'assistance Opinio, gérez vos tickets et obtenez de l'aide pour le vote, les profils et les paramètres de compte.",
+    },
+    signIn: {
+      title: 'Connexion - Opinio',
+      description: 'Connectez-vous à Opinio avec Google ou Microsoft pour voter, publier des profils et suivre votre activité.',
+    },
+  },
 };
 
 // Keys ordered by expected audience: English default, then the largest EU
