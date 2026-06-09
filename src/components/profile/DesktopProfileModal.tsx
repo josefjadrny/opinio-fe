@@ -203,38 +203,45 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                   )}
                 </div>
 
-                {/* Right: breakdown */}
-                <div className="px-6 py-4">
-                  {breakdown && (breakdown.topLiking.length > 0 || breakdown.topDisliking.length > 0) ? (
-                    <div className="grid grid-cols-2 gap-6">
-                      <div>
-                        <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-2">▲ {t.breakdownLiking}</p>
-                        <div className="max-h-[calc(100dvh-22rem)] overflow-y-auto pr-1 subtle-scrollbar">
-                          {breakdown.topLiking.map(({ countryCode, count }) => (
-                            <div key={countryCode} className="flex items-center gap-1.5 mb-1.5">
-                              <span className="text-sm">{getCountryFlag(countryCode)}</span>
-                              <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
-                              <span className="text-xs text-positive font-medium tabular-nums">{formatNumber(count)}</span>
-                            </div>
-                          ))}
+                {/* Right: breakdown. The wrapper is `relative` with its content
+                    `absolute inset-0`, so the column contributes no intrinsic
+                    height — the grid row is sized by the LEFT (opinion text)
+                    column. The lists then scroll to fit that height instead of
+                    growing the modal just to list 10 countries. A min-height
+                    floor keeps it usable when the opinion text is very short. */}
+                <div className="relative min-h-[200px]">
+                  <div className="absolute inset-0 px-6 py-4">
+                    {breakdown && (breakdown.topLiking.length > 0 || breakdown.topDisliking.length > 0) ? (
+                      <div className="grid grid-cols-2 gap-6 h-full">
+                        <div className="flex flex-col min-h-0">
+                          <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-2 shrink-0">▲ {t.breakdownLiking}</p>
+                          <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
+                            {breakdown.topLiking.map(({ countryCode, count }) => (
+                              <div key={countryCode} className="flex items-center gap-1.5 mb-1.5">
+                                <span className="text-sm">{getCountryFlag(countryCode)}</span>
+                                <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
+                                <span className="text-xs text-positive font-medium tabular-nums">{formatNumber(count)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex flex-col min-h-0">
+                          <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-2 shrink-0">▼ {t.breakdownDisliking}</p>
+                          <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
+                            {breakdown.topDisliking.map(({ countryCode, count }) => (
+                              <div key={countryCode} className="flex items-center gap-1.5 mb-1.5">
+                                <span className="text-sm">{getCountryFlag(countryCode)}</span>
+                                <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
+                                <span className="text-xs text-negative font-medium tabular-nums">{formatNumber(count)}</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-2">▼ {t.breakdownDisliking}</p>
-                        <div className="max-h-[calc(100dvh-22rem)] overflow-y-auto pr-1 subtle-scrollbar">
-                          {breakdown.topDisliking.map(({ countryCode, count }) => (
-                            <div key={countryCode} className="flex items-center gap-1.5 mb-1.5">
-                              <span className="text-sm">{getCountryFlag(countryCode)}</span>
-                              <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
-                              <span className="text-xs text-negative font-medium tabular-nums">{formatNumber(count)}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-white/20">No votes yet</p>
-                  )}
+                    ) : (
+                      <p className="text-xs text-white/20">No votes yet</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
