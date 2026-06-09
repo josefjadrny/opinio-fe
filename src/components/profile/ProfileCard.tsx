@@ -14,6 +14,7 @@ import { Avatar } from './Avatar';
 import { formatNumber } from '../../utils/formatNumber';
 import { useProfileText } from '../../hooks/useProfileText';
 import { useI18n } from '../../i18n/I18nContext';
+import { getCountryName } from '../../utils/countries';
 
 interface ProfileCardProps {
   profile: Profile;
@@ -32,10 +33,11 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   const hoverTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const isOverTooltip = useRef(false);
+  const isOverVote = useRef(false);
   const isMobile = useIsMobile();
   const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(hoveredId);
-  const { setHoveredProfileCountry } = useFilters();
-  const { locale } = useI18n();
+  const { setHoveredProfileCountry, setCountry, toggleRole } = useFilters();
+  const { locale, t } = useI18n();
   // Cards show the translated text but no "see original" toggle — that lives
   // only in the profile detail modal.
   const { name, description } = useProfileText(profile);
@@ -47,6 +49,9 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
+    // Suppress the hover tooltip while the pointer is over the vote buttons —
+    // it blocks the view and is distracting while deciding how to vote.
+    if (isOverVote.current) return;
     // Only reset the open-delay while the tooltip isn't shown yet — once
     // it's open, mouse movement should not re-arm the timer.
     if (hoveredId == null) {
@@ -61,10 +66,65 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
     clearTimeout(leaveTimer.current);
     clearTimeout(hoverTimer.current);
     setHoveredProfileCountry(profile.countryCode);
+    if (isOverVote.current) return;
     hoverTimer.current = setTimeout(() => {
       setHoveredId(profile.id);
     }, 500);
   }, [profile.id, profile.countryCode, setHoveredProfileCountry]);
+
+  // While the pointer is over the vote buttons, keep the tooltip closed and
+  // don't let the card's onMouseMove re-arm it.
+  const handleVoteEnter = useCallback(() => {
+    isOverVote.current = true;
+    clearTimeout(hoverTimer.current);
+    setHoveredId(null);
+  }, []);
+
+  const handleVoteLeave = useCallback(() => {
+    isOverVote.current = false;
+  }, []);
+
+  // Desktop only: clicking the flag / role badge applies that filter instead
+  // of opening the detail modal.
+  const handleCountryClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCountry(profile.countryCode);
+  }, [profile.countryCode, setCountry]);
+
+  const handleRoleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleRole(profile.role);
+  }, [profile.role, toggleRole]);
+
+  // On desktop the flag + role badge become filter shortcuts; on mobile they
+  // stay decorative (tap falls through to opening the detail modal).
+  const flagEl = isMobile ? (
+    <CountryFlag code={profile.countryCode} />
+  ) : (
+    <span
+      role="button"
+      tabIndex={0}
+      onClick={handleCountryClick}
+      title={`${t.filterBy}: ${getCountryName(profile.countryCode)}`}
+      className="cursor-pointer rounded hover:opacity-70 transition-opacity"
+    >
+      <CountryFlag code={profile.countryCode} />
+    </span>
+  );
+
+  const roleEl = isMobile ? (
+    <RoleBadge role={profile.role} />
+  ) : (
+    <span
+      role="button"
+      tabIndex={0}
+      onClick={handleRoleClick}
+      title={`${t.filterBy}: ${t.roles[profile.role]}`}
+      className="cursor-pointer hover:opacity-70 transition-opacity"
+    >
+      <RoleBadge role={profile.role} />
+    </span>
+  );
 
   const handleMouseLeave = useCallback(() => {
     clearTimeout(hoverTimer.current);
@@ -127,14 +187,18 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
             <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
               <span className="text-sm font-medium text-white truncate min-w-0 flex-shrink">{name}</span>
               <div className="flex items-center gap-1.5 shrink-0">
-                <CountryFlag code={profile.countryCode} />
-                <RoleBadge role={profile.role} />
+                {flagEl}
+                {roleEl}
                 {profile.label && <LabelBadge label={profile.label} />}
               </div>
             </div>
           </div>
         </div>
-        <div onClick={(e) => e.stopPropagation()}>
+        <div
+          onClick={(e) => e.stopPropagation()}
+          onMouseEnter={handleVoteEnter}
+          onMouseLeave={handleVoteLeave}
+        >
           <VoteButtons
             profileId={profile.id}
             likes={profile.likes}
@@ -177,13 +241,17 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
         <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
           <span className="font-semibold text-white truncate min-w-0 flex-shrink">{name}</span>
           <div className="flex items-center gap-1.5 shrink-0">
-            <CountryFlag code={profile.countryCode} />
-            <RoleBadge role={profile.role} />
+            {flagEl}
+            {roleEl}
             {profile.label && <LabelBadge label={profile.label} />}
           </div>
         </div>
         <p className="text-[13px] text-text-secondary mb-0.5">{description}</p>
-        <div onClick={(e) => e.stopPropagation()}>
+        <div
+          onClick={(e) => e.stopPropagation()}
+          onMouseEnter={handleVoteEnter}
+          onMouseLeave={handleVoteLeave}
+        >
           <VoteButtons
             profileId={profile.id}
             likes={profile.likes}

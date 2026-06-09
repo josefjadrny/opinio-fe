@@ -31,6 +31,7 @@ export interface Strings {
   lightboxDownload: string;
   newBadge: string;
   clearFilters: string;
+  filterBy: string;
   clearSelection: string;
   searchLabel: string;
   searchPlaceholder: string;
@@ -273,6 +274,7 @@ const en: Strings = {
   lightboxDownload: 'Download',
   newBadge: 'NEW',
   clearFilters: 'Clear filters',
+  filterBy: 'Filter by',
   clearSelection: 'Clear selection',
   searchLabel: 'Search',
   searchPlaceholder: 'Search opinios…',
@@ -567,6 +569,7 @@ const cs: Strings = {
   lightboxDownload: 'Stáhnout',
   newBadge: 'NOVÝ',
   clearFilters: 'Zrušit filtry',
+  filterBy: 'Filtrovat podle',
   clearSelection: 'Zrušit výběr',
   searchLabel: 'Hledat',
   searchPlaceholder: 'Hledat opinio…',
@@ -861,6 +864,7 @@ const es: Strings = {
   lightboxDownload: 'Descargar',
   newBadge: 'NUEVO',
   clearFilters: 'Borrar filtros',
+  filterBy: 'Filtrar por',
   clearSelection: 'Borrar selección',
   searchLabel: 'Buscar',
   searchPlaceholder: 'Buscar opinio…',
@@ -1155,6 +1159,7 @@ const de: Strings = {
   lightboxDownload: 'Herunterladen',
   newBadge: 'NEU',
   clearFilters: 'Filter zurücksetzen',
+  filterBy: 'Filtern nach',
   clearSelection: 'Auswahl aufheben',
   searchLabel: 'Suche',
   searchPlaceholder: 'opinio suchen…',
@@ -1449,6 +1454,7 @@ const fr: Strings = {
   lightboxDownload: 'Télécharger',
   newBadge: 'NOUVEAU',
   clearFilters: 'Effacer les filtres',
+  filterBy: 'Filtrer par',
   clearSelection: 'Effacer la sélection',
   searchLabel: 'Rechercher',
   searchPlaceholder: 'Rechercher des opinios…',
