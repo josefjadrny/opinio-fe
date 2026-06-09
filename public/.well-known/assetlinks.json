@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "live.opinio.app",
       "sha256_cert_fingerprints": [
-        "F7:B1:69:66:9F:D2:24:AF:1D:06:AB:BE:FE:A1:BA:47:CC:B6:A4:43:71:CA:A2:C0:8C:7D:79:69:F2:0C:E3:58"
+        "F7:B1:69:66:9F:D2:24:AF:1D:06:AB:BE:FE:A1:BA:47:CC:B6:A4:43:71:CA:A2:C0:8C:7D:79:69:F2:0C:E3:58",
+        "5C:66:7C:8A:EF:EA:46:EF:D5:31:21:DA:90:9E:C4:37:D2:A7:85:E6:4A:CB:20:4F:18:ED:D4:F6:F4:CD:F8:EE"
       ]
     }
   }
