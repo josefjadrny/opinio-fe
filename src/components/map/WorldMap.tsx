@@ -23,6 +23,15 @@ const DEFAULT_FILL = '#3a3a6a';
 const CAPITAL_LABEL_ZOOM = 1.6;
 const CITY_LABEL_ZOOM = 2.2;
 
+// City labels/dots are constant in SVG user units, so the map's CSS render width
+// (viewBox is 800 wide) sets their on-screen size: a wide map shows them at a
+// comfortable ~13 px, but a Full HD map (~870 px wide, squeezed between the two
+// sidebars) renders them at ~7.6 px - too small to read. `labelScale` below
+// compensates: at/above LABEL_REF_WIDTH it's 1 (wide screens unchanged), and
+// it grows as the map narrows so labels stay readable, capped by MAX_LABEL_SCALE.
+const LABEL_REF_WIDTH = 1430;
+const MAX_LABEL_SCALE = 2.5;
+
 // Tint a country by like/dislike skew. Pct = (max - min) / min — i.e. how much
 // the leading side outweighs the trailing side. Sub-25% stays neutral so noisy
 // near-ties don't flicker; tiers brighten with skew but stay dark on purpose.
@@ -69,6 +78,11 @@ export function WorldMap() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [countries, setCountries] = useState<GeoJSON.Feature[]>([]);
   const [zoom, setZoom] = useState<ZoomState>({ scale: 1, tx: 0, ty: 0 });
+  // Rendered CSS width of the map SVG, tracked so labels can be scaled up on
+  // narrow (Full HD and smaller) layouts. Init to the reference width so the
+  // first paint uses labelScale = 1 (no oversized flash) until the observer fires.
+  const [mapRenderWidth, setMapRenderWidth] = useState(LABEL_REF_WIDTH);
+  const labelScale = Math.min(MAX_LABEL_SCALE, Math.max(1, LABEL_REF_WIDTH / mapRenderWidth));
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const [debouncedCountry, setDebouncedCountry] = useState<string | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -114,10 +128,10 @@ export function WorldMap() {
     // neighbour (Bratislava next to Vienna) is still shown, just offset. forceShow
     // =false (secondary): drop the label when every position overlaps.
     const place = (c: (typeof CITIES)[number], cx: number, cy: number, forceShow: boolean) => {
-      const fs = (c.capital ? 7 : 6.2) / scale;
+      const fs = ((c.capital ? 7 : 6.2) / scale) * labelScale;
       const w = cityLabel(c.name, locale).length * fs * 0.55;
       const h = fs;
-      const gap = ((c.capital ? 0.95 : 0.65) + 1.2) / scale;
+      const gap = (((c.capital ? 0.95 : 0.65) + 1.2) / scale) * labelScale;
       // [x, y (vertical center), anchor, box] candidates: right, left, above, below.
       const candidates: [number, number, 'start' | 'end' | 'middle', Box][] = [
         [cx + gap, cy, 'start', { x1: cx + gap, y1: cy - h / 2, x2: cx + gap + w, y2: cy + h / 2 }],
@@ -143,7 +157,21 @@ export function WorldMap() {
       if (!c.capital && scale > CITY_LABEL_ZOOM) place(c, p[0], p[1], false);
     }
     return layout;
-  }, [zoom.scale, locale]);
+  }, [zoom.scale, locale, labelScale]);
+
+  // Track the map's rendered width so labelScale can normalize on-screen label
+  // size across resolutions (the flex layout resizes the map independently of
+  // the window, e.g. when sidebars reflow), not just on window resize.
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width;
+      if (w) setMapRenderWidth(w);
+    });
+    ro.observe(svg);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     fetch(GEO_URL)
@@ -278,7 +306,7 @@ export function WorldMap() {
               const p = projection(city.coords);
               if (!p) return null;
               const [cx, cy] = p;
-              const r = (city.capital ? 0.95 : 0.65) / zoom.scale;
+              const r = ((city.capital ? 0.95 : 0.65) / zoom.scale) * labelScale;
               const label = cityLabelLayout.get(`${city.code}:${city.name}`);
               return (
                 <g key={`${city.code}:${city.name}`}>
@@ -297,11 +325,11 @@ export function WorldMap() {
                       y={label.y}
                       textAnchor={label.anchor}
                       dominantBaseline="central"
-                      fontSize={(city.capital ? 7 : 6.2) / zoom.scale}
+                      fontSize={((city.capital ? 7 : 6.2) / zoom.scale) * labelScale}
                       fontWeight={500}
                       fill="#e4e7f1"
                       stroke="#14142a"
-                      strokeWidth={1.4 / zoom.scale}
+                      strokeWidth={(1.4 / zoom.scale) * labelScale}
                       paintOrder="stroke"
                     >
                       {cityLabel(city.name, locale)}
