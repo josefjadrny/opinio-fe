@@ -10,6 +10,7 @@ import { useMe } from '../../hooks/useMe';
 import { useBillingRedirect } from '../../hooks/useBillingRedirect';
 import { createCheckoutSession } from '../../api/client';
 import { useSignIn } from '../auth/SignInContext';
+import { isTwa } from '../../utils/twa';
 
 interface AboutModalProps {
   onClose: () => void;
@@ -41,11 +42,15 @@ export function AboutModal({ onClose }: AboutModalProps) {
   // Anonymous → sign-in opens; signed-in users already cleared the registered bar.
   const onRegisteredClick = isAnonymous ? promptSignIn : undefined;
   // Anonymous → sign in first; registered → Stripe Checkout; supporter/admin → no action.
-  const onSupporterClick = isAlreadySupporter
+  // Inside the Play TWA the Stripe purchase is suppressed (Play Billing policy):
+  // the plans stay visible for information, but the Supporter card isn't clickable.
+  const onSupporterClick = isTwa()
     ? undefined
-    : isAnonymous
-      ? promptSignIn
-      : handleCheckout;
+    : isAlreadySupporter
+      ? undefined
+      : isAnonymous
+        ? promptSignIn
+        : handleCheckout;
 
   return (
     <ModalShell onClose={onClose} title={t.about} icon={<AboutIcon />} maxWidth="max-w-md">

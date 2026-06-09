@@ -13,6 +13,7 @@ import { updateMe, createCheckoutSession, createPortalSession, uploadAvatar, res
 import { useSignIn } from '../auth/SignInContext';
 import { SignInIcon } from '../auth/SignInIcon';
 import { useQueryClient } from '@tanstack/react-query';
+import { isTwa } from '../../utils/twa';
 
 interface SettingsModalProps {
   onClose: () => void;
@@ -144,8 +145,11 @@ function SettingsContent({
               <span>{t.login}</span>
             </ActionChip>
           )}
-          {!isAnonymous && user?.tier === 'registered' && <UpgradeChip t={t} />}
-          {!isAnonymous && user?.tier === 'supporter' && <ManageSubscriptionLink t={t} />}
+          {/* Stripe redirects (checkout + customer portal) are hidden inside the
+              Play TWA — Play Billing policy forbids selling/managing the
+              subscription outside Play Billing. Web + PWA keep them. */}
+          {!isAnonymous && user?.tier === 'registered' && !isTwa() && <UpgradeChip t={t} />}
+          {!isAnonymous && user?.tier === 'supporter' && !isTwa() && <ManageSubscriptionLink t={t} />}
         </div>
       </div>
 
