@@ -209,7 +209,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                     <div className="grid grid-cols-2 gap-6">
                       <div>
                         <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-2">▲ {t.breakdownLiking}</p>
-                        <div className="max-h-[150px] overflow-y-auto pr-1 subtle-scrollbar">
+                        <div>
                           {breakdown.topLiking.map(({ countryCode, count }) => (
                             <div key={countryCode} className="flex items-center gap-1.5 mb-1.5">
                               <span className="text-sm">{getCountryFlag(countryCode)}</span>
@@ -221,7 +221,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                       </div>
                       <div>
                         <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-2">▼ {t.breakdownDisliking}</p>
-                        <div className="max-h-[150px] overflow-y-auto pr-1 subtle-scrollbar">
+                        <div>
                           {breakdown.topDisliking.map(({ countryCode, count }) => (
                             <div key={countryCode} className="flex items-center gap-1.5 mb-1.5">
                               <span className="text-sm">{getCountryFlag(countryCode)}</span>

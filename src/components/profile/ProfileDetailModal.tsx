@@ -166,7 +166,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
             <div className="grid grid-cols-2 gap-4 pt-1 border-t border-border">
               <div className="pt-3">
                 <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-2">▲ {t.breakdownLiking}</p>
-                <div className="max-h-[140px] overflow-y-auto pr-1 subtle-scrollbar">
+                <div>
                   {breakdown.topLiking.map(({ countryCode, count }) => (
                     <div key={countryCode} className="flex items-center gap-1.5 mb-1">
                       <span className="text-sm">{getCountryFlag(countryCode)}</span>
@@ -178,7 +178,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
               </div>
               <div className="pt-3">
                 <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-2">▼ {t.breakdownDisliking}</p>
-                <div className="max-h-[140px] overflow-y-auto pr-1 subtle-scrollbar">
+                <div>
                   {breakdown.topDisliking.map(({ countryCode, count }) => (
                     <div key={countryCode} className="flex items-center gap-1.5 mb-1">
                       <span className="text-sm">{getCountryFlag(countryCode)}</span>
