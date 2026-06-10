@@ -96,6 +96,29 @@ const METRIC_ICON: Record<CountryMetric, () => ReactElement> = {
   net: NetMetricIcon,
 };
 
+// Votes received: arrow-down into a tray (votes flowing into your content).
+// Green tray (your posts) + red incoming arrow (the votes arriving).
+const ReceivedVoterIcon = () => (
+  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
+    <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1" />
+    <path stroke="#e94560" strokeLinecap="round" strokeLinejoin="round" d="M12 4v11m0 0l-3.5-3.5M12 15l3.5-3.5" />
+  </svg>
+);
+
+// Votes given: arrow-up out of a tray (your votes going out to others).
+// Red outgoing arrow (your vote actions) + green tray baseline (from the app).
+const GivenVoterIcon = () => (
+  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
+    <path stroke="#e94560" strokeLinecap="round" strokeLinejoin="round" d="M4 8V7a2 2 0 012-2h12a2 2 0 012 2v1" />
+    <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M12 20V9m0 0l-3.5 3.5M12 9l3.5 3.5" />
+  </svg>
+);
+
+const VOTER_METRIC_ICON: Record<VoterMetric, () => ReactElement> = {
+  received: ReceivedVoterIcon,
+  given: GivenVoterIcon,
+};
+
 function rankCell(i: number) {
   if (i === 0) return <span className="text-sm">🥇</span>;
   if (i === 1) return <span className="text-sm">🥈</span>;
@@ -227,6 +250,7 @@ function MetricTabs({ metric, onChange, t }: { metric: CountryMetric; onChange: 
 
 function VoterMetricTabs({ metric, onChange, t }: { metric: VoterMetric; onChange: (m: VoterMetric) => void; t: ReturnType<typeof useI18n>['t'] }) {
   const tab = (key: VoterMetric, label: string) => {
+    const Icon = VOTER_METRIC_ICON[key];
     const active = metric === key;
     return (
       <button
@@ -237,14 +261,15 @@ function VoterMetricTabs({ metric, onChange, t }: { metric: VoterMetric; onChang
           active ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'
         }`}
       >
+        <Icon />
         {label}
       </button>
     );
   };
   return (
     <div className="flex gap-1 p-0.5 bg-black/20 border border-border rounded-lg overflow-x-auto no-scrollbar">
-      {tab('given', t.statsVoterMetricGiven)}
       {tab('received', t.statsVoterMetricReceived)}
+      {tab('given', t.statsVoterMetricGiven)}
     </div>
   );
 }
@@ -289,11 +314,11 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
   };
   const voterMetric: VoterMetric = VALID_VOTER_METRICS.includes(rawMetric as VoterMetric)
     ? (rawMetric as VoterMetric)
-    : 'given';
+    : 'received';
   const setVoterMetric = (m: VoterMetric) => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
-      if (m === 'given') next.delete('metric'); else next.set('metric', m);
+      if (m === 'received') next.delete('metric'); else next.set('metric', m);
       return next;
     }, { replace: true });
   };

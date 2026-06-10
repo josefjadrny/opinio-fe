@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getOnFireUsers, getTopVoters, getTrendingCountries } from '../api/client';
 import type { CountryMetric, VoterMetric } from '../types/api';
 
-export function useTopVoters(country?: string, metric: VoterMetric = 'given') {
+export function useTopVoters(country?: string, metric: VoterMetric = 'received') {
   return useQuery({
     queryKey: ['top-voters', country ?? null, metric],
     queryFn: () => getTopVoters(country, metric),

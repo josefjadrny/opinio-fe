@@ -158,10 +158,10 @@ export function getCountries(): Promise<{ countries: CountryCounts[] }> {
   return apiFetch('/api/countries');
 }
 
-export function getTopVoters(country?: string, metric: import('../types/api').VoterMetric = 'given'): Promise<import('../types/api').TopVotersResponse> {
+export function getTopVoters(country?: string, metric: import('../types/api').VoterMetric = 'received'): Promise<import('../types/api').TopVotersResponse> {
   const params = new URLSearchParams();
   if (country) params.set('country', country);
-  if (metric !== 'given') params.set('metric', metric);
+  if (metric !== 'received') params.set('metric', metric);
   const qs = params.toString();
   return apiFetch(`/api/stats/top-voters${qs ? `?${qs}` : ''}`);
 }
