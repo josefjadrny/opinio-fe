@@ -96,19 +96,20 @@ const METRIC_ICON: Record<CountryMetric, () => ReactElement> = {
   net: NetMetricIcon,
 };
 
-// Tray at bottom (green) + ▼ signature arrow (red) descending into it = votes arriving
+// SVG polygon triangles give pixel-perfect identical gaps on both icons —
+// <text> glyphs have font-metric variance that makes the tip-to-line gap differ.
+// Both triangles: width=14 (x 5→19), height=13, 2-unit gap to their line.
 const ReceivedVoterIcon = () => (
-  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none">
-    <path stroke="#22c55e" strokeWidth={2} strokeLinecap="round" d="M3 20h18" />
-    <text x="12" y="16" textAnchor="middle" fontSize="14" fill="#e94560">▼</text>
+  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+    <path stroke="#22c55e" strokeWidth={2} strokeLinecap="round" d="M3 22h18" />
+    <polygon points="12,20 5,7 19,7" fill="#e94560" />
   </svg>
 );
 
-// Launch line at top (red) + ▲ signature arrow (green) rising from it = votes going out
 const GivenVoterIcon = () => (
-  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none">
-    <path stroke="#e94560" strokeWidth={2} strokeLinecap="round" d="M3 4h18" />
-    <text x="12" y="20" textAnchor="middle" fontSize="14" fill="#22c55e">▲</text>
+  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+    <path stroke="#e94560" strokeWidth={2} strokeLinecap="round" d="M3 2h18" />
+    <polygon points="12,4 5,17 19,17" fill="#22c55e" />
   </svg>
 );
 
