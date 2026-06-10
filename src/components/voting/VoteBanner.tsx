@@ -5,13 +5,15 @@ import { useVote } from '../../hooks/useVote';
 import { useVoteAnimation } from '../../hooks/useVoteAnimation';
 import { useI18n } from '../../i18n/I18nContext';
 
+const VOTE_WINDOW_MS = 3600 * 1000;
+
 function VoteSlot({ type, remaining, nextAt, voteOnProfileId }: {
   type: 'like' | 'dislike';
   remaining: number;
   nextAt: string | null;
   voteOnProfileId: string | null;
 }) {
-  const countdown = useCountdown(remaining === 0 ? nextAt : null);
+  const { text: countdown, remainingMs } = useCountdown(remaining === 0 ? nextAt : null);
   const voteMutation = useVote();
   const anim = useVoteAnimation();
   const isLike = type === 'like';
@@ -20,15 +22,22 @@ function VoteSlot({ type, remaining, nextAt, voteOnProfileId }: {
   const bgActive = isLike ? 'bg-positive/15' : 'bg-negative/15';
   const baseClasses = `flex items-center gap-2 px-4 py-1.5 rounded-lg text-base font-medium`;
 
+  const progress = remainingMs !== null ? Math.max(0, Math.min(1, 1 - remainingMs / VOTE_WINDOW_MS)) : 0;
+  const progressBg = isLike ? 'rgba(34,197,94,0.12)' : 'rgba(233,69,96,0.12)';
+
   // Wrapper is always rendered so the particles span survives the
   // remaining=0 transition right after a successful vote — otherwise the
   // ` +1` would unmount before its 750ms float-up animation finishes.
   let body;
   if (remaining === 0 && countdown) {
     body = (
-      <div className={`${baseClasses} bg-white/5 text-white/40`}>
-        <span>{arrow}</span>
-        <span className="tabular-nums">{countdown}</span>
+      <div className={`relative overflow-hidden rounded-lg ${baseClasses} bg-white/5 text-white/40`}>
+        <div
+          className="absolute inset-0 origin-left"
+          style={{ backgroundColor: progressBg, transform: `scaleX(${progress})` }}
+        />
+        <span className="relative">{arrow}</span>
+        <span className="relative tabular-nums">{countdown}</span>
       </div>
     );
   } else if (remaining === 0) {

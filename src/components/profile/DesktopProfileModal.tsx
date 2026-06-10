@@ -273,8 +273,8 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                   }`}
                 >
                   <span>▲</span>
-                  {!canLike && likeCountdown ? (
-                    <span className="text-sm font-medium tabular-nums">{t.nextVote} {likeCountdown}</span>
+                  {!canLike && likeCountdown.text ? (
+                    <span className="text-sm font-medium tabular-nums">{t.nextVote} {likeCountdown.text}</span>
                   ) : (
                     <span>{t.agree}</span>
                   )}
@@ -305,8 +305,8 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                   }`}
                 >
                   <span>▼</span>
-                  {!canDislike && dislikeCountdown ? (
-                    <span className="text-sm font-medium tabular-nums">{t.nextVote} {dislikeCountdown}</span>
+                  {!canDislike && dislikeCountdown.text ? (
+                    <span className="text-sm font-medium tabular-nums">{t.nextVote} {dislikeCountdown.text}</span>
                   ) : (
                     <span>{t.disagree}</span>
                   )}
