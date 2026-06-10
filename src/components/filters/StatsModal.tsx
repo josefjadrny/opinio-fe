@@ -96,20 +96,20 @@ const METRIC_ICON: Record<CountryMetric, () => ReactElement> = {
   net: NetMetricIcon,
 };
 
-// ▼▲ — converging arrows (votes coming in toward you)
+// Tray at bottom (green) + ▼ signature arrow (red) descending into it = votes arriving
 const ReceivedVoterIcon = () => (
-  <span className="text-xs leading-none tracking-[-0.25em]">
-    <span className="text-negative">▼</span>
-    <span className="text-positive">▲</span>
-  </span>
+  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none">
+    <path stroke="#22c55e" strokeWidth={2} strokeLinecap="round" d="M3 20h18" />
+    <text x="12" y="16" textAnchor="middle" fontSize="14" fill="#e94560">▼</text>
+  </svg>
 );
 
-// ▲▼ — diverging arrows (your votes going out)
+// Launch line at top (red) + ▲ signature arrow (green) rising from it = votes going out
 const GivenVoterIcon = () => (
-  <span className="text-xs leading-none tracking-[-0.25em]">
-    <span className="text-positive">▲</span>
-    <span className="text-negative">▼</span>
-  </span>
+  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none">
+    <path stroke="#e94560" strokeWidth={2} strokeLinecap="round" d="M3 4h18" />
+    <text x="12" y="20" textAnchor="middle" fontSize="14" fill="#22c55e">▲</text>
+  </svg>
 );
 
 const VOTER_METRIC_ICON: Record<VoterMetric, () => ReactElement> = {
