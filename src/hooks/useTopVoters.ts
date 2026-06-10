@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { getOnFireUsers, getTopVoters, getTrendingCountries } from '../api/client';
-import type { CountryMetric } from '../types/api';
+import type { CountryMetric, VoterMetric } from '../types/api';
 
-export function useTopVoters(country?: string) {
+export function useTopVoters(country?: string, metric: VoterMetric = 'given') {
   return useQuery({
-    queryKey: ['top-voters', country ?? null],
-    queryFn: () => getTopVoters(country),
+    queryKey: ['top-voters', country ?? null, metric],
+    queryFn: () => getTopVoters(country, metric),
     staleTime: 60_000,
   });
 }

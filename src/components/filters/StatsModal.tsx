@@ -7,7 +7,7 @@ import { useI18n } from '../../i18n/I18nContext';
 import { useFilters } from '../../context/useFilters';
 import { useOnFireUsers, useTopVoters, useTrendingCountries } from '../../hooks/useTopVoters';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
-import type { CountryMetric, TrendingCountry } from '../../types/api';
+import type { CountryMetric, TrendingCountry, VoterMetric } from '../../types/api';
 
 export type StatsCategory = 'voters' | 'onFire' | 'countries';
 type Category = StatsCategory;
@@ -33,6 +33,7 @@ export function slugToCategory(slug?: string): StatsCategory {
 }
 
 const VALID_METRICS: CountryMetric[] = ['total', 'likes', 'dislikes', 'net'];
+const VALID_VOTER_METRICS: VoterMetric[] = ['given', 'received'];
 
 const StatsIcon = () => (
   <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
@@ -224,6 +225,30 @@ function MetricTabs({ metric, onChange, t }: { metric: CountryMetric; onChange: 
   );
 }
 
+function VoterMetricTabs({ metric, onChange, t }: { metric: VoterMetric; onChange: (m: VoterMetric) => void; t: ReturnType<typeof useI18n>['t'] }) {
+  const tab = (key: VoterMetric, label: string) => {
+    const active = metric === key;
+    return (
+      <button
+        key={key}
+        type="button"
+        onClick={() => onChange(key)}
+        className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
+          active ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'
+        }`}
+      >
+        {label}
+      </button>
+    );
+  };
+  return (
+    <div className="flex gap-1 p-0.5 bg-black/20 border border-border rounded-lg overflow-x-auto no-scrollbar">
+      {tab('given', t.statsVoterMetricGiven)}
+      {tab('received', t.statsVoterMetricReceived)}
+    </div>
+  );
+}
+
 // Maps the selected metric to the value shown for a country row and its label.
 function countryMetricValue(c: TrendingCountry, metric: CountryMetric, t: ReturnType<typeof useI18n>['t']) {
   switch (metric) {
@@ -248,7 +273,9 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
   const isCountries = category === 'countries';
   const isOnFire = category === 'onFire';
 
-  // Metric rides in ?metric= (countries tab only); validated, total = default.
+  // ?metric= is shared between the two tabs that use it, but the valid values are
+  // disjoint: countries use total|likes|dislikes|net; voters use given|received.
+  // Switching tabs always clears metric so each tab starts at its own default.
   const rawMetric = searchParams.get('metric');
   const metric: CountryMetric = VALID_METRICS.includes(rawMetric as CountryMetric)
     ? (rawMetric as CountryMetric)
@@ -260,18 +287,26 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
       return next;
     }, { replace: true });
   };
+  const voterMetric: VoterMetric = VALID_VOTER_METRICS.includes(rawMetric as VoterMetric)
+    ? (rawMetric as VoterMetric)
+    : 'given';
+  const setVoterMetric = (m: VoterMetric) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (m === 'given') next.delete('metric'); else next.set('metric', m);
+      return next;
+    }, { replace: true });
+  };
 
-  // Tab clicks change the path (each category is its own URL). Country rides in
-  // the global ?country= (shared with the feed); metric is dropped off the
-  // non-countries tabs to keep their URLs clean.
+  // Tab clicks change the path. Always clear metric so each tab's default applies.
   const goToCategory = (cat: StatsCategory) => {
     const params = new URLSearchParams(location.search);
-    if (cat !== 'countries') params.delete('metric');
+    params.delete('metric');
     const qs = params.toString();
     navigate(`${CATEGORY_PATH[cat]}${qs ? `?${qs}` : ''}`, { replace: true });
   };
 
-  const voters = useTopVoters(isVoters ? country : undefined);
+  const voters = useTopVoters(isVoters ? country : undefined, isVoters ? voterMetric : 'given');
   const onFire = useOnFireUsers(isOnFire ? country : undefined);
   const countries = useTrendingCountries(metric);
 
@@ -286,7 +321,7 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
       ? countryRows.length === 0
       : onFireRows.length === 0;
   const description = isVoters
-    ? t.statsVotersDescription
+    ? (voterMetric === 'received' ? t.statsVotersReceivedDescription : t.statsVotersDescription)
     : isCountries
       ? t.statsCountriesDescription
       : t.statsProfilesDescription;
@@ -295,13 +330,32 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
     <div className="px-6 py-5 space-y-4">
       <CategoryTabs category={category} onChange={goToCategory} t={t} />
 
-      {/* Trending countries is itself a country ranking, so a country filter
-          is meaningless there - that tab swaps in a metric picker instead. */}
+      {/* Countries tab: metric picker (country filter is meaningless on a country ranking).
+          Voters tab: voter metric picker + country filter stacked.
+          On Fire tab: country filter only. */}
       {isCountries ? (
         <div>
           <label className="block text-xs font-medium text-white/80 mb-1.5">{t.statsMetricLabel}</label>
           <MetricTabs metric={metric} onChange={setMetric} t={t} />
         </div>
+      ) : isVoters ? (
+        <>
+          <div>
+            <label className="block text-xs font-medium text-white/80 mb-1.5">{t.statsVoterMetricLabel}</label>
+            <VoterMetricTabs metric={voterMetric} onChange={setVoterMetric} t={t} />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-white/80 mb-1.5">{t.country}</label>
+            <SelectField value={country ?? ''} onChange={(e) => setCountry(e.target.value || undefined)}>
+              <option value="" style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{t.allCountries}</option>
+              {ALL_COUNTRIES.map(({ code, name }) => (
+                <option key={code} value={code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
+                  {getCountryFlag(code)} {name}
+                </option>
+              ))}
+            </SelectField>
+          </div>
+        </>
       ) : (
         <div>
           <label className="block text-xs font-medium text-white/80 mb-1.5">{t.country}</label>
@@ -338,8 +392,10 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
                 countryCode={v.countryCode}
                 rank={i}
                 subtitle={`${v.activeProfiles} ${t.statsPostsLabel}`}
-                value={v.totalVotesCast}
-                valueLabel={t.statsVotes}
+                value={voterMetric === 'received'
+                  ? v.totalLikesReceived + v.totalDislikesReceived
+                  : v.totalLikesCast + v.totalDislikesCast}
+                valueLabel={voterMetric === 'received' ? t.statsVotesReceived : t.statsVotesCast}
               />
             ))}
           {isCountries &&

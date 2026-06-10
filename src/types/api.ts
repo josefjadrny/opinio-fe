@@ -66,13 +66,18 @@ export interface PersonBreakdownResponse {
   topDisliking: CountryBreakdown[];
 }
 
+export type VoterMetric = 'given' | 'received';
+
 export interface TopVoter {
   id: string;
   displayName: string;
   avatarUrl: string | null;
   countryCode: string | null;
   activeProfiles: number;
-  totalVotesCast: number;
+  totalLikesCast: number;
+  totalDislikesCast: number;
+  totalLikesReceived: number;
+  totalDislikesReceived: number;
 }
 
 export interface TopVotersResponse {
