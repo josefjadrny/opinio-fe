@@ -96,22 +96,20 @@ const METRIC_ICON: Record<CountryMetric, () => ReactElement> = {
   net: NetMetricIcon,
 };
 
-// Votes received: arrow-down into a tray (votes flowing into your content).
-// Green tray (your posts) + red incoming arrow (the votes arriving).
+// ▼▲ — converging arrows (votes coming in toward you)
 const ReceivedVoterIcon = () => (
-  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
-    <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1" />
-    <path stroke="#e94560" strokeLinecap="round" strokeLinejoin="round" d="M12 4v11m0 0l-3.5-3.5M12 15l3.5-3.5" />
-  </svg>
+  <span className="text-xs leading-none tracking-[-0.25em]">
+    <span className="text-negative">▼</span>
+    <span className="text-positive">▲</span>
+  </span>
 );
 
-// Votes given: arrow-up out of a tray (your votes going out to others).
-// Red outgoing arrow (your vote actions) + green tray baseline (from the app).
+// ▲▼ — diverging arrows (your votes going out)
 const GivenVoterIcon = () => (
-  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
-    <path stroke="#e94560" strokeLinecap="round" strokeLinejoin="round" d="M4 8V7a2 2 0 012-2h12a2 2 0 012 2v1" />
-    <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M12 20V9m0 0l-3.5 3.5M12 9l3.5 3.5" />
-  </svg>
+  <span className="text-xs leading-none tracking-[-0.25em]">
+    <span className="text-positive">▲</span>
+    <span className="text-negative">▼</span>
+  </span>
 );
 
 const VOTER_METRIC_ICON: Record<VoterMetric, () => ReactElement> = {
