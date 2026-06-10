@@ -8,11 +8,11 @@ const PROFILE_PATH_RE = /^\/p\/([^\/]+)\/?$/;
 // server-rendered translated pages (see handleProfileLang) — the SPA is NOT
 // involved for these and stays untouched. English lives on the bare /p/<uuid>
 // URL and is the x-default; only the four non-English locales get a prefix.
-const PROFILE_LANG_PATH_RE = /^\/(cs|es|de|fr)\/p\/([^\/]+)\/?$/;
+const PROFILE_LANG_PATH_RE = /^\/(cs|es|de|fr|it)\/p\/([^\/]+)\/?$/;
 // Any /<lang>/... path. Profile lang pages are handled separately (standalone
 // render); everything else under a prefix is served as the SPA shell with
 // translated meta (see handleLangShell).
-const LANG_PREFIX_RE = /^\/(cs|es|de|fr)(\/.*)?$/;
+const LANG_PREFIX_RE = /^\/(cs|es|de|fr|it)(\/.*)?$/;
 const USER_PATH_RE = /^\/u\/([^\/]+)\/?$/;
 const COUNTRY_PATH_RE = /^\/c\/([^\/]+)\/?$/;
 const COUNTRY_CODE_RE = /^[A-Z]{2}$/;
@@ -20,7 +20,7 @@ const COUNTRY_CODE_RE = /^[A-Z]{2}$/;
 // Locales that get their own prefixed URL. English is excluded — it stays on
 // the bare path and is emitted as hreflang="en" + x-default. Keep in sync with
 // the i18n LANGUAGES set and the API sitemap's PREFIX_LANGS.
-const PREFIX_LANGS = ['cs', 'es', 'de', 'fr'];
+const PREFIX_LANGS = ['cs', 'es', 'de', 'fr', 'it'];
 
 // Per-locale chrome for the standalone translated profile page. Descriptive
 // copy uses the natural word for "opinion" per locale (not the invariable
@@ -62,6 +62,15 @@ const LANG_UI = {
     original: 'Original:',
     gone: "Cette opinion n'est plus disponible.",
     home: 'Retour à Opinio',
+  },
+  it: {
+    ogLocale: 'it_IT',
+    cta: 'Vota su Opinio',
+    tagline: 'Classifiche mondiali in tempo reale di opinioni, persone e idee - votate per paese.',
+    likes: 'mi piace', dislikes: 'non mi piace',
+    original: 'Originale:',
+    gone: 'Questa opinione non è più disponibile.',
+    home: 'Torna a Opinio',
   },
 };
 
@@ -648,6 +657,16 @@ const STATIC_I18N = {
     '/stats/trending-countries': { title: 'Pays tendance par votes - Opinio', description: "Quels pays font le plus parler d'eux en ce moment - classés par votes sur leurs publications actives, actualisés toutes les 24 heures sur Opinio." },
     '/stats/top-voters': { title: 'Classement des plus actifs - Opinio', description: "Les votants les plus actifs dans le monde et par pays, classés selon les j'aime et je n'aime pas attribués sur Opinio." },
     '/support': { title: 'Assistance - Opinio', description: "Contactez l'assistance Opinio, gérez vos tickets et obtenez de l'aide pour le vote, les profils et les paramètres de compte." },
+  },
+  it: {
+    '/': { title: 'Opinio - Vota sui temi che plasmano il mondo', description: 'Una piattaforma di voto sociale nata in Europa. Metti mi piace o non mi piace a dichiarazioni, eventi e personaggi pubblici che plasmano il mondo - in classifica paese per paese, aggiornata ogni 24 h.' },
+    '/about': { title: 'Informazioni su Opinio - Come funziona il voto in diretta', description: 'Scopri come funziona Opinio: voto sociale veloce, voti che scadono dopo 24 ore e tendenze mondiali in diretta.' },
+    '/privacy': { title: 'Informativa sulla privacy - Opinio', description: 'Informativa sulla privacy di Opinio: cosa raccogliamo, perché, per quanto tempo e i tuoi diritti secondo il GDPR.' },
+    '/terms': { title: "Termini di utilizzo - Opinio", description: 'Termini di utilizzo di Opinio: regole per la pubblicazione, voto, abbonamenti e sospensioni degli account.' },
+    '/stats': { title: 'Opinioni di tendenza in questo momento - Opinio', description: 'Le opinioni, le analisi e le idee che ricevono più voti in questo momento su Opinio - in classifica in diretta e aggiornate ogni 24 ore.' },
+    '/stats/trending-countries': { title: 'Paesi di tendenza per voti - Opinio', description: 'Quali paesi fanno più scalpore in questo momento - in classifica per voti sui loro contenuti attivi, aggiornata ogni 24 ore su Opinio.' },
+    '/stats/top-voters': { title: 'Classifica dei più attivi - Opinio', description: 'I votanti più attivi nel mondo e per paese, in classifica per mi piace e non mi piace assegnati su Opinio.' },
+    '/support': { title: 'Assistenza - Opinio', description: "Contatta l'assistenza Opinio, gestisci i tuoi ticket e ottieni aiuto per il voto, i profili e le impostazioni dell'account." },
   },
 };
 
