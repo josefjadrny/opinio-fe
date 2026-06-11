@@ -22,13 +22,13 @@ export function VoteSentimentBar({ likes, dislikes, totalLikes, totalDislikes }:
     <div className="flex items-center gap-2 tabular-nums leading-none">
       <span className="inline-flex items-baseline gap-1.5 shrink-0 text-positive font-semibold text-base">
         <span className="text-base">▲</span>{formatNumber(likes)}
-        {totalLikes != null && totalLikes !== likes && <span className="text-xs font-normal text-positive/40">({formatNumber(totalLikes)})</span>}
+        {totalLikes != null && totalLikes > likes && <span className="text-xs font-normal text-positive/40">({formatNumber(totalLikes)})</span>}
       </span>
       <div className={`flex-1 h-2.5 rounded-full overflow-hidden flex ${hasVotes ? 'bg-negative/45' : 'bg-white/10'}`}>
         {hasVotes && likePct > 0 && <div className="h-full bg-positive" style={{ width: `${likePct}%` }} />}
       </div>
       <span className="inline-flex items-baseline gap-1.5 shrink-0 text-negative font-semibold text-base">
-        {totalDislikes != null && totalDislikes !== dislikes && <span className="text-xs font-normal text-negative/40">({formatNumber(totalDislikes)})</span>}
+        {totalDislikes != null && totalDislikes > dislikes && <span className="text-xs font-normal text-negative/40">({formatNumber(totalDislikes)})</span>}
         {formatNumber(dislikes)}<span className="text-base">▼</span>
       </span>
     </div>
