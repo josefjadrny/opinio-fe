@@ -13,6 +13,7 @@ import { useProfileText } from '../../hooks/useProfileText';
 import { Avatar } from './Avatar';
 import { ShareButton } from './ShareButton';
 import { DeleteProfileButton } from './DeleteProfileButton';
+import { VoteSentimentBar } from './VoteSentimentBar';
 import { RoleBadge } from '../common/RoleBadge';
 import { CountryFlag } from '../common/CountryFlag';
 import { getCountryFlag, getCountryName } from '../../utils/countries';
@@ -134,19 +135,6 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                   {' · '}{formatRelativeTime(profile.createdAt, locale, t.justNow)}
                 </p>
               </div>
-              <div
-                className="shrink-0 flex items-center gap-2 text-sm tabular-nums leading-none"
-                title={`${formatNumber(profile.likes)} likes · ${formatNumber(profile.dislikes)} dislikes`}
-              >
-                <span className="inline-flex items-baseline gap-1 text-positive font-semibold">
-                  <span className="text-[11px]">▲</span>
-                  {formatNumber(animatedLikes)}
-                </span>
-                <span className="inline-flex items-baseline gap-1 text-negative font-semibold">
-                  <span className="text-[11px]">▼</span>
-                  {formatNumber(animatedDislikes)}
-                </span>
-              </div>
               <div className="flex items-center gap-1 shrink-0">
                 {me?.user.id && profile.addedById === me.user.id && (
                   <DeleteProfileButton
@@ -171,6 +159,11 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
 
             {/* Body - two columns */}
             <div className="flex-1 overflow-y-auto">
+              {/* Live votes as a sentiment bar: green segment = likes' share of
+                  the active (24h) votes, red = dislikes'. Replaces the old ▲/▼ counts. */}
+              <div className="px-6 pt-4 pb-3 border-b border-border">
+                <VoteSentimentBar likes={animatedLikes} dislikes={animatedDislikes} totalLikes={profile.totalLikes ?? 0} totalDislikes={profile.totalDislikes ?? 0} />
+              </div>
               <div className="grid grid-cols-2 gap-0 divide-x divide-border">
                 {/* Left: description first, optional image second as supporting context */}
                 <div className="px-6 py-4 space-y-3">

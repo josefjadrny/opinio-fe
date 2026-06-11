@@ -5,6 +5,7 @@ import type { PersonBreakdownResponse } from '../../types/api';
 import { Avatar } from './Avatar';
 import { ShareButton } from './ShareButton';
 import { DeleteProfileButton } from './DeleteProfileButton';
+import { VoteSentimentBar } from './VoteSentimentBar';
 import { ContentImageLightbox } from './ContentImageLightbox';
 import { useMe } from '../../hooks/useMe';
 import { RoleBadge } from '../common/RoleBadge';
@@ -76,20 +77,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
             </div>
           </div>
           <div className="flex items-center justify-between gap-3 mt-2">
-            <div
-              className="flex items-center gap-2 text-sm tabular-nums leading-none"
-              title={`${formatNumber(profile.likes)} likes · ${formatNumber(profile.dislikes)} dislikes`}
-            >
-              <span className="inline-flex items-baseline gap-1 text-positive font-semibold">
-                <span className="text-[11px]">▲</span>
-                {formatNumber(profile.likes)}
-              </span>
-              <span className="inline-flex items-baseline gap-1 text-negative font-semibold">
-                <span className="text-[11px]">▼</span>
-                {formatNumber(profile.dislikes)}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex items-center gap-1 shrink-0 ml-auto">
               {me?.user.id && profile.addedById === me.user.id && (
                 <DeleteProfileButton
                   profileId={profile.id}
@@ -113,6 +101,9 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
         </div>
 
         <div className="px-6 py-5 space-y-4">
+          {/* Live votes as a sentiment bar: green = likes' share of the active
+              (24h) votes, red = dislikes'. Replaces the old ▲/▼ counts. */}
+          <VoteSentimentBar likes={profile.likes} dislikes={profile.dislikes} totalLikes={profile.totalLikes ?? 0} totalDislikes={profile.totalDislikes ?? 0} />
           <p className="text-sm text-white/80 leading-relaxed">{description}</p>
           {hasTranslation && (
             <button

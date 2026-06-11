@@ -30,5 +30,10 @@ export interface Profile {
   createdAt: string;
   likes: number;
   dislikes: number;
+  // Lifetime votes received — only ever increment, never decremented by expiry.
+  // Unlike likes/dislikes (active 24h window), these accumulate forever. May be
+  // absent on lightweight payloads (e.g. realtime banner) — treat as 0.
+  totalLikes?: number;
+  totalDislikes?: number;
   label?: 'new' | 'rising' | 'falling';
 }
