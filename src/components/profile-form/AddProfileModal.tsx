@@ -3,7 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ModalShell } from '../common/ModalShell';
 import { addNewProfile, uploadImage, uploadContentImage } from '../../api/client';
-import { ALL_COUNTRIES, getCountryFlag } from '../../utils/countries';
+import { ALL_COUNTRIES } from '../../utils/countries';
+import { FlagImg } from '../common/CountryFlag';
 import { ALL_ROLES, ROLE_COLORS } from '../../utils/roles';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
@@ -303,8 +304,8 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           <label className={LABEL}>{t.profileCountry}</label>
           <div ref={countryFieldRef} className="relative">
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-base leading-none pointer-events-none">
-                {getCountryFlag(countryCode)}
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <FlagImg code={countryCode} />
               </span>
               <input
                 type="text"
@@ -352,7 +353,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
                       onClick={() => { setCountryCode(c.code); setCountryInput(getCountryOptionLabel(c.code)); setCountryMenuOpen(false); }}
                       className="w-full px-3 py-2 text-left text-sm text-white hover:bg-white/5 transition-colors"
                     >
-                      <span className="mr-2">{getCountryFlag(c.code)}</span>
+                      <FlagImg code={c.code} className="mr-2 inline-block align-middle shrink-0" />
                       {c.name}
                       <span className="ml-2 text-white/40">{c.code}</span>
                     </button>

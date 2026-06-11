@@ -10,8 +10,8 @@ import { VoteSentimentBar } from './VoteSentimentBar';
 import { ContentImageLightbox } from './ContentImageLightbox';
 import { useMe } from '../../hooks/useMe';
 import { RoleBadge } from '../common/RoleBadge';
-import { CountryFlag } from '../common/CountryFlag';
-import { getCountryFlag, getCountryName } from '../../utils/countries';
+import { CountryFlag, FlagImg } from '../common/CountryFlag';
+import { getCountryName } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useI18n } from '../../i18n/I18nContext';
@@ -72,7 +72,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
             <div className="min-w-0 flex-1">
               <span className="block font-semibold text-white truncate mb-1">{name}</span>
               <div className="flex items-center gap-1.5">
-                <CountryFlag code={profile.countryCode} flagClassName="text-xl leading-none" />
+                <CountryFlag code={profile.countryCode} />
                 <RoleBadge role={profile.role} />
                 <div className="flex items-center gap-0.5 shrink-0 ml-auto -mr-1">
                   {me?.user.id && profile.addedById === me.user.id && (
@@ -160,7 +160,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 <div>
                   {breakdown.topLiking.map(({ countryCode, count }) => (
                     <div key={countryCode} className="flex items-center gap-1.5 mb-1">
-                      <span className="text-sm">{getCountryFlag(countryCode)}</span>
+                      <FlagImg code={countryCode} />
                       <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
                       <span className="text-xs text-positive font-medium tabular-nums">{formatNumber(count)}</span>
                     </div>
@@ -172,7 +172,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 <div>
                   {breakdown.topDisliking.map(({ countryCode, count }) => (
                     <div key={countryCode} className="flex items-center gap-1.5 mb-1">
-                      <span className="text-sm">{getCountryFlag(countryCode)}</span>
+                      <FlagImg code={countryCode} />
                       <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
                       <span className="text-xs text-negative font-medium tabular-nums">{formatNumber(count)}</span>
                     </div>

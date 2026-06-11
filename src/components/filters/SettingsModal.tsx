@@ -8,6 +8,7 @@ import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
 import { LANGUAGES, type Locale } from '../../i18n/strings';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
+import { FlagImg } from '../common/CountryFlag';
 import { resizeImage } from '../../utils/resizeImage';
 import { updateMe, createCheckoutSession, createPortalSession, uploadAvatar, resetAvatar } from '../../api/client';
 import { useSignIn } from '../auth/SignInContext';
@@ -198,7 +199,7 @@ function SettingsContent({
           <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2 opacity-60 cursor-not-allowed">
             {user?.countryCode ? (
               <>
-                <span className="text-base leading-none">{getCountryFlag(user.countryCode)}</span>
+                <FlagImg code={user.countryCode} className="inline-block align-middle shrink-0" />
                 <span className="text-sm text-white">{getCountryName(user.countryCode)}</span>
               </>
             ) : (

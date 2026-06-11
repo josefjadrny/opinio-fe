@@ -4,7 +4,7 @@ import { Avatar } from '../profile/Avatar';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
 import { logout } from '../../api/client';
-import { getCountryFlag } from '../../utils/countries';
+import { FlagImg } from '../common/CountryFlag';
 import { useQueryClient } from '@tanstack/react-query';
 import { HeaderButton } from '../ui/HeaderButton';
 import { useSignIn } from '../auth/SignInContext';
@@ -37,7 +37,7 @@ export function ProfileMenu({ onOpen }: ProfileMenuProps) {
   const user = me?.user;
   const isAnonymous = !user || user.tier === 'anonymous';
   const displayName = isAnonymous ? t.anonymousUser : (user?.displayName ?? t.anonymousUser);
-  const anonymousFlag = meLoading ? null : (user?.countryCode ? getCountryFlag(user.countryCode) : null);
+  const hasCountry = !meLoading && !!user?.countryCode;
   const profileButtonLabel = isAnonymous ? t.profile : `@${displayName}`;
 
   useEffect(() => {
@@ -58,8 +58,8 @@ export function ProfileMenu({ onOpen }: ProfileMenuProps) {
         className="flex items-center gap-2 px-3 py-1.5"
       >
         {isAnonymous
-          ? anonymousFlag
-            ? <span className="w-6 h-6 flex items-center justify-center text-base leading-none shrink-0">{anonymousFlag}</span>
+          ? hasCountry
+            ? <span className="w-6 h-6 flex items-center justify-center shrink-0"><FlagImg code={user!.countryCode!} /></span>
             : !meLoading && (
               <span className="relative group/warn w-6 h-6 flex items-center justify-center shrink-0">
                 <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>

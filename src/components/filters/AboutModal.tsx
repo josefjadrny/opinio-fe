@@ -11,6 +11,7 @@ import { useBillingRedirect } from '../../hooks/useBillingRedirect';
 import { createCheckoutSession } from '../../api/client';
 import { useSignIn } from '../auth/SignInContext';
 import { isTwa } from '../../utils/twa';
+import { FlagImg } from '../common/CountryFlag';
 
 interface AboutModalProps {
   onClose: () => void;
@@ -75,11 +76,11 @@ export function AboutModal({ onClose }: AboutModalProps) {
 
         {/* EU origin / Made in CZ / Hosted in DE — moved above Terms so we lead with the proud signal */}
         <div className="!mb-2 text-center text-xs text-white/75 font-medium">
-          <span>🇪🇺 {t.aboutEuOrigin}</span>
+          <span className="inline-flex items-center gap-1"><FlagImg code="EU" /> {t.aboutEuOrigin}</span>
           <span className="mx-1.5 text-white/30">·</span>
-          <span>🇨🇿 {t.aboutMadeInCzechia}</span>
+          <span className="inline-flex items-center gap-1"><FlagImg code="CZ" /> {t.aboutMadeInCzechia}</span>
           <span className="mx-1.5 text-white/30">·</span>
-          <span>🇩🇪 {t.aboutHostedInGermany}</span>
+          <span className="inline-flex items-center gap-1"><FlagImg code="DE" /> {t.aboutHostedInGermany}</span>
         </div>
 
         {/* Terms · Privacy — bottom links, full text-sm body size (not fine-print) */}

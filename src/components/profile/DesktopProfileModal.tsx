@@ -16,8 +16,8 @@ import { ReportProfileButton } from './ReportProfileButton';
 import { DeleteProfileButton } from './DeleteProfileButton';
 import { VoteSentimentBar } from './VoteSentimentBar';
 import { RoleBadge } from '../common/RoleBadge';
-import { CountryFlag } from '../common/CountryFlag';
-import { getCountryFlag, getCountryName } from '../../utils/countries';
+import { CountryFlag, FlagImg } from '../common/CountryFlag';
+import { getCountryName } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 
@@ -213,7 +213,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                           <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
                             {breakdown.topLiking.map(({ countryCode, count }) => (
                               <div key={countryCode} className="flex items-center gap-1.5 mb-1.5">
-                                <span className="text-sm">{getCountryFlag(countryCode)}</span>
+                                <FlagImg code={countryCode} className="inline-block align-middle shrink-0" />
                                 <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
                                 <span className="text-xs text-positive font-medium tabular-nums">{formatNumber(count)}</span>
                               </div>
@@ -225,7 +225,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                           <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
                             {breakdown.topDisliking.map(({ countryCode, count }) => (
                               <div key={countryCode} className="flex items-center gap-1.5 mb-1.5">
-                                <span className="text-sm">{getCountryFlag(countryCode)}</span>
+                                <FlagImg code={countryCode} className="inline-block align-middle shrink-0" />
                                 <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
                                 <span className="text-xs text-negative font-medium tabular-nums">{formatNumber(count)}</span>
                               </div>

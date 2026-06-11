@@ -8,7 +8,7 @@ import { useSignIn } from '../auth/SignInContext';
 import { SignInIcon } from '../auth/SignInIcon';
 import { Avatar } from '../profile/Avatar';
 import { RoleBadge } from '../common/RoleBadge';
-import { getCountryFlag } from '../../utils/countries';
+import { FlagImg } from '../common/CountryFlag';
 import {
   useSupportTickets, useCreateTicket,
   useUpdateStatus, useUpdateReply, useUpdateNote,
@@ -129,7 +129,7 @@ function TicketList({
                   <div className="flex items-center gap-1.5 shrink-0">
                     <Avatar name={ticket.userDisplayName ?? '?'} imageUrl={ticket.userAvatarUrl ?? null} className="w-4 h-4" isAnonymous={false} />
                     <span className="text-xs text-white/50 truncate max-w-28">@{ticket.userDisplayName}</span>
-                    {ticket.userCountryCode && <span className="text-xs leading-none">{getCountryFlag(ticket.userCountryCode)}</span>}
+                    {ticket.userCountryCode && <FlagImg code={ticket.userCountryCode} className="inline-block align-middle shrink-0" />}
                     <TierBadge tier={ticket.userTier} />
                   </div>
                 )}
@@ -285,7 +285,7 @@ function TicketDetail({
                 <span className="text-white/20 text-xs">·</span>
                 <Avatar name={fresh.userDisplayName ?? '?'} imageUrl={fresh.userAvatarUrl ?? null} className="w-4 h-4" isAnonymous={false} />
                 <span className="text-xs text-white/50">@{fresh.userDisplayName}</span>
-                {fresh.userCountryCode && <span className="text-xs leading-none">{getCountryFlag(fresh.userCountryCode)}</span>}
+                {fresh.userCountryCode && <FlagImg code={fresh.userCountryCode} className="inline-block align-middle shrink-0" />}
                 <TierBadge tier={fresh.userTier} />
               </>
             )}
@@ -431,7 +431,7 @@ function ReportsList({
                 onClick={() => openProfile(g.profileId)}
                 className="flex items-center gap-2 min-w-0 text-left group"
               >
-                {g.profileCountry && <span className="text-sm leading-none shrink-0">{getCountryFlag(g.profileCountry)}</span>}
+                {g.profileCountry && <FlagImg code={g.profileCountry} className="inline-block align-middle shrink-0" />}
                 <span className="text-sm text-white font-medium truncate group-hover:underline">{g.profileName}</span>
                 <RoleBadge role={g.role} />
               </button>

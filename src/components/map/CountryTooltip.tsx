@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import type { CountryProfilesResponse } from '../../types/api';
-import { getCountryName, getCountryFlag } from '../../utils/countries';
+import { getCountryName } from '../../utils/countries';
+import { FlagImg } from '../common/CountryFlag';
 import { useI18n } from '../../i18n/I18nContext';
 import { useCountries } from '../../hooks/useCountries';
 import { formatNumber } from '../../utils/formatNumber';
@@ -60,7 +61,7 @@ export function CountryTooltip({ countryCode, data, isLoading, position }: Count
       }}
     >
       <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border">
-        <span className="text-lg">{getCountryFlag(countryCode)}</span>
+        <FlagImg code={countryCode} className="inline-block align-middle shrink-0" />
         <span className="font-bold text-white flex-1 min-w-0 truncate">{getCountryName(countryCode)}</span>
         <div className="shrink-0 flex items-center gap-2 text-sm tabular-nums leading-none">
           <span className="inline-flex items-baseline gap-1 text-positive font-semibold">

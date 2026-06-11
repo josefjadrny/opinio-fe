@@ -2,7 +2,8 @@ import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import type { Profile } from '../../types/profile';
 import type { PersonBreakdownResponse } from '../../types/api';
-import { getCountryFlag, getCountryName } from '../../utils/countries';
+import { getCountryName } from '../../utils/countries';
+import { FlagImg } from '../common/CountryFlag';
 import { RoleBadge } from '../common/RoleBadge';
 import { Avatar } from './Avatar';
 import { formatNumber } from '../../utils/formatNumber';
@@ -49,7 +50,7 @@ export function PersonTooltip({ profile, breakdown, isLoading, position, onMouse
         <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-10 h-10 shrink-0" />
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap leading-tight">
-            <span className="text-sm">{getCountryFlag(profile.countryCode)}</span>
+            <FlagImg code={profile.countryCode} className="inline-block align-middle shrink-0" />
             <span className="font-semibold text-white text-sm truncate">{profile.name}</span>
           </div>
           <div className="mt-1">
@@ -121,7 +122,7 @@ export function PersonTooltip({ profile, breakdown, isLoading, position, onMouse
             </p>
             {breakdown.topLiking.slice(0, 5).map(({ countryCode, count }) => (
               <div key={countryCode} className="flex items-center gap-1 mb-0.5">
-                <span className="text-xs">{getCountryFlag(countryCode)}</span>
+                <FlagImg code={countryCode} className="inline-block align-middle shrink-0" />
                 <span className="text-[11px] text-text-secondary truncate flex-1">
                   {getCountryName(countryCode)}
                 </span>
@@ -139,7 +140,7 @@ export function PersonTooltip({ profile, breakdown, isLoading, position, onMouse
             </p>
             {breakdown.topDisliking.slice(0, 5).map(({ countryCode, count }) => (
               <div key={countryCode} className="flex items-center gap-1 mb-0.5">
-                <span className="text-xs">{getCountryFlag(countryCode)}</span>
+                <FlagImg code={countryCode} className="inline-block align-middle shrink-0" />
                 <span className="text-[11px] text-text-secondary truncate flex-1">
                   {getCountryName(countryCode)}
                 </span>

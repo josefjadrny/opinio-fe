@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ModalShell } from '../common/ModalShell';
-import { ALL_COUNTRIES, getCountryFlag } from '../../utils/countries';
+import { ALL_COUNTRIES } from '../../utils/countries';
+import { FlagImg } from '../common/CountryFlag';
 import { ALL_ROLES, ROLE_COLORS } from '../../utils/roles';
 import { useFilters } from '../../context/useFilters';
 import { useSearchField } from '../../hooks/useSearchField';
@@ -75,7 +76,7 @@ export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
                 onClick={() => setCountry(country === c.code ? undefined : c.code)}
                 className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-white/5 ${country === c.code ? 'text-accent' : 'text-white/80'}`}
               >
-                <span className="shrink-0">{getCountryFlag(c.code)}</span>
+                <FlagImg code={c.code} className="shrink-0 inline-block align-middle" />
                 <span className="truncate">{c.name}</span>
               </button>
             ))}

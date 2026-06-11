@@ -7,6 +7,7 @@ import { useI18n } from '../../i18n/I18nContext';
 import { useFilters } from '../../context/useFilters';
 import { useOnFireUsers, useTopVoters, useTrendingCountries } from '../../hooks/useTopVoters';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
+import { FlagImg } from '../common/CountryFlag';
 import type { CountryMetric, TrendingCountry, VoterMetric } from '../../types/api';
 
 export type StatsCategory = 'voters' | 'onFire' | 'countries';
@@ -148,7 +149,7 @@ function StatsRow({ id, displayName, avatarUrl, countryCode, rank, subtitle, val
       <div className="flex-1 min-w-0">
         <p className="text-sm text-white truncate">
           @{displayName}
-          {countryCode && <span className="ml-1.5">{getCountryFlag(countryCode)}</span>}
+          {countryCode && <FlagImg code={countryCode} className="inline-block align-middle ml-1.5 shrink-0" />}
         </p>
         {subtitle && (
           <p className="text-[11px] text-white/30 truncate leading-tight">{subtitle}</p>
@@ -177,7 +178,7 @@ function StatsCountryRow({ countryCode, rank, subtitle, value, valueLabel }: Sta
       className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors"
     >
       <span className="w-5 shrink-0 text-center">{rankCell(rank)}</span>
-      <span className="w-7 h-7 shrink-0 flex items-center justify-center text-xl leading-none">{getCountryFlag(countryCode)}</span>
+      <span className="w-7 h-7 shrink-0 flex items-center justify-center"><FlagImg code={countryCode} /></span>
       <div className="flex-1 min-w-0">
         <p className="text-sm text-white truncate">{getCountryName(countryCode)}</p>
         {subtitle && (

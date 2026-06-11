@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { ALL_COUNTRIES, getCountryFlag } from '../../utils/countries';
+import { ALL_COUNTRIES } from '../../utils/countries';
+import { FlagImg } from '../common/CountryFlag';
 import { useFilters } from '../../context/useFilters';
 import { useI18n } from '../../i18n/I18nContext';
 
@@ -42,7 +43,7 @@ export function CountryFilter() {
       >
         {selected ? (
           <>
-            <span className="shrink-0">{getCountryFlag(selected.code)}</span>
+            <FlagImg code={selected.code} className="shrink-0 inline-block align-middle" />
             <span className="truncate flex-1 text-left">{selected.name}</span>
           </>
         ) : (
@@ -81,7 +82,7 @@ export function CountryFilter() {
                 onClick={() => pick(c.code)}
                 className={`w-full text-left px-3 py-1.5 text-sm flex items-center gap-2 transition-colors hover:bg-white/5 ${country === c.code ? 'text-accent' : 'text-white/80'}`}
               >
-                <span className="shrink-0">{getCountryFlag(c.code)}</span>
+                <FlagImg code={c.code} className="shrink-0 inline-block align-middle" />
                 <span className="truncate">{c.name}</span>
               </button>
             ))}

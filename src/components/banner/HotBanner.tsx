@@ -4,7 +4,7 @@ import { Avatar } from '../profile/Avatar';
 import { RoleBadge } from '../common/RoleBadge';
 import { useRealtimeProfiles } from '../../hooks/useRealtimeProfiles';
 import { useI18n } from '../../i18n/I18nContext';
-import { getCountryFlag } from '../../utils/countries';
+import { FlagImg } from '../common/CountryFlag';
 
 const FADE_IN_MS = 500;
 const HOLD_MS = 6_000;
@@ -136,7 +136,7 @@ export function HotBanner({ enabled, mobile = false }: { enabled: boolean; mobil
           </div>
           <div className="text-white/60 text-xs line-clamp-2">{next.description}</div>
         </div>
-        <span className="text-2xl shrink-0" title={next.countryCode}>{getCountryFlag(next.countryCode)}</span>
+        <FlagImg code={next.countryCode} className="shrink-0 inline-block align-middle" />
       </div>
     </div>
   );

@@ -4,10 +4,10 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 import { useI18n } from '../../i18n/I18nContext';
 import { useCountries } from '../../hooks/useCountries';
 import { useCountryDiscussed } from '../../hooks/useCountryDiscussed';
-import { getCountryFlag, getCountryName, isKnownCountry } from '../../utils/countries';
+import { getCountryName, isKnownCountry } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
 import { Avatar } from '../profile/Avatar';
-import { CountryFlag } from '../common/CountryFlag';
+import { CountryFlag, FlagImg } from '../common/CountryFlag';
 import { RoleBadge } from '../common/RoleBadge';
 import { VoteButtons } from '../voting/VoteButtons';
 import type { Profile } from '../../types/profile';
@@ -118,7 +118,6 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const code = countryCode.toUpperCase();
   const notFound = !isKnownCountry(code);
   const name = getCountryName(code);
-  const flag = getCountryFlag(code);
   const { data } = useCountries();
   const counts = data?.countries.find((c) => c.code === code) ?? { likes: 0, dislikes: 0 };
   // Skip the discussed fetch for an unknown code - there's nothing to load and
@@ -140,7 +139,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
 
   const Header = (
     <>
-      <span className="text-3xl leading-none shrink-0" aria-hidden>{flag}</span>
+      <FlagImg code={code} className="shrink-0" />
       <div className="flex-1 min-w-0">
         <div className="font-semibold text-white truncate">{name}</div>
         <p className="text-[11px] text-white/30 uppercase tracking-wider">{code}</p>
