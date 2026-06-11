@@ -208,7 +208,6 @@ export interface Strings {
   disagree: string;
   breakdownLiking: string;
   breakdownDisliking: string;
-  allTime: string;
   share: string;
   linkCopied: string;
   seeOriginal: string;
@@ -477,7 +476,6 @@ const en: Strings = {
   disagree: 'Dislike',
   breakdownLiking: 'Liking',
   breakdownDisliking: 'Disliking',
-  allTime: 'All-time',
   share: 'Share',
   linkCopied: 'Link copied',
   seeOriginal: 'See original',
@@ -779,7 +777,6 @@ const cs: Strings = {
   disagree: 'Nelíbí',
   breakdownLiking: 'Líbí se',
   breakdownDisliking: 'Nelíbí se',
-  allTime: 'Celkem',
   share: 'Sdílet',
   linkCopied: 'Odkaz zkopírován',
   seeOriginal: 'Zobrazit originál',
@@ -1081,7 +1078,6 @@ const es: Strings = {
   disagree: 'No me gusta',
   breakdownLiking: 'A favor',
   breakdownDisliking: 'En contra',
-  allTime: 'Total',
   share: 'Compartir',
   linkCopied: 'Enlace copiado',
   seeOriginal: 'Ver original',
@@ -1383,7 +1379,6 @@ const de: Strings = {
   disagree: 'Dislike',
   breakdownLiking: 'Dafür',
   breakdownDisliking: 'Dagegen',
-  allTime: 'Insgesamt',
   share: 'Teilen',
   linkCopied: 'Link kopiert',
   seeOriginal: 'Original anzeigen',
@@ -1685,7 +1680,6 @@ const fr: Strings = {
   disagree: "Je n'aime pas",
   breakdownLiking: 'Pour',
   breakdownDisliking: 'Contre',
-  allTime: 'Total',
   share: 'Partager',
   linkCopied: 'Lien copié',
   seeOriginal: "Voir l'original",
@@ -1987,7 +1981,6 @@ const it: Strings = {
   disagree: 'Non mi piace',
   breakdownLiking: 'A favore',
   breakdownDisliking: 'Contro',
-  allTime: 'Totale',
   share: 'Condividi',
   linkCopied: 'Link copiato',
   seeOriginal: 'Vedi originale',
