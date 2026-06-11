@@ -1,4 +1,4 @@
-import type { Profile } from './profile';
+import type { Profile, Role } from './profile';
 
 export interface ProfilesResponse {
   profiles: Profile[];
@@ -150,6 +150,25 @@ export interface SupportTicket {
   userAvatarUrl?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export type ReporterTier = 'anonymous' | 'registered' | 'supporter' | 'admin';
+
+export interface ProfileReport {
+  reason: string;
+  reporterName: string | null;
+  reporterTier: ReporterTier | null;
+  createdAt: string;
+}
+
+export interface ProfileReportGroup {
+  profileId: string;
+  profileName: string;
+  profileCountry: string | null;
+  role: Role;
+  reportCount: number;
+  lastReportedAt: string;
+  reports: ProfileReport[];
 }
 
 export interface RealtimeEvent {

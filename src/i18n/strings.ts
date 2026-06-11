@@ -240,6 +240,20 @@ export interface Strings {
   deleteProfileConfirmManyVotes: string;
   deleting: string;
   close: string;
+  report: string;
+  reportTitle: string;
+  reportReasonLabel: string;
+  reportReasonPlaceholder: string;
+  reportSubmit: string;
+  reportSubmitting: string;
+  reportThanks: string;
+  ticketsTab: string;
+  reportsTab: string;
+  reportsNone: string;
+  reportMarkValidated: string;
+  reportValidating: string;
+  reportAnonymous: string;
+  reportsCount: string;
   // Per-page SEO title + meta description, keyed by page (home, stats,
   // statsTrendingCountries, statsTopVoters, about, privacy, terms, support,
   // signIn). Drives applySeo so prefixed pages (/fr/about) get a localized
@@ -508,6 +522,20 @@ const en: Strings = {
   deleteProfileConfirmManyVotes: 'Delete this opinio and discard {count} votes?',
   deleting: 'Deleting…',
   close: 'Close',
+  report: 'Report',
+  reportTitle: 'Report opinio',
+  reportReasonLabel: 'Why are you reporting this?',
+  reportReasonPlaceholder: 'Tell us what is wrong with this opinio',
+  reportSubmit: 'Submit report',
+  reportSubmitting: 'Submitting...',
+  reportThanks: 'Thanks, your report was sent',
+  ticketsTab: 'Tickets',
+  reportsTab: 'Reports',
+  reportsNone: 'No open reports',
+  reportMarkValidated: 'Mark validated',
+  reportValidating: 'Saving...',
+  reportAnonymous: 'anonymous',
+  reportsCount: '{count} reports',
   seo: {
     home: {
       title: 'Opinio - Vote on the stories shaping the world today',
@@ -809,6 +837,20 @@ const cs: Strings = {
   deleteProfileConfirmManyVotes: 'Smazat toto opinio a zahodit všech {count} hlasů?',
   deleting: 'Mazání…',
   close: 'Zavřít',
+  report: 'Nahlásit',
+  reportTitle: 'Nahlásit opinio',
+  reportReasonLabel: 'Proč to nahlašujete?',
+  reportReasonPlaceholder: 'Napište, co je s tímto opinio špatně',
+  reportSubmit: 'Odeslat hlášení',
+  reportSubmitting: 'Odesílání...',
+  reportThanks: 'Děkujeme, hlášení bylo odesláno',
+  ticketsTab: 'Požadavky',
+  reportsTab: 'Hlášení',
+  reportsNone: 'Žádná otevřená hlášení',
+  reportMarkValidated: 'Označit jako prověřené',
+  reportValidating: 'Ukládání...',
+  reportAnonymous: 'anonym',
+  reportsCount: 'Hlášení: {count}',
   seo: {
     home: {
       title: 'Opinio - Hlasujte o dění, které formuje svět',
@@ -1110,6 +1152,20 @@ const es: Strings = {
   deleteProfileConfirmManyVotes: '¿Eliminar este opinio y descartar {count} votos?',
   deleting: 'Eliminando…',
   close: 'Cerrar',
+  report: 'Reportar',
+  reportTitle: 'Reportar opinio',
+  reportReasonLabel: '¿Por qué lo reportas?',
+  reportReasonPlaceholder: 'Cuéntanos qué pasa con este opinio',
+  reportSubmit: 'Enviar reporte',
+  reportSubmitting: 'Enviando...',
+  reportThanks: 'Gracias, tu reporte fue enviado',
+  ticketsTab: 'Tickets',
+  reportsTab: 'Reportes',
+  reportsNone: 'No hay reportes abiertos',
+  reportMarkValidated: 'Marcar como revisado',
+  reportValidating: 'Guardando...',
+  reportAnonymous: 'anónimo',
+  reportsCount: '{count} reportes',
   seo: {
     home: {
       title: 'Opinio - Vota sobre lo que está marcando el mundo',
@@ -1411,6 +1467,20 @@ const de: Strings = {
   deleteProfileConfirmManyVotes: 'Dieses opinio löschen und {count} Stimmen verwerfen?',
   deleting: 'Wird gelöscht…',
   close: 'Schließen',
+  report: 'Melden',
+  reportTitle: 'Opinio melden',
+  reportReasonLabel: 'Warum meldest du das?',
+  reportReasonPlaceholder: 'Sag uns, was mit diesem opinio nicht stimmt',
+  reportSubmit: 'Meldung senden',
+  reportSubmitting: 'Wird gesendet...',
+  reportThanks: 'Danke, deine Meldung wurde gesendet',
+  ticketsTab: 'Tickets',
+  reportsTab: 'Meldungen',
+  reportsNone: 'Keine offenen Meldungen',
+  reportMarkValidated: 'Als geprüft markieren',
+  reportValidating: 'Wird gespeichert...',
+  reportAnonymous: 'anonym',
+  reportsCount: '{count} Meldungen',
   seo: {
     home: {
       title: 'Opinio - Stimme über das Weltgeschehen ab',
@@ -1712,6 +1782,20 @@ const fr: Strings = {
   deleteProfileConfirmManyVotes: 'Supprimer cet opinio et abandonner {count} votes ?',
   deleting: 'Suppression…',
   close: 'Fermer',
+  report: 'Signaler',
+  reportTitle: 'Signaler un opinio',
+  reportReasonLabel: 'Pourquoi le signalez-vous ?',
+  reportReasonPlaceholder: 'Dites-nous ce qui ne va pas avec cet opinio',
+  reportSubmit: 'Envoyer le signalement',
+  reportSubmitting: 'Envoi...',
+  reportThanks: 'Merci, votre signalement a été envoyé',
+  ticketsTab: 'Tickets',
+  reportsTab: 'Signalements',
+  reportsNone: 'Aucun signalement ouvert',
+  reportMarkValidated: 'Marquer comme vérifié',
+  reportValidating: 'Enregistrement...',
+  reportAnonymous: 'anonyme',
+  reportsCount: '{count} signalements',
   seo: {
     home: {
       title: "Opinio - Votez sur l'actualité qui façonne le monde",
@@ -2013,6 +2097,20 @@ const it: Strings = {
   deleteProfileConfirmManyVotes: 'Eliminare questo opinio e scartare {count} voti?',
   deleting: 'Eliminazione…',
   close: 'Chiudi',
+  report: 'Segnala',
+  reportTitle: 'Segnala opinio',
+  reportReasonLabel: 'Perché lo segnali?',
+  reportReasonPlaceholder: 'Dicci cosa non va in questo opinio',
+  reportSubmit: 'Invia segnalazione',
+  reportSubmitting: 'Invio...',
+  reportThanks: 'Grazie, la tua segnalazione è stata inviata',
+  ticketsTab: 'Ticket',
+  reportsTab: 'Segnalazioni',
+  reportsNone: 'Nessuna segnalazione aperta',
+  reportMarkValidated: 'Segna come verificato',
+  reportValidating: 'Salvataggio...',
+  reportAnonymous: 'anonimo',
+  reportsCount: '{count} segnalazioni',
   seo: {
     home: {
       title: 'Opinio - Vota sui temi che plasmano il mondo',
@@ -2314,6 +2412,20 @@ const pl: Strings = {
   deleteProfileConfirmManyVotes: 'Usunąć to opinio i odrzucić {count} głosów?',
   deleting: 'Usuwanie…',
   close: 'Zamknij',
+  report: 'Zgłoś',
+  reportTitle: 'Zgłoś opinio',
+  reportReasonLabel: 'Dlaczego to zgłaszasz?',
+  reportReasonPlaceholder: 'Napisz, co jest nie tak z tym opinio',
+  reportSubmit: 'Wyślij zgłoszenie',
+  reportSubmitting: 'Wysyłanie...',
+  reportThanks: 'Dziękujemy, zgłoszenie zostało wysłane',
+  ticketsTab: 'Wsparcie',
+  reportsTab: 'Zgłoszenia',
+  reportsNone: 'Brak otwartych zgłoszeń',
+  reportMarkValidated: 'Oznacz jako sprawdzone',
+  reportValidating: 'Zapisywanie...',
+  reportAnonymous: 'anonim',
+  reportsCount: 'Zgłoszenia: {count}',
   seo: {
     home: {
       title: 'Opinio - Głosuj o wydarzeniach, które kształtują świat',

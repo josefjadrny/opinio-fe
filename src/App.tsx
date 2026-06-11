@@ -390,7 +390,9 @@ function AppLayout() {
           HotBanner sits just above it; the container is click-through so taps
           on the feed behind the banner's padding still register. */}
       {isMobile && (
-        <div className="fixed bottom-0 left-0 right-0 z-[60] pointer-events-none">
+        // z-[90]: votes bar above all modals (ModalShell z-80, detail z-50),
+        // which reserve pb-11 so content clears it. Lightbox (z-95) stays on top.
+        <div className="fixed bottom-0 left-0 right-0 z-[90] pointer-events-none">
           <HotBanner enabled={isMobile} mobile />
           <div className="pointer-events-auto">
             <VoteBanner />

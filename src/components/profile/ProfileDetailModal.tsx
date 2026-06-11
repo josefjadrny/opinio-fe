@@ -4,6 +4,7 @@ import type { Profile } from '../../types/profile';
 import type { PersonBreakdownResponse } from '../../types/api';
 import { Avatar } from './Avatar';
 import { ShareButton } from './ShareButton';
+import { ReportProfileButton } from './ReportProfileButton';
 import { DeleteProfileButton } from './DeleteProfileButton';
 import { VoteSentimentBar } from './VoteSentimentBar';
 import { ContentImageLightbox } from './ContentImageLightbox';
@@ -86,6 +87,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 />
               )}
               <ShareButton profileId={profile.id} profileName={profile.name} />
+              <ReportProfileButton profileId={profile.id} />
               <button
                 onClick={onClose}
                 title={t.close}

@@ -22,9 +22,8 @@ function downloadUrl(imageUrl: string): string {
   }
 }
 
-// Full-bleed image viewer. Renders above the existing modal (z-60 vs modal's z-50)
-// so the user can click out without dismissing the underlying profile sheet.
-// Backdrop click / ESC close; centered download link in the bottom-right.
+// Full-bleed image viewer at z-95 (above bar z-90, modal z-50) so nothing
+// intrudes. Backdrop/ESC close; click-out keeps the profile sheet open.
 export function ContentImageLightbox({ imageUrl, alt, onClose }: ContentImageLightboxProps) {
   const { t } = useI18n();
 
@@ -37,7 +36,7 @@ export function ContentImageLightbox({ imageUrl, alt, onClose }: ContentImageLig
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black/85 p-4 pointer-events-auto"
-      style={{ zIndex: 60 }}
+      style={{ zIndex: 95 }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <img

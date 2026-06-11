@@ -1,7 +1,7 @@
 import type {
   ProfilesResponse, CountryProfilesResponse, CountryDiscussedResponse, MeResponse,
   VoteResponse, ProfileFilters, VoteType, PersonBreakdownResponse,
-  SupportTicket, UserDetailResponse,
+  SupportTicket, UserDetailResponse, ProfileReportGroup,
 } from '../types/api';
 
 const API_URL = import.meta.env.OPINIO_API_URL as string;
@@ -197,6 +197,18 @@ export function updateSupportReply(id: string, adminReply: string): Promise<{ ok
 
 export function updateSupportNote(id: string, adminNote: string): Promise<{ ok: boolean }> {
   return apiFetch(`/api/support/${id}/note`, { method: 'PATCH', body: JSON.stringify({ adminNote }) });
+}
+
+export function reportProfile(profileId: string, reason: string): Promise<{ ok: boolean }> {
+  return apiFetch(`/api/profiles/${profileId}/report`, { method: 'POST', body: JSON.stringify({ reason }) });
+}
+
+export function getReports(): Promise<ProfileReportGroup[]> {
+  return apiFetch('/api/reports');
+}
+
+export function validateReportedProfile(profileId: string): Promise<{ ok: boolean }> {
+  return apiFetch(`/api/reports/${profileId}/validate`, { method: 'POST', body: JSON.stringify({}) });
 }
 
 export function createCheckoutSession(): Promise<{ url: string }> {

@@ -12,6 +12,7 @@ import { useI18n } from '../../i18n/I18nContext';
 import { useProfileText } from '../../hooks/useProfileText';
 import { Avatar } from './Avatar';
 import { ShareButton } from './ShareButton';
+import { ReportProfileButton } from './ReportProfileButton';
 import { DeleteProfileButton } from './DeleteProfileButton';
 import { VoteSentimentBar } from './VoteSentimentBar';
 import { RoleBadge } from '../common/RoleBadge';
@@ -144,6 +145,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                   />
                 )}
                 <ShareButton profileId={profile.id} profileName={profile.name} />
+                <ReportProfileButton profileId={profile.id} />
                 <button
                   onClick={close}
                   title={t.close}
