@@ -90,6 +90,8 @@ export interface Strings {
   privacyDataSignInBody: string;
   privacyDataVoteTitle: string;
   privacyDataVoteBody: string;
+  privacyDataReportTitle: string;
+  privacyDataReportBody: string;
   privacyDataPrefsTitle: string;
   privacyDataPrefsBody: string;
   privacyDataSubscriptionTitle: string;
@@ -352,6 +354,8 @@ const en: Strings = {
   privacyDataSignInBody: 'your name, email address, profile picture, and a unique ID from your sign-in provider.',
   privacyDataVoteTitle: 'When you vote',
   privacyDataVoteBody: 'your IP address, the country we detect from it, and your account ID.',
+  privacyDataReportTitle: 'When you report an opinio',
+  privacyDataReportBody: 'your reason, your account ID, and your IP address, so we can review the report.',
   privacyDataPrefsTitle: 'Your preferences',
   privacyDataPrefsBody: 'the language you have chosen and the country you have manually set (if any).',
   privacyDataSubscriptionTitle: 'When you subscribe',
@@ -667,6 +671,8 @@ const cs: Strings = {
   privacyDataSignInBody: 'vaše jméno, e-mailovou adresu, profilový obrázek a unikátní ID od poskytovatele přihlášení.',
   privacyDataVoteTitle: 'Při hlasování',
   privacyDataVoteBody: 'vaši IP adresu, zemi, kterou z ní zjistíme, a ID vašeho účtu.',
+  privacyDataReportTitle: 'Když nahlásíte opinio',
+  privacyDataReportBody: 'důvod, ID vašeho účtu a vaši IP adresu, abychom hlášení mohli posoudit.',
   privacyDataPrefsTitle: 'Vaše předvolby',
   privacyDataPrefsBody: 'jazyk, který jste si zvolili, a zemi, kterou jste si případně nastavili.',
   privacyDataSubscriptionTitle: 'Při předplatném',
@@ -982,6 +988,8 @@ const es: Strings = {
   privacyDataSignInBody: 'tu nombre, dirección de correo electrónico, foto de perfil y un identificador único de tu proveedor de inicio de sesión.',
   privacyDataVoteTitle: 'Al votar',
   privacyDataVoteBody: 'tu dirección IP, el país que detectamos a partir de ella y el ID de tu cuenta.',
+  privacyDataReportTitle: 'Cuando reportas un opinio',
+  privacyDataReportBody: 'tu motivo, el ID de tu cuenta y tu dirección IP, para poder revisar el reporte.',
   privacyDataPrefsTitle: 'Tus preferencias',
   privacyDataPrefsBody: 'el idioma que has elegido y el país que hayas configurado manualmente (si lo has hecho).',
   privacyDataSubscriptionTitle: 'Al suscribirte',
@@ -1297,6 +1305,8 @@ const de: Strings = {
   privacyDataSignInBody: 'deinen Namen, deine E-Mail-Adresse, dein Profilbild und eine eindeutige ID von deinem Anmeldeanbieter.',
   privacyDataVoteTitle: 'Beim Abstimmen',
   privacyDataVoteBody: 'deine IP-Adresse, das daraus erkannte Land und deine Konto-ID.',
+  privacyDataReportTitle: 'Wenn du ein Opinio meldest',
+  privacyDataReportBody: 'deinen Grund, deine Konto-ID und deine IP-Adresse, damit wir die Meldung prüfen können.',
   privacyDataPrefsTitle: 'Deine Einstellungen',
   privacyDataPrefsBody: 'die von dir gewählte Sprache und das Land, das du gegebenenfalls manuell festgelegt hast.',
   privacyDataSubscriptionTitle: 'Beim Abonnieren',
@@ -1612,6 +1622,8 @@ const fr: Strings = {
   privacyDataSignInBody: 'votre nom, votre adresse e-mail, votre photo de profil et un identifiant unique de votre fournisseur de connexion.',
   privacyDataVoteTitle: 'Lorsque vous votez',
   privacyDataVoteBody: "votre adresse IP, le pays que nous en déduisons et l'identifiant de votre compte.",
+  privacyDataReportTitle: 'Quand vous signalez un opinio',
+  privacyDataReportBody: "votre motif, l'identifiant de votre compte et votre adresse IP, afin de pouvoir examiner le signalement.",
   privacyDataPrefsTitle: 'Vos préférences',
   privacyDataPrefsBody: 'la langue que vous avez choisie et le pays que vous avez éventuellement défini manuellement.',
   privacyDataSubscriptionTitle: "Lors de l'abonnement",
@@ -1927,6 +1939,8 @@ const it: Strings = {
   privacyDataSignInBody: 'il tuo nome, indirizzo e-mail, foto del profilo e un identificativo univoco del tuo fornitore di accesso.',
   privacyDataVoteTitle: 'Quando voti',
   privacyDataVoteBody: 'il tuo indirizzo IP, il paese che ne deduciamo e l\'identificativo del tuo account.',
+  privacyDataReportTitle: 'Quando segnali un opinio',
+  privacyDataReportBody: 'il motivo, il tuo ID account e il tuo indirizzo IP, per poter esaminare la segnalazione.',
   privacyDataPrefsTitle: 'Le tue preferenze',
   privacyDataPrefsBody: 'la lingua che hai scelto e il paese che hai eventualmente impostato manualmente.',
   privacyDataSubscriptionTitle: 'Quando ti abboni',
@@ -2242,6 +2256,8 @@ const pl: Strings = {
   privacyDataSignInBody: 'Twoje imię, adres e-mail, zdjęcie profilowe i unikalny identyfikator od dostawcy logowania.',
   privacyDataVoteTitle: 'Gdy głosujesz',
   privacyDataVoteBody: 'Twój adres IP, kraj, który z niego wykrywamy, oraz identyfikator Twojego konta.',
+  privacyDataReportTitle: 'Gdy zgłaszasz opinio',
+  privacyDataReportBody: 'Twój powód, identyfikator Twojego konta i Twój adres IP, abyśmy mogli rozpatrzyć zgłoszenie.',
   privacyDataPrefsTitle: 'Twoje preferencje',
   privacyDataPrefsBody: 'wybrany język i kraj, który ewentualnie ustawiłeś ręcznie.',
   privacyDataSubscriptionTitle: 'Gdy subskrybujesz',

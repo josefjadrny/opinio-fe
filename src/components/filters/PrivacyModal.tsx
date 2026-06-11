@@ -82,6 +82,9 @@ export function PrivacyModal({ onClose }: PrivacyModalProps) {
               <span className="text-white/80">{t.privacyDataVoteTitle}:</span>{' '}{t.privacyDataVoteBody}
             </BulletItem>
             <BulletItem>
+              <span className="text-white/80">{t.privacyDataReportTitle}:</span>{' '}{t.privacyDataReportBody}
+            </BulletItem>
+            <BulletItem>
               <span className="text-white/80">{t.privacyDataPrefsTitle}:</span>{' '}{t.privacyDataPrefsBody}
             </BulletItem>
             <BulletItem>
