@@ -215,9 +215,9 @@ export interface Strings {
   seeOriginal: string;
   seeTranslation: string;
   userJoined: string;
-  userLikesCast: string;
-  userDislikesCast: string;
-  userVotesCast: string;
+  userLikesReceived: string;
+  userDislikesReceived: string;
+  userVotesReceived: string;
   userReportedProfiles: string;
   userNoProfiles: string;
   userNotFoundLabel: string;
@@ -499,9 +499,9 @@ const en: Strings = {
   seeOriginal: 'See original',
   seeTranslation: 'See translation',
   userJoined: 'Joined {date}',
-  userLikesCast: 'likes cast',
-  userDislikesCast: 'dislikes cast',
-  userVotesCast: 'Votes cast',
+  userLikesReceived: 'likes received',
+  userDislikesReceived: 'dislikes received',
+  userVotesReceived: 'Votes received',
   userReportedProfiles: 'Recent opinios',
   userNoProfiles: 'No active opinios',
   userNotFoundLabel: 'Not found',
@@ -816,9 +816,9 @@ const cs: Strings = {
   seeOriginal: 'Zobrazit originál',
   seeTranslation: 'Zobrazit překlad',
   userJoined: 'Účet od {date}',
-  userLikesCast: 'lajků',
-  userDislikesCast: 'dislajků',
-  userVotesCast: 'Hlasování',
+  userLikesReceived: 'získaných lajků',
+  userDislikesReceived: 'získaných dislajků',
+  userVotesReceived: 'Získané hlasy',
   userReportedProfiles: 'Nedávná opinio',
   userNoProfiles: 'Žádná aktivní opinio',
   userNotFoundLabel: 'Nenalezeno',
@@ -1133,9 +1133,9 @@ const es: Strings = {
   seeOriginal: 'Ver original',
   seeTranslation: 'Ver traducción',
   userJoined: 'Se unió el {date}',
-  userLikesCast: 'votos positivos',
-  userDislikesCast: 'votos negativos',
-  userVotesCast: 'Votos emitidos',
+  userLikesReceived: 'votos positivos recibidos',
+  userDislikesReceived: 'votos negativos recibidos',
+  userVotesReceived: 'Votos recibidos',
   userReportedProfiles: 'Opinio recientes',
   userNoProfiles: 'Sin opinio activos',
   userNotFoundLabel: 'No encontrado',
@@ -1450,9 +1450,9 @@ const de: Strings = {
   seeOriginal: 'Original anzeigen',
   seeTranslation: 'Übersetzung anzeigen',
   userJoined: 'Dabei seit {date}',
-  userLikesCast: 'vergebene Likes',
-  userDislikesCast: 'vergebene Dislikes',
-  userVotesCast: 'Abgegebene Stimmen',
+  userLikesReceived: 'erhaltene Likes',
+  userDislikesReceived: 'erhaltene Dislikes',
+  userVotesReceived: 'Erhaltene Stimmen',
   userReportedProfiles: 'Aktuelle opinio',
   userNoProfiles: 'Keine aktiven opinio',
   userNotFoundLabel: 'Nicht gefunden',
@@ -1767,9 +1767,9 @@ const fr: Strings = {
   seeOriginal: "Voir l'original",
   seeTranslation: 'Voir la traduction',
   userJoined: 'Inscrit le {date}',
-  userLikesCast: "j'aime donnés",
-  userDislikesCast: "je n'aime pas donnés",
-  userVotesCast: 'Votes émis',
+  userLikesReceived: "j'aime reçus",
+  userDislikesReceived: "je n'aime pas reçus",
+  userVotesReceived: 'Votes reçus',
   userReportedProfiles: 'Opinios récents',
   userNoProfiles: 'Aucun opinio actif',
   userNotFoundLabel: 'Introuvable',
@@ -2084,9 +2084,9 @@ const it: Strings = {
   seeOriginal: 'Vedi originale',
   seeTranslation: 'Vedi traduzione',
   userJoined: 'Iscritto il {date}',
-  userLikesCast: 'mi piace dati',
-  userDislikesCast: 'non mi piace dati',
-  userVotesCast: 'Voti espressi',
+  userLikesReceived: 'mi piace ricevuti',
+  userDislikesReceived: 'non mi piace ricevuti',
+  userVotesReceived: 'Voti ricevuti',
   userReportedProfiles: 'Opinios recenti',
   userNoProfiles: 'Nessun opinio attivo',
   userNotFoundLabel: 'Non trovato',
@@ -2401,9 +2401,9 @@ const pl: Strings = {
   seeOriginal: 'Pokaż oryginał',
   seeTranslation: 'Pokaż tłumaczenie',
   userJoined: 'Dołączył {date}',
-  userLikesCast: 'polubień',
-  userDislikesCast: 'niechęci',
-  userVotesCast: 'Oddane głosy',
+  userLikesReceived: 'otrzymanych polubień',
+  userDislikesReceived: 'otrzymanych niechęci',
+  userVotesReceived: 'Otrzymane głosy',
   userReportedProfiles: 'Ostatnie opinio',
   userNoProfiles: 'Brak aktywnych opinio',
   userNotFoundLabel: 'Nie znaleziono',

@@ -20,18 +20,19 @@ export function useVote() {
       queryClient.setQueryData<Profile>(['profile', data.profile.id], (old) =>
         old ? { ...old, ...data.profile } : data.profile
       );
-      const myId = queryClient.getQueryData<MeResponse>(['me'])?.user?.id ?? null;
       queryClient.setQueriesData<UserDetailResponse>({ queryKey: ['user'] }, (old) => {
         if (!old) return old;
         const profilesPatched = old.profiles.some((p) => p.id === data.profile.id)
           ? old.profiles.map((p) => p.id === data.profile.id ? { ...p, likes: data.profile.likes, dislikes: data.profile.dislikes } : p)
           : old.profiles;
-        const isMyDetail = myId !== null && old.id === myId;
+        // Received totals belong to the profile's author — bump them when the
+        // user page being viewed is that author's.
+        const isAuthorDetail = data.profile.addedById !== null && old.id === data.profile.addedById;
         return {
           ...old,
           profiles: profilesPatched,
-          totalLikesCast: isMyDetail && vars.type === 'like' ? old.totalLikesCast + 1 : old.totalLikesCast,
-          totalDislikesCast: isMyDetail && vars.type === 'dislike' ? old.totalDislikesCast + 1 : old.totalDislikesCast,
+          totalLikesReceived: isAuthorDetail && vars.type === 'like' ? old.totalLikesReceived + 1 : old.totalLikesReceived,
+          totalDislikesReceived: isAuthorDetail && vars.type === 'dislike' ? old.totalDislikesReceived + 1 : old.totalDislikesReceived,
         };
       });
       lockOrderFor5s(() => {

@@ -127,20 +127,20 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   const StatsBlock = user && (
     <div
       className="shrink-0 flex flex-col items-end gap-0.5"
-      title={`${t.userLikesCast} · ${t.userDislikesCast}`}
+      title={`${t.userLikesReceived} · ${t.userDislikesReceived}`}
     >
       <div className="flex items-center gap-2 text-sm tabular-nums leading-none">
         <span className="inline-flex items-baseline gap-1 text-positive font-semibold">
           <span className="text-[11px]">▲</span>
-          {formatNumber(user.totalLikesCast)}
+          {formatNumber(user.totalLikesReceived)}
         </span>
         <span className="inline-flex items-baseline gap-1 text-negative font-semibold">
           <span className="text-[11px]">▼</span>
-          {formatNumber(user.totalDislikesCast)}
+          {formatNumber(user.totalDislikesReceived)}
         </span>
       </div>
       <span className="text-[9px] uppercase tracking-[0.08em] font-semibold text-white/40 leading-none">
-        {t.userVotesCast}
+        {t.userVotesReceived}
       </span>
     </div>
   );

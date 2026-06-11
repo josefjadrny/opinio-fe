@@ -128,8 +128,8 @@ export interface UserDetailResponse {
   avatarUrl: string | null;
   countryCode: string | null;
   createdAt: string;
-  totalLikesCast: number;
-  totalDislikesCast: number;
+  totalLikesReceived: number;
+  totalDislikesReceived: number;
   profiles: UserProfileSummary[];
 }
 
