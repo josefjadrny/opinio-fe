@@ -8,11 +8,11 @@ const PROFILE_PATH_RE = /^\/p\/([^\/]+)\/?$/;
 // server-rendered translated pages (see handleProfileLang) — the SPA is NOT
 // involved for these and stays untouched. English lives on the bare /p/<uuid>
 // URL and is the x-default; only the four non-English locales get a prefix.
-const PROFILE_LANG_PATH_RE = /^\/(cs|es|de|fr|it)\/p\/([^\/]+)\/?$/;
+const PROFILE_LANG_PATH_RE = /^\/(cs|es|de|fr|it|pl)\/p\/([^\/]+)\/?$/;
 // Any /<lang>/... path. Profile lang pages are handled separately (standalone
 // render); everything else under a prefix is served as the SPA shell with
 // translated meta (see handleLangShell).
-const LANG_PREFIX_RE = /^\/(cs|es|de|fr|it)(\/.*)?$/;
+const LANG_PREFIX_RE = /^\/(cs|es|de|fr|it|pl)(\/.*)?$/;
 const USER_PATH_RE = /^\/u\/([^\/]+)\/?$/;
 const COUNTRY_PATH_RE = /^\/c\/([^\/]+)\/?$/;
 const COUNTRY_CODE_RE = /^[A-Z]{2}$/;
@@ -20,7 +20,7 @@ const COUNTRY_CODE_RE = /^[A-Z]{2}$/;
 // Locales that get their own prefixed URL. English is excluded — it stays on
 // the bare path and is emitted as hreflang="en" + x-default. Keep in sync with
 // the i18n LANGUAGES set and the API sitemap's PREFIX_LANGS.
-const PREFIX_LANGS = ['cs', 'es', 'de', 'fr', 'it'];
+const PREFIX_LANGS = ['cs', 'es', 'de', 'fr', 'it', 'pl'];
 
 // Per-locale chrome for the standalone translated profile page. Descriptive
 // copy uses the natural word for "opinion" per locale (not the invariable
@@ -71,6 +71,15 @@ const LANG_UI = {
     original: 'Originale:',
     gone: 'Questa opinione non è più disponibile.',
     home: 'Torna a Opinio',
+  },
+  pl: {
+    ogLocale: 'pl_PL',
+    cta: 'Głosuj na Opinio',
+    tagline: 'Światowe rankingi opinii, ludzi i pomysłów na żywo - głosowane według krajów.',
+    likes: 'lubię', dislikes: 'nie lubię',
+    original: 'Oryginał:',
+    gone: 'Ta opinia nie jest już dostępna.',
+    home: 'Powrót do Opinio',
   },
 };
 
@@ -667,6 +676,16 @@ const STATIC_I18N = {
     '/stats/trending-countries': { title: 'Paesi di tendenza per voti - Opinio', description: 'Quali paesi fanno più scalpore in questo momento - in classifica per voti sui loro contenuti attivi, aggiornata ogni 24 ore su Opinio.' },
     '/stats/top-voters': { title: 'Classifica dei più attivi - Opinio', description: 'I votanti più attivi nel mondo e per paese, in classifica per mi piace e non mi piace assegnati su Opinio.' },
     '/support': { title: 'Assistenza - Opinio', description: "Contatta l'assistenza Opinio, gestisci i tuoi ticket e ottieni aiuto per il voto, i profili e le impostazioni dell'account." },
+  },
+  pl: {
+    '/': { title: 'Opinio - Głosuj o wydarzeniach, które kształtują świat', description: 'Społecznościowa platforma głosowania z Europy. Polub lub odrzuć wypowiedzi, wydarzenia i osoby publiczne kształtujące świat - w rankingu kraj po kraju, odświeżane co 24 h.' },
+    '/about': { title: 'O Opinio - Jak działa głosowanie na żywo', description: 'Dowiedz się, jak działa Opinio: szybkie głosowanie społecznościowe, głosy wygasające po 24 godzinach i światowe trendy na żywo.' },
+    '/privacy': { title: 'Polityka prywatności - Opinio', description: 'Polityka prywatności Opinio: co zbieramy, dlaczego, jak długo i jakie masz prawa zgodnie z RODO.' },
+    '/terms': { title: 'Regulamin - Opinio', description: 'Regulamin Opinio: zasady publikowania, głosowanie, subskrypcje i zawieszenia kont.' },
+    '/stats': { title: 'Popularne opinie w tej chwili - Opinio', description: 'Opinie, komentarze i pomysły, które właśnie teraz zbierają najwięcej głosów na Opinio - w rankingu na żywo i odświeżane co 24 godziny.' },
+    '/stats/trending-countries': { title: 'Popularne kraje według głosów - Opinio', description: 'Które kraje budzą teraz największe poruszenie - w rankingu według głosów na ich aktywnych wpisach, odświeżane co 24 godziny na Opinio.' },
+    '/stats/top-voters': { title: 'Ranking najaktywniejszych głosujących - Opinio', description: 'Najaktywniejsi głosujący na świecie i według krajów, w rankingu według oddanych polubień i niechęci na Opinio.' },
+    '/support': { title: 'Pomoc - Opinio', description: 'Skontaktuj się z pomocą Opinio, zarządzaj zgłoszeniami i uzyskaj pomoc w głosowaniu, profilach i ustawieniach konta.' },
   },
 };
 

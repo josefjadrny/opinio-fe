@@ -55,7 +55,7 @@ const DEFAULT_DESCRIPTION = 'A social voting platform from Europe. Like or disli
 // crawler/entry-point URLs: the SPA strips the prefix for routing, sets the
 // locale from it, and internal navigation continues on bare paths (the locale
 // then persists as state, not in the URL).
-const PREFIX_LOCALES: readonly string[] = ['cs', 'es', 'de', 'fr', 'it'];
+const PREFIX_LOCALES: readonly string[] = ['cs', 'es', 'de', 'fr', 'it', 'pl'];
 
 // The "/<lang>" prefix on the *current* URL, or '' for a bare (English) path.
 // Used to build self-referencing canonicals so a prefixed page is never folded
