@@ -46,8 +46,8 @@ export function ReportProfileButton({ profileId }: ReportProfileButtonProps) {
     <>
       <button
         onClick={() => setOpen(true)}
-        title={t.reportTitle}
-        aria-label={t.reportTitle}
+        title={t.report}
+        aria-label={t.report}
         className="text-white/40 hover:text-white/80 transition-colors p-1 shrink-0"
       >
         <FlagIcon />
