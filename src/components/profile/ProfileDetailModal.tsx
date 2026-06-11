@@ -50,8 +50,8 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 bg-white/20 rounded-full" />
         </div>
-        <div className="px-6 py-3 border-b border-border">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="px-4 py-2.5 border-b border-border">
+          <div className="flex items-start gap-2.5 min-w-0">
             {(() => {
               const state = location.state as { fromUserId?: string; fromUserName?: string } | null;
               if (!state?.fromUserId) return null;
@@ -60,7 +60,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                   to={`/u/${state.fromUserId}${location.search}`}
                   title={state.fromUserName ? `← @${state.fromUserName}` : 'Back'}
                   aria-label={state.fromUserName ? `Back to @${state.fromUserName}` : 'Back'}
-                  className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0"
+                  className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0 self-center"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -68,36 +68,34 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 </Link>
               );
             })()}
-            <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-12 h-12 shrink-0" />
+            <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-10 h-10 shrink-0" />
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                <CountryFlag code={profile.countryCode} />
-                <span className="font-semibold text-white truncate">{name}</span>
+              <span className="block font-semibold text-white truncate mb-0.5">{name}</span>
+              <div className="flex items-center gap-1.5">
+                <CountryFlag code={profile.countryCode} flagClassName="text-xl leading-none" />
+                <RoleBadge role={profile.role} />
+                <div className="flex items-center gap-0.5 shrink-0 ml-auto -mr-1">
+                  {me?.user.id && profile.addedById === me.user.id && (
+                    <DeleteProfileButton
+                      profileId={profile.id}
+                      voteCount={profile.likes + profile.dislikes}
+                      onDeleted={onClose}
+                    />
+                  )}
+                  <ShareButton profileId={profile.id} profileName={profile.name} />
+                  <ReportProfileButton profileId={profile.id} />
+                  <button
+                    onClick={onClose}
+                    title={t.close}
+                    aria-label={t.close}
+                    className="text-white/40 hover:text-white/80 transition-colors p-1"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <RoleBadge role={profile.role} />
-            </div>
-          </div>
-          <div className="flex items-center justify-between gap-3 mt-2">
-            <div className="flex items-center gap-1 shrink-0 ml-auto">
-              {me?.user.id && profile.addedById === me.user.id && (
-                <DeleteProfileButton
-                  profileId={profile.id}
-                  voteCount={profile.likes + profile.dislikes}
-                  onDeleted={onClose}
-                />
-              )}
-              <ShareButton profileId={profile.id} profileName={profile.name} />
-              <ReportProfileButton profileId={profile.id} />
-              <button
-                onClick={onClose}
-                title={t.close}
-                aria-label={t.close}
-                className="text-white/40 hover:text-white/80 transition-colors p-1"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
             </div>
           </div>
         </div>
