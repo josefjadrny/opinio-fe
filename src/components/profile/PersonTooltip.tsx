@@ -121,6 +121,9 @@ export function PersonTooltip({ profile, breakdown, isLoading, anchorEl, onMouse
   const location = useLocation();
   const panelRef = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useState<Layout | null>(null);
+  // Natural-ratio hero has no reserved height until the image loads, so re-run
+  // positioning on load to re-clamp the (now taller) panel against the viewport.
+  const [heroLoaded, setHeroLoaded] = useState(false);
 
   // Anchor to the card element (not the cursor): pin to the inner side with room,
   // clamp to the viewport, and bridge the gap so the pointer can reach the panel.
@@ -162,7 +165,7 @@ export function PersonTooltip({ profile, breakdown, isLoading, anchorEl, onMouse
       window.removeEventListener('scroll', compute, true);
       window.removeEventListener('resize', compute);
     };
-  }, [anchorEl, profile.contentImageUrl, breakdown]);
+  }, [anchorEl, profile.contentImageUrl, breakdown, heroLoaded]);
 
   const total = profile.likes + profile.dislikes;
   const agreePct = total ? Math.round((profile.likes / total) * 100) : 50;
@@ -202,38 +205,42 @@ export function PersonTooltip({ profile, breakdown, isLoading, anchorEl, onMouse
           animation: layout ? `spotlight-in-${layout.side} .18s ease-out` : undefined,
         }}
       >
-        {/* Hero — content images keep their 16:9 ratio (no crop); the gradient
-            fallback uses a fixed band since there's no image to honor. */}
-        <div className={`relative overflow-hidden ${hasImage ? 'aspect-video' : 'h-[124px]'}`}>
+        {/* Hero — content images render at their natural ratio (no forced crop);
+            only very tall images are capped. Gradient fallback uses a fixed band. */}
+        <div className={`relative overflow-hidden bg-black/40 ${hasImage ? '' : 'h-[124px]'}`}>
           {hasImage ? (
             <img
               src={profile.contentImageUrl!}
               alt={profile.name}
               loading="lazy"
               decoding="async"
-              className="absolute inset-0 w-full h-full object-cover"
+              onLoad={() => setHeroLoaded(true)}
+              className="block w-full h-auto max-h-[300px] object-cover"
             />
           ) : (
             <>
               <div className={`absolute inset-0 ${ROLE_COLORS[profile.role]}`} />
               <div className="absolute inset-0 bg-gradient-to-br from-white/15 to-black/50" />
-              <Avatar
-                name={profile.name}
-                imageUrl={profile.imageUrl}
-                className="absolute right-3 top-3 w-12 h-12 opacity-90 ring-2 ring-white/20"
-              />
             </>
           )}
           {/* Scrim for legible text over any image */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-3">
-            <div className="flex items-center gap-1.5 mb-1">
-              <FlagImg code={profile.countryCode} className="inline-block align-middle shrink-0" />
-              <RoleBadge role={profile.role} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+          {/* Identity — avatar always shown (over the image or the gradient) */}
+          <div className="absolute inset-x-0 bottom-0 p-3 flex items-end gap-2.5">
+            <Avatar
+              name={profile.name}
+              imageUrl={profile.imageUrl}
+              className="w-11 h-11 ring-2 ring-white/25"
+            />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 mb-1">
+                <FlagImg code={profile.countryCode} className="inline-block align-middle shrink-0" />
+                <RoleBadge role={profile.role} />
+              </div>
+              <h3 className="text-white font-semibold text-[15px] leading-snug line-clamp-2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+                {profile.name}
+              </h3>
             </div>
-            <h3 className="text-white font-semibold text-[15px] leading-snug line-clamp-2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
-              {profile.name}
-            </h3>
           </div>
         </div>
 
