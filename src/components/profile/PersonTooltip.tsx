@@ -244,23 +244,30 @@ export function PersonTooltip({ profile, breakdown, isLoading, anchorEl, onMouse
           </div>
         </div>
 
-        {/* Sentiment */}
+        {/* Sentiment — a 0-vote profile has no real ratio, so showing "50%
+            liked" would be fabricated. Render a neutral placeholder instead. */}
         <div className="px-3 py-2.5">
-          <div className="flex items-end justify-between mb-2.5">
-            <div className="flex items-baseline gap-1">
-              <span className="text-positive text-xl font-bold tabular-nums leading-none">{pctUp}%</span>
-              <span className="text-sm text-text-secondary">{t.liked}</span>
-            </div>
-            <span className={`text-sm font-bold tabular-nums px-2 py-0.5 rounded-full ${netTone}`}>
-              {netSign}{formatNumber(netUp)}
-            </span>
-          </div>
-          <div className="relative h-2 rounded-full overflow-hidden bg-accent/35">
-            <div
-              className="absolute inset-y-0 left-0 bg-positive rounded-full transition-[width] duration-700 ease-out"
-              style={{ width: `${filled ? agreePct : 50}%` }}
-            />
-          </div>
+          {total === 0 ? (
+            <div className="text-sm text-text-secondary">{t.noVotesYet}</div>
+          ) : (
+            <>
+              <div className="flex items-end justify-between mb-2.5">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-positive text-xl font-bold tabular-nums leading-none">{pctUp}%</span>
+                  <span className="text-sm text-text-secondary">{t.liked}</span>
+                </div>
+                <span className={`text-sm font-bold tabular-nums px-2 py-0.5 rounded-full ${netTone}`}>
+                  {netSign}{formatNumber(netUp)}
+                </span>
+              </div>
+              <div className="relative h-2 rounded-full overflow-hidden bg-accent/35">
+                <div
+                  className="absolute inset-y-0 left-0 bg-positive rounded-full transition-[width] duration-700 ease-out"
+                  style={{ width: `${filled ? agreePct : 50}%` }}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         {/* Geography */}

@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { ModalShell } from '../common/ModalShell';
 import { SelectField } from '../common/SelectField';
+import { LanguageSelect } from '../common/LanguageSelect';
 import { Avatar } from '../profile/Avatar';
 import { ActionChip } from '../common/ActionChip';
 import { useBillingRedirect } from '../../hooks/useBillingRedirect';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
-import { LANGUAGES, type Locale } from '../../i18n/strings';
+import { type Locale } from '../../i18n/strings';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { resizeImage } from '../../utils/resizeImage';
@@ -224,11 +225,7 @@ function SettingsContent({
       {/* Language */}
       <div>
         <label className="block text-xs font-medium text-white/80 mb-1.5">{t.language}</label>
-        <SelectField value={locale} onChange={(e) => setLocale(e.target.value as Locale)}>
-          {Object.entries(LANGUAGES).map(([key, { label }]) => (
-            <option key={key} value={key} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{label}</option>
-          ))}
-        </SelectField>
+        <LanguageSelect value={locale as Locale} onChange={setLocale} />
         <p className="text-xs text-white/30 mt-1.5">{t.languageHint}</p>
       </div>
     </div>

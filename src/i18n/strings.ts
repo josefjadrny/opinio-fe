@@ -213,6 +213,7 @@ export interface Strings {
   liked: string;
   popularIn: string;
   dislikedIn: string;
+  noVotesYet: string;
   share: string;
   linkCopied: string;
   seeOriginal: string;
@@ -500,6 +501,7 @@ const en: Strings = {
   liked: 'liked',
   popularIn: 'Popular in',
   dislikedIn: 'Disliked in',
+  noVotesYet: 'No votes yet',
   share: 'Share',
   linkCopied: 'Link copied',
   seeOriginal: 'See original',
@@ -820,6 +822,7 @@ const cs: Strings = {
   liked: 'líbí se',
   popularIn: 'Populární v',
   dislikedIn: 'Nepopulární v',
+  noVotesYet: 'Zatím bez hlasů',
   share: 'Sdílet',
   linkCopied: 'Odkaz zkopírován',
   seeOriginal: 'Zobrazit originál',
@@ -1140,6 +1143,7 @@ const es: Strings = {
   liked: 'les gusta',
   popularIn: 'Popular en',
   dislikedIn: 'Impopular en',
+  noVotesYet: 'Sin votos aún',
   share: 'Compartir',
   linkCopied: 'Enlace copiado',
   seeOriginal: 'Ver original',
@@ -1460,6 +1464,7 @@ const de: Strings = {
   liked: 'gefällt',
   popularIn: 'Beliebt in',
   dislikedIn: 'Unbeliebt in',
+  noVotesYet: 'Noch keine Stimmen',
   share: 'Teilen',
   linkCopied: 'Link kopiert',
   seeOriginal: 'Original anzeigen',
@@ -1780,6 +1785,7 @@ const fr: Strings = {
   liked: 'aiment',
   popularIn: 'Populaire en',
   dislikedIn: 'Impopulaire en',
+  noVotesYet: 'Aucun vote',
   share: 'Partager',
   linkCopied: 'Lien copié',
   seeOriginal: "Voir l'original",
@@ -2100,6 +2106,7 @@ const it: Strings = {
   liked: 'apprezzato',
   popularIn: 'Popolare in',
   dislikedIn: 'Impopolare in',
+  noVotesYet: 'Ancora nessun voto',
   share: 'Condividi',
   linkCopied: 'Link copiato',
   seeOriginal: 'Vedi originale',
@@ -2420,6 +2427,7 @@ const pl: Strings = {
   liked: 'lubi',
   popularIn: 'Popularne w',
   dislikedIn: 'Niepopularne w',
+  noVotesYet: 'Brak głosów',
   share: 'Udostępnij',
   linkCopied: 'Link skopiowany',
   seeOriginal: 'Pokaż oryginał',
@@ -2509,14 +2517,18 @@ const pl: Strings = {
 // Keys ordered by expected audience: English default, then the largest EU
 // markets by size, Czech (home market, small population) last. This is the
 // order the language select renders (Object.entries order in SettingsModal).
+// `flag` is the ISO-2 country code for the language's flag, rendered via
+// <FlagImg> (image fallback) rather than an emoji so it shows on Windows too,
+// where regional-indicator flag emoji don't render. `name` is the plain
+// endonym with no emoji. `label` (emoji + name) is kept for any legacy/text use.
 export const LANGUAGES = {
-  en: { label: '🇬🇧 English', strings: en },
-  de: { label: '🇩🇪 Deutsch', strings: de },
-  fr: { label: '🇫🇷 Français', strings: fr },
-  es: { label: '🇪🇸 Español', strings: es },
-  it: { label: '🇮🇹 Italiano', strings: it },
-  pl: { label: '🇵🇱 Polski', strings: pl },
-  cs: { label: '🇨🇿 Čeština', strings: cs },
+  en: { flag: 'GB', name: 'English',  label: '🇬🇧 English',  strings: en },
+  de: { flag: 'DE', name: 'Deutsch',  label: '🇩🇪 Deutsch',  strings: de },
+  fr: { flag: 'FR', name: 'Français', label: '🇫🇷 Français', strings: fr },
+  es: { flag: 'ES', name: 'Español',  label: '🇪🇸 Español',  strings: es },
+  it: { flag: 'IT', name: 'Italiano', label: '🇮🇹 Italiano', strings: it },
+  pl: { flag: 'PL', name: 'Polski',   label: '🇵🇱 Polski',   strings: pl },
+  cs: { flag: 'CZ', name: 'Čeština',  label: '🇨🇿 Čeština',  strings: cs },
 } as const;
 
 export type Locale = keyof typeof LANGUAGES;

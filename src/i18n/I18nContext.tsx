@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { LANGUAGES, getDefaultLocale, type Locale, type Strings } from './strings';
 import { updateMe } from '../api/client';
 import { useQuery } from '@tanstack/react-query';
@@ -27,15 +27,23 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   const { data: me } = useQuery({ queryKey: ['me'], queryFn: getMe });
 
-  // Sync language from server for registered users (overrides localStorage)
+  // Adopt the server's saved language for registered users ONCE, the first time
+  // `me` loads. We must NOT keep re-adopting it on every later refetch: after
+  // the user picks a language we PATCH the server, but the `me` cache can still
+  // briefly hold the old value (the write isn't awaited / query not invalidated).
+  // Re-running on each refetch let that stale value clobber the user's fresh
+  // choice — the "language stops sticking" bug. A ref makes it strictly one-shot.
+  const didAdoptServerLang = useRef(false);
   useEffect(() => {
+    if (didAdoptServerLang.current) return;
     const serverLang = me?.user?.language;
     const tier = me?.user?.tier;
+    if (tier === undefined) return; // me not loaded yet
+    didAdoptServerLang.current = true;
     if (serverLang && tier !== 'anonymous' && serverLang in LANGUAGES && serverLang !== locale) {
       setLocaleState(serverLang as Locale);
       localStorage.setItem(LOCALE_KEY, serverLang);
     }
-  // Only run when server data first loads - not on every locale change
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me?.user?.language, me?.user?.tier]);
 
