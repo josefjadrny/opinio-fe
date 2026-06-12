@@ -210,6 +210,9 @@ export interface Strings {
   disagree: string;
   breakdownLiking: string;
   breakdownDisliking: string;
+  liked: string;
+  popularIn: string;
+  dislikedIn: string;
   share: string;
   linkCopied: string;
   seeOriginal: string;
@@ -494,6 +497,9 @@ const en: Strings = {
   disagree: 'Dislike',
   breakdownLiking: 'Liking',
   breakdownDisliking: 'Disliking',
+  liked: 'liked',
+  popularIn: 'Popular in',
+  dislikedIn: 'Disliked in',
   share: 'Share',
   linkCopied: 'Link copied',
   seeOriginal: 'See original',
@@ -811,6 +817,9 @@ const cs: Strings = {
   disagree: 'Nelíbí',
   breakdownLiking: 'Líbí se',
   breakdownDisliking: 'Nelíbí se',
+  liked: 'líbí se',
+  popularIn: 'Populární v',
+  dislikedIn: 'Nepopulární v',
   share: 'Sdílet',
   linkCopied: 'Odkaz zkopírován',
   seeOriginal: 'Zobrazit originál',
@@ -1128,6 +1137,9 @@ const es: Strings = {
   disagree: 'No me gusta',
   breakdownLiking: 'A favor',
   breakdownDisliking: 'En contra',
+  liked: 'les gusta',
+  popularIn: 'Popular en',
+  dislikedIn: 'Impopular en',
   share: 'Compartir',
   linkCopied: 'Enlace copiado',
   seeOriginal: 'Ver original',
@@ -1445,6 +1457,9 @@ const de: Strings = {
   disagree: 'Dislike',
   breakdownLiking: 'Dafür',
   breakdownDisliking: 'Dagegen',
+  liked: 'gefällt',
+  popularIn: 'Beliebt in',
+  dislikedIn: 'Unbeliebt in',
   share: 'Teilen',
   linkCopied: 'Link kopiert',
   seeOriginal: 'Original anzeigen',
@@ -1762,6 +1777,9 @@ const fr: Strings = {
   disagree: "Je n'aime pas",
   breakdownLiking: 'Pour',
   breakdownDisliking: 'Contre',
+  liked: 'aiment',
+  popularIn: 'Populaire en',
+  dislikedIn: 'Impopulaire en',
   share: 'Partager',
   linkCopied: 'Lien copié',
   seeOriginal: "Voir l'original",
@@ -2079,6 +2097,9 @@ const it: Strings = {
   disagree: 'Non mi piace',
   breakdownLiking: 'A favore',
   breakdownDisliking: 'Contro',
+  liked: 'apprezzato',
+  popularIn: 'Popolare in',
+  dislikedIn: 'Impopolare in',
   share: 'Condividi',
   linkCopied: 'Link copiato',
   seeOriginal: 'Vedi originale',
@@ -2396,6 +2417,9 @@ const pl: Strings = {
   disagree: 'Nie lubię',
   breakdownLiking: 'Lubią',
   breakdownDisliking: 'Nie lubią',
+  liked: 'lubi',
+  popularIn: 'Popularne w',
+  dislikedIn: 'Niepopularne w',
   share: 'Udostępnij',
   linkCopied: 'Link skopiowany',
   seeOriginal: 'Pokaż oryginał',

@@ -16,6 +16,10 @@ import { useProfileText } from '../../hooks/useProfileText';
 import { useI18n } from '../../i18n/I18nContext';
 import { getCountryName } from '../../utils/countries';
 
+// Hover dwell before the popup opens (ms). Short enough to feel responsive,
+// long enough not to flash while sweeping the pointer across the list.
+const OPEN_DELAY = 150;
+
 interface ProfileCardProps {
   profile: Profile;
   variant?: 'default' | 'compact' | 'tooltip';
@@ -29,11 +33,10 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   const location = useLocation();
   const queryClient = useQueryClient();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const cardRef = useRef<HTMLDivElement>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const isOverTooltip = useRef(false);
-  const isOverVote = useRef(false);
   const isMobile = useIsMobile();
   const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(hoveredId);
   const { setHoveredProfileCountry, setCountry, toggleRole } = useFilters();
@@ -47,42 +50,27 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
     navigate('/p/' + profile.id + location.search);
   }, [navigate, profile, location.search, queryClient, locale]);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    setMousePos({ x: e.clientX, y: e.clientY });
-    // Suppress the hover tooltip while the pointer is over the vote buttons —
-    // it blocks the view and is distracting while deciding how to vote.
-    if (isOverVote.current) return;
-    // Only reset the open-delay while the tooltip isn't shown yet — once
-    // it's open, mouse movement should not re-arm the timer.
-    if (hoveredId == null) {
-      clearTimeout(hoverTimer.current);
-      hoverTimer.current = setTimeout(() => {
-        setHoveredId(profile.id);
-      }, 500);
-    }
+  // Arm the open timer once. Crucially we do NOT reset it on every mouse move —
+  // continuous movement used to perpetually restart the timer so the popup only
+  // appeared if the pointer held still for the full delay.
+  const scheduleOpen = useCallback(() => {
+    if (hoveredId != null) return; // already open
+    if (hoverTimer.current) return; // already armed
+    hoverTimer.current = setTimeout(() => {
+      hoverTimer.current = undefined;
+      setHoveredId(profile.id);
+    }, OPEN_DELAY);
   }, [hoveredId, profile.id]);
 
   const handleMouseEnter = useCallback(() => {
     clearTimeout(leaveTimer.current);
-    clearTimeout(hoverTimer.current);
     setHoveredProfileCountry(profile.countryCode);
-    if (isOverVote.current) return;
-    hoverTimer.current = setTimeout(() => {
-      setHoveredId(profile.id);
-    }, 500);
-  }, [profile.id, profile.countryCode, setHoveredProfileCountry]);
+    scheduleOpen();
+  }, [scheduleOpen, profile.countryCode, setHoveredProfileCountry]);
 
-  // While the pointer is over the vote buttons, keep the tooltip closed and
-  // don't let the card's onMouseMove re-arm it.
-  const handleVoteEnter = useCallback(() => {
-    isOverVote.current = true;
-    clearTimeout(hoverTimer.current);
-    setHoveredId(null);
-  }, []);
-
-  const handleVoteLeave = useCallback(() => {
-    isOverVote.current = false;
-  }, []);
+  const handleMouseMove = useCallback(() => {
+    scheduleOpen();
+  }, [scheduleOpen]);
 
   // Desktop only: clicking the flag / role badge applies that filter instead
   // of opening the detail modal.
@@ -128,6 +116,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
 
   const handleMouseLeave = useCallback(() => {
     clearTimeout(hoverTimer.current);
+    hoverTimer.current = undefined;
     setHoveredProfileCountry(undefined);
     leaveTimer.current = setTimeout(() => {
       if (!isOverTooltip.current) setHoveredId(null);
@@ -170,6 +159,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   if (variant === 'compact') {
     return (
       <div
+        ref={cardRef}
         className="flex items-center gap-3 px-2 py-2 bg-surface-light/50 rounded-lg ring-1 ring-transparent hover:bg-surface-light hover:ring-white/10 transition-all duration-150 select-none"
         onMouseEnter={handleMouseEnter}
         onMouseMove={handleMouseMove}
@@ -194,11 +184,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
             </div>
           </div>
         </div>
-        <div
-          onClick={(e) => e.stopPropagation()}
-          onMouseEnter={handleVoteEnter}
-          onMouseLeave={handleVoteLeave}
-        >
+        <div onClick={(e) => e.stopPropagation()}>
           <VoteButtons
             profileId={profile.id}
             likes={profile.likes}
@@ -213,7 +199,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
             profile={profile}
             breakdown={breakdown}
             isLoading={breakdownLoading}
-            position={mousePos}
+            anchorEl={cardRef.current}
             onMouseEnter={handleTooltipEnter}
             onMouseLeave={handleTooltipLeave}
           />
@@ -225,6 +211,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   // default variant
   return (
     <div
+      ref={cardRef}
       className="flex items-start gap-2.5 px-1.5 py-2 bg-surface-light/50 rounded-xl ring-1 ring-transparent hover:bg-surface-light hover:ring-white/10 transition-all duration-150 select-none"
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
@@ -247,11 +234,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
           </div>
         </div>
         <p className="text-[13px] text-text-secondary mb-0.5">{description}</p>
-        <div
-          onClick={(e) => e.stopPropagation()}
-          onMouseEnter={handleVoteEnter}
-          onMouseLeave={handleVoteLeave}
-        >
+        <div onClick={(e) => e.stopPropagation()}>
           <VoteButtons
             profileId={profile.id}
             likes={profile.likes}
@@ -266,7 +249,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
           profile={profile}
           breakdown={breakdown}
           isLoading={breakdownLoading}
-          position={mousePos}
+          anchorEl={cardRef.current}
           onMouseEnter={handleTooltipEnter}
           onMouseLeave={handleTooltipLeave}
         />

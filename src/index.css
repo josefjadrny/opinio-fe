@@ -127,3 +127,14 @@ body {
   from { opacity: 1; transform: translateY(0); }
   to   { opacity: 0; transform: translateY(8px); }
 }
+
+/* PersonTooltip (Spotlight) entrance — slides in from the card edge. */
+@keyframes spotlight-in-right {
+  from { opacity: 0; transform: translateX(-8px) scale(0.98); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes spotlight-in-left {
+  from { opacity: 0; transform: translateX(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
