@@ -232,25 +232,33 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                         <div className="flex flex-col min-h-0">
                           <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-2 shrink-0">▲ {t.breakdownLiking}</p>
                           <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
-                            {breakdown.topLiking.map(({ countryCode, count }) => (
-                              <div key={countryCode} className="flex items-center gap-1.5 mb-1.5">
-                                <FlagImg code={countryCode} className="inline-block align-middle shrink-0" />
-                                <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
-                                <span className="text-xs text-positive font-medium tabular-nums">{formatNumber(count)}</span>
-                              </div>
-                            ))}
+                            {(() => {
+                              const max = Math.max(1, ...breakdown.topLiking.map(r => r.count));
+                              return breakdown.topLiking.map(({ countryCode, count }) => (
+                                <div key={countryCode} className="relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden">
+                                  <div className="absolute inset-y-0 left-0 bg-positive/15 rounded" style={{ width: `${(count / max) * 100}%` }} />
+                                  <FlagImg code={countryCode} className="relative inline-block align-middle shrink-0" />
+                                  <span className="relative text-xs text-white/60 flex-1 truncate">{getCountryName(countryCode)}</span>
+                                  <span className="relative text-xs text-positive font-semibold tabular-nums">{formatNumber(count)}</span>
+                                </div>
+                              ));
+                            })()}
                           </div>
                         </div>
                         <div className="flex flex-col min-h-0">
                           <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-2 shrink-0">▼ {t.breakdownDisliking}</p>
                           <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
-                            {breakdown.topDisliking.map(({ countryCode, count }) => (
-                              <div key={countryCode} className="flex items-center gap-1.5 mb-1.5">
-                                <FlagImg code={countryCode} className="inline-block align-middle shrink-0" />
-                                <span className="text-xs text-white/50 flex-1 truncate">{getCountryName(countryCode)}</span>
-                                <span className="text-xs text-negative font-medium tabular-nums">{formatNumber(count)}</span>
-                              </div>
-                            ))}
+                            {(() => {
+                              const max = Math.max(1, ...breakdown.topDisliking.map(r => r.count));
+                              return breakdown.topDisliking.map(({ countryCode, count }) => (
+                                <div key={countryCode} className="relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden">
+                                  <div className="absolute inset-y-0 left-0 bg-accent/15 rounded" style={{ width: `${(count / max) * 100}%` }} />
+                                  <FlagImg code={countryCode} className="relative inline-block align-middle shrink-0" />
+                                  <span className="relative text-xs text-white/60 flex-1 truncate">{getCountryName(countryCode)}</span>
+                                  <span className="relative text-xs text-negative font-semibold tabular-nums">{formatNumber(count)}</span>
+                                </div>
+                              ));
+                            })()}
                           </div>
                         </div>
                       </div>
