@@ -231,7 +231,7 @@ export function PersonTooltip({ profile, breakdown, isLoading, anchorEl, onMouse
                   <span className="text-positive text-xl font-bold tabular-nums leading-none">{agreePct}%</span>
                   <span className="text-sm text-text-secondary">{t.liked}</span>
                 </div>
-                <span className={`text-sm font-bold tabular-nums px-2 py-0.5 rounded-full ${netTone}`}>
+                <span className={`text-lg font-bold tabular-nums px-2 py-0.5 rounded-full ${netTone}`}>
                   {netSign}{formatNumber(net)}
                 </span>
               </div>

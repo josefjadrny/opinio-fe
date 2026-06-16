@@ -165,8 +165,27 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
             <div className="flex-1 overflow-y-auto">
               {/* Live votes as a sentiment bar: green segment = likes' share of
                   the active (24h) votes, red = dislikes'. Replaces the old ▲/▼ counts. */}
-              <div className="px-6 pt-4 pb-3 border-b border-border">
-                <VoteSentimentBar likes={animatedLikes} dislikes={animatedDislikes} totalLikes={profile.totalLikes ?? 0} totalDislikes={profile.totalDislikes ?? 0} />
+              <div className="px-6 pt-4 pb-3 border-b border-border space-y-2.5" style={{ animation: 'stat-in 0.35s ease-out' }}>
+                {(() => {
+                  const total = animatedLikes + animatedDislikes;
+                  const agreePct = total > 0 ? Math.round((animatedLikes / total) * 100) : 0;
+                  const net = animatedLikes - animatedDislikes;
+                  const netTone = net > 0 ? 'text-positive bg-positive/15' : net < 0 ? 'text-accent bg-accent/15' : 'text-white/40 bg-white/10';
+                  return (
+                    <>
+                      <div className="flex items-end justify-between">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-positive text-xl font-bold tabular-nums leading-none">{agreePct}%</span>
+                          <span className="text-sm text-text-secondary">{t.liked}</span>
+                        </div>
+                        <span className={`text-lg font-bold tabular-nums px-2 py-0.5 rounded-full transition-colors ${netTone}`}>
+                          {net > 0 ? '+' : ''}{formatNumber(net)}
+                        </span>
+                      </div>
+                      <VoteSentimentBar likes={animatedLikes} dislikes={animatedDislikes} totalLikes={profile.totalLikes ?? 0} totalDislikes={profile.totalDislikes ?? 0} />
+                    </>
+                  );
+                })()}
               </div>
               <div className="grid grid-cols-2 gap-0 divide-x divide-border">
                 {/* Left: description first, optional image second as supporting context */}

@@ -128,6 +128,12 @@ body {
   to   { opacity: 0; transform: translateY(8px); }
 }
 
+/* Profile detail stats row entrance — fades in and rises slightly. */
+@keyframes stat-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* PersonTooltip (Spotlight) entrance — slides in from the card edge. */
 @keyframes spotlight-in-right {
   from { opacity: 0; transform: translateX(-8px) scale(0.98); }

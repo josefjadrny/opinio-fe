@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAnimatedValue } from '../../hooks/useAnimatedValue';
 import { Link, useLocation } from 'react-router-dom';
 import type { Profile } from '../../types/profile';
 import type { PersonBreakdownResponse } from '../../types/api';
@@ -30,6 +31,8 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
   const { data: me } = useMe();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const { name, description, hasTranslation, showingOriginal, toggle } = useProfileText(profile);
+  const animatedLikes = useAnimatedValue(profile.likes);
+  const animatedDislikes = useAnimatedValue(profile.dislikes);
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       // Lightbox handles its own ESC (and stops propagation); only close the
@@ -103,7 +106,26 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
         <div className="px-6 py-5 space-y-4">
           {/* Live votes as a sentiment bar: green = likes' share of the active
               (24h) votes, red = dislikes'. Replaces the old ▲/▼ counts. */}
-          <VoteSentimentBar likes={profile.likes} dislikes={profile.dislikes} totalLikes={profile.totalLikes ?? 0} totalDislikes={profile.totalDislikes ?? 0} />
+          {(() => {
+            const total = animatedLikes + animatedDislikes;
+            const agreePct = total > 0 ? Math.round((animatedLikes / total) * 100) : 0;
+            const net = animatedLikes - animatedDislikes;
+            const netTone = net > 0 ? 'text-positive bg-positive/15' : net < 0 ? 'text-accent bg-accent/15' : 'text-white/40 bg-white/10';
+            return (
+              <div className="space-y-2.5" style={{ animation: 'stat-in 0.35s ease-out' }}>
+                <div className="flex items-end justify-between">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-positive text-xl font-bold tabular-nums leading-none">{agreePct}%</span>
+                    <span className="text-sm text-text-secondary">{t.liked}</span>
+                  </div>
+                  <span className={`text-lg font-bold tabular-nums px-2 py-0.5 rounded-full transition-colors ${netTone}`}>
+                    {net > 0 ? '+' : ''}{formatNumber(net)}
+                  </span>
+                </div>
+                <VoteSentimentBar likes={animatedLikes} dislikes={animatedDislikes} totalLikes={profile.totalLikes ?? 0} totalDislikes={profile.totalDislikes ?? 0} />
+              </div>
+            );
+          })()}
           <p className="text-sm text-white/80 leading-relaxed">{description}</p>
           {hasTranslation && (
             <button
