@@ -17,7 +17,7 @@ export function useVote() {
       queryClient.setQueriesData<ProfilesResponse>({ queryKey: ['profiles'] }, (old) =>
         old ? { ...old, profiles: old.profiles.map(patch) } : old
       );
-      queryClient.setQueryData<Profile>(['profile', data.profile.id], (old) =>
+      queryClient.setQueriesData<Profile>({ queryKey: ['profile', data.profile.id] }, (old) =>
         old ? { ...old, ...data.profile } : data.profile
       );
       queryClient.setQueriesData<UserDetailResponse>({ queryKey: ['user'] }, (old) => {
