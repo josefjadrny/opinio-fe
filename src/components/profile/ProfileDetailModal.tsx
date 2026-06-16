@@ -49,7 +49,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto pb-11">
+      <div className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto pb-11" style={{ animation: 'modal-enter 0.28s ease-out' }}>
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 bg-white/20 rounded-full" />
         </div>
@@ -182,9 +182,9 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 <div className="overflow-y-auto max-h-[180px] pr-1 subtle-scrollbar">
                   {(() => {
                     const max = Math.max(1, ...breakdown.topLiking.map(r => r.count));
-                    return breakdown.topLiking.map(({ countryCode, count }) => (
-                      <div key={countryCode} className="relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden">
-                        <div className="absolute inset-y-0 left-0 bg-positive/15 rounded" style={{ width: `${(count / max) * 100}%` }} />
+                    return breakdown.topLiking.map(({ countryCode, count }, i) => (
+                      <div key={countryCode} className="relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden" style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${i * 35}ms` }}>
+                        <div className="absolute inset-y-0 left-0 bg-positive/15 rounded" style={{ width: `${(count / max) * 100}%`, animation: 'bar-fill 0.45s ease-out both', transformOrigin: 'left', animationDelay: `${i * 35 + 80}ms` }} />
                         <FlagImg code={countryCode} className="relative shrink-0" />
                         <span className="relative text-xs text-white/60 flex-1 truncate">{getCountryName(countryCode)}</span>
                         <span className="relative text-xs text-positive font-semibold tabular-nums">{formatNumber(count)}</span>
@@ -198,9 +198,9 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 <div className="overflow-y-auto max-h-[180px] pr-1 subtle-scrollbar">
                   {(() => {
                     const max = Math.max(1, ...breakdown.topDisliking.map(r => r.count));
-                    return breakdown.topDisliking.map(({ countryCode, count }) => (
-                      <div key={countryCode} className="relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden">
-                        <div className="absolute inset-y-0 left-0 bg-accent/15 rounded" style={{ width: `${(count / max) * 100}%` }} />
+                    return breakdown.topDisliking.map(({ countryCode, count }, i) => (
+                      <div key={countryCode} className="relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden" style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${i * 35}ms` }}>
+                        <div className="absolute inset-y-0 left-0 bg-accent/15 rounded" style={{ width: `${(count / max) * 100}%`, animation: 'bar-fill 0.45s ease-out both', transformOrigin: 'left', animationDelay: `${i * 35 + 80}ms` }} />
                         <FlagImg code={countryCode} className="relative shrink-0" />
                         <span className="relative text-xs text-white/60 flex-1 truncate">{getCountryName(countryCode)}</span>
                         <span className="relative text-xs text-negative font-semibold tabular-nums">{formatNumber(count)}</span>

@@ -71,7 +71,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
       className="fixed inset-0 z-50 flex flex-col justify-end items-center pointer-events-none"
     >
       <div className="absolute bottom-0 left-0 right-0 h-[55vh] bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-      <div className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto">
+      <div className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto" style={{ animation: 'modal-enter 0.25s ease-out' }}>
         {isLoading && (
           <div className="flex items-center justify-center py-12 text-sm text-white/40">Loading…</div>
         )}
@@ -234,9 +234,9 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                           <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
                             {(() => {
                               const max = Math.max(1, ...breakdown.topLiking.map(r => r.count));
-                              return breakdown.topLiking.map(({ countryCode, count }) => (
-                                <div key={countryCode} className="relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden">
-                                  <div className="absolute inset-y-0 left-0 bg-positive/15 rounded" style={{ width: `${(count / max) * 100}%` }} />
+                              return breakdown.topLiking.map(({ countryCode, count }, i) => (
+                                <div key={countryCode} className="relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden" style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${i * 35}ms` }}>
+                                  <div className="absolute inset-y-0 left-0 bg-positive/15 rounded" style={{ width: `${(count / max) * 100}%`, animation: 'bar-fill 0.45s ease-out both', transformOrigin: 'left', animationDelay: `${i * 35 + 80}ms` }} />
                                   <FlagImg code={countryCode} className="relative inline-block align-middle shrink-0" />
                                   <span className="relative text-xs text-white/60 flex-1 truncate">{getCountryName(countryCode)}</span>
                                   <span className="relative text-xs text-positive font-semibold tabular-nums">{formatNumber(count)}</span>
@@ -250,9 +250,9 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                           <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
                             {(() => {
                               const max = Math.max(1, ...breakdown.topDisliking.map(r => r.count));
-                              return breakdown.topDisliking.map(({ countryCode, count }) => (
-                                <div key={countryCode} className="relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden">
-                                  <div className="absolute inset-y-0 left-0 bg-accent/15 rounded" style={{ width: `${(count / max) * 100}%` }} />
+                              return breakdown.topDisliking.map(({ countryCode, count }, i) => (
+                                <div key={countryCode} className="relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden" style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${i * 35}ms` }}>
+                                  <div className="absolute inset-y-0 left-0 bg-accent/15 rounded" style={{ width: `${(count / max) * 100}%`, animation: 'bar-fill 0.45s ease-out both', transformOrigin: 'left', animationDelay: `${i * 35 + 80}ms` }} />
                                   <FlagImg code={countryCode} className="relative inline-block align-middle shrink-0" />
                                   <span className="relative text-xs text-white/60 flex-1 truncate">{getCountryName(countryCode)}</span>
                                   <span className="relative text-xs text-negative font-semibold tabular-nums">{formatNumber(count)}</span>

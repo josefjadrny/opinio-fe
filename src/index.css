@@ -134,6 +134,18 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Profile modal card entrance — slides up from below. */
+@keyframes modal-enter {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Sentiment / country bar fill — grows from the left. */
+@keyframes bar-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
 /* PersonTooltip (Spotlight) entrance — slides in from the card edge. */
 @keyframes spotlight-in-right {
   from { opacity: 0; transform: translateX(-8px) scale(0.98); }
