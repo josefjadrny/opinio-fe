@@ -68,8 +68,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col justify-end items-center"
-      onClick={(e) => { if (e.target === e.currentTarget) close(); }}
+      className="fixed inset-0 z-50 flex flex-col justify-end items-center pointer-events-none"
     >
       <div className="absolute bottom-0 left-0 right-0 h-[55vh] bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
       <div className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto">
