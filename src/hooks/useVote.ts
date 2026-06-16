@@ -20,6 +20,7 @@ export function useVote() {
       queryClient.setQueriesData<Profile>({ queryKey: ['profile', data.profile.id] }, (old) =>
         old ? { ...old, ...data.profile } : data.profile
       );
+      queryClient.invalidateQueries({ queryKey: ['profile', data.profile.id] });
       queryClient.setQueriesData<UserDetailResponse>({ queryKey: ['user'] }, (old) => {
         if (!old) return old;
         const profilesPatched = old.profiles.some((p) => p.id === data.profile.id)
