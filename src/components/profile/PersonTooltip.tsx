@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
-import { useLayoutEffect, useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import type { Profile } from '../../types/profile';
 import type { PersonBreakdownResponse, CountryBreakdown } from '../../types/api';
 import { FlagImg } from '../common/CountryFlag';
@@ -29,7 +29,7 @@ const MARGIN = 12; // viewport clamp margin
 // wraps or spills — wide counts like "12.1K" just mean fewer flags are shown.
 const ROW_AVAIL = 300; // usable px inside the 330px panel (px-3 + a little safety)
 const CHIP_GAP = 4; // matches gap-1
-const chipPxWidth = (label: string) => 36 + label.length * 7;
+const chipPxWidth = (label: string) => 52 + label.length * 7; // +16 for 2-char country code
 
 interface Layout {
   outerLeft: number;
@@ -37,23 +37,6 @@ interface Layout {
   panelMarginLeft: number;
   top: number;
   side: 'left' | 'right';
-}
-
-// Lightweight count-up so the headline numbers feel live on open. easeOutCubic.
-function useCountUp(target: number, duration = 650): number {
-  const [value, setValue] = useState(0);
-  useEffect(() => {
-    let raf = 0;
-    const start = performance.now();
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / duration);
-      setValue(Math.round(target * (1 - Math.pow(1 - p, 3))));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [target, duration]);
-  return value;
 }
 
 function GeoRow({
@@ -105,8 +88,9 @@ function GeoRow({
                     className={`absolute inset-y-0 left-0 ${barColor}`}
                     style={{ width: `${(count / max) * 100}%` }}
                   />
-                  <FlagImg code={countryCode} className="relative inline-block align-middle shrink-0" />
-                  <span className={`relative text-xs font-semibold tabular-nums ${numColor}`}>
+                  <FlagImg code={countryCode} className="relative shrink-0 leading-none" />
+                  <span className="relative text-xs font-medium text-white/45 leading-none">{countryCode}</span>
+                  <span className={`relative text-xs font-semibold tabular-nums leading-none ${numColor}`}>
                     {formatNumber(count)}
                   </span>
                 </div>
@@ -170,15 +154,6 @@ export function PersonTooltip({ profile, breakdown, isLoading, anchorEl, onMouse
   const total = profile.likes + profile.dislikes;
   const agreePct = total ? Math.round((profile.likes / total) * 100) : 50;
   const net = profile.likes - profile.dislikes;
-  const pctUp = useCountUp(agreePct);
-  const netUp = useCountUp(net);
-
-  // Sentiment bar grows from a 50/50 split to the real ratio on open.
-  const [filled, setFilled] = useState(false);
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setFilled(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
 
   const hasImage = !!profile.contentImageUrl;
   const netSign = net > 0 ? '+' : '';
@@ -253,17 +228,17 @@ export function PersonTooltip({ profile, breakdown, isLoading, anchorEl, onMouse
             <>
               <div className="flex items-end justify-between mb-2.5">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-positive text-xl font-bold tabular-nums leading-none">{pctUp}%</span>
+                  <span className="text-positive text-xl font-bold tabular-nums leading-none">{agreePct}%</span>
                   <span className="text-sm text-text-secondary">{t.liked}</span>
                 </div>
                 <span className={`text-sm font-bold tabular-nums px-2 py-0.5 rounded-full ${netTone}`}>
-                  {netSign}{formatNumber(netUp)}
+                  {netSign}{formatNumber(net)}
                 </span>
               </div>
               <div className="relative h-2 rounded-full overflow-hidden bg-accent/35">
                 <div
-                  className="absolute inset-y-0 left-0 bg-positive rounded-full transition-[width] duration-700 ease-out"
-                  style={{ width: `${filled ? agreePct : 50}%` }}
+                  className="absolute inset-y-0 left-0 bg-positive rounded-full"
+                  style={{ width: `${agreePct}%` }}
                 />
               </div>
             </>
