@@ -155,9 +155,9 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
           )}
           {breakdown && (breakdown.topLiking.length > 0 || breakdown.topDisliking.length > 0) && (
             <div className="grid grid-cols-2 gap-4 pt-1 border-t border-border">
-              <div className="pt-3">
-                <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-2">▲ {t.breakdownLiking}</p>
-                <div>
+              <div className="pt-3 flex flex-col">
+                <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-2 shrink-0">▲ {t.breakdownLiking}</p>
+                <div className="overflow-y-auto max-h-[180px] pr-1 subtle-scrollbar">
                   {breakdown.topLiking.map(({ countryCode, count }) => (
                     <div key={countryCode} className="flex items-center gap-1.5 mb-1">
                       <FlagImg code={countryCode} />
@@ -167,9 +167,9 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                   ))}
                 </div>
               </div>
-              <div className="pt-3">
-                <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-2">▼ {t.breakdownDisliking}</p>
-                <div>
+              <div className="pt-3 flex flex-col">
+                <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-2 shrink-0">▼ {t.breakdownDisliking}</p>
+                <div className="overflow-y-auto max-h-[180px] pr-1 subtle-scrollbar">
                   {breakdown.topDisliking.map(({ countryCode, count }) => (
                     <div key={countryCode} className="flex items-center gap-1.5 mb-1">
                       <FlagImg code={countryCode} />
