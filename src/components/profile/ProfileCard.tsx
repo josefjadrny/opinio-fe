@@ -46,9 +46,17 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   const { name, description } = useProfileText(profile);
 
   const openDetail = useCallback(() => {
+    // Dismiss the hover popup so it doesn't sit on top of the detail modal
+    // (the tooltip portal is z-[9999], above the modal).
+    clearTimeout(hoverTimer.current);
+    clearTimeout(leaveTimer.current);
+    hoverTimer.current = undefined;
+    isOverTooltip.current = false;
+    setHoveredId(null);
+    setHoveredProfileCountry(undefined);
     queryClient.setQueryData(['profile', profile.id, locale], profile);
     navigate('/p/' + profile.id + location.search);
-  }, [navigate, profile, location.search, queryClient, locale]);
+  }, [navigate, profile, location.search, queryClient, locale, setHoveredProfileCountry]);
 
   // Arm the open timer once. Crucially we do NOT reset it on every mouse move —
   // continuous movement used to perpetually restart the timer so the popup only
