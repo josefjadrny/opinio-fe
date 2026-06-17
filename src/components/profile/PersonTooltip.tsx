@@ -238,7 +238,7 @@ export function PersonTooltip({ profile, breakdown, isLoading, anchorEl, onMouse
               <div className="relative h-2 rounded-full overflow-hidden bg-accent/35">
                 <div
                   className="absolute inset-y-0 left-0 bg-positive rounded-full"
-                  style={{ width: `${agreePct}%` }}
+                  style={{ width: `${agreePct}%`, animation: 'bar-fill 0.6s ease-out both', transformOrigin: 'left' }}
                 />
               </div>
             </>
