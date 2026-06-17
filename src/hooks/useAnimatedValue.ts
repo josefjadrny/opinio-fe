@@ -22,6 +22,10 @@ export function useAnimatedValue(target: number): number {
   const [displayed, setDisplayed] = useState(target);
   const refs = useRef({ displayed: target, target });
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // The first value change after mount is the placeholder→data load (a freshly
+  // fetched profile going 0 → N on page refresh or navigation). Snap to it so
+  // the counts don't visibly tick up from zero; only later live updates animate.
+  const settledRef = useRef(false);
 
   const startAnimation = (from: number, to: number) => {
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -58,7 +62,18 @@ export function useAnimatedValue(target: number): number {
     refs.current.target = target;
 
     if (target !== prev) {
-      startAnimation(refs.current.displayed, target);
+      if (!settledRef.current) {
+        // First change after mount = initial data load → snap, don't animate.
+        settledRef.current = true;
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+        refs.current.displayed = target;
+        setDisplayed(target);
+      } else {
+        startAnimation(refs.current.displayed, target);
+      }
     }
 
     return () => {
