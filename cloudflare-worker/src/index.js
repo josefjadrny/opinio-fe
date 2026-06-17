@@ -628,7 +628,7 @@ const STATIC_PAGES = {
 // block in opinio-fe/src/i18n/strings.ts (same strings, two render paths).
 const STATIC_I18N = {
   cs: {
-    '/': { title: 'Opinio - Hlasujte o dění, které formuje svět', description: 'Sociální hlasovací platforma z Evropy. Lajkujte nebo dejte palec dolů názorům, událostem a veřejně známým osobnostem, které formují svět - řazeno podle zemí, obnovováno každých 24 h.' },
+    '/': { title: 'Opinio - Hlasujte o názorech celého světa, zemi po zemi', description: 'Sociální hlasovací platforma z Evropy, bez reklam. Sdílejte a hlasujte o názorech na cokoli - od titulků až po běžný život - a sledujte, jak to vidí každá země, zemi po zemi, obnovováno každých 24 h.' },
     '/about': { title: 'O Opinio - Jak funguje živé hlasování', description: 'Zjistěte, jak Opinio funguje: rychlé sociální hlasování, hlasy vyprší po 24 hodinách a živé světové trendy.' },
     '/privacy': { title: 'Zásady ochrany soukromí - Opinio', description: 'Zásady ochrany soukromí Opinio: co shromažďujeme, proč, jak dlouho a jaká máte práva podle GDPR.' },
     '/terms': { title: 'Podmínky použití - Opinio', description: 'Podmínky použití Opinio: pravidla pro přispívání, hlasování, předplatné a pozastavení účtů.' },
@@ -638,7 +638,7 @@ const STATIC_I18N = {
     '/support': { title: 'Podpora - Opinio', description: 'Kontaktujte podporu Opinio, spravujte své tikety a získejte pomoc s hlasováním, profily a nastavením účtu.' },
   },
   es: {
-    '/': { title: 'Opinio - Vota sobre lo que está marcando el mundo', description: 'Una plataforma de voto social desde Europa. Dale me gusta o no me gusta a las opiniones, eventos y figuras públicas que marcan el mundo - clasificado país por país, actualizado cada 24 h.' },
+    '/': { title: 'Opinio - Vota las opiniones del mundo, país por país', description: 'Una plataforma de voto social desde Europa, sin anuncios. Comparte y vota opiniones sobre cualquier cosa - de los titulares a la vida cotidiana - y descubre cómo se siente cada país, país por país, actualizado cada 24 h.' },
     '/about': { title: 'Acerca de Opinio - Cómo funciona el voto en vivo', description: 'Descubre cómo funciona Opinio: voto social rápido, votos que caducan a las 24 horas y tendencias mundiales en vivo.' },
     '/privacy': { title: 'Aviso de privacidad - Opinio', description: 'Aviso de privacidad de Opinio: qué recopilamos, por qué, durante cuánto tiempo y tus derechos según el RGPD.' },
     '/terms': { title: 'Términos de uso - Opinio', description: 'Términos de uso de Opinio: reglas de publicación, votación, suscripciones y suspensiones de cuenta.' },
@@ -648,7 +648,7 @@ const STATIC_I18N = {
     '/support': { title: 'Soporte - Opinio', description: 'Contacta con el soporte de Opinio, gestiona tus tickets y obtén ayuda con la votación, los perfiles y la configuración de tu cuenta.' },
   },
   de: {
-    '/': { title: 'Opinio - Stimme über das Weltgeschehen ab', description: 'Eine soziale Abstimmungsplattform aus Europa. Like oder dislike die Aussagen, Ereignisse und Personen des öffentlichen Lebens, die die Welt prägen - Land für Land gewertet, alle 24 Std. aktualisiert.' },
+    '/': { title: 'Opinio - Über die Meinungen der Welt abstimmen, Land für Land', description: 'Eine werbefreie soziale Abstimmungsplattform aus Europa. Teile Meinungen und stimme über alles ab - von den Schlagzeilen bis zum Alltag - und sieh, wie jedes Land tickt, Land für Land, alle 24 Std. aktualisiert.' },
     '/about': { title: 'Über Opinio - So funktioniert Live-Abstimmung', description: 'Erfahre, wie Opinio funktioniert: schnelles soziales Abstimmen, Stimmen verfallen nach 24 Stunden und weltweite Live-Trends.' },
     '/privacy': { title: 'Datenschutzhinweis - Opinio', description: 'Datenschutzhinweis von Opinio: was wir erheben, warum, wie lange und welche Rechte du nach der DSGVO hast.' },
     '/terms': { title: 'Nutzungsbedingungen - Opinio', description: 'Nutzungsbedingungen von Opinio: Regeln fürs Posten, Abstimmen, Abos und Kontosperren.' },
@@ -658,7 +658,7 @@ const STATIC_I18N = {
     '/support': { title: 'Support - Opinio', description: 'Kontaktiere den Opinio-Support, verwalte deine Tickets und erhalte Hilfe bei Abstimmungen, Profilen und Kontoeinstellungen.' },
   },
   fr: {
-    '/': { title: "Opinio - Votez sur l'actualité qui façonne le monde", description: "Une plateforme de vote social venue d'Europe. Aimez ou rejetez les déclarations, événements et personnalités publiques qui façonnent le monde - classés pays par pays, actualisés toutes les 24 h." },
+    '/': { title: "Opinio - Votez sur les opinions du monde, pays par pays", description: "Une plateforme de vote social venue d'Europe, sans publicité. Partagez vos opinions et votez sur tout - de l'actualité à la vie quotidienne - et voyez ce que ressent chaque pays, pays par pays, actualisé toutes les 24 h." },
     '/about': { title: "À propos d'Opinio - Le vote en direct expliqué", description: 'Découvrez comment fonctionne Opinio : vote social rapide, votes qui expirent au bout de 24 heures et tendances mondiales en direct.' },
     '/privacy': { title: 'Avis de confidentialité - Opinio', description: "Avis de confidentialité d'Opinio : ce que nous collectons, pourquoi, pendant combien de temps et vos droits selon le RGPD." },
     '/terms': { title: "Conditions d'utilisation - Opinio", description: "Conditions d'utilisation d'Opinio : règles de publication, vote, abonnements et suspensions de compte." },
@@ -668,7 +668,7 @@ const STATIC_I18N = {
     '/support': { title: 'Assistance - Opinio', description: "Contactez l'assistance Opinio, gérez vos tickets et obtenez de l'aide pour le vote, les profils et les paramètres de compte." },
   },
   it: {
-    '/': { title: 'Opinio - Vota sui temi che plasmano il mondo', description: 'Una piattaforma di voto sociale nata in Europa. Metti mi piace o non mi piace a dichiarazioni, eventi e personaggi pubblici che plasmano il mondo - in classifica paese per paese, aggiornata ogni 24 h.' },
+    '/': { title: 'Opinio - Vota le opinioni del mondo, paese per paese', description: "Una piattaforma di voto sociale dall'Europa, senza pubblicità. Condividi e vota opinioni su qualsiasi cosa - dai titoli alla vita di tutti i giorni - e scopri come la pensa ogni paese, paese per paese, aggiornato ogni 24 h." },
     '/about': { title: 'Informazioni su Opinio - Come funziona il voto in diretta', description: 'Scopri come funziona Opinio: voto sociale veloce, voti che scadono dopo 24 ore e tendenze mondiali in diretta.' },
     '/privacy': { title: 'Informativa sulla privacy - Opinio', description: 'Informativa sulla privacy di Opinio: cosa raccogliamo, perché, per quanto tempo e i tuoi diritti secondo il GDPR.' },
     '/terms': { title: "Termini di utilizzo - Opinio", description: 'Termini di utilizzo di Opinio: regole per la pubblicazione, voto, abbonamenti e sospensioni degli account.' },
@@ -678,7 +678,7 @@ const STATIC_I18N = {
     '/support': { title: 'Assistenza - Opinio', description: "Contatta l'assistenza Opinio, gestisci i tuoi ticket e ottieni aiuto per il voto, i profili e le impostazioni dell'account." },
   },
   pl: {
-    '/': { title: 'Opinio - Głosuj o wydarzeniach, które kształtują świat', description: 'Społecznościowa platforma głosowania z Europy. Polub lub odrzuć wypowiedzi, wydarzenia i osoby publiczne kształtujące świat - w rankingu kraj po kraju, odświeżane co 24 h.' },
+    '/': { title: 'Opinio - Głosuj na opinie z całego świata, kraj po kraju', description: 'Społecznościowa platforma głosowania z Europy, bez reklam. Dziel się opiniami i głosuj na wszystko - od nagłówków po codzienne życie - i zobacz, co czuje każdy kraj, kraj po kraju, odświeżane co 24 h.' },
     '/about': { title: 'O Opinio - Jak działa głosowanie na żywo', description: 'Dowiedz się, jak działa Opinio: szybkie głosowanie społecznościowe, głosy wygasające po 24 godzinach i światowe trendy na żywo.' },
     '/privacy': { title: 'Polityka prywatności - Opinio', description: 'Polityka prywatności Opinio: co zbieramy, dlaczego, jak długo i jakie masz prawa zgodnie z RODO.' },
     '/terms': { title: 'Regulamin - Opinio', description: 'Regulamin Opinio: zasady publikowania, głosowanie, subskrypcje i zawieszenia kont.' },
@@ -730,8 +730,8 @@ async function handleHome(request, lang) {
   headers.set('x-opinio-og', 'home-lang');
   const loc = STATIC_I18N[lang]?.['/'];
   const html = injectProfileMeta(shellText, {
-    title: loc?.title ?? 'Opinio - Vote on the stories shaping the world today',
-    description: loc?.description ?? 'Like or dislike the statements, events and public figures shaping the world - ranked country by country, refreshed every 24h.',
+    title: loc?.title ?? "Opinio - Vote on the world's opinions, country by country",
+    description: loc?.description ?? 'An ad-free social voting platform from Europe. Share and vote on opinions about anything - from the headlines to everyday life - and see how every country feels, country by country, refreshed every 24h.',
     image: DEFAULT_OG_IMAGE,
     imageAlt: 'Opinio',
     url: `${SITE_BASE}/${lang}/`,

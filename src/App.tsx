@@ -46,8 +46,8 @@ const MAX_WIDTH = 700;
 
 const BASE_URL = 'https://opinio.live';
 const BRAND = 'Opinio';
-const DEFAULT_TITLE = 'Opinio - Vote on the stories shaping the world today';
-const DEFAULT_DESCRIPTION = 'A social voting platform from Europe. Like or dislike the statements, events & public figures shaping the world - ranked country by country, refreshed every 24h.';
+const DEFAULT_TITLE = "Opinio - Vote on the world's opinions, country by country";
+const DEFAULT_DESCRIPTION = 'An ad-free social voting platform from Europe. Share and vote on opinions about anything - from the headlines to everyday life - and see how every country feels, country by country, refreshed every 24h.';
 
 // Non-English locales that get a URL prefix (/fr/about, /de/c/CZ, ...). English
 // stays on the bare path. Mirrors the Cloudflare worker's PREFIX_LANGS and the

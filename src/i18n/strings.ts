@@ -321,7 +321,7 @@ const en: Strings = {
   languageHint: 'We translate opinios into this language for you',
   upgradeBanner: 'Become a supporter',
   manageSubscription: 'Manage subscription',
-  brandTagline: 'Social voting platform from Europe. Vote on the stories shaping the world today, ranked country by country.',
+  brandTagline: "An ad-free social voting platform from Europe. Vote on the world's opinions, country by country.",
   aboutPrinciplesTitle: 'Our principles',
   aboutPrincipleTimeTitle: 'We respect your time',
   aboutPrincipleTimeBody: 'No ads, no useless clicks, just opinions.',
@@ -344,7 +344,7 @@ const en: Strings = {
   aboutVotesPerHourFew: 'votes / hr',
   aboutVotesPerHourMany: 'votes / hr',
   welcomeTitle: 'Welcome to Opinio',
-  welcomeBulletVote: 'Like or dislike statements, events, and public figures',
+  welcomeBulletVote: 'Like or dislike any opinion - from the headlines to everyday life',
   welcomeBulletExpire: 'Votes expire after 24 hours, so rankings stay alive',
   welcomeBulletRefill: 'Each vote refills 1 hour after you cast it',
   welcomeCta: "Let's vote",
@@ -550,8 +550,8 @@ const en: Strings = {
   reportsCount: '{count} reports',
   seo: {
     home: {
-      title: 'Opinio - Vote on the stories shaping the world today',
-      description: 'A social voting platform from Europe. Like or dislike the statements, events & public figures shaping the world - ranked country by country, refreshed every 24h.',
+      title: "Opinio - Vote on the world's opinions, country by country",
+      description: 'An ad-free social voting platform from Europe. Share and vote on opinions about anything - from the headlines to everyday life - and see how every country feels, country by country, refreshed every 24h.',
     },
     stats: {
       title: 'Trending opinions right now - Opinio',
@@ -642,7 +642,7 @@ const cs: Strings = {
   manageSubscription: 'Spravovat předplatné',
   language: 'Jazyk',
   languageHint: 'Opinio za vás překládáme do tohoto jazyka',
-  brandTagline: 'Evropská sociální hlasovací platforma. Hlasuj o tématech, která utvářejí dnešní svět, seřazeno zemi po zemi.',
+  brandTagline: 'Sociální hlasovací platforma z Evropy, bez reklam. Hlasuj o názorech celého světa, zemi po zemi.',
   aboutPrinciplesTitle: 'Naše principy',
   aboutPrincipleTimeTitle: 'Respektujeme váš čas',
   aboutPrincipleTimeBody: 'Žádné reklamy, žádné zbytečné klikání, jen názory.',
@@ -665,7 +665,7 @@ const cs: Strings = {
   aboutVotesPerHourFew: 'hlasy / hod',
   aboutVotesPerHourMany: 'hlasů / hod',
   welcomeTitle: 'Vítej v Opinio',
-  welcomeBulletVote: 'Lajkuj nebo zamítni témata, události a veřejné osobnosti',
+  welcomeBulletVote: 'Lajkuj nebo zamítni jakýkoli názor - od titulků až po běžný život',
   welcomeBulletExpire: 'Hlasy vyprší po 24 hodinách, žebříčky tak žijí',
   welcomeBulletRefill: 'Každý hlas se ti vrátí hodinu po hlasování',
   welcomeCta: 'Pojďme hlasovat',
@@ -871,8 +871,8 @@ const cs: Strings = {
   reportsCount: 'Hlášení: {count}',
   seo: {
     home: {
-      title: 'Opinio - Hlasujte o dění, které formuje svět',
-      description: 'Sociální hlasovací platforma z Evropy. Lajkujte nebo dejte palec dolů názorům, událostem a veřejně známým osobnostem, které formují svět - řazeno podle zemí, obnovováno každých 24 h.',
+      title: 'Opinio - Hlasujte o názorech celého světa, zemi po zemi',
+      description: 'Sociální hlasovací platforma z Evropy, bez reklam. Sdílejte a hlasujte o názorech na cokoli - od titulků až po běžný život - a sledujte, jak to vidí každá země, zemi po zemi, obnovováno každých 24 h.',
     },
     stats: {
       title: 'Nejdiskutovanější názory právě teď - Opinio',
@@ -963,7 +963,7 @@ const es: Strings = {
   manageSubscription: 'Gestionar suscripción',
   language: 'Idioma',
   languageHint: 'Traducimos los opinio a este idioma por ti',
-  brandTagline: 'Plataforma europea de votación social. Vota sobre las historias que dan forma al mundo hoy, clasificadas país por país.',
+  brandTagline: 'Plataforma de voto social desde Europa, sin anuncios. Vota las opiniones del mundo, país por país.',
   aboutPrinciplesTitle: 'Nuestros principios',
   aboutPrincipleTimeTitle: 'Respetamos tu tiempo',
   aboutPrincipleTimeBody: 'Sin anuncios, sin clics inútiles, solo opiniones.',
@@ -986,7 +986,7 @@ const es: Strings = {
   aboutVotesPerHourFew: 'votos / h',
   aboutVotesPerHourMany: 'votos / h',
   welcomeTitle: 'Bienvenido a Opinio',
-  welcomeBulletVote: 'Dale me gusta o no me gusta a opiniones, eventos y figuras públicas',
+  welcomeBulletVote: 'Dale me gusta o no me gusta a cualquier opinión - de los titulares a la vida cotidiana',
   welcomeBulletExpire: 'Los votos caducan a las 24 horas, así los rankings siguen vivos',
   welcomeBulletRefill: 'Cada voto se renueva 1 hora después de usarlo',
   welcomeCta: 'A votar',
@@ -1192,8 +1192,8 @@ const es: Strings = {
   reportsCount: '{count} reportes',
   seo: {
     home: {
-      title: 'Opinio - Vota sobre lo que está marcando el mundo',
-      description: 'Una plataforma de voto social desde Europa. Dale me gusta o no me gusta a las opiniones, eventos y figuras públicas que marcan el mundo - clasificado país por país, actualizado cada 24 h.',
+      title: 'Opinio - Vota las opiniones del mundo, país por país',
+      description: 'Una plataforma de voto social desde Europa, sin anuncios. Comparte y vota opiniones sobre cualquier cosa - de los titulares a la vida cotidiana - y descubre cómo se siente cada país, país por país, actualizado cada 24 h.',
     },
     stats: {
       title: 'Opiniones en tendencia ahora mismo - Opinio',
@@ -1284,7 +1284,7 @@ const de: Strings = {
   languageHint: 'Wir übersetzen Opinio für dich in diese Sprache',
   upgradeBanner: 'Werde Supporter',
   manageSubscription: 'Abo verwalten',
-  brandTagline: 'Soziale Abstimmungsplattform aus Europa. Stimme über die Themen ab, die die Welt heute bewegen - sortiert Land für Land.',
+  brandTagline: 'Werbefreie soziale Abstimmungsplattform aus Europa. Stimme über die Meinungen der Welt ab, Land für Land.',
   aboutPrinciplesTitle: 'Unsere Prinzipien',
   aboutPrincipleTimeTitle: 'Wir respektieren deine Zeit',
   aboutPrincipleTimeBody: 'Keine Werbung, keine sinnlosen Klicks, nur Meinungen.',
@@ -1307,7 +1307,7 @@ const de: Strings = {
   aboutVotesPerHourFew: 'Stimmen / Std.',
   aboutVotesPerHourMany: 'Stimmen / Std.',
   welcomeTitle: 'Willkommen bei Opinio',
-  welcomeBulletVote: 'Bewerte Aussagen, Ereignisse und Personen des öffentlichen Lebens mit Like oder Dislike',
+  welcomeBulletVote: 'Bewerte jede Meinung mit Like oder Dislike - von den Schlagzeilen bis zum Alltag',
   welcomeBulletExpire: 'Stimmen verfallen nach 24 Stunden, so bleiben die Rankings lebendig',
   welcomeBulletRefill: 'Jede Stimme lädt sich 1 Stunde nach dem Abstimmen wieder auf',
   welcomeCta: 'Los geht\'s',
@@ -1513,8 +1513,8 @@ const de: Strings = {
   reportsCount: '{count} Meldungen',
   seo: {
     home: {
-      title: 'Opinio - Stimme über das Weltgeschehen ab',
-      description: 'Eine soziale Abstimmungsplattform aus Europa. Like oder dislike die Aussagen, Ereignisse und Personen des öffentlichen Lebens, die die Welt prägen - Land für Land gewertet, alle 24 Std. aktualisiert.',
+      title: 'Opinio - Über die Meinungen der Welt abstimmen, Land für Land',
+      description: 'Eine werbefreie soziale Abstimmungsplattform aus Europa. Teile Meinungen und stimme über alles ab - von den Schlagzeilen bis zum Alltag - und sieh, wie jedes Land tickt, Land für Land, alle 24 Std. aktualisiert.',
     },
     stats: {
       title: 'Angesagte Meinungen gerade jetzt - Opinio',
@@ -1605,7 +1605,7 @@ const fr: Strings = {
   languageHint: 'Nous traduisons les opinios dans cette langue pour vous',
   upgradeBanner: 'Devenir Supporter',
   manageSubscription: "Gérer l'abonnement",
-  brandTagline: "Plateforme de vote social née en Europe. Votez sur les sujets qui façonnent le monde aujourd'hui, classés pays par pays.",
+  brandTagline: "Plateforme de vote social venue d'Europe, sans publicité. Votez sur les opinions du monde, pays par pays.",
   aboutPrinciplesTitle: 'Nos principes',
   aboutPrincipleTimeTitle: 'Nous respectons votre temps',
   aboutPrincipleTimeBody: 'Pas de pub, pas de clics inutiles, juste des opinions.',
@@ -1628,7 +1628,7 @@ const fr: Strings = {
   aboutVotesPerHourFew: 'votes / h',
   aboutVotesPerHourMany: 'votes / h',
   welcomeTitle: 'Bienvenue sur Opinio',
-  welcomeBulletVote: 'Aimez ou rejetez des déclarations, des événements et des personnalités publiques',
+  welcomeBulletVote: "Aimez ou rejetez n'importe quelle opinion - de l'actualité à la vie quotidienne",
   welcomeBulletExpire: 'Les votes expirent au bout de 24 heures, les classements restent donc vivants',
   welcomeBulletRefill: "Chaque vote se recharge 1 heure après l'avoir utilisé",
   welcomeCta: 'On vote',
@@ -1834,8 +1834,8 @@ const fr: Strings = {
   reportsCount: '{count} signalements',
   seo: {
     home: {
-      title: "Opinio - Votez sur l'actualité qui façonne le monde",
-      description: "Une plateforme de vote social venue d'Europe. Aimez ou rejetez les déclarations, événements et personnalités publiques qui façonnent le monde - classés pays par pays, actualisés toutes les 24 h.",
+      title: "Opinio - Votez sur les opinions du monde, pays par pays",
+      description: "Une plateforme de vote social venue d'Europe, sans publicité. Partagez vos opinions et votez sur tout - de l'actualité à la vie quotidienne - et voyez ce que ressent chaque pays, pays par pays, actualisé toutes les 24 h.",
     },
     stats: {
       title: 'Opinions tendance en ce moment - Opinio',
@@ -1926,7 +1926,7 @@ const it: Strings = {
   languageHint: 'Traduciamo gli opinios in questa lingua per te',
   upgradeBanner: 'Diventa Supporter',
   manageSubscription: 'Gestisci abbonamento',
-  brandTagline: 'Piattaforma di voto sociale nata in Europa. Vota sui temi che plasmano il mondo oggi, in classifica paese per paese.',
+  brandTagline: "Piattaforma di voto sociale dall'Europa, senza pubblicità. Vota le opinioni del mondo, paese per paese.",
   aboutPrinciplesTitle: 'I nostri principi',
   aboutPrincipleTimeTitle: 'Rispettiamo il tuo tempo',
   aboutPrincipleTimeBody: 'Niente pubblicità, niente clic inutili, solo opinioni.',
@@ -1949,7 +1949,7 @@ const it: Strings = {
   aboutVotesPerHourFew: 'voti / h',
   aboutVotesPerHourMany: 'voti / h',
   welcomeTitle: 'Benvenuto su Opinio',
-  welcomeBulletVote: 'Metti mi piace o non mi piace a dichiarazioni, eventi e personaggi pubblici',
+  welcomeBulletVote: 'Metti mi piace o non mi piace a qualsiasi opinione - dai titoli alla vita di tutti i giorni',
   welcomeBulletExpire: 'I voti scadono dopo 24 ore, quindi le classifiche restano vive',
   welcomeBulletRefill: 'Ogni voto si ricarica 1 ora dopo averlo usato',
   welcomeCta: 'Votiamo',
@@ -2155,8 +2155,8 @@ const it: Strings = {
   reportsCount: '{count} segnalazioni',
   seo: {
     home: {
-      title: 'Opinio - Vota sui temi che plasmano il mondo',
-      description: 'Una piattaforma di voto sociale dall\'Europa. Metti mi piace o non mi piace a dichiarazioni, eventi e personaggi pubblici che plasmano il mondo - in classifica paese per paese, aggiornata ogni 24 h.',
+      title: 'Opinio - Vota le opinioni del mondo, paese per paese',
+      description: 'Una piattaforma di voto sociale dall\'Europa, senza pubblicità. Condividi e vota opinioni su qualsiasi cosa - dai titoli alla vita di tutti i giorni - e scopri come la pensa ogni paese, paese per paese, aggiornato ogni 24 h.',
     },
     stats: {
       title: 'Opinioni di tendenza in questo momento - Opinio',
@@ -2247,7 +2247,7 @@ const pl: Strings = {
   languageHint: 'Tłumaczymy dla Ciebie opinio na ten język',
   upgradeBanner: 'Zostań wspierającym',
   manageSubscription: 'Zarządzaj subskrypcją',
-  brandTagline: 'Społecznościowa platforma głosowania z Europy. Głosuj na tematy kształtujące dzisiejszy świat, w rankingu kraj po kraju.',
+  brandTagline: 'Społecznościowa platforma głosowania z Europy, bez reklam. Głosuj na opinie z całego świata, kraj po kraju.',
   aboutPrinciplesTitle: 'Nasze zasady',
   aboutPrincipleTimeTitle: 'Szanujemy Twój czas',
   aboutPrincipleTimeBody: 'Bez reklam, bez zbędnych kliknięć, tylko opinie.',
@@ -2270,7 +2270,7 @@ const pl: Strings = {
   aboutVotesPerHourFew: 'głosy / godz',
   aboutVotesPerHourMany: 'głosów / godz',
   welcomeTitle: 'Witaj w Opinio',
-  welcomeBulletVote: 'Polub lub odrzuć wypowiedzi, wydarzenia i osoby publiczne',
+  welcomeBulletVote: 'Polub lub odrzuć dowolną opinię - od nagłówków po codzienne życie',
   welcomeBulletExpire: 'Głosy wygasają po 24 godzinach, więc rankingi wciąż żyją',
   welcomeBulletRefill: 'Każdy głos wraca godzinę po jego oddaniu',
   welcomeCta: 'Głosujmy',
@@ -2476,8 +2476,8 @@ const pl: Strings = {
   reportsCount: 'Zgłoszenia: {count}',
   seo: {
     home: {
-      title: 'Opinio - Głosuj o wydarzeniach, które kształtują świat',
-      description: 'Społecznościowa platforma głosowania z Europy. Polub lub odrzuć wypowiedzi, wydarzenia i osoby publiczne kształtujące świat - w rankingu kraj po kraju, odświeżane co 24 h.',
+      title: 'Opinio - Głosuj na opinie z całego świata, kraj po kraju',
+      description: 'Społecznościowa platforma głosowania z Europy, bez reklam. Dziel się opiniami i głosuj na wszystko - od nagłówków po codzienne życie - i zobacz, co czuje każdy kraj, kraj po kraju, odświeżane co 24 h.',
     },
     stats: {
       title: 'Popularne opinie w tej chwili - Opinio',

@@ -53,11 +53,11 @@
   <text x="558" y="172" fill="#f6f7fb" font-family="'Inter','Segoe UI',-apple-system,'Helvetica Neue',Arial,sans-serif" font-size="84" font-weight="800" letter-spacing="-2.5">Opinio</text>
 
   <!-- ===== Hero headline (catchy + searchable) ===== -->
-  <text x="600" y="306" text-anchor="middle" fill="#ffffff" font-family="'Inter','Segoe UI',-apple-system,'Helvetica Neue',Arial,sans-serif" font-size="62" font-weight="800" letter-spacing="-1.5">Vote on the stories</text>
-  <text x="600" y="378" text-anchor="middle" fill="#ffffff" font-family="'Inter','Segoe UI',-apple-system,'Helvetica Neue',Arial,sans-serif" font-size="62" font-weight="800" letter-spacing="-1.5">shaping the world today</text>
+  <text x="600" y="306" text-anchor="middle" fill="#ffffff" font-family="'Inter','Segoe UI',-apple-system,'Helvetica Neue',Arial,sans-serif" font-size="62" font-weight="800" letter-spacing="-1.5">Vote on the world's opinions,</text>
+  <text x="600" y="378" text-anchor="middle" fill="#ffffff" font-family="'Inter','Segoe UI',-apple-system,'Helvetica Neue',Arial,sans-serif" font-size="62" font-weight="800" letter-spacing="-1.5">country by country</text>
 
   <!-- Subline: identity + mechanic keywords -->
-  <text x="600" y="436" text-anchor="middle" fill="#c6cbdb" font-family="'Inter','Segoe UI',-apple-system,'Helvetica Neue',Arial,sans-serif" font-size="27" font-weight="500" letter-spacing="-0.2">Social voting platform from Europe &#183; country by country, refreshed every 24h</text>
+  <text x="600" y="436" text-anchor="middle" fill="#c6cbdb" font-family="'Inter','Segoe UI',-apple-system,'Helvetica Neue',Arial,sans-serif" font-size="27" font-weight="500" letter-spacing="-0.2">Ad-free social voting platform from Europe &#183; refreshed every 24h</text>
 
   <!-- ===== Pills: Rising / Falling / 24h votes (arrows reinforce the mark) ===== -->
   <g font-family="'Inter','Segoe UI',-apple-system,'Helvetica Neue',Arial,sans-serif" font-size="23" font-weight="600" transform="translate(0 498)">
