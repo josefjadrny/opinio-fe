@@ -83,6 +83,50 @@ const LANG_UI = {
   },
 };
 
+// Localized country-page title/description templates. Tokens: {country} = the
+// English country name (no translated table yet — see CLAUDE.md Open Work),
+// {likes} / {dislikes} = formatted 24h counts. Mirror of the seo.country block in
+// opinio-fe/src/i18n/strings.ts — keep the two in sync. The SPA reuses the
+// no-counts `description` at runtime; the worker swaps in `descriptionCounts`
+// whenever the country has live votes (a warmer, number-backed snippet).
+const COUNTRY_SEO = {
+  en: {
+    title: '{country}: loved or hated by the world? - Opinio',
+    description: 'See how the world feels about {country} right now - live opinion votes, refreshed every 24h on Opinio.',
+    descriptionCounts: 'How the world feels about {country} right now - {likes} likes and {dislikes} dislikes in the last 24h on Opinio.',
+  },
+  cs: {
+    title: '{country}: jak to vidí svět? - Opinio',
+    description: 'Podívejte se, jak svět právě teď vnímá zemi {country} - živé hlasování, obnovováno každých 24 h. Opinio.',
+    descriptionCounts: '{country}: jak to právě teď vidí svět - {likes} líbí se, {dislikes} nelíbí se za posledních 24 h. Opinio.',
+  },
+  es: {
+    title: '{country}: ¿qué opina el mundo? - Opinio',
+    description: 'Descubre cómo ve el mundo a {country} ahora mismo - votos en vivo, actualizados cada 24 h. Opinio.',
+    descriptionCounts: '{country}: qué opina el mundo ahora mismo - {likes} me gusta y {dislikes} no me gusta en 24 h. Opinio.',
+  },
+  de: {
+    title: '{country}: was denkt die Welt? - Opinio',
+    description: 'Sieh, wie die Welt {country} gerade sieht - Live-Abstimmungen, alle 24 Std. aktualisiert. Opinio.',
+    descriptionCounts: '{country}: was die Welt gerade denkt - {likes} Likes, {dislikes} Dislikes in 24 Std. Opinio.',
+  },
+  fr: {
+    title: "{country} : qu'en pense le monde ? - Opinio",
+    description: 'Découvrez ce que le monde pense de {country} en ce moment - votes en direct, actualisés toutes les 24 h. Opinio.',
+    descriptionCounts: "{country} : ce que le monde en pense - {likes} j'aime, {dislikes} je n'aime pas en 24 h. Opinio.",
+  },
+  it: {
+    title: '{country}: cosa ne pensa il mondo? - Opinio',
+    description: 'Scopri cosa pensa il mondo di {country} in questo momento - voti in tempo reale, aggiornati ogni 24 h. Opinio.',
+    descriptionCounts: '{country}: cosa ne pensa il mondo - {likes} mi piace, {dislikes} non mi piace nelle ultime 24 h. Opinio.',
+  },
+  pl: {
+    title: '{country}: co sądzi o tym świat? - Opinio',
+    description: 'Zobacz, co świat sądzi o {country} w tej chwili - głosowanie na żywo, odświeżane co 24 h. Opinio.',
+    descriptionCounts: '{country}: co świat o tym sądzi - {likes} polubień, {dislikes} ocen negatywnych w 24 h. Opinio.',
+  },
+};
+
 // Mirrors opinio-fe/src/utils/countries.ts ALL_COUNTRY_NAMES — used to render
 // country OG cards server-side without an API round-trip. Keep the two in sync.
 const COUNTRY_NAMES = {
@@ -772,12 +816,15 @@ async function handleCountry(request, code, lang = null) {
   }
 
   headers.set('x-opinio-og', lang ? 'country-lang' : 'country');
-  const title = `${name} - Opinio`;
   const likes = counts?.likes ?? 0;
   const dislikes = counts?.dislikes ?? 0;
-  const description = (likes || dislikes)
-    ? `${name} on Opinio - ${formatCountForOg(likes)} likes, ${formatCountForOg(dislikes)} dislikes in the last 24h.`
-    : `Live rankings and votes from ${name} on Opinio.`;
+  const seo = COUNTRY_SEO[lang] || COUNTRY_SEO.en;
+  const fill = (tpl) => tpl
+    .replace(/\{country\}/g, name)
+    .replace(/\{likes\}/g, formatCountForOg(likes))
+    .replace(/\{dislikes\}/g, formatCountForOg(dislikes));
+  const title = fill(seo.title);
+  const description = (likes || dislikes) ? fill(seo.descriptionCounts) : fill(seo.description);
   const basePath = `/c/${code}`;
   const canonicalUrl = lang ? `${SITE_BASE}/${lang}${basePath}` : `${SITE_BASE}${basePath}`;
 

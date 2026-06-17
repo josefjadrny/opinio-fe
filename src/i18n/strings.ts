@@ -553,6 +553,10 @@ const en: Strings = {
       title: "Opinio - Vote on the world's opinions, country by country",
       description: 'An ad-free social voting platform from Europe. Share and vote on opinions about anything - from the headlines to everyday life - and see how every country feels, country by country, refreshed every 24h.',
     },
+    country: {
+      title: '{country}: loved or hated by the world? - Opinio',
+      description: 'See how the world feels about {country} right now - live opinion votes, refreshed every 24h on Opinio.',
+    },
     stats: {
       title: 'Trending opinions right now - Opinio',
       description: 'The opinions, takes and ideas getting the most votes right now on Opinio - ranked live and refreshed every 24 hours.',
@@ -873,6 +877,10 @@ const cs: Strings = {
     home: {
       title: 'Opinio - Hlasujte o názorech celého světa, podle států',
       description: 'Sociální hlasovací platforma z Evropy, bez reklam. Sdílejte a hlasujte o názorech na cokoli - od titulků až po běžný život - a sledujte, jak to vidí každá země, podle států, obnovováno každých 24 h.',
+    },
+    country: {
+      title: '{country}: jak to vidí svět? - Opinio',
+      description: 'Podívejte se, jak svět právě teď vnímá zemi {country} - živé hlasování, obnovováno každých 24 h. Opinio.',
     },
     stats: {
       title: 'Nejdiskutovanější názory právě teď - Opinio',
@@ -1195,6 +1203,10 @@ const es: Strings = {
       title: 'Opinio - Vota las opiniones del mundo, país por país',
       description: 'Una plataforma de voto social desde Europa, sin anuncios. Comparte y vota opiniones sobre cualquier cosa - de los titulares a la vida cotidiana - y descubre cómo se siente cada país, país por país, actualizado cada 24 h.',
     },
+    country: {
+      title: '{country}: ¿qué opina el mundo? - Opinio',
+      description: 'Descubre cómo ve el mundo a {country} ahora mismo - votos en vivo, actualizados cada 24 h. Opinio.',
+    },
     stats: {
       title: 'Opiniones en tendencia ahora mismo - Opinio',
       description: 'Las opiniones, ideas y propuestas que más votos reciben ahora mismo en Opinio - clasificadas en vivo y actualizadas cada 24 horas.',
@@ -1515,6 +1527,10 @@ const de: Strings = {
     home: {
       title: 'Opinio - Über die Meinungen der Welt abstimmen, Land für Land',
       description: 'Eine werbefreie soziale Abstimmungsplattform aus Europa. Teile Meinungen und stimme über alles ab - von den Schlagzeilen bis zum Alltag - und sieh, wie jedes Land tickt, Land für Land, alle 24 Std. aktualisiert.',
+    },
+    country: {
+      title: '{country}: was denkt die Welt? - Opinio',
+      description: 'Sieh, wie die Welt {country} gerade sieht - Live-Abstimmungen, alle 24 Std. aktualisiert. Opinio.',
     },
     stats: {
       title: 'Angesagte Meinungen gerade jetzt - Opinio',
@@ -1837,6 +1853,10 @@ const fr: Strings = {
       title: "Opinio - Votez sur les opinions du monde, pays par pays",
       description: "Une plateforme de vote social venue d'Europe, sans publicité. Partagez vos opinions et votez sur tout - de l'actualité à la vie quotidienne - et voyez ce que ressent chaque pays, pays par pays, actualisé toutes les 24 h.",
     },
+    country: {
+      title: "{country} : qu'en pense le monde ? - Opinio",
+      description: 'Découvrez ce que le monde pense de {country} en ce moment - votes en direct, actualisés toutes les 24 h. Opinio.',
+    },
     stats: {
       title: 'Opinions tendance en ce moment - Opinio',
       description: 'Les opinions, analyses et idées qui reçoivent le plus de votes en ce moment sur Opinio - classées en direct et actualisées toutes les 24 heures.',
@@ -2158,6 +2178,10 @@ const it: Strings = {
       title: 'Opinio - Vota le opinioni del mondo, paese per paese',
       description: 'Una piattaforma di voto sociale dall\'Europa, senza pubblicità. Condividi e vota opinioni su qualsiasi cosa - dai titoli alla vita di tutti i giorni - e scopri come la pensa ogni paese, paese per paese, aggiornato ogni 24 h.',
     },
+    country: {
+      title: '{country}: cosa ne pensa il mondo? - Opinio',
+      description: 'Scopri cosa pensa il mondo di {country} in questo momento - voti in tempo reale, aggiornati ogni 24 h. Opinio.',
+    },
     stats: {
       title: 'Opinioni di tendenza in questo momento - Opinio',
       description: 'Le opinioni, le analisi e le idee che ricevono più voti in questo momento su Opinio - in classifica in diretta e aggiornate ogni 24 ore.',
@@ -2478,6 +2502,10 @@ const pl: Strings = {
     home: {
       title: 'Opinio - Głosuj na opinie z całego świata, według krajów',
       description: 'Społecznościowa platforma głosowania z Europy, bez reklam. Dziel się opiniami i głosuj na wszystko - od nagłówków po codzienne życie - i zobacz, co czuje każdy kraj, według krajów, odświeżane co 24 h.',
+    },
+    country: {
+      title: '{country}: co sądzi o tym świat? - Opinio',
+      description: 'Zobacz, co świat sądzi o {country} w tej chwili - głosowanie na żywo, odświeżane co 24 h. Opinio.',
     },
     stats: {
       title: 'Popularne opinie w tej chwili - Opinio',

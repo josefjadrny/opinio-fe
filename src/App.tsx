@@ -140,10 +140,14 @@ function applyProfileSeo(name: string, description: string, id: string) {
   upsertCanonical(canonicalUrl);
 }
 
-function applyCountrySeo(code: string) {
+function applyCountrySeo(code: string, seo: Strings['seo']) {
   const name = getCountryName(code);
-  const title = `${name} - ${BRAND}`;
-  const description = `Live rankings and votes from ${name} on Opinio.`;
+  // Localized "how the world feels about <country>" template (mirrors the worker's
+  // no-counts COUNTRY_SEO; the runtime SPA has no 24h counts handy). {country} is
+  // the only token. Falls back to a plain title if a locale lacks the entry.
+  const tpl = seo.country ?? { title: '{country} - Opinio', description: `Live rankings and votes from {country} on Opinio.` };
+  const title = tpl.title.replace(/\{country\}/g, name);
+  const description = tpl.description.replace(/\{country\}/g, name);
   const canonicalUrl = `${BASE_URL}${currentLocalePrefix()}/c/${code}`;
   document.title = title;
   upsertMeta('meta[name="description"]', { name: 'description', content: description });
@@ -572,14 +576,15 @@ function UserDetailRoute() {
 
 function CountryDetailRoute() {
   const { code } = useParams<{ code: string }>();
+  const { t } = useI18n();
   const upper = (code ?? '').toUpperCase();
   useEffect(() => {
     if (!upper) return;
     // Unknown code: the worker already serves a 404; don't title the tab with
     // the junk code - mark it as not found instead.
-    if (isKnownCountry(upper)) applyCountrySeo(upper);
+    if (isKnownCountry(upper)) applyCountrySeo(upper, t.seo);
     else document.title = `Page not found - ${BRAND}`;
-  }, [upper]);
+  }, [upper, t.seo]);
   return <CountryDetailModal countryCode={upper} />;
 }
 
