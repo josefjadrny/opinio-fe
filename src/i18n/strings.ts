@@ -642,7 +642,7 @@ const cs: Strings = {
   manageSubscription: 'Spravovat předplatné',
   language: 'Jazyk',
   languageHint: 'Opinio za vás překládáme do tohoto jazyka',
-  brandTagline: 'Sociální hlasovací platforma z Evropy, bez reklam. Hlasuj o názorech celého světa, zemi po zemi.',
+  brandTagline: 'Sociální hlasovací platforma z Evropy, bez reklam. Hlasuj o názorech celého světa, podle států.',
   aboutPrinciplesTitle: 'Naše principy',
   aboutPrincipleTimeTitle: 'Respektujeme váš čas',
   aboutPrincipleTimeBody: 'Žádné reklamy, žádné zbytečné klikání, jen názory.',
@@ -871,8 +871,8 @@ const cs: Strings = {
   reportsCount: 'Hlášení: {count}',
   seo: {
     home: {
-      title: 'Opinio - Hlasujte o názorech celého světa, zemi po zemi',
-      description: 'Sociální hlasovací platforma z Evropy, bez reklam. Sdílejte a hlasujte o názorech na cokoli - od titulků až po běžný život - a sledujte, jak to vidí každá země, zemi po zemi, obnovováno každých 24 h.',
+      title: 'Opinio - Hlasujte o názorech celého světa, podle států',
+      description: 'Sociální hlasovací platforma z Evropy, bez reklam. Sdílejte a hlasujte o názorech na cokoli - od titulků až po běžný život - a sledujte, jak to vidí každá země, podle států, obnovováno každých 24 h.',
     },
     stats: {
       title: 'Nejdiskutovanější názory právě teď - Opinio',
@@ -2247,7 +2247,7 @@ const pl: Strings = {
   languageHint: 'Tłumaczymy dla Ciebie opinio na ten język',
   upgradeBanner: 'Zostań wspierającym',
   manageSubscription: 'Zarządzaj subskrypcją',
-  brandTagline: 'Społecznościowa platforma głosowania z Europy, bez reklam. Głosuj na opinie z całego świata, kraj po kraju.',
+  brandTagline: 'Społecznościowa platforma głosowania z Europy, bez reklam. Głosuj na opinie z całego świata, według krajów.',
   aboutPrinciplesTitle: 'Nasze zasady',
   aboutPrincipleTimeTitle: 'Szanujemy Twój czas',
   aboutPrincipleTimeBody: 'Bez reklam, bez zbędnych kliknięć, tylko opinie.',
@@ -2476,8 +2476,8 @@ const pl: Strings = {
   reportsCount: 'Zgłoszenia: {count}',
   seo: {
     home: {
-      title: 'Opinio - Głosuj na opinie z całego świata, kraj po kraju',
-      description: 'Społecznościowa platforma głosowania z Europy, bez reklam. Dziel się opiniami i głosuj na wszystko - od nagłówków po codzienne życie - i zobacz, co czuje każdy kraj, kraj po kraju, odświeżane co 24 h.',
+      title: 'Opinio - Głosuj na opinie z całego świata, według krajów',
+      description: 'Społecznościowa platforma głosowania z Europy, bez reklam. Dziel się opiniami i głosuj na wszystko - od nagłówków po codzienne życie - i zobacz, co czuje każdy kraj, według krajów, odświeżane co 24 h.',
     },
     stats: {
       title: 'Popularne opinie w tej chwili - Opinio',

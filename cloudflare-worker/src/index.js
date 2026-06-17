@@ -628,7 +628,7 @@ const STATIC_PAGES = {
 // block in opinio-fe/src/i18n/strings.ts (same strings, two render paths).
 const STATIC_I18N = {
   cs: {
-    '/': { title: 'Opinio - Hlasujte o názorech celého světa, zemi po zemi', description: 'Sociální hlasovací platforma z Evropy, bez reklam. Sdílejte a hlasujte o názorech na cokoli - od titulků až po běžný život - a sledujte, jak to vidí každá země, zemi po zemi, obnovováno každých 24 h.' },
+    '/': { title: 'Opinio - Hlasujte o názorech celého světa, podle států', description: 'Sociální hlasovací platforma z Evropy, bez reklam. Sdílejte a hlasujte o názorech na cokoli - od titulků až po běžný život - a sledujte, jak to vidí každá země, podle států, obnovováno každých 24 h.' },
     '/about': { title: 'O Opinio - Jak funguje živé hlasování', description: 'Zjistěte, jak Opinio funguje: rychlé sociální hlasování, hlasy vyprší po 24 hodinách a živé světové trendy.' },
     '/privacy': { title: 'Zásady ochrany soukromí - Opinio', description: 'Zásady ochrany soukromí Opinio: co shromažďujeme, proč, jak dlouho a jaká máte práva podle GDPR.' },
     '/terms': { title: 'Podmínky použití - Opinio', description: 'Podmínky použití Opinio: pravidla pro přispívání, hlasování, předplatné a pozastavení účtů.' },
@@ -678,7 +678,7 @@ const STATIC_I18N = {
     '/support': { title: 'Assistenza - Opinio', description: "Contatta l'assistenza Opinio, gestisci i tuoi ticket e ottieni aiuto per il voto, i profili e le impostazioni dell'account." },
   },
   pl: {
-    '/': { title: 'Opinio - Głosuj na opinie z całego świata, kraj po kraju', description: 'Społecznościowa platforma głosowania z Europy, bez reklam. Dziel się opiniami i głosuj na wszystko - od nagłówków po codzienne życie - i zobacz, co czuje każdy kraj, kraj po kraju, odświeżane co 24 h.' },
+    '/': { title: 'Opinio - Głosuj na opinie z całego świata, według krajów', description: 'Społecznościowa platforma głosowania z Europy, bez reklam. Dziel się opiniami i głosuj na wszystko - od nagłówków po codzienne życie - i zobacz, co czuje każdy kraj, według krajów, odświeżane co 24 h.' },
     '/about': { title: 'O Opinio - Jak działa głosowanie na żywo', description: 'Dowiedz się, jak działa Opinio: szybkie głosowanie społecznościowe, głosy wygasające po 24 godzinach i światowe trendy na żywo.' },
     '/privacy': { title: 'Polityka prywatności - Opinio', description: 'Polityka prywatności Opinio: co zbieramy, dlaczego, jak długo i jakie masz prawa zgodnie z RODO.' },
     '/terms': { title: 'Regulamin - Opinio', description: 'Regulamin Opinio: zasady publikowania, głosowanie, subskrypcje i zawieszenia kont.' },
