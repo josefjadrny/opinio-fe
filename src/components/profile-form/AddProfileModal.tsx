@@ -545,6 +545,9 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           </p>
         </div>
 
+        {/* Attachments — image + link grouped with tight (8px) spacing so the
+            two "Add ..." affordances sit together, not a full field-gap apart. */}
+        <div className="space-y-2">
         {/* Optional image — collapsed to a single text affordance by default so
             the form reads as four core fields. Clicking opens the picker; once a
             file is chosen we show a compact preview with change / remove. */}
@@ -580,7 +583,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
             <button
               type="button"
               onClick={() => contentFileInputRef.current?.click()}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-white/50 hover:text-white/80 transition-colors"
+              className="flex w-fit items-center gap-1.5 text-xs font-medium text-white/50 hover:text-white/80 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M21 3.75H3A.75.75 0 002.25 4.5v15a.75.75 0 00.75.75h18a.75.75 0 00.75-.75v-15A.75.75 0 0021 3.75z" />
@@ -636,12 +639,13 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
             <button
               type="button"
               onClick={() => { setLinkOpen(true); requestAnimationFrame(() => linkInputRef.current?.focus()); }}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-white/50 hover:text-white/80 transition-colors"
+              className="flex w-fit items-center gap-1.5 text-xs font-medium text-white/50 hover:text-white/80 transition-colors"
             >
               <LinkIcon />
               {t.linkAdd}
             </button>
           )}
+        </div>
         </div>
 
         {isAnonymous ? (
