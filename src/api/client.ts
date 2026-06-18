@@ -115,6 +115,7 @@ export function addNewProfile(data: {
   imageKey?: string;
   contentImageUrl?: string;
   contentImageKey?: string;
+  link?: string;
   addedBy: string;
 }): Promise<import('../types/profile').Profile> {
   return apiFetch('/api/profiles', {

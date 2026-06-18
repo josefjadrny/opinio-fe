@@ -8,8 +8,11 @@ import { FlagImg } from '../common/CountryFlag';
 import { ALL_ROLES, ROLE_COLORS } from '../../utils/roles';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSignIn } from '../auth/SignInContext';
 import { resizeImage } from '../../utils/resizeImage';
+import { Avatar } from '../profile/Avatar';
+import { RoleBadge } from '../common/RoleBadge';
 import type { Role } from '../../types/profile';
 
 function getDefaultCountryCode() {
@@ -44,6 +47,91 @@ const HINT = 'text-xs text-white/30 mt-1.5 leading-snug';
 const COUNTER = 'text-xs text-white/30 mt-1 text-right tabular-nums';
 const ERROR = 'text-xs text-red-400 mt-1';
 
+// Link is stored as plain text for the MVP (no OG fetch / preview card yet).
+// We only sanity-check it's an http(s) URL and cap it so the BE contract is
+// simple (single optional string, <= 255 chars).
+const MAX_LINK_LENGTH = 255;
+
+function isValidLink(value: string) {
+  try {
+    const u = new URL(value);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+// "https://www.example.com/path?x=1" -> "example.com" for the compact chip.
+function linkHost(value: string) {
+  try {
+    return new URL(value).hostname.replace(/^www\./, '');
+  } catch {
+    return value;
+  }
+}
+
+const LinkIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+  </svg>
+);
+
+// Static, non-interactive twin of the opinio card so the author sees the result
+// of every field as they type. Mirrors the detail-modal layout (header + body +
+// content image + link chip + read-only vote row). Not the real ProfileCard,
+// which is wired into navigation/hover/voting and needs a full Profile object.
+interface PreviewCardProps {
+  name: string;
+  role: Role;
+  countryCode: string;
+  description: string;
+  avatarUrl: string | null;
+  contentImageUrl: string | null;
+  link: string;
+}
+
+function OpinioPreviewCard({ name, role, countryCode, description, avatarUrl, contentImageUrl, link }: PreviewCardProps) {
+  const { t } = useI18n();
+  const hasLink = link.trim().length > 0;
+  return (
+    <div className="rounded-xl border border-border bg-surface-light/50 overflow-hidden">
+      <div className="flex items-start gap-2.5 px-3 pt-3">
+        <Avatar name={name || '?'} imageUrl={avatarUrl} className="w-9 h-9 shrink-0" />
+        <div className="min-w-0 flex-1">
+          <span className={`block text-sm font-semibold truncate ${name ? 'text-white' : 'text-white/30'}`}>
+            {name || t.previewHeadlinePlaceholder}
+          </span>
+          <div className="flex items-center gap-1.5 mt-1">
+            <FlagImg code={countryCode} />
+            <RoleBadge role={role} />
+            <span className="text-[9px] leading-none font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 ring-1 ring-orange-500/40">
+              {t.newBadge}
+            </span>
+          </div>
+        </div>
+      </div>
+      <p className={`px-3 mt-2 text-[13px] leading-relaxed break-words ${description ? 'text-white/80' : 'text-white/30'}`}>
+        {description || t.previewDescriptionPlaceholder}
+      </p>
+      {contentImageUrl && (
+        <img src={contentImageUrl} alt="" className="mt-2 w-full max-h-32 object-contain bg-black/30" />
+      )}
+      {hasLink && (
+        <div className="px-3 mt-2">
+          <span className="inline-flex items-center gap-1 max-w-full text-[11px] text-accent/90 bg-accent/10 rounded-full px-2 py-0.5">
+            <LinkIcon className="w-3 h-3 shrink-0" />
+            <span className="truncate">{linkHost(link)}</span>
+          </span>
+        </div>
+      )}
+      <div className="flex items-center gap-4 px-3 py-2.5 mt-2 border-t border-border text-xs font-semibold tabular-nums">
+        <span className="inline-flex items-baseline gap-1 text-positive"><span className="text-[10px]">▲</span>0</span>
+        <span className="inline-flex items-baseline gap-1 text-negative"><span className="text-[10px]">▼</span>0</span>
+      </div>
+    </div>
+  );
+}
+
 const NominateIcon = () => (
   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.75}>
     <path stroke="var(--color-negative)" strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
@@ -70,7 +158,12 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const { data: me } = useMe();
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
   const { promptSignIn } = useSignIn();
+
+  // Clipboard read is gated behind a secure context + browser support; only
+  // show the Paste affordance where it actually works.
+  const canPaste = typeof navigator !== 'undefined' && !!navigator.clipboard?.readText;
 
   const user = me?.user;
   const isAnonymous = !user || user.tier === 'anonymous';
@@ -89,6 +182,10 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const [contentImageFile, setContentImageFile] = useState<File | null>(null);
   const [contentPreviewUrl, setContentPreviewUrl] = useState<string | null>(null);
   const [contentImageError, setContentImageError] = useState<string | null>(null);
+  const [link, setLink] = useState('');
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkError, setLinkError] = useState<string | null>(null);
+  const linkInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const contentFileInputRef = useRef<HTMLInputElement>(null);
   const countryFieldRef = useRef<HTMLDivElement>(null);
@@ -165,8 +262,20 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     setContentPreviewUrl(URL.createObjectURL(file));
   };
 
+  const handlePasteLink = async () => {
+    try {
+      const text = (await navigator.clipboard.readText()).trim();
+      if (text) {
+        setLink(text.slice(0, MAX_LINK_LENGTH));
+        setLinkError(null);
+      }
+    } catch {
+      // Permission denied / unavailable — silently no-op; the user can still type.
+    }
+  };
+
   const mutation = useMutation({
-    mutationFn: async (fields: { name: string; role: Role; countryCode: string; description: string }) => {
+    mutationFn: async (fields: { name: string; role: Role; countryCode: string; description: string; link?: string }) => {
       let finalImageUrl = '';
       let finalImageKey: string | undefined;
       if (imageBlob) {
@@ -195,6 +304,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
         imageKey: finalImageKey,
         contentImageUrl: finalContentImageUrl,
         contentImageKey: finalContentImageKey,
+        link: fields.link,
         addedBy: user?.displayName ?? 'Anonymous',
       });
     },
@@ -208,7 +318,19 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     e.preventDefault();
     if (!name.trim() || !description.trim()) return;
     if (isBlocked) return;
-    mutation.mutate({ name: name.trim(), role, countryCode, description: description.trim() });
+    const trimmedLink = link.trim();
+    if (trimmedLink && !isValidLink(trimmedLink)) {
+      setLinkError(t.linkInvalid);
+      setLinkOpen(true);
+      return;
+    }
+    mutation.mutate({
+      name: name.trim(),
+      role,
+      countryCode,
+      description: description.trim(),
+      link: trimmedLink || undefined,
+    });
   };
 
   return (
@@ -216,10 +338,24 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
       onClose={onClose}
       title={t.addProfileTitle}
       icon={<NominateIcon />}
-      maxWidth="max-w-md"
+      maxWidth="max-w-3xl"
       desktopScrollable
     >
-      <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
+      <div className="md:flex md:items-stretch">
+      {isMobile && (
+        <div className="sticky top-0 z-10 bg-surface border-b border-border px-4 py-3">
+          <OpinioPreviewCard
+            name={name}
+            role={role}
+            countryCode={countryCode}
+            description={description}
+            avatarUrl={previewUrl}
+            contentImageUrl={contentPreviewUrl}
+            link={link}
+          />
+        </div>
+      )}
+      <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4 md:flex-1 md:min-w-0">
         {/* Statement — avatar picker sits inline to the left, so the opinio's
             face and headline read as one unit and we drop a whole labeled row. */}
         <div>
@@ -273,9 +409,12 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
               required
             />
           </div>
-          <p className={`${COUNTER} ${name.length >= 36 ? 'text-red-400' : ''}`}>
-            {name.length} / 40
-          </p>
+          <div className="flex items-start justify-between gap-3 mt-1.5">
+            <p className="text-xs text-white/30 leading-snug">{t.statementHint}</p>
+            <p className={`text-xs text-white/30 tabular-nums shrink-0 ${name.length >= 36 ? 'text-red-400' : ''}`}>
+              {name.length} / 40
+            </p>
+          </div>
           {imageError && <p className={ERROR}>{imageError}</p>}
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
         </div>
@@ -431,6 +570,58 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           <input ref={contentFileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleContentFileChange} />
         </div>
 
+        {/* Optional link — one URL, plain text for now (no OG/preview in MVP).
+            Same collapsed-affordance pattern as the content image; sits next to
+            it so future attachment types (e.g. video) slot in here too. */}
+        <div>
+          {linkOpen || link ? (
+            <div>
+              <label className={LABEL}>{t.linkLabel}</label>
+              <div className="flex gap-2">
+                <input
+                  ref={linkInputRef}
+                  type="url"
+                  inputMode="url"
+                  placeholder={t.linkPlaceholder}
+                  value={link}
+                  onChange={(e) => { setLink(e.target.value.slice(0, MAX_LINK_LENGTH)); setLinkError(null); }}
+                  maxLength={MAX_LINK_LENGTH}
+                  className={`${INPUT} flex-1 min-w-0`}
+                />
+                {canPaste && (
+                  <button
+                    type="button"
+                    onClick={handlePasteLink}
+                    className="shrink-0 px-3 rounded-lg border border-border text-xs font-medium text-white/70 hover:text-white hover:border-white/25 transition-colors"
+                  >
+                    {t.linkPaste}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => { setLink(''); setLinkError(null); setLinkOpen(false); }}
+                  aria-label={t.linkRemove}
+                  className="shrink-0 px-2 text-white/40 hover:text-white/80 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              {linkError && <p className={ERROR}>{linkError}</p>}
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => { setLinkOpen(true); requestAnimationFrame(() => linkInputRef.current?.focus()); }}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-white/50 hover:text-white/80 transition-colors"
+            >
+              <LinkIcon />
+              {t.linkAdd}
+            </button>
+          )}
+        </div>
+
         {isAnonymous ? (
           <div className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 flex items-center justify-between gap-3">
             <p className="text-sm text-white/70">{t.nominateTooltip}</p>
@@ -481,6 +672,24 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           </button>
         )}
       </form>
+      {!isMobile && (
+        <aside className="md:flex md:flex-col md:w-72 md:shrink-0 border-l border-border bg-black/20 px-5 py-4">
+          <div className="sticky top-4">
+            <p className="text-xs font-medium text-white/50 mb-2">{t.previewCaption}</p>
+            <OpinioPreviewCard
+              name={name}
+              role={role}
+              countryCode={countryCode}
+              description={description}
+              avatarUrl={previewUrl}
+              contentImageUrl={contentPreviewUrl}
+              link={link}
+            />
+            <p className="text-xs text-white/30 mt-2">{t.votesExpireNote}</p>
+          </div>
+        </aside>
+      )}
+      </div>
     </ModalShell>
   );
 }
