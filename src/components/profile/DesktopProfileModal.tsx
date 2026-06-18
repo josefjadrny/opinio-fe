@@ -220,7 +220,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                   )}
                   {profile.hasLink && (
                     <div>
-                      <SourceLink profileId={profile.id} />
+                      <SourceLink profileId={profile.id} host={profile.linkHost} />
                     </div>
                   )}
                 </div>

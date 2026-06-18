@@ -13,6 +13,7 @@ import { useSignIn } from '../auth/SignInContext';
 import { resizeImage } from '../../utils/resizeImage';
 import { Avatar } from '../profile/Avatar';
 import { RoleBadge } from '../common/RoleBadge';
+import { LabelBadge } from '../profile/LabelBadge';
 import type { Role } from '../../types/profile';
 
 function getDefaultCountryCode() {
@@ -88,25 +89,27 @@ interface PreviewCardProps {
   avatarUrl: string | null;
   contentImageUrl: string | null;
   link: string;
+  // Votes row is dropped on mobile (the pinned preview must stay compact).
+  showVotes?: boolean;
 }
 
-function OpinioPreviewCard({ name, role, countryCode, description, avatarUrl, contentImageUrl, link }: PreviewCardProps) {
+function OpinioPreviewCard({ name, role, countryCode, description, avatarUrl, contentImageUrl, link, showVotes = true }: PreviewCardProps) {
   const { t } = useI18n();
   const hasLink = link.trim().length > 0;
   return (
     <div className="rounded-xl border border-border bg-surface-light/50 overflow-hidden">
+      {/* Name + badges share one wrapping row (mirrors ProfileCard) so there's
+          no dead gap between the headline and the flag/category/NEW row. */}
       <div className="flex items-start gap-2.5 px-3 pt-3">
         <Avatar name={name || '?'} imageUrl={avatarUrl} className="w-9 h-9 shrink-0" />
-        <div className="min-w-0 flex-1">
-          <span className={`block text-sm font-semibold truncate ${name ? 'text-white' : 'text-white/30'}`}>
+        <div className="min-w-0 flex-1 flex items-center gap-x-1.5 gap-y-0.5 flex-wrap">
+          <span className={`text-sm font-semibold truncate min-w-0 flex-shrink ${name ? 'text-white' : 'text-white/30'}`}>
             {name || t.previewHeadlinePlaceholder}
           </span>
-          <div className="flex items-center gap-1.5 mt-1">
+          <div className="flex items-center gap-1.5 shrink-0">
             <FlagImg code={countryCode} />
             <RoleBadge role={role} />
-            <span className="text-[9px] leading-none font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 ring-1 ring-orange-500/40">
-              {t.newBadge}
-            </span>
+            <LabelBadge label="new" />
           </div>
         </div>
       </div>
@@ -124,10 +127,13 @@ function OpinioPreviewCard({ name, role, countryCode, description, avatarUrl, co
           </span>
         </div>
       )}
-      <div className="flex items-center gap-4 px-3 py-2.5 mt-2 border-t border-border text-xs font-semibold tabular-nums">
-        <span className="inline-flex items-baseline gap-1 text-positive"><span className="text-[10px]">▲</span>0</span>
-        <span className="inline-flex items-baseline gap-1 text-negative"><span className="text-[10px]">▼</span>0</span>
-      </div>
+      {showVotes && (
+        <div className="flex items-center gap-4 px-3 py-2.5 mt-2 border-t border-border text-xs font-semibold tabular-nums">
+          <span className="inline-flex items-baseline gap-1 text-positive"><span className="text-[10px]">▲</span>0</span>
+          <span className="inline-flex items-baseline gap-1 text-negative"><span className="text-[10px]">▼</span>0</span>
+        </div>
+      )}
+      {!showVotes && <div className="pb-3" />}
     </div>
   );
 }
@@ -352,6 +358,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
             avatarUrl={previewUrl}
             contentImageUrl={contentPreviewUrl}
             link={link}
+            showVotes={false}
           />
         </div>
       )}

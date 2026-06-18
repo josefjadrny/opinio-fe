@@ -157,7 +157,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
           )}
           {profile.hasLink && (
             <div>
-              <SourceLink profileId={profile.id} />
+              <SourceLink profileId={profile.id} host={profile.linkHost} />
             </div>
           )}
           {profile.addedBy && (

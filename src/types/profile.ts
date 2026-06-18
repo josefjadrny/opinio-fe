@@ -18,8 +18,10 @@ export interface Profile {
   contentImageUrl: string | null;
   // True when the opinio carries a source link. The raw URL is never sent to the
   // client; it is reached only via GET /l/:id (see profileLinkUrl), which
-  // redirects + counts the click.
+  // redirects + counts the click. linkHost is just the destination hostname
+  // (e.g. "reuters.com") for display so users see where the link goes.
   hasLink?: boolean;
+  linkHost?: string | null;
   countryCode: string;
   description: string;
   // name/description above carry the translation for the requested UI language
