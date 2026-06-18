@@ -352,7 +352,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
       onClose={onClose}
       title={t.addProfileTitle}
       icon={<NominateIcon />}
-      maxWidth="max-w-3xl"
+      maxWidth="max-w-4xl"
       desktopScrollable
     >
       <div className="md:flex md:items-stretch">
@@ -699,7 +699,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
         )}
       </form>
       {!isMobile && (
-        <aside className="md:flex md:flex-col md:w-72 md:shrink-0 border-l border-border bg-black/20 px-5 py-4">
+        <aside className="md:flex md:flex-col md:w-96 md:shrink-0 border-l border-border bg-black/20 px-5 py-4">
           <div className="sticky top-4">
             {/* Same corner tag as mobile - overlays the card's top-right corner. */}
             <div className="relative">
