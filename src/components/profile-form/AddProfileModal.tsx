@@ -358,16 +358,23 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
       <div className="md:flex md:items-stretch">
       {isMobile && (
         <div className="sticky top-0 z-10 bg-surface border-b border-border px-4 py-3">
-          <OpinioPreviewCard
-            name={name}
-            role={role}
-            countryCode={countryCode}
-            description={description}
-            avatarUrl={previewUrl}
-            contentImageUrl={contentPreviewUrl}
-            link={link}
-            showVotes={false}
-          />
+          {/* "Live preview" tag overlays the card's top-right corner (absolute,
+              out of flow) so the cue costs zero height and zero width. */}
+          <div className="relative">
+            <span className="absolute -top-2 right-3 z-10 text-[10px] font-medium uppercase tracking-wide text-white/50 bg-surface border border-border rounded-full px-2 py-0.5 pointer-events-none">
+              {t.previewCaption}
+            </span>
+            <OpinioPreviewCard
+              name={name}
+              role={role}
+              countryCode={countryCode}
+              description={description}
+              avatarUrl={previewUrl}
+              contentImageUrl={contentPreviewUrl}
+              link={link}
+              showVotes={false}
+            />
+          </div>
         </div>
       )}
       <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4 md:flex-1 md:min-w-0">
@@ -690,16 +697,21 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
       {!isMobile && (
         <aside className="md:flex md:flex-col md:w-72 md:shrink-0 border-l border-border bg-black/20 px-5 py-4">
           <div className="sticky top-4">
-            <p className="text-xs font-medium text-white/50 mb-2">{t.previewCaption}</p>
-            <OpinioPreviewCard
-              name={name}
-              role={role}
-              countryCode={countryCode}
-              description={description}
-              avatarUrl={previewUrl}
-              contentImageUrl={contentPreviewUrl}
-              link={link}
-            />
+            {/* Same corner tag as mobile - overlays the card's top-right corner. */}
+            <div className="relative">
+              <span className="absolute -top-2 right-3 z-10 text-[10px] font-medium uppercase tracking-wide text-white/50 bg-surface border border-border rounded-full px-2 py-0.5 pointer-events-none">
+                {t.previewCaption}
+              </span>
+              <OpinioPreviewCard
+                name={name}
+                role={role}
+                countryCode={countryCode}
+                description={description}
+                avatarUrl={previewUrl}
+                contentImageUrl={contentPreviewUrl}
+                link={link}
+              />
+            </div>
             <p className="text-xs text-white/30 mt-2">{t.votesExpireNote}</p>
           </div>
         </aside>
