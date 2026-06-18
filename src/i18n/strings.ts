@@ -228,6 +228,7 @@ export interface Strings {
   share: string;
   linkCopied: string;
   seeOriginal: string;
+  sourceLink: string;
   seeTranslation: string;
   userJoined: string;
   userLikesReceived: string;
@@ -527,6 +528,7 @@ const en: Strings = {
   share: 'Share',
   linkCopied: 'Link copied',
   seeOriginal: 'See original',
+  sourceLink: 'Source',
   seeTranslation: 'See translation',
   userJoined: 'Joined {date}',
   userLikesReceived: 'likes received',
@@ -863,6 +865,7 @@ const cs: Strings = {
   share: 'Sdílet',
   linkCopied: 'Odkaz zkopírován',
   seeOriginal: 'Zobrazit originál',
+  sourceLink: 'Zdroj',
   seeTranslation: 'Zobrazit překlad',
   userJoined: 'Účet od {date}',
   userLikesReceived: 'získaných lajků',
@@ -1199,6 +1202,7 @@ const es: Strings = {
   share: 'Compartir',
   linkCopied: 'Enlace copiado',
   seeOriginal: 'Ver original',
+  sourceLink: 'Fuente',
   seeTranslation: 'Ver traducción',
   userJoined: 'Se unió el {date}',
   userLikesReceived: 'votos positivos recibidos',
@@ -1535,6 +1539,7 @@ const de: Strings = {
   share: 'Teilen',
   linkCopied: 'Link kopiert',
   seeOriginal: 'Original anzeigen',
+  sourceLink: 'Quelle',
   seeTranslation: 'Übersetzung anzeigen',
   userJoined: 'Dabei seit {date}',
   userLikesReceived: 'erhaltene Likes',
@@ -1871,6 +1876,7 @@ const fr: Strings = {
   share: 'Partager',
   linkCopied: 'Lien copié',
   seeOriginal: "Voir l'original",
+  sourceLink: 'Source',
   seeTranslation: 'Voir la traduction',
   userJoined: 'Inscrit le {date}',
   userLikesReceived: "j'aime reçus",
@@ -2207,6 +2213,7 @@ const it: Strings = {
   share: 'Condividi',
   linkCopied: 'Link copiato',
   seeOriginal: 'Vedi originale',
+  sourceLink: 'Fonte',
   seeTranslation: 'Vedi traduzione',
   userJoined: 'Iscritto il {date}',
   userLikesReceived: 'mi piace ricevuti',
@@ -2543,6 +2550,7 @@ const pl: Strings = {
   share: 'Udostępnij',
   linkCopied: 'Link skopiowany',
   seeOriginal: 'Pokaż oryginał',
+  sourceLink: 'Źródło',
   seeTranslation: 'Pokaż tłumaczenie',
   userJoined: 'Dołączył {date}',
   userLikesReceived: 'otrzymanych polubień',

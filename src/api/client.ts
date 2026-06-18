@@ -129,6 +129,13 @@ export function getProfile(profileId: string, lang?: string): Promise<import('..
   return apiFetch(`/api/profiles/${profileId}${qs}`);
 }
 
+// Outbound source-link URL for an opinio. Points at the API redirect endpoint
+// (counts the click + keeps the raw URL behind our domain) rather than the raw
+// link, which the client never receives. Used as an <a href> opened in a new tab.
+export function profileLinkUrl(profileId: string): string {
+  return `${API_URL}/l/${profileId}`;
+}
+
 export async function deleteProfile(profileId: string): Promise<void> {
   const res = await fetch(`${API_URL}/api/profiles/${profileId}`, {
     method: 'DELETE',

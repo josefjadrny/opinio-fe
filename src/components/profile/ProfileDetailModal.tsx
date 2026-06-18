@@ -11,6 +11,7 @@ import { VoteSentimentBar } from './VoteSentimentBar';
 import { ContentImageLightbox } from './ContentImageLightbox';
 import { useMe } from '../../hooks/useMe';
 import { RoleBadge } from '../common/RoleBadge';
+import { SourceLink } from './SourceLink';
 import { CountryFlag, FlagImg } from '../common/CountryFlag';
 import { getCountryName } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
@@ -153,6 +154,11 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 className="w-full h-auto max-h-[220px] object-contain"
               />
             </button>
+          )}
+          {profile.hasLink && (
+            <div>
+              <SourceLink profileId={profile.id} />
+            </div>
           )}
           {profile.addedBy && (
             <p className="text-xs text-white/30">

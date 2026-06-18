@@ -16,6 +16,10 @@ export interface Profile {
   // Optional large content image (720p JPEG) shown on the detail page and
   // desktop hover preview. Separate from imageUrl, which is the 128×128 avatar.
   contentImageUrl: string | null;
+  // True when the opinio carries a source link. The raw URL is never sent to the
+  // client; it is reached only via GET /l/:id (see profileLinkUrl), which
+  // redirects + counts the click.
+  hasLink?: boolean;
   countryCode: string;
   description: string;
   // name/description above carry the translation for the requested UI language
