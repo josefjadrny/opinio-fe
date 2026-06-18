@@ -37,7 +37,6 @@ export interface Strings {
   linkRemove: string;
   previewCaption: string;
   previewHeadlinePlaceholder: string;
-  previewDescriptionPlaceholder: string;
   votesExpireNote: string;
   lightboxDownload: string;
   newBadge: string;
@@ -318,7 +317,6 @@ const en: Strings = {
   linkRemove: 'Remove link',
   previewCaption: 'Preview',
   previewHeadlinePlaceholder: 'Your headline',
-  previewDescriptionPlaceholder: 'Your long story short...',
   votesExpireNote: 'Votes expire after 24h.',
   lightboxDownload: 'Download',
   newBadge: 'NEW',
@@ -655,7 +653,6 @@ const cs: Strings = {
   linkRemove: 'Odebrat odkaz',
   previewCaption: 'Náhled',
   previewHeadlinePlaceholder: 'Váš titulek',
-  previewDescriptionPlaceholder: 'Vaše shrnutí v kostce...',
   votesExpireNote: 'Hlasy vyprší po 24 h.',
   lightboxDownload: 'Stáhnout',
   newBadge: 'NOVÝ',
@@ -992,7 +989,6 @@ const es: Strings = {
   linkRemove: 'Quitar enlace',
   previewCaption: 'Vista previa',
   previewHeadlinePlaceholder: 'Tu titular',
-  previewDescriptionPlaceholder: 'Tu resumen en pocas palabras...',
   votesExpireNote: 'Los votos caducan tras 24 h.',
   lightboxDownload: 'Descargar',
   newBadge: 'NUEVO',
@@ -1329,7 +1325,6 @@ const de: Strings = {
   linkRemove: 'Link entfernen',
   previewCaption: 'Vorschau',
   previewHeadlinePlaceholder: 'Deine Überschrift',
-  previewDescriptionPlaceholder: 'Deine Kurzfassung...',
   votesExpireNote: 'Stimmen verfallen nach 24 Std.',
   lightboxDownload: 'Herunterladen',
   newBadge: 'NEU',
@@ -1666,7 +1661,6 @@ const fr: Strings = {
   linkRemove: 'Retirer le lien',
   previewCaption: 'Aperçu',
   previewHeadlinePlaceholder: 'Votre titre',
-  previewDescriptionPlaceholder: 'Votre résumé en bref...',
   votesExpireNote: 'Les votes expirent après 24 h.',
   lightboxDownload: 'Télécharger',
   newBadge: 'NOUVEAU',
@@ -2003,7 +1997,6 @@ const it: Strings = {
   linkRemove: 'Rimuovi link',
   previewCaption: 'Anteprima',
   previewHeadlinePlaceholder: 'Il tuo titolo',
-  previewDescriptionPlaceholder: 'Il tuo riassunto in breve...',
   votesExpireNote: 'I voti scadono dopo 24 h.',
   lightboxDownload: 'Scarica',
   newBadge: 'NUOVO',
@@ -2340,7 +2333,6 @@ const pl: Strings = {
   linkRemove: 'Usuń link',
   previewCaption: 'Podgląd',
   previewHeadlinePlaceholder: 'Twój nagłówek',
-  previewDescriptionPlaceholder: 'Twoje streszczenie w skrócie...',
   votesExpireNote: 'Głosy wygasają po 24 godz.',
   lightboxDownload: 'Pobierz',
   newBadge: 'NOWE',

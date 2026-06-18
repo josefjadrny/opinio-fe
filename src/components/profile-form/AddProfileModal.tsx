@@ -122,7 +122,7 @@ function OpinioPreviewCard({ name, role, countryCode, description, avatarUrl, co
         </div>
       </div>
       <p className={`px-3 mt-2 text-[13px] leading-relaxed break-words ${description ? 'text-white/80' : 'text-white/30'}`}>
-        {description || t.previewDescriptionPlaceholder}
+        {description || t.descriptionLabel}
       </p>
       {contentImageUrl && (
         <img src={contentImageUrl} alt="" className="mt-2 w-full max-h-32 object-contain bg-black/30" />
