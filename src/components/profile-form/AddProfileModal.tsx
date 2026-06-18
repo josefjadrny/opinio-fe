@@ -101,7 +101,15 @@ function OpinioPreviewCard({ name, role, countryCode, description, avatarUrl, co
       {/* Name + badges share one wrapping row (mirrors ProfileCard) so there's
           no dead gap between the headline and the flag/category/NEW row. */}
       <div className="flex items-start gap-2.5 px-3 pt-3">
-        <Avatar name={name || '?'} imageUrl={avatarUrl} className="w-9 h-9 shrink-0" />
+        {avatarUrl ? (
+          <Avatar name={name || '?'} imageUrl={avatarUrl} className="w-9 h-9 shrink-0" />
+        ) : (
+          // Neutral placeholder so the avatar doesn't reshuffle its hashed color
+          // on every keystroke — the color is meaningless in the preview.
+          <div className="w-9 h-9 shrink-0 rounded-full bg-white/10 flex items-center justify-center text-white/40 text-sm font-semibold">
+            {(name.trim()[0] || '?').toUpperCase()}
+          </div>
+        )}
         <div className="min-w-0 flex-1 flex items-center gap-x-1.5 gap-y-0.5 flex-wrap">
           <span className={`text-sm font-semibold truncate min-w-0 flex-shrink ${name ? 'text-white' : 'text-white/30'}`}>
             {name || t.previewHeadlinePlaceholder}
