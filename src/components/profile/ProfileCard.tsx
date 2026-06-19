@@ -263,7 +263,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
           </div>
         </div>
         <p className="text-[13px] text-text-secondary leading-snug line-clamp-2 mt-0.5 mb-1.5">{description}</p>
-        <div onClick={(e) => e.stopPropagation()}>
+        <div className="w-fit" onClick={(e) => e.stopPropagation()}>
           <VoteButtons
             profileId={profile.id}
             likes={profile.likes}
