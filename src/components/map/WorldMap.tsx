@@ -20,8 +20,10 @@ const DEFAULT_FILL = '#3a3a6a';
 // City names fade in progressively as you zoom so labels never pile up: capitals
 // first, then secondary cities deeper in (where there's room). Dots are always
 // drawn. Tuned with the higher MAX_ZOOM so dense regions can be pulled apart.
-const CAPITAL_LABEL_ZOOM = 1.6;
-const CITY_LABEL_ZOOM = 2.2;
+// Thresholds kept high so a barely-zoomed map (esp. on wide Full HD layouts)
+// doesn't dump the whole capital set at once.
+const CAPITAL_LABEL_ZOOM = 2.0;
+const CITY_LABEL_ZOOM = 2.8;
 
 // City labels/dots are constant in SVG user units, so the map's CSS render width
 // (viewBox is 800 wide) sets their on-screen size: a wide map shows them at a
@@ -102,13 +104,15 @@ export function WorldMap() {
   // Label placement + decluttering. Each label tries four positions around its
   // dot (right, left, above, below) and takes the first whose box is clear, so a
   // capital crowded on one side (e.g. Vienna next to Bratislava) flips to a free
-  // side instead of overprinting. Capitals are placed first (priority) and are
-  // always shown — if no side is fully clear they take the least-crowded one, so
-  // every capital stays visible. Secondary cities fill the remaining gaps and are
-  // dropped when no position is free. Boxes are in projected (pre-transform)
-  // space; label sizes divide by scale, so zooming in shrinks boxes and frees up
-  // positions. Returns per-key {x, y, anchor} so the render places text
-  // identically. Recomputed each zoom step.
+  // side instead of overprinting. Capitals are placed first (priority) so they
+  // win slots over secondary cities, but — unlike before — a capital with no
+  // clear slot is DROPPED rather than force-shown: this stops a barely-zoomed map
+  // from dumping all ~197 capitals into a dense wall. Crowded capitals reappear
+  // as you zoom in and the cluster separates. Secondary cities then fill any
+  // remaining gaps. Boxes are in projected (pre-transform) space; label sizes
+  // divide by scale, so zooming in shrinks boxes and frees up positions. Returns
+  // per-key {x, y, anchor} so the render places text identically. Recomputed each
+  // zoom step.
   const cityLabelLayout = useMemo(() => {
     const scale = zoom.scale;
     type Box = { x1: number; y1: number; x2: number; y2: number };
@@ -123,15 +127,16 @@ export function WorldMap() {
     const projected = CITIES.map((c) => ({ c, p: projection(c.coords) })).filter(
       (x): x is { c: (typeof CITIES)[number]; p: [number, number] } => !!x.p,
     );
-    // forceShow=true (capitals): always render, picking the least-crowded of the
-    // four positions when none is fully clear — so a capital wedged against a
-    // neighbour (Bratislava next to Vienna) is still shown, just offset. forceShow
-    // =false (secondary): drop the label when every position overlaps.
+    // forceShow=true: render even when every position overlaps, taking the
+    // least-crowded slot (reserved for nothing now — kept for the option).
+    // forceShow=false: drop the label when no position is clear. Both capitals
+    // and secondary cities use false so dense regions thin out; capitals just go
+    // first, so they claim the open slots before cities do.
     const place = (c: (typeof CITIES)[number], cx: number, cy: number, forceShow: boolean) => {
       const fs = ((c.capital ? 7 : 6.2) / scale) * labelScale;
       const w = cityLabel(c.name, locale).length * fs * 0.55;
       const h = fs;
-      const gap = (((c.capital ? 0.95 : 0.65) + 1.2) / scale) * labelScale;
+      const gap = (((c.capital ? 0.95 : 0.65) + 1.9) / scale) * labelScale;
       // [x, y (vertical center), anchor, box] candidates: right, left, above, below.
       const candidates: [number, number, 'start' | 'end' | 'middle', Box][] = [
         [cx + gap, cy, 'start', { x1: cx + gap, y1: cy - h / 2, x2: cx + gap + w, y2: cy + h / 2 }],
@@ -149,9 +154,11 @@ export function WorldMap() {
       placed.push(chosen[3]);
       layout.set(`${c.code}:${c.name}`, { x: chosen[0], y: chosen[1], anchor: chosen[2] });
     };
-    // Capitals first (priority + always shown), then secondary cities fill gaps.
+    // Capitals first (priority — they claim slots before cities), then secondary
+    // cities fill gaps. Capitals are droppable now (forceShow=false) so crowded
+    // regions don't overprint; they reappear as zoom separates the cluster.
     for (const { c, p } of projected) {
-      if (c.capital && scale > CAPITAL_LABEL_ZOOM) place(c, p[0], p[1], true);
+      if (c.capital && scale > CAPITAL_LABEL_ZOOM) place(c, p[0], p[1], false);
     }
     for (const { c, p } of projected) {
       if (!c.capital && scale > CITY_LABEL_ZOOM) place(c, p[0], p[1], false);
