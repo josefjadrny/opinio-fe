@@ -307,10 +307,17 @@ export function WorldMap() {
               <path
                 key={`${id}-${i}`}
                 d={d}
-                fill={isHovered ? '#e94560' : baseFill}
+                fill={baseFill}
                 stroke={isHovered ? '#f1f1f1' : '#5a5a8a'}
-                strokeWidth={(isHovered ? 0.75 : 0.5) / zoom.scale}
-                style={{ outline: 'none', cursor: alpha2 ? 'pointer' : 'default' }}
+                strokeWidth={(isHovered ? 1.1 : 0.5) / zoom.scale}
+                style={{
+                  outline: 'none',
+                  cursor: alpha2 ? 'pointer' : 'default',
+                  // Keep the country's own sentiment colour on hover (red/green
+                  // mean "unpopular/popular" in the legend, so don't repaint it);
+                  // signal selection by brightening it + a thicker white border.
+                  filter: isHovered ? 'brightness(1.7)' : undefined,
+                }}
                 onMouseEnter={() => alpha2 && handleMouseEnter(alpha2)}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => alpha2 && handleCountryClick(alpha2)}
