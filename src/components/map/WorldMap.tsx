@@ -9,13 +9,15 @@ import { numericToAlpha2 } from '../../utils/countries';
 import { CITIES, cityLabel } from '../../utils/cities';
 import { useI18n } from '../../i18n/I18nContext';
 import { CountryTooltip } from './CountryTooltip';
+import { MapZoomControl } from './MapZoomControl';
+import { MapLegend } from './MapLegend';
 import { useFilters } from '../../context/useFilters';
 
 const GEO_URL = '/topojson/world-110m.json';
 const WIDTH = 800;
 const HEIGHT = 500;
 const MIN_ZOOM = 1;
-const MAX_ZOOM = 4.5;
+const MAX_ZOOM = 5;
 const DEFAULT_FILL = '#3a3a6a';
 // City names fade in progressively as you zoom so labels never pile up: capitals
 // first, then secondary cities deeper in (where there's room). Dots are always
@@ -214,6 +216,23 @@ export function WorldMap() {
     return () => svg.removeEventListener('wheel', onWheel);
   }, []);
 
+  // Zoom from the slider/buttons, keeping the map's visual center fixed — the
+  // viewBox center (WIDTH/2, HEIGHT/2) maps to the screen center under xMidYMid,
+  // so we reuse the wheel's anchor math with it. nextScaleFor reads the live
+  // previous scale so rapid clicks compound instead of snapping to one step.
+  const applyZoom = useCallback((nextScaleFor: (prevScale: number) => number) => {
+    setZoom((prev) => {
+      const ns = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, nextScaleFor(prev.scale)));
+      const ratio = ns / prev.scale;
+      const cx = WIDTH / 2;
+      const cy = HEIGHT / 2;
+      const { tx, ty } = clampTranslate(cx - ratio * (cx - prev.tx), cy - ratio * (cy - prev.ty), ns);
+      return { scale: ns, tx, ty };
+    });
+  }, []);
+  const zoomToScale = useCallback((s: number) => applyZoom(() => s), [applyZoom]);
+  const stepZoom = useCallback((factor: number) => applyZoom((p) => p * factor), [applyZoom]);
+
   const handleMouseDown = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
     dragRef.current = { startX: e.clientX, startY: e.clientY, tx: zoom.tx, ty: zoom.ty };
     didDragRef.current = false;
@@ -348,6 +367,9 @@ export function WorldMap() {
           </g>
         </g>
       </svg>
+
+      <MapLegend />
+      <MapZoomControl scale={zoom.scale} min={MIN_ZOOM} max={MAX_ZOOM} onZoom={zoomToScale} onStep={stepZoom} />
 
       {hoveredCountry && (
         <CountryTooltip

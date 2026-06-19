@@ -223,6 +223,9 @@ export interface Strings {
   liked: string;
   popularIn: string;
   dislikedIn: string;
+  mapLegendLiked: string;
+  mapLegendDisliked: string;
+  mapLegendNeutral: string;
   noVotesYet: string;
   share: string;
   linkCopied: string;
@@ -522,6 +525,9 @@ const en: Strings = {
   liked: 'liked',
   popularIn: 'Popular in',
   dislikedIn: 'Disliked in',
+  mapLegendLiked: 'Liked',
+  mapLegendDisliked: 'Disliked',
+  mapLegendNeutral: 'Neutral',
   noVotesYet: 'No votes yet',
   share: 'Share',
   linkCopied: 'Link copied',
@@ -858,6 +864,9 @@ const cs: Strings = {
   liked: 'líbí se',
   popularIn: 'Populární v',
   dislikedIn: 'Nepopulární v',
+  mapLegendLiked: 'Líbí',
+  mapLegendDisliked: 'Nelíbí',
+  mapLegendNeutral: 'Neutrální',
   noVotesYet: 'Zatím bez hlasů',
   share: 'Sdílet',
   linkCopied: 'Odkaz zkopírován',
@@ -1194,6 +1203,9 @@ const es: Strings = {
   liked: 'les gusta',
   popularIn: 'Popular en',
   dislikedIn: 'Impopular en',
+  mapLegendLiked: 'Gusta',
+  mapLegendDisliked: 'No gusta',
+  mapLegendNeutral: 'Neutral',
   noVotesYet: 'Sin votos aún',
   share: 'Compartir',
   linkCopied: 'Enlace copiado',
@@ -1530,6 +1542,9 @@ const de: Strings = {
   liked: 'gefällt',
   popularIn: 'Beliebt in',
   dislikedIn: 'Unbeliebt in',
+  mapLegendLiked: 'Beliebt',
+  mapLegendDisliked: 'Unbeliebt',
+  mapLegendNeutral: 'Neutral',
   noVotesYet: 'Noch keine Stimmen',
   share: 'Teilen',
   linkCopied: 'Link kopiert',
@@ -1866,6 +1881,9 @@ const fr: Strings = {
   liked: 'aiment',
   popularIn: 'Populaire en',
   dislikedIn: 'Impopulaire en',
+  mapLegendLiked: 'Aimé',
+  mapLegendDisliked: 'Détesté',
+  mapLegendNeutral: 'Neutre',
   noVotesYet: 'Aucun vote',
   share: 'Partager',
   linkCopied: 'Lien copié',
@@ -2202,6 +2220,9 @@ const it: Strings = {
   liked: 'apprezzato',
   popularIn: 'Popolare in',
   dislikedIn: 'Impopolare in',
+  mapLegendLiked: 'Apprezzato',
+  mapLegendDisliked: 'Sgradito',
+  mapLegendNeutral: 'Neutro',
   noVotesYet: 'Ancora nessun voto',
   share: 'Condividi',
   linkCopied: 'Link copiato',
@@ -2538,6 +2559,9 @@ const pl: Strings = {
   liked: 'lubi',
   popularIn: 'Popularne w',
   dislikedIn: 'Niepopularne w',
+  mapLegendLiked: 'Lubiane',
+  mapLegendDisliked: 'Nielubiane',
+  mapLegendNeutral: 'Neutralne',
   noVotesYet: 'Brak głosów',
   share: 'Udostępnij',
   linkCopied: 'Link skopiowany',
