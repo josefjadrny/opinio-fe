@@ -270,7 +270,7 @@ export function WorldMap() {
         ref={svgRef}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         preserveAspectRatio="xMidYMid meet"
-        style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }}
+        style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible', userSelect: 'none', WebkitUserSelect: 'none' }}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
