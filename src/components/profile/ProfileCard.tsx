@@ -216,32 +216,56 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
     );
   }
 
-  // default variant
+  // default variant — modern card: flat surface, a soft side-coloured glow that
+  // fades in on hover, a status dot on the avatar (green on rising / red on
+  // falling), and a two-line description.
+  const tooltipEl = hoveredId ? (
+    <PersonTooltip
+      profile={profile}
+      breakdown={breakdown}
+      isLoading={breakdownLoading}
+      anchorEl={cardRef.current}
+      onMouseEnter={handleTooltipEnter}
+      onMouseLeave={handleTooltipLeave}
+    />
+  ) : null;
+
+  const side = reverseVotes ? 'negative' : 'positive';
+  const glow = side === 'positive' ? 'rgba(34,197,94,0.16)' : 'rgba(239,68,68,0.16)';
+
   return (
     <div
       ref={cardRef}
-      className="flex items-start gap-2.5 px-1.5 py-2 bg-surface-light/50 rounded-xl ring-1 ring-transparent hover:bg-surface-light hover:ring-white/10 transition-all duration-150 select-none"
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={openDetail}
+      className="group relative flex items-start gap-2.5 px-2.5 py-2.5 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 hover:-translate-y-0.5 transition-all duration-200 overflow-hidden select-none"
     >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{ background: `radial-gradient(120% 80% at 0% 0%, ${glow}, transparent 60%)` }}
+      />
       {rank != null && (
-        <span className="text-sm font-bold text-text-secondary w-6 text-right shrink-0 pt-1">
+        <span className="relative z-10 shrink-0 mt-0.5 text-[11px] font-semibold tabular-nums text-text-secondary bg-white/[0.06] rounded-md px-1.5 py-0.5 leading-none">
           {rank}
         </span>
       )}
-      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-10 h-10" />
-      <div className="flex-1 min-w-0">
+      <div className="relative z-10 shrink-0">
+        <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-10 h-10 ring-2 ring-white/5" />
+        <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-surface ${side === 'positive' ? 'bg-positive' : 'bg-negative'}`} />
+      </div>
+      <div className="relative z-10 flex-1 min-w-0">
         <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
-          <span className="font-semibold text-white truncate min-w-0 flex-shrink">{name}</span>
+          <span className="font-semibold text-white leading-tight break-words min-w-0">{name}</span>
           <div className="flex items-center gap-1.5 shrink-0">
             {flagEl}
             {roleEl}
             {profile.label && <LabelBadge label={profile.label} />}
           </div>
         </div>
-        <p className="text-[13px] text-text-secondary mb-0.5">{description}</p>
+        <p className="text-[13px] text-text-secondary leading-snug line-clamp-2 mt-0.5 mb-1.5">{description}</p>
         <div onClick={(e) => e.stopPropagation()}>
           <VoteButtons
             profileId={profile.id}
@@ -252,16 +276,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
           />
         </div>
       </div>
-      {hoveredId && (
-        <PersonTooltip
-          profile={profile}
-          breakdown={breakdown}
-          isLoading={breakdownLoading}
-          anchorEl={cardRef.current}
-          onMouseEnter={handleTooltipEnter}
-          onMouseLeave={handleTooltipLeave}
-        />
-      )}
+      {tooltipEl}
     </div>
   );
 }
