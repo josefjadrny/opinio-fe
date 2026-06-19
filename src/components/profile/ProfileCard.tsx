@@ -252,10 +252,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
           {rank}
         </span>
       )}
-      <div className="relative z-10 shrink-0">
-        <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-10 h-10 ring-2 ring-white/5" />
-        <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-surface ${side === 'positive' ? 'bg-positive' : 'bg-negative'}`} />
-      </div>
+      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="relative z-10 shrink-0 w-10 h-10 ring-2 ring-white/5" />
       <div className="relative z-10 flex-1 min-w-0">
         <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
           <span className="font-semibold text-white leading-tight break-words min-w-0">{name}</span>
