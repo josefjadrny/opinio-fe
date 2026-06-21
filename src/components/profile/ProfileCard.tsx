@@ -168,7 +168,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
     return (
       <div
         ref={cardRef}
-        className="flex items-center gap-3 px-2 py-2 bg-surface-light/50 rounded-lg ring-1 ring-transparent hover:bg-surface-light hover:ring-white/10 transition-all duration-150 select-none"
+        className="flex items-center gap-3 px-2 py-2 bg-surface-light/50 rounded-lg ring-1 ring-white/10 hover:bg-surface-light hover:ring-white/20 transition-all duration-150 select-none"
         onMouseEnter={handleMouseEnter}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -180,7 +180,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
           </span>
         )}
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-8 h-8 shrink-0" />
+          <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-8 h-8 shrink-0 ring-2 ring-white/5" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
               <span className="text-sm font-medium text-white truncate min-w-0 flex-shrink">{name}</span>
