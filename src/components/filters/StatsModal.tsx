@@ -9,8 +9,9 @@ import { useOnFireUsers, useTopVoters, useTrendingCountries } from '../../hooks/
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import type { CountryMetric, TrendingCountry, VoterMetric } from '../../types/api';
+import type { StatsCategory } from './statsCategory';
 
-export type StatsCategory = 'voters' | 'onFire' | 'countries';
+export type { StatsCategory };
 type Category = StatsCategory;
 
 interface StatsModalProps {
@@ -26,12 +27,6 @@ const CATEGORY_PATH: Record<StatsCategory, string> = {
   countries: '/stats/trending-countries',
   voters: '/stats/top-voters',
 };
-
-export function slugToCategory(slug?: string): StatsCategory {
-  if (slug === 'trending-countries') return 'countries';
-  if (slug === 'top-voters') return 'voters';
-  return 'onFire';
-}
 
 const VALID_METRICS: CountryMetric[] = ['total', 'likes', 'dislikes', 'net'];
 const VALID_VOTER_METRICS: VoterMetric[] = ['given', 'received'];

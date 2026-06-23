@@ -15,7 +15,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && eslint . && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "gen:icons": "node scripts/gen-pwa-icons.mjs"

@@ -19,5 +19,15 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // react-hooks v7 bundles the new React Compiler bailout rules into its
+      // recommended set. They flag intentional, idiomatic patterns we rely on
+      // (the "latest-value ref" idiom, render-time state adjustments), not
+      // bugs - so keep them as warnings rather than build-blocking errors.
+      // rules-of-hooks + exhaustive-deps stay at their recommended severity.
+      'react-hooks/refs': 'warn',
+      'react-hooks/purity': 'warn',
+      'react-hooks/set-state-in-effect': 'warn',
+    },
   },
 ])

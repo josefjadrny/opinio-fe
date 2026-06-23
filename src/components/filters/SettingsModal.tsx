@@ -109,8 +109,9 @@ function SettingsContent({
     try {
       await updateMe({ displayName: trimmed });
       await queryClient.invalidateQueries({ queryKey: ['me'] });
-    } catch (err: any) {
-      setNameError(err?.status === 409 ? t.displayNameTaken : t.displayNameFormat);
+    } catch (err) {
+      const status = (err as { status?: number } | null)?.status;
+      setNameError(status === 409 ? t.displayNameTaken : t.displayNameFormat);
     } finally {
       setNameSaving(false);
     }
@@ -267,8 +268,8 @@ function AvatarEditor({
       const blob = await resizeImage(file);
       await uploadAvatar(blob);
       await queryClient.invalidateQueries({ queryKey: ['me'] });
-    } catch (err: any) {
-      setError(err?.message || 'Upload failed');
+    } catch (err) {
+      setError((err as { message?: string } | null)?.message || 'Upload failed');
     } finally {
       setBusy(false);
     }
@@ -281,8 +282,8 @@ function AvatarEditor({
     try {
       await resetAvatar();
       await queryClient.invalidateQueries({ queryKey: ['me'] });
-    } catch (err: any) {
-      setError(err?.message || 'Failed to reset');
+    } catch (err) {
+      setError((err as { message?: string } | null)?.message || 'Failed to reset');
     } finally {
       setBusy(false);
     }
