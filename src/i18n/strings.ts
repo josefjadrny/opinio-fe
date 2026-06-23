@@ -38,6 +38,8 @@ export interface Strings {
   previewCaption: string;
   previewHeadlinePlaceholder: string;
   votesExpireNote: string;
+  draftRestored: string;
+  draftDiscard: string;
   lightboxDownload: string;
   newBadge: string;
   clearFilters: string;
@@ -321,6 +323,8 @@ const en: Strings = {
   previewCaption: 'Preview',
   previewHeadlinePlaceholder: 'Your headline',
   votesExpireNote: 'Votes expire after 24h.',
+  draftRestored: 'Restored your unsaved draft.',
+  draftDiscard: 'Discard',
   lightboxDownload: 'Download',
   newBadge: 'NEW',
   clearFilters: 'Clear filters',
@@ -660,6 +664,8 @@ const cs: Strings = {
   previewCaption: 'Náhled',
   previewHeadlinePlaceholder: 'Váš titulek',
   votesExpireNote: 'Hlasy vyprší po 24 h.',
+  draftRestored: 'Obnovili jsme tvůj rozepsaný koncept.',
+  draftDiscard: 'Zahodit',
   lightboxDownload: 'Stáhnout',
   newBadge: 'NOVÝ',
   clearFilters: 'Zrušit filtry',
@@ -999,6 +1005,8 @@ const es: Strings = {
   previewCaption: 'Vista previa',
   previewHeadlinePlaceholder: 'Tu titular',
   votesExpireNote: 'Los votos caducan tras 24 h.',
+  draftRestored: 'Restauramos tu borrador sin guardar.',
+  draftDiscard: 'Descartar',
   lightboxDownload: 'Descargar',
   newBadge: 'NUEVO',
   clearFilters: 'Borrar filtros',
@@ -1338,6 +1346,8 @@ const de: Strings = {
   previewCaption: 'Vorschau',
   previewHeadlinePlaceholder: 'Deine Überschrift',
   votesExpireNote: 'Stimmen verfallen nach 24 Std.',
+  draftRestored: 'Dein nicht gespeicherter Entwurf wurde wiederhergestellt.',
+  draftDiscard: 'Verwerfen',
   lightboxDownload: 'Herunterladen',
   newBadge: 'NEU',
   clearFilters: 'Filter zurücksetzen',
@@ -1677,6 +1687,8 @@ const fr: Strings = {
   previewCaption: 'Aperçu',
   previewHeadlinePlaceholder: 'Votre titre',
   votesExpireNote: 'Les votes expirent après 24 h.',
+  draftRestored: 'Brouillon non enregistré restauré.',
+  draftDiscard: 'Supprimer',
   lightboxDownload: 'Télécharger',
   newBadge: 'NOUVEAU',
   clearFilters: 'Effacer les filtres',
@@ -2016,6 +2028,8 @@ const it: Strings = {
   previewCaption: 'Anteprima',
   previewHeadlinePlaceholder: 'Il tuo titolo',
   votesExpireNote: 'I voti scadono dopo 24 h.',
+  draftRestored: 'Bozza non salvata ripristinata.',
+  draftDiscard: 'Scarta',
   lightboxDownload: 'Scarica',
   newBadge: 'NUOVO',
   clearFilters: 'Cancella filtri',
@@ -2355,6 +2369,8 @@ const pl: Strings = {
   previewCaption: 'Podgląd',
   previewHeadlinePlaceholder: 'Twój nagłówek',
   votesExpireNote: 'Głosy wygasają po 24 godz.',
+  draftRestored: 'Przywrócono niezapisaną wersję roboczą.',
+  draftDiscard: 'Odrzuć',
   lightboxDownload: 'Pobierz',
   newBadge: 'NOWE',
   clearFilters: 'Wyczyść filtry',

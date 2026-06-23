@@ -16,6 +16,69 @@ import { RoleBadge } from '../common/RoleBadge';
 import { LabelBadge } from '../profile/LabelBadge';
 import type { Role } from '../../types/profile';
 
+// Draft persisted to localStorage so a half-composed opinio survives closing
+// the modal (or a reload). The card image (already resized to 128x128 JPEG, a
+// few KB) rides along as a base64 data URL. The content image is NOT kept — raw
+// uploads run up to 10MB, which blows the ~5MB localStorage quota; that would
+// need IndexedDB.
+const DRAFT_KEY = 'opinio:add-profile-draft';
+
+// Drafts older than this are dropped on load, so a stale opinio from days ago
+// never resurfaces.
+const DRAFT_TTL_MS = 24 * 60 * 60 * 1000;
+
+interface ProfileDraft {
+  name: string;
+  role: Role;
+  countryCode: string;
+  description: string;
+  link: string;
+  image: string | null;   // card image as a base64 data URL (null = none)
+  savedAt: number;
+}
+
+function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+// Returns a draft only when it carries real content and hasn't expired, so an
+// empty/default or stale form never triggers the "restored" notice.
+function loadDraft(): ProfileDraft | null {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    const d = JSON.parse(raw) as Partial<ProfileDraft>;
+    if (typeof d.savedAt !== 'number' || Date.now() - d.savedAt > DRAFT_TTL_MS) {
+      localStorage.removeItem(DRAFT_KEY);
+      return null;
+    }
+    const name = typeof d.name === 'string' ? d.name : '';
+    const description = typeof d.description === 'string' ? d.description : '';
+    const link = typeof d.link === 'string' ? d.link : '';
+    const image = typeof d.image === 'string' && d.image.startsWith('data:') ? d.image : null;
+    if (!name.trim() && !description.trim() && !link.trim() && !image) return null;
+    return {
+      name,
+      description,
+      link,
+      image,
+      savedAt: d.savedAt,
+      role: ALL_ROLES.includes(d.role as Role) ? (d.role as Role) : 'politics',
+      countryCode:
+        typeof d.countryCode === 'string' && ALL_COUNTRIES.some((c) => c.code === d.countryCode)
+          ? d.countryCode
+          : getDefaultCountryCode(),
+    };
+  } catch {
+    return null;
+  }
+}
+
 function getDefaultCountryCode() {
   const locale = navigator.language || 'en-US';
   const region = locale.split('-')[1]?.toUpperCase();
@@ -184,19 +247,25 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const blockedUntilDate = user?.blockedUntil ? new Date(user.blockedUntil) : null;
   const isBlocked = !!blockedUntilDate && blockedUntilDate.getTime() > Date.now();
 
-  const [name, setName] = useState('');
-  const [role, setRole] = useState<Role>('politics');
-  const [countryCode, setCountryCode] = useState(getDefaultCountryCode);
-  const [countryInput, setCountryInput] = useState(() => getCountryOptionLabel(getDefaultCountryCode()));
+  // Restore a half-composed draft once on mount (null when none worth restoring).
+  const [restoredDraft, setRestoredDraft] = useState(loadDraft);
+  const [name, setName] = useState(() => restoredDraft?.name ?? '');
+  const [role, setRole] = useState<Role>(() => restoredDraft?.role ?? 'politics');
+  const [countryCode, setCountryCode] = useState(() => restoredDraft?.countryCode ?? getDefaultCountryCode());
+  const [countryInput, setCountryInput] = useState(() =>
+    getCountryOptionLabel(restoredDraft?.countryCode ?? getDefaultCountryCode()),
+  );
   const [countryMenuOpen, setCountryMenuOpen] = useState(false);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState(() => restoredDraft?.description ?? '');
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // Seeded from a restored draft (a base64 data URL); imageBlob stays null until
+  // submit, where it's rebuilt from this data URL (see mutationFn).
+  const [previewUrl, setPreviewUrl] = useState<string | null>(() => restoredDraft?.image ?? null);
   const [imageError, setImageError] = useState<string | null>(null);
   const [contentImageFile, setContentImageFile] = useState<File | null>(null);
   const [contentPreviewUrl, setContentPreviewUrl] = useState<string | null>(null);
   const [contentImageError, setContentImageError] = useState<string | null>(null);
-  const [link, setLink] = useState('');
+  const [link, setLink] = useState(() => restoredDraft?.link ?? '');
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkError, setLinkError] = useState<string | null>(null);
   const linkInputRef = useRef<HTMLInputElement>(null);
@@ -210,7 +279,9 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     return country.name.toLowerCase().includes(query) || country.code.toLowerCase().includes(query);
   });
 
-  const countryInitialized = useRef(false);
+  // A restored draft already carries the country the user picked, so don't let
+  // the auto-fill-from-profile effect below overwrite it.
+  const countryInitialized = useRef(!!restoredDraft);
   useEffect(() => {
     if (!countryInitialized.current && user?.countryCode) {
       if (ALL_COUNTRIES.some((c) => c.code === user.countryCode)) {
@@ -232,13 +303,43 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     return () => document.removeEventListener('mousedown', onPointerDown);
   }, [countryCode]);
 
-  useEffect(() => {
-    return () => { if (previewUrl) URL.revokeObjectURL(previewUrl); };
-  }, [previewUrl]);
-
+  // The card preview is a data URL (no object URL to revoke). The content image
+  // still uses an object URL, so it's revoked on cleanup.
   useEffect(() => {
     return () => { if (contentPreviewUrl) URL.revokeObjectURL(contentPreviewUrl); };
   }, [contentPreviewUrl]);
+
+  // Persist the fields as the user edits so closing the modal (or a reload)
+  // keeps the half-composed opinio. The card image (previewUrl) is a base64 data
+  // URL when present. Cleared on a successful submit, or when the user empties
+  // everything / discards the draft.
+  const image = previewUrl?.startsWith('data:') ? previewUrl : null;
+  useEffect(() => {
+    const hasContent = name.trim() || description.trim() || link.trim() || !!image;
+    try {
+      if (!hasContent) {
+        localStorage.removeItem(DRAFT_KEY);
+      } else {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({ name, role, countryCode, description, link, image, savedAt: Date.now() }));
+      }
+    } catch {
+      // localStorage unavailable / over quota (private mode, oversized image) —
+      // drafts just won't persist.
+    }
+  }, [name, role, countryCode, description, link, image]);
+
+  const discardDraft = () => {
+    setName('');
+    setRole('politics');
+    setDescription('');
+    setLink('');
+    setLinkOpen(false);
+    setImageBlob(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    setRestoredDraft(null);
+    try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -247,9 +348,11 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     if (!file.type.startsWith('image/')) { setImageError('Please select an image file'); return; }
     try {
       const blob = await resizeImage(file);
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      // Use a data URL (not an object URL) so the same value both renders the
+      // preview and persists into the draft verbatim.
+      const dataUrl = await blobToDataUrl(blob);
       setImageBlob(blob);
-      setPreviewUrl(URL.createObjectURL(blob));
+      setPreviewUrl(dataUrl);
     } catch {
       setImageError('Failed to process image');
     }
@@ -292,8 +395,14 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     mutationFn: async (fields: { name: string; role: Role; countryCode: string; description: string; link?: string }) => {
       let finalImageUrl = '';
       let finalImageKey: string | undefined;
-      if (imageBlob) {
-        const { url, key } = await uploadImage(imageBlob);
+      // After restoring a draft, imageBlob is null but previewUrl holds the card
+      // image as a data URL — rebuild the blob so the avatar still uploads.
+      let blob = imageBlob;
+      if (!blob && previewUrl?.startsWith('data:')) {
+        blob = await (await fetch(previewUrl)).blob();
+      }
+      if (blob) {
+        const { url, key } = await uploadImage(blob);
         finalImageUrl = url;
         finalImageKey = key;
       }
@@ -323,6 +432,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
       });
     },
     onSuccess: () => {
+      try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
       onClose();
     },
@@ -378,6 +488,18 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
         </div>
       )}
       <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4 md:flex-1 md:min-w-0">
+        {restoredDraft && (
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+            <p className="text-xs text-white/70">{t.draftRestored}</p>
+            <button
+              type="button"
+              onClick={discardDraft}
+              className="shrink-0 text-xs font-medium text-accent hover:text-accent/80 transition-colors"
+            >
+              {t.draftDiscard}
+            </button>
+          </div>
+        )}
         {/* Statement — avatar picker sits inline to the left, so the opinio's
             face and headline read as one unit and we drop a whole labeled row. */}
         <div>
