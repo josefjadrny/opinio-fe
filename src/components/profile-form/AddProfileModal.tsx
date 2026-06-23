@@ -245,7 +245,10 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const user = me?.user;
   const isAnonymous = !user || user.tier === 'anonymous';
   const blockedUntilDate = user?.blockedUntil ? new Date(user.blockedUntil) : null;
-  const isBlocked = !!blockedUntilDate && blockedUntilDate.getTime() > Date.now();
+  // Captured once at mount (Date.now() can't be called during render) — block
+  // status is static for the lifetime of an open modal.
+  const [mountedAt] = useState(() => Date.now());
+  const isBlocked = !!blockedUntilDate && blockedUntilDate.getTime() > mountedAt;
 
   // Restore a half-composed draft once on mount (null when none worth restoring).
   const [restoredDraft, setRestoredDraft] = useState(loadDraft);
@@ -279,18 +282,19 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     return country.name.toLowerCase().includes(query) || country.code.toLowerCase().includes(query);
   });
 
-  // A restored draft already carries the country the user picked, so don't let
-  // the auto-fill-from-profile effect below overwrite it.
-  const countryInitialized = useRef(!!restoredDraft);
-  useEffect(() => {
-    if (!countryInitialized.current && user?.countryCode) {
-      if (ALL_COUNTRIES.some((c) => c.code === user.countryCode)) {
-        setCountryCode(user.countryCode!);
-        setCountryInput(getCountryOptionLabel(user.countryCode!));
-      }
-      countryInitialized.current = true;
+  // Once the signed-in user's profile loads (async), default the country field
+  // to their country - but only the first time, and never over a restored draft
+  // (which already carries the country they'd picked). This is a render-time
+  // state adjustment per the React docs, not an effect: the guard flips false
+  // after one application, so it can't loop.
+  const [countryFromUserApplied, setCountryFromUserApplied] = useState(!!restoredDraft);
+  if (!countryFromUserApplied && user?.countryCode) {
+    setCountryFromUserApplied(true);
+    if (ALL_COUNTRIES.some((c) => c.code === user.countryCode)) {
+      setCountryCode(user.countryCode);
+      setCountryInput(getCountryOptionLabel(user.countryCode));
     }
-  }, [user?.countryCode]);
+  }
 
   useEffect(() => {
     function onPointerDown(e: MouseEvent) {
