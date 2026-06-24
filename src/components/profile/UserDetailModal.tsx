@@ -84,9 +84,9 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
       to={`/p/${fromProfileState.fromProfileId}${location.search}`}
       title={fromProfileState.fromProfileName ? `← ${fromProfileState.fromProfileName}` : 'Back'}
       aria-label={fromProfileState.fromProfileName ? `Back to ${fromProfileState.fromProfileName}` : 'Back'}
-      className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0"
+      className="text-white/40 hover:text-white/80 transition-colors p-0.5 -ml-1 shrink-0"
     >
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
       </svg>
     </Link>
@@ -106,15 +106,15 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
       <Avatar
         name={user.displayName}
         imageUrl={user.avatarUrl}
-        className={`${isMobile ? 'w-12 h-12' : 'w-14 h-14'} shrink-0`}
+        className={`${isMobile ? 'w-9 h-9' : 'w-14 h-14'} shrink-0`}
         isAnonymous={!hasAvatar}
       />
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-          <span className="font-semibold text-white truncate">@{user.displayName}</span>
+        <div className="flex items-center gap-1 flex-nowrap mb-0.5 min-w-0">
+          <span className="font-semibold text-white truncate min-w-0">@{user.displayName}</span>
           {user.countryCode && <CountryFlag code={user.countryCode} />}
         </div>
-        <p className="text-[11px] text-white/30">{t.userJoined.replace('{date}', formatJoinDate(user.createdAt, locale))}</p>
+        <p className="text-[11px] text-white/30 truncate">{t.userJoined.replace('{date}', formatJoinDate(user.createdAt, locale))}</p>
       </div>
       {StatsBlock}
     </>
@@ -162,11 +162,11 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
             <div className="w-10 h-1 bg-white/20 rounded-full" />
           </div>
           <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="flex items-center gap-1 min-w-0 flex-1">
               {BackToProfile}
               {user ? Header : <span className="text-sm font-semibold text-white/60">{notFound ? t.userNotFoundLabel : ''}</span>}
             </div>
-            <div className="flex items-center gap-1 shrink-0 ml-3">
+            <div className="flex items-center gap-1 shrink-0 ml-1">
               {user && <ShareUserButton userId={user.id} displayName={user.displayName} />}
               <button onClick={close} className="text-white/40 hover:text-white/80 transition-colors p-1">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
