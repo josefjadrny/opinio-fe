@@ -12,8 +12,8 @@ import { ContentImageLightbox } from './ContentImageLightbox';
 import { useMe } from '../../hooks/useMe';
 import { RoleBadge } from '../common/RoleBadge';
 import { SourceLink } from './SourceLink';
-import { CountryFlag, FlagImg } from '../common/CountryFlag';
-import { getCountryName } from '../../utils/countries';
+import { CountryFlag } from '../common/CountryFlag';
+import { BreakdownRow } from './BreakdownRow';
 import { formatNumber } from '../../utils/formatNumber';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useI18n } from '../../i18n/I18nContext';
@@ -189,12 +189,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                   {(() => {
                     const max = Math.max(1, ...breakdown.topLiking.map(r => r.count));
                     return breakdown.topLiking.map(({ countryCode, count }, i) => (
-                      <div key={countryCode} className="relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden" style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${i * 35}ms` }}>
-                        <div className="absolute inset-y-0 left-0 bg-positive/15 rounded" style={{ width: `${(count / max) * 100}%`, animation: 'bar-fill 0.45s ease-out both', transformOrigin: 'left', animationDelay: `${i * 35 + 80}ms` }} />
-                        <FlagImg code={countryCode} className="relative shrink-0" />
-                        <span className="relative text-xs text-white/60 flex-1 truncate">{getCountryName(countryCode)}</span>
-                        <span className="relative text-xs text-positive font-semibold tabular-nums">{formatNumber(count)}</span>
-                      </div>
+                      <BreakdownRow key={countryCode} countryCode={countryCode} count={count} max={max} index={i} side="like" />
                     ));
                   })()}
                 </div>
@@ -205,12 +200,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                   {(() => {
                     const max = Math.max(1, ...breakdown.topDisliking.map(r => r.count));
                     return breakdown.topDisliking.map(({ countryCode, count }, i) => (
-                      <div key={countryCode} className="relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden" style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${i * 35}ms` }}>
-                        <div className="absolute inset-y-0 left-0 bg-accent/15 rounded" style={{ width: `${(count / max) * 100}%`, animation: 'bar-fill 0.45s ease-out both', transformOrigin: 'left', animationDelay: `${i * 35 + 80}ms` }} />
-                        <FlagImg code={countryCode} className="relative shrink-0" />
-                        <span className="relative text-xs text-white/60 flex-1 truncate">{getCountryName(countryCode)}</span>
-                        <span className="relative text-xs text-negative font-semibold tabular-nums">{formatNumber(count)}</span>
-                      </div>
+                      <BreakdownRow key={countryCode} countryCode={countryCode} count={count} max={max} index={i} side="dislike" />
                     ));
                   })()}
                 </div>

@@ -266,7 +266,13 @@ export function WorldMap() {
 
   const handleCountryClick = useCallback((alpha2: string) => {
     if (didDragRef.current) return;
-    navigate('/c/' + alpha2 + location.search);
+    // A map click is the ONE place that applies the country filter to the feed:
+    // set ?country= so the sidebars filter behind the modal and stay filtered on
+    // close. Other ways into the detail (breakdown row, /c/ link, pasted URL)
+    // navigate without it and leave the feed untouched.
+    const params = new URLSearchParams(location.search);
+    params.set('country', alpha2);
+    navigate('/c/' + alpha2 + '?' + params.toString());
   }, [navigate, location.search]);
 
   const handleMouseEnter = useCallback((alpha2: string) => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useI18n } from '../../i18n/I18nContext';
 import { useCountries } from '../../hooks/useCountries';
@@ -54,7 +54,6 @@ function ShareCountryButton({ code, name }: { code: string; name: string }) {
 export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [, setSearchParams] = useSearchParams();
   const isMobile = useIsMobile();
   const { t } = useI18n();
 
@@ -68,31 +67,14 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const { data: countryData, isLoading: profilesLoading } = useCountryDiscussed(notFound ? '' : code);
   const profiles = countryData?.profiles ?? [];
 
-  // Closing the detail lands on the feed filtered to this country. The filter is
-  // URL-backed (FilterContext reads ?country=), so we write it into the URL too -
-  // a filtered feed without the matching query param looks broken on reload/share.
-  const close = () => {
-    const params = new URLSearchParams(location.search);
-    if (notFound) params.delete('country'); else params.set('country', code);
-    const qs = params.toString();
-    navigate('/' + (qs ? '?' + qs : ''));
-  };
+  // Close preserves the URL's query as-is. The country filter is NOT applied just
+  // by opening this modal - only a map click sets ?country= (see WorldMap). So
+  // reaching the detail via a breakdown row, a /c/ link, or a pasted URL leaves
+  // the feed filter untouched.
+  const close = () => navigate('/' + location.search);
   const openProfile = (profileId: string) => navigate('/p/' + profileId + location.search, {
     state: { fromCountryCode: code, fromCountryName: name },
   });
-
-  // While the detail is open, filter the feed behind it to this country so both
-  // sidebars already show this country's profiles (and the filter carries through
-  // on close). replace:true so opening the modal doesn't add a history entry.
-  useEffect(() => {
-    if (notFound) return;
-    setSearchParams((prev) => {
-      if (prev.get('country') === code) return prev;
-      const next = new URLSearchParams(prev);
-      next.set('country', code);
-      return next;
-    }, { replace: true });
-  }, [code, notFound, setSearchParams]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
