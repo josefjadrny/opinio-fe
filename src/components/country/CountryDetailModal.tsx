@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useI18n } from '../../i18n/I18nContext';
 import { useCountries } from '../../hooks/useCountries';
 import { useCountryDiscussed } from '../../hooks/useCountryDiscussed';
 import { getCountryName, isKnownCountry } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
-import { Avatar } from '../profile/Avatar';
-import { CountryFlag, FlagImg } from '../common/CountryFlag';
-import { RoleBadge } from '../common/RoleBadge';
-import { VoteButtons } from '../voting/VoteButtons';
-import type { Profile } from '../../types/profile';
+import { FlagImg } from '../common/CountryFlag';
+import { ProfileList } from '../profile/ProfileList';
 
 interface CountryDetailModalProps {
   countryCode: string;
@@ -53,65 +50,10 @@ function ShareCountryButton({ code, name }: { code: string; name: string }) {
   );
 }
 
-function ProfileRow({ profile, onOpen }: { profile: Profile; onOpen: () => void }) {
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={onOpen}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
-      className="w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-lg ring-1 ring-transparent hover:bg-surface-light hover:ring-white/10 transition-all duration-150 cursor-pointer"
-    >
-      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-9 h-9 shrink-0" />
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap">
-          <span className="font-semibold text-white truncate min-w-0 flex-shrink">{profile.name}</span>
-          <CountryFlag code={profile.countryCode} />
-          <RoleBadge role={profile.role} />
-        </div>
-        <p className="text-[13px] text-text-secondary truncate">{profile.description}</p>
-      </div>
-      <div className="shrink-0">
-        <VoteButtons
-          profileId={profile.id}
-          likes={profile.likes}
-          dislikes={profile.dislikes}
-          reverseVotes={profile.dislikes > profile.likes}
-        />
-      </div>
-    </div>
-  );
-}
-
-function ProfilesList({
-  profiles,
-  loading,
-  t,
-  onOpen,
-}: {
-  profiles: Profile[];
-  loading: boolean;
-  t: { loading: string; noProfiles: string };
-  onOpen: (id: string) => void;
-}) {
-  if (loading && profiles.length === 0) {
-    return <p className="text-sm text-white/30 py-6 text-center">{t.loading}</p>;
-  }
-  if (profiles.length === 0) {
-    return <p className="text-sm text-white/30 py-6 text-center">{t.noProfiles}</p>;
-  }
-  return (
-    <div className="space-y-1">
-      {profiles.map((p) => (
-        <ProfileRow key={p.id} profile={p} onOpen={() => onOpen(p.id)} />
-      ))}
-    </div>
-  );
-}
-
 export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [, setSearchParams] = useSearchParams();
   const isMobile = useIsMobile();
   const { t } = useI18n();
 
@@ -125,10 +67,31 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const { data: countryData, isLoading: profilesLoading } = useCountryDiscussed(notFound ? '' : code);
   const profiles = countryData?.profiles ?? [];
 
-  const close = () => navigate('/' + location.search);
+  // Closing the detail lands on the feed filtered to this country. The filter is
+  // URL-backed (FilterContext reads ?country=), so we write it into the URL too -
+  // a filtered feed without the matching query param looks broken on reload/share.
+  const close = () => {
+    const params = new URLSearchParams(location.search);
+    if (notFound) params.delete('country'); else params.set('country', code);
+    const qs = params.toString();
+    navigate('/' + (qs ? '?' + qs : ''));
+  };
   const openProfile = (profileId: string) => navigate('/p/' + profileId + location.search, {
     state: { fromCountryCode: code, fromCountryName: name },
   });
+
+  // While the detail is open, filter the feed behind it to this country so both
+  // sidebars already show this country's profiles (and the filter carries through
+  // on close). replace:true so opening the modal doesn't add a history entry.
+  useEffect(() => {
+    if (notFound) return;
+    setSearchParams((prev) => {
+      if (prev.get('country') === code) return prev;
+      const next = new URLSearchParams(prev);
+      next.set('country', code);
+      return next;
+    }, { replace: true });
+  }, [code, notFound, setSearchParams]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
@@ -208,10 +171,12 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
           </div>
           <div className="flex-1 overflow-y-auto px-6 pt-4 pb-14 space-y-4">
             {notFound ? NotFoundView : (
-              <ProfilesList
+              <ProfileList
                 profiles={profiles}
+                label={t.userReportedProfiles}
+                emptyText={t.noProfiles}
                 loading={profilesLoading}
-                t={t}
+                loadingText={t.loading}
                 onOpen={openProfile}
               />
             )}
@@ -238,10 +203,12 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {notFound ? NotFoundView : (
-            <ProfilesList
+            <ProfileList
               profiles={profiles}
+              label={t.userReportedProfiles}
+              emptyText={t.noProfiles}
               loading={profilesLoading}
-              t={t}
+              loadingText={t.loading}
               onOpen={openProfile}
             />
           )}
