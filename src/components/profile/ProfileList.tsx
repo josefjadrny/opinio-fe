@@ -19,30 +19,40 @@ export interface ProfileListEntry {
 }
 
 export function ProfileListRow({ profile, onOpen }: { profile: ProfileListEntry; onOpen: () => void }) {
+  // Match the landing-page ProfileCard visual: flat surface, soft side-coloured
+  // glow on hover (green rising / red falling), ringed avatar.
+  const reverseVotes = profile.dislikes > profile.likes;
+  const glow = reverseVotes ? 'rgba(239,68,68,0.16)' : 'rgba(34,197,94,0.16)';
   return (
     <div
       role="button"
       tabIndex={0}
       onClick={onOpen}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
-      className="w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-lg ring-1 ring-transparent hover:bg-surface-light hover:ring-white/10 transition-all duration-150 cursor-pointer"
+      className="group relative flex items-center gap-3 px-2.5 py-2.5 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 transition-all duration-200 overflow-hidden cursor-pointer select-none"
     >
-      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-9 h-9 shrink-0" />
-      <div className="flex-1 min-w-0">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{ background: `radial-gradient(120% 80% at 0% 0%, ${glow}, transparent 60%)` }}
+      />
+      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="relative z-10 shrink-0 w-10 h-10 ring-2 ring-white/5" />
+      <div className="relative z-10 flex-1 min-w-0">
         <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap">
           <span className="font-semibold text-white truncate min-w-0 flex-shrink">{profile.name}</span>
           <CountryFlag code={profile.countryCode} />
           <RoleBadge role={profile.role} />
         </div>
-        {/* Description hidden on mobile, shown on desktop (>= md). */}
-        <p className="hidden md:block text-[13px] text-text-secondary truncate">{profile.description}</p>
+        {/* Description hidden on mobile (title only), one line on desktop (>= md). */}
+        <p className="hidden md:block text-[13px] text-text-secondary truncate mt-0.5">{profile.description}</p>
       </div>
-      <div className="shrink-0">
+      {/* Votes on the right on both breakpoints (matches the landing card). */}
+      <div className="relative z-10 shrink-0" onClick={(e) => e.stopPropagation()}>
         <VoteButtons
           profileId={profile.id}
           likes={profile.likes}
           dislikes={profile.dislikes}
-          reverseVotes={profile.dislikes > profile.likes}
+          reverseVotes={reverseVotes}
         />
       </div>
     </div>
