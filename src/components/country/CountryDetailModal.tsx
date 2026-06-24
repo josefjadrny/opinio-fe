@@ -7,6 +7,7 @@ import { useCountryDiscussed } from '../../hooks/useCountryDiscussed';
 import { getCountryName, isKnownCountry } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
 import { FlagImg } from '../common/CountryFlag';
+import { VoteStat } from '../common/VoteStat';
 import { ProfileList } from '../profile/ProfileList';
 
 interface CountryDetailModalProps {
@@ -107,19 +108,12 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
         <div className="font-semibold text-white truncate">{name}</div>
         <p className="text-[11px] text-white/30 uppercase tracking-wider">{code}</p>
       </div>
-      <div
-        className="shrink-0 flex items-center gap-2 text-sm tabular-nums leading-none"
+      <VoteStat
+        likes={counts.likes}
+        dislikes={counts.dislikes}
+        label={t.statsVotes}
         title={`${formatNumber(counts.likes)} likes · ${formatNumber(counts.dislikes)} dislikes`}
-      >
-        <span className="inline-flex items-baseline gap-1 text-positive font-semibold">
-          <span className="text-[11px]">▲</span>
-          {formatNumber(counts.likes)}
-        </span>
-        <span className="inline-flex items-baseline gap-1 text-negative font-semibold">
-          <span className="text-[11px]">▼</span>
-          {formatNumber(counts.dislikes)}
-        </span>
-      </div>
+      />
     </>
   );
 

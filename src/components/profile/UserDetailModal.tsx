@@ -6,7 +6,7 @@ import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from './Avatar';
 import { CountryFlag } from '../common/CountryFlag';
 import { ProfileList } from './ProfileList';
-import { formatNumber } from '../../utils/formatNumber';
+import { VoteStat } from '../common/VoteStat';
 
 interface UserDetailModalProps {
   userId: string;
@@ -93,24 +93,12 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   ) : null;
 
   const StatsBlock = user && (
-    <div
-      className="shrink-0 flex flex-col items-end gap-0.5"
+    <VoteStat
+      likes={user.totalLikesReceived}
+      dislikes={user.totalDislikesReceived}
+      label={t.userVotesReceived}
       title={`${t.userLikesReceived} · ${t.userDislikesReceived}`}
-    >
-      <div className="flex items-center gap-2 text-sm tabular-nums leading-none">
-        <span className="inline-flex items-baseline gap-1 text-positive font-semibold">
-          <span className="text-[11px]">▲</span>
-          {formatNumber(user.totalLikesReceived)}
-        </span>
-        <span className="inline-flex items-baseline gap-1 text-negative font-semibold">
-          <span className="text-[11px]">▼</span>
-          {formatNumber(user.totalDislikesReceived)}
-        </span>
-      </div>
-      <span className="text-[9px] uppercase tracking-[0.08em] font-semibold text-white/40 leading-none">
-        {t.userVotesReceived}
-      </span>
-    </div>
+    />
   );
 
   const Header = user && (
