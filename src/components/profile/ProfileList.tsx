@@ -2,6 +2,7 @@ import { Avatar } from './Avatar';
 import { CountryFlag } from '../common/CountryFlag';
 import { RoleBadge } from '../common/RoleBadge';
 import { VoteButtons } from '../voting/VoteButtons';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import type { Role } from '../../types/profile';
 
 // Minimal structural shape shared by Profile and UserProfileSummary - enough to
@@ -18,9 +19,10 @@ export interface ProfileListEntry {
   dislikes: number;
 }
 
-export function ProfileListRow({ profile, onOpen }: { profile: ProfileListEntry; onOpen: () => void }) {
+export function ProfileListRow({ profile, onOpen, compact }: { profile: ProfileListEntry; onOpen: () => void; compact?: boolean }) {
   // Match the landing-page ProfileCard visual: flat surface, soft side-coloured
-  // glow on hover (green rising / red falling), ringed avatar.
+  // glow on hover (green rising / red falling), ringed avatar. On mobile we mirror
+  // the compact feed card (smaller avatar/name/votes) so names don't crop.
   const reverseVotes = profile.dislikes > profile.likes;
   const glow = reverseVotes ? 'rgba(239,68,68,0.16)' : 'rgba(34,197,94,0.16)';
   return (
@@ -29,17 +31,17 @@ export function ProfileListRow({ profile, onOpen }: { profile: ProfileListEntry;
       tabIndex={0}
       onClick={onOpen}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
-      className="group relative flex items-center gap-3 px-2.5 py-2.5 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 transition-all duration-200 overflow-hidden cursor-pointer select-none"
+      className="group relative flex items-center gap-2.5 md:gap-3 px-2 md:px-2.5 py-2 md:py-2.5 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 transition-all duration-200 overflow-hidden cursor-pointer select-none"
     >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         style={{ background: `radial-gradient(120% 80% at 0% 0%, ${glow}, transparent 60%)` }}
       />
-      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="relative z-10 shrink-0 w-10 h-10 ring-2 ring-white/5" />
+      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="relative z-10 shrink-0 w-8 h-8 md:w-10 md:h-10 ring-2 ring-white/5" />
       <div className="relative z-10 flex-1 min-w-0">
         <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap">
-          <span className="font-semibold text-white truncate min-w-0 flex-shrink">{profile.name}</span>
+          <span className="text-sm font-medium md:text-base md:font-semibold text-white truncate min-w-0 flex-shrink">{profile.name}</span>
           <CountryFlag code={profile.countryCode} />
           <RoleBadge role={profile.role} />
         </div>
@@ -52,6 +54,7 @@ export function ProfileListRow({ profile, onOpen }: { profile: ProfileListEntry;
           profileId={profile.id}
           likes={profile.likes}
           dislikes={profile.dislikes}
+          compact={compact}
           reverseVotes={reverseVotes}
         />
       </div>
@@ -72,6 +75,7 @@ interface ProfileListProps {
 }
 
 export function ProfileList({ profiles, label, emptyText, onOpen, count, loading, loadingText }: ProfileListProps) {
+  const isMobile = useIsMobile();
   // Wrapped in a single element (not a fragment) so a parent's space-y can't
   // open a gap between the header and the list - the header's own pb controls it.
   return (
@@ -86,7 +90,7 @@ export function ProfileList({ profiles, label, emptyText, onOpen, count, loading
       ) : (
         <div className="space-y-1">
           {profiles.map((p) => (
-            <ProfileListRow key={p.id} profile={p} onOpen={() => onOpen(p.id)} />
+            <ProfileListRow key={p.id} profile={p} onOpen={() => onOpen(p.id)} compact={isMobile} />
           ))}
         </div>
       )}
