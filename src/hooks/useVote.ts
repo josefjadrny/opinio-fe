@@ -12,13 +12,18 @@ export function useVote() {
       vote(profileId, type),
     onSuccess: (data: VoteResponse, vars) => {
       // Immediately patch counts - order stays frozen for 5s, then unlock triggers invalidation.
-      // Merge rather than replace so list-only fields (e.g. `label`) survive until reinvalidation.
-      const patch = (p: Profile) => p.id === data.profile.id ? { ...p, ...data.profile } : p;
+      // Patch ONLY the vote counts: the vote endpoint returns the untranslated
+      // original name/description (no ?lang handling, no originalName/sourceLang),
+      // so merging the whole profile would clobber the cached translated text -
+      // flipping the sidebar back to the original language for the 5s lock window
+      // and breaking the "see original" toggle in the detail modal.
+      const patch = (p: Profile) =>
+        p.id === data.profile.id ? { ...p, likes: data.profile.likes, dislikes: data.profile.dislikes } : p;
       queryClient.setQueriesData<ProfilesResponse>({ queryKey: ['profiles'] }, (old) =>
         old ? { ...old, profiles: old.profiles.map(patch) } : old
       );
       queryClient.setQueriesData<Profile>({ queryKey: ['profile', data.profile.id] }, (old) =>
-        old ? { ...old, ...data.profile } : data.profile
+        old ? { ...old, likes: data.profile.likes, dislikes: data.profile.dislikes } : old
       );
       queryClient.invalidateQueries({ queryKey: ['profile', data.profile.id] });
       queryClient.setQueriesData<UserDetailResponse>({ queryKey: ['user'] }, (old) => {
