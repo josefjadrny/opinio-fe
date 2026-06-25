@@ -41,10 +41,10 @@ export function MapZoomControl({ scale, min, max, onZoom, onStep }: MapZoomContr
   const step = (dir: 1 | -1) => onStep(dir === 1 ? 1.3 : 1 / 1.3);
 
   const btn =
-    'w-9 h-9 flex items-center justify-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white transition-colors text-2xl font-bold leading-none';
+    'w-7 h-7 flex items-center justify-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white transition-colors text-xl font-bold leading-none';
 
   return (
-    <div className="absolute bottom-4 right-4 z-10 select-none flex flex-col items-center gap-2.5 rounded-xl bg-surface/80 backdrop-blur-sm ring-1 ring-border px-2.5 py-3">
+    <div className="absolute bottom-4 right-4 z-10 select-none flex flex-col items-center gap-1.5 rounded-xl bg-surface/80 backdrop-blur-sm ring-1 ring-border px-1.5 py-2">
       <button className={btn} onClick={() => step(1)} aria-label="Zoom in">+</button>
       <div
         ref={trackRef}
