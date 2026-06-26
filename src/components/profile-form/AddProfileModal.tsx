@@ -108,12 +108,12 @@ function findCountry(value: string) {
 // labels, which made this modal look off next to the rest of the app.
 const LABEL = 'block text-xs font-medium text-white/80 mb-1.5';
 const INPUT =
-  'w-full bg-surface text-white text-sm rounded-lg border border-border px-3 py-2 placeholder:text-white/30 focus:outline-none focus:border-accent transition-colors';
-const HINT = 'text-xs text-white/30 mt-1.5 leading-snug';
-// /60 (not the /30 used for hints): the char counter is information the user
-// actively needs, and /30 over the dark surface is ~1.6:1 contrast - invisible
-// on dimmer/uncalibrated displays (reported by Windows users).
-const COUNTER = 'text-xs text-white/60 mt-1 text-right tabular-nums';
+  'w-full bg-surface text-white text-sm rounded-lg border border-border px-3 py-2 placeholder:text-white/50 focus:outline-none focus:border-accent transition-colors';
+const HINT = 'text-xs text-white/50 mt-1.5 leading-snug';
+// The form's faint secondary text (hints, counters, placeholders) was /30 -
+// ~1.6:1 contrast on the dark surface, too dark to read on dimmer displays
+// (reported by Windows users). Standardised to /50 across the form.
+const COUNTER = 'text-xs text-white/50 mt-1 text-right tabular-nums';
 const ERROR = 'text-xs text-red-400 mt-1';
 
 // Link is stored as plain text for the MVP (no OG fetch / preview card yet).
@@ -183,7 +183,7 @@ function OpinioPreviewCard({ name, role, countryCode, description, avatarUrl, co
           </div>
         )}
         <div className="min-w-0 flex-1 flex items-center gap-x-1.5 gap-y-0.5 flex-wrap">
-          <span className={`text-sm font-semibold truncate min-w-0 flex-shrink ${name ? 'text-white' : 'text-white/30'}`}>
+          <span className={`text-sm font-semibold truncate min-w-0 flex-shrink ${name ? 'text-white' : 'text-white/50'}`}>
             {name || t.previewHeadlinePlaceholder}
           </span>
           <div className="flex items-center gap-1.5 shrink-0">
@@ -193,7 +193,7 @@ function OpinioPreviewCard({ name, role, countryCode, description, avatarUrl, co
           </div>
         </div>
       </div>
-      <p className={`px-3 mt-2 text-[13px] leading-relaxed break-words ${description ? 'text-white/80' : 'text-white/30'}`}>
+      <p className={`px-3 mt-2 text-[13px] leading-relaxed break-words ${description ? 'text-white/80' : 'text-white/50'}`}>
         {description || t.descriptionLabel}
       </p>
       {contentImageUrl && (
@@ -612,8 +612,8 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
             />
           </div>
           <div className="flex items-start justify-between gap-3 mt-1.5">
-            <p className="text-xs text-white/30 leading-snug">{t.statementHint}</p>
-            <p className={`text-xs text-white/60 tabular-nums shrink-0 ${name.length >= 36 ? 'text-red-400' : ''}`}>
+            <p className="text-xs text-white/50 leading-snug">{t.statementHint}</p>
+            <p className={`text-xs text-white/50 tabular-nums shrink-0 ${name.length >= 36 ? 'text-red-400' : ''}`}>
               {name.length} / 40
             </p>
           </div>
@@ -917,7 +917,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
                 link={link}
               />
             </div>
-            <p className="text-xs text-white/30 mt-2">{t.votesExpireNote}</p>
+            <p className="text-xs text-white/50 mt-2">{t.votesExpireNote}</p>
           </div>
         </aside>
       )}
