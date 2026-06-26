@@ -110,7 +110,10 @@ const LABEL = 'block text-xs font-medium text-white/80 mb-1.5';
 const INPUT =
   'w-full bg-surface text-white text-sm rounded-lg border border-border px-3 py-2 placeholder:text-white/30 focus:outline-none focus:border-accent transition-colors';
 const HINT = 'text-xs text-white/30 mt-1.5 leading-snug';
-const COUNTER = 'text-xs text-white/30 mt-1 text-right tabular-nums';
+// /60 (not the /30 used for hints): the char counter is information the user
+// actively needs, and /30 over the dark surface is ~1.6:1 contrast - invisible
+// on dimmer/uncalibrated displays (reported by Windows users).
+const COUNTER = 'text-xs text-white/60 mt-1 text-right tabular-nums';
 const ERROR = 'text-xs text-red-400 mt-1';
 
 // Link is stored as plain text for the MVP (no OG fetch / preview card yet).
@@ -610,7 +613,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           </div>
           <div className="flex items-start justify-between gap-3 mt-1.5">
             <p className="text-xs text-white/30 leading-snug">{t.statementHint}</p>
-            <p className={`text-xs text-white/30 tabular-nums shrink-0 ${name.length >= 36 ? 'text-red-400' : ''}`}>
+            <p className={`text-xs text-white/60 tabular-nums shrink-0 ${name.length >= 36 ? 'text-red-400' : ''}`}>
               {name.length} / 40
             </p>
           </div>
