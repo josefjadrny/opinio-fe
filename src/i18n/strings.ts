@@ -20,6 +20,10 @@ export interface Strings {
   categoryLabel: string;
   descriptionLabel: string;
   descriptionPlaceholder: string;
+  emojiAdd: string;
+  emojiSearch: string;
+  emojiNone: string;
+  descriptionTooShort: string;
   photoChoose: string;
   photoChange: string;
   photoRemove: string;
@@ -305,6 +309,10 @@ const en: Strings = {
   categoryLabel: 'Category',
   descriptionLabel: 'Long story short',
   descriptionPlaceholder: 'Give it some context…',
+  emojiAdd: 'Add emoji',
+  emojiSearch: 'Search emoji…',
+  emojiNone: 'No emoji found',
+  descriptionTooShort: 'Add a bit more - at least 5 characters.',
   photoChoose: 'Choose avatar',
   photoChange: 'Change avatar',
   photoRemove: 'Remove',
@@ -646,6 +654,10 @@ const cs: Strings = {
   categoryLabel: 'Kategorie',
   descriptionLabel: 'Zkrátka řečeno',
   descriptionPlaceholder: 'Přidejte kontext…',
+  emojiAdd: 'Přidat emoji',
+  emojiSearch: 'Hledat emoji…',
+  emojiNone: 'Žádné emoji nenalezeno',
+  descriptionTooShort: 'Přidejte trochu víc - alespoň 5 znaků.',
   photoChoose: 'Vybrat avatar',
   photoChange: 'Změnit avatar',
   photoRemove: 'Odebrat',
@@ -987,6 +999,10 @@ const es: Strings = {
   categoryLabel: 'Categoría',
   descriptionLabel: 'En pocas palabras',
   descriptionPlaceholder: 'Añade algo de contexto…',
+  emojiAdd: 'Añadir emoji',
+  emojiSearch: 'Buscar emoji…',
+  emojiNone: 'No se encontraron emojis',
+  descriptionTooShort: 'Añade un poco más - al menos 5 caracteres.',
   photoChoose: 'Elegir avatar',
   photoChange: 'Cambiar avatar',
   photoRemove: 'Eliminar',
@@ -1328,6 +1344,10 @@ const de: Strings = {
   categoryLabel: 'Kategorie',
   descriptionLabel: 'Kurz gesagt',
   descriptionPlaceholder: 'Gib etwas Kontext…',
+  emojiAdd: 'Emoji hinzufügen',
+  emojiSearch: 'Emoji suchen…',
+  emojiNone: 'Keine Emojis gefunden',
+  descriptionTooShort: 'Etwas mehr bitte - mindestens 5 Zeichen.',
   photoChoose: 'Avatar wählen',
   photoChange: 'Avatar ändern',
   photoRemove: 'Entfernen',
@@ -1669,6 +1689,10 @@ const fr: Strings = {
   categoryLabel: 'Catégorie',
   descriptionLabel: 'En bref',
   descriptionPlaceholder: 'Donne un peu de contexte…',
+  emojiAdd: 'Ajouter un emoji',
+  emojiSearch: 'Rechercher un emoji…',
+  emojiNone: 'Aucun emoji trouvé',
+  descriptionTooShort: 'Ajoutez un peu plus - au moins 5 caractères.',
   photoChoose: 'Choisir un avatar',
   photoChange: "Changer d'avatar",
   photoRemove: 'Retirer',
@@ -2010,6 +2034,10 @@ const it: Strings = {
   categoryLabel: 'Categoria',
   descriptionLabel: 'In breve',
   descriptionPlaceholder: 'Dai un po\' di contesto…',
+  emojiAdd: 'Aggiungi emoji',
+  emojiSearch: 'Cerca emoji…',
+  emojiNone: 'Nessun emoji trovato',
+  descriptionTooShort: 'Aggiungi un po\' di più - almeno 5 caratteri.',
   photoChoose: 'Scegli un avatar',
   photoChange: 'Cambia avatar',
   photoRemove: 'Rimuovi',
@@ -2351,6 +2379,10 @@ const pl: Strings = {
   categoryLabel: 'Kategoria',
   descriptionLabel: 'W skrócie',
   descriptionPlaceholder: 'Dodaj trochę kontekstu…',
+  emojiAdd: 'Dodaj emoji',
+  emojiSearch: 'Szukaj emoji…',
+  emojiNone: 'Nie znaleziono emoji',
+  descriptionTooShort: 'Dodaj trochę więcej - co najmniej 5 znaków.',
   photoChoose: 'Wybierz awatar',
   photoChange: 'Zmień awatar',
   photoRemove: 'Usuń',

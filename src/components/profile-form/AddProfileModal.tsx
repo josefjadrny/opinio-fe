@@ -15,6 +15,8 @@ import { Avatar } from '../profile/Avatar';
 import { RoleBadge } from '../common/RoleBadge';
 import { LabelBadge } from '../profile/LabelBadge';
 import type { Role } from '../../types/profile';
+import { stripEmoji } from '../../utils/emoji';
+import { EmojiPickerPopover } from './EmojiPickerPopover';
 
 // Draft persisted to localStorage so a half-composed opinio survives closing
 // the modal (or a reload). The card image (already resized to 128x128 JPEG, a
@@ -115,6 +117,10 @@ const ERROR = 'text-xs text-red-400 mt-1';
 // We only sanity-check it's an http(s) URL and cap it so the BE contract is
 // simple (single optional string, <= 255 chars).
 const MAX_LINK_LENGTH = 255;
+
+// Body floor - kept in sync with the BE check in routes/profiles.ts so the FE
+// never lets through something the API would 400 on.
+const MIN_DESCRIPTION_LENGTH = 5;
 
 function isValidLink(value: string) {
   try {
@@ -260,6 +266,10 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   );
   const [countryMenuOpen, setCountryMenuOpen] = useState(false);
   const [description, setDescription] = useState(() => restoredDraft?.description ?? '');
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const [descError, setDescError] = useState<string | null>(null);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  const emojiWrapRef = useRef<HTMLDivElement>(null);
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
   // Seeded from a restored draft (a base64 data URL); imageBlob stays null until
   // submit, where it's rebuilt from this data URL (see mutationFn).
@@ -312,6 +322,43 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   useEffect(() => {
     return () => { if (contentPreviewUrl) URL.revokeObjectURL(contentPreviewUrl); };
   }, [contentPreviewUrl]);
+
+  // Close the emoji popover on an outside click or Escape. Escape is handled in
+  // the capture phase so it dismisses the picker without also bubbling up to
+  // ModalShell's Escape-to-close (otherwise one keypress would shut both).
+  useEffect(() => {
+    if (!emojiOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (!emojiWrapRef.current?.contains(e.target as Node)) setEmojiOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); setEmojiOpen(false); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [emojiOpen]);
+
+  // Insert an emoji at the caret (or replacing the selection) in the body. Honors
+  // the same 255 UTF-16 cap as the textarea's maxLength and never splits an emoji
+  // - if it wouldn't fit, the insert is dropped rather than truncated mid-glyph.
+  const insertEmoji = (emoji: string) => {
+    const ta = descriptionRef.current;
+    const start = ta?.selectionStart ?? description.length;
+    const end = ta?.selectionEnd ?? description.length;
+    const next = description.slice(0, start) + emoji + description.slice(end);
+    if (next.length > 255) return;
+    setDescription(next);
+    requestAnimationFrame(() => {
+      if (!ta) return;
+      const pos = start + emoji.length;
+      ta.focus();
+      ta.setSelectionRange(pos, pos);
+    });
+  };
 
   // Persist the fields as the user edits so closing the modal (or a reload)
   // keeps the half-composed opinio. The card image (previewUrl) is a base64 data
@@ -444,7 +491,14 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !description.trim()) return;
+    if (!name.trim()) return;
+    // Body must carry a bit of substance - mirrors the BE 5-char floor so a
+    // one-letter "ok" can't be posted. Counted in the same UTF-16 units the
+    // counter and BE use (an emoji is ~2), so the two never disagree.
+    if (description.trim().length < MIN_DESCRIPTION_LENGTH) {
+      setDescError(t.descriptionTooShort);
+      return;
+    }
     if (isBlocked) return;
     const trimmedLink = link.trim();
     if (trimmedLink && !isValidLink(trimmedLink)) {
@@ -551,7 +605,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
               type="text"
               placeholder={t.statementPlaceholder}
               value={name}
-              onChange={(e) => setName(e.target.value.slice(0, 40))}
+              onChange={(e) => setName(stripEmoji(e.target.value).slice(0, 40))}
               maxLength={40}
               className={`${INPUT} flex-1 min-w-0`}
               required
@@ -654,21 +708,43 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           <p className={HINT}>{t.profileCountryHint}</p>
         </div>
 
-        {/* Description */}
+        {/* Description — emoji are allowed here (the statement stays text-only).
+            The picker floats as an absolutely-positioned popover that opens
+            upward, so opening it never changes the form's height. */}
         <div>
           <label className={LABEL}>{t.descriptionLabel}</label>
-          <textarea
-            placeholder={t.descriptionPlaceholder}
-            value={description}
-            maxLength={255}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            className={`${INPUT} resize-none`}
-            required
-          />
+          <div ref={emojiWrapRef} className="relative">
+            <textarea
+              ref={descriptionRef}
+              placeholder={t.descriptionPlaceholder}
+              value={description}
+              maxLength={255}
+              onChange={(e) => { setDescription(e.target.value); if (descError) setDescError(null); }}
+              rows={3}
+              className={`${INPUT} resize-none pr-10`}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setEmojiOpen((v) => !v)}
+              aria-label={t.emojiAdd}
+              title={t.emojiAdd}
+              className={`absolute bottom-2 right-2 flex items-center justify-center w-7 h-7 rounded-md text-white/40 hover:text-white/80 hover:bg-white/5 transition-colors ${emojiOpen ? 'bg-white/5 text-white/80' : ''}`}
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+              </svg>
+            </button>
+            {emojiOpen && (
+              <div className="absolute bottom-full right-0 mb-2 z-30">
+                <EmojiPickerPopover onPick={insertEmoji} />
+              </div>
+            )}
+          </div>
           <p className={`${COUNTER} ${description.length >= 230 ? 'text-red-400' : ''}`}>
             {description.length} / 255
           </p>
+          {descError && <p className={ERROR}>{descError}</p>}
         </div>
 
         {/* Attachments — image + link grouped with tight (8px) spacing so the
