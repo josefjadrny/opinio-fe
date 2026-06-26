@@ -267,7 +267,6 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const [countryMenuOpen, setCountryMenuOpen] = useState(false);
   const [description, setDescription] = useState(() => restoredDraft?.description ?? '');
   const [emojiOpen, setEmojiOpen] = useState(false);
-  const [descError, setDescError] = useState<string | null>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const emojiWrapRef = useRef<HTMLDivElement>(null);
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
@@ -489,17 +488,15 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     },
   });
 
+  // Required fields gate the submit button (disabled until met) rather than
+  // validating after a click. The body floor mirrors the BE 5-char check,
+  // counted in the same UTF-16 units the counter/BE use (an emoji is ~2).
+  const canSubmit =
+    name.trim().length > 0 && description.trim().length >= MIN_DESCRIPTION_LENGTH;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
-    // Body must carry a bit of substance - mirrors the BE 5-char floor so a
-    // one-letter "ok" can't be posted. Counted in the same UTF-16 units the
-    // counter and BE use (an emoji is ~2), so the two never disagree.
-    if (description.trim().length < MIN_DESCRIPTION_LENGTH) {
-      setDescError(t.descriptionTooShort);
-      return;
-    }
-    if (isBlocked) return;
+    if (!canSubmit || isBlocked || mutation.isPending) return;
     const trimmedLink = link.trim();
     if (trimmedLink && !isValidLink(trimmedLink)) {
       setLinkError(t.linkInvalid);
@@ -719,7 +716,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
               placeholder={t.descriptionPlaceholder}
               value={description}
               maxLength={255}
-              onChange={(e) => { setDescription(e.target.value); if (descError) setDescError(null); }}
+              onChange={(e) => setDescription(e.target.value)}
               rows={3}
               className={`${INPUT} resize-none pr-10`}
               required
@@ -744,7 +741,6 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           <p className={`${COUNTER} ${description.length >= 230 ? 'text-red-400' : ''}`}>
             {description.length} / 255
           </p>
-          {descError && <p className={ERROR}>{descError}</p>}
         </div>
 
         {/* Attachments — image + link grouped with tight (8px) spacing so the
@@ -890,11 +886,11 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
         ) : (
           <button
             type="submit"
-            disabled={mutation.isPending}
-            // Brand --color-positive (#22c55e), dimmed via /80 so a full-width
-            // bar of it isn't retina-burning against the dark surface. Same
-            // hue as vote arrows / liking accents — one green app-wide.
-            className="w-full bg-positive/80 text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-positive transition-colors disabled:opacity-50"
+            disabled={!canSubmit || mutation.isPending}
+            // Brand accent (#e94560) - the app-wide primary CTA color (matches
+            // SupportModal / report / welcome). Disabled until the required
+            // fields are valid, so it gates rather than validating post-click.
+            className="w-full py-2.5 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {mutation.isPending ? t.adding : t.dropButton}
           </button>

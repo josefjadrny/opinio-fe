@@ -7,8 +7,11 @@
 // (U+FE0F), and the enclosing keycap (U+20E3). Plain digits / # / * are
 // deliberately NOT matched, so "Plan B" or "Top 10" survive untouched (only
 // their emoji presentation markers, if any, are removed).
+// Alternation rather than a character class: the zero-width / combining members
+// (U+200D, U+FE0F, U+20E3) trip eslint's no-misleading-character-class when put
+// in a [...] class, but as alternatives they match the same single code points.
 const EMOJI_RE = new RegExp(
-  '[\\p{Extended_Pictographic}\\p{Emoji_Modifier}\\p{Regional_Indicator}\\u200D\\uFE0F\\u20E3]',
+  '\\p{Extended_Pictographic}|\\p{Emoji_Modifier}|\\p{Regional_Indicator}|\\u200D|\\uFE0F|\\u20E3',
   'gu',
 );
 
