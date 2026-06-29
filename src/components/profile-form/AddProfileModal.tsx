@@ -613,7 +613,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
           </div>
           <div className="flex items-start justify-between gap-3 mt-1.5">
             <p className="text-xs text-white/50 leading-snug">{t.statementHint}</p>
-            <p className={`text-xs text-white/50 tabular-nums shrink-0 ${name.length >= 36 ? 'text-red-400' : ''}`}>
+            <p translate="no" className={`text-xs text-white/50 tabular-nums shrink-0 notranslate ${name.length >= 36 ? 'text-red-400' : ''}`}>
               {name.length} / 40
             </p>
           </div>
@@ -741,7 +741,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
               </div>
             )}
           </div>
-          <p className={`${COUNTER} ${description.length >= 230 ? 'text-red-400' : ''}`}>
+          <p translate="no" className={`${COUNTER} notranslate ${description.length >= 230 ? 'text-red-400' : ''}`}>
             {description.length} / 255
           </p>
         </div>
