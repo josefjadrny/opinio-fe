@@ -59,6 +59,7 @@ export interface Strings {
   displayName: string;
   country: string;
   countryHint: string;
+  countryChangeLocked: string;
   profileCountry: string;
   profileCountryHint: string;
   detectedFromIp: string;
@@ -348,6 +349,7 @@ const en: Strings = {
   displayName: 'Display name',
   country: 'Country',
   countryHint: 'Your votes count as coming from this country',
+  countryChangeLocked: 'You can change your country again {time}',
   profileCountry: 'Country',
   profileCountryHint: 'Likes and dislikes count toward this country\'s stats.',
   detectedFromIp: 'Detected from your IP',
@@ -693,6 +695,7 @@ const cs: Strings = {
   displayName: 'Zobrazované jméno',
   country: 'Země',
   countryHint: 'Vaše hlasy se počítají, jako by byly z této země',
+  countryChangeLocked: 'Zemi můžete znovu změnit {time}',
   profileCountry: 'Země',
   profileCountryHint: 'Lajky a dislajky se přičtou statistikám této země.',
   detectedFromIp: 'Zjištěno z vaší IP',
@@ -1038,6 +1041,7 @@ const es: Strings = {
   displayName: 'Nombre visible',
   country: 'País',
   countryHint: 'Tus votos cuentan como si fueran de este país',
+  countryChangeLocked: 'Podrás cambiar tu país de nuevo {time}',
   profileCountry: 'País',
   profileCountryHint: 'Los me gusta y no me gusta cuentan para las estadísticas de este país.',
   detectedFromIp: 'Detectado desde tu IP',
@@ -1383,6 +1387,7 @@ const de: Strings = {
   displayName: 'Anzeigename',
   country: 'Land',
   countryHint: 'Deine Stimmen zählen, als kämen sie aus diesem Land',
+  countryChangeLocked: 'Du kannst dein Land {time} wieder ändern',
   profileCountry: 'Land',
   profileCountryHint: 'Likes und Dislikes zählen zu den Statistiken dieses Landes.',
   detectedFromIp: 'Anhand deiner IP erkannt',
@@ -1728,6 +1733,7 @@ const fr: Strings = {
   displayName: 'Nom affiché',
   country: 'Pays',
   countryHint: 'Vos votes comptent comme provenant de ce pays',
+  countryChangeLocked: 'Vous pourrez changer de pays à nouveau {time}',
   profileCountry: 'Pays',
   profileCountryHint: "Les j'aime et je n'aime pas comptent pour les statistiques de ce pays.",
   detectedFromIp: 'Détecté depuis votre IP',
@@ -2073,6 +2079,7 @@ const it: Strings = {
   displayName: 'Nome visualizzato',
   country: 'Paese',
   countryHint: 'I tuoi voti contano come provenienti da questo paese',
+  countryChangeLocked: 'Potrai cambiare di nuovo paese {time}',
   profileCountry: 'Paese',
   profileCountryHint: 'I mi piace e i non mi piace contano per le statistiche di questo paese.',
   detectedFromIp: 'Rilevato dal tuo IP',
@@ -2418,6 +2425,7 @@ const pl: Strings = {
   displayName: 'Nazwa wyświetlana',
   country: 'Kraj',
   countryHint: 'Twoje głosy liczą się jako oddane z tego kraju',
+  countryChangeLocked: 'Kraj możesz ponownie zmienić {time}',
   profileCountry: 'Kraj',
   profileCountryHint: 'Polubienia i niechęci liczą się do statystyk tego kraju.',
   detectedFromIp: 'Wykryto z Twojego IP',

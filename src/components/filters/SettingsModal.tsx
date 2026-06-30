@@ -11,6 +11,7 @@ import { type Locale } from '../../i18n/strings';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { resizeImage } from '../../utils/resizeImage';
+import { formatTimeUntil } from '../../utils/formatRelativeTime';
 import { updateMe, createCheckoutSession, createPortalSession, uploadAvatar, resetAvatar } from '../../api/client';
 import { useSignIn } from '../auth/SignInContext';
 import { SignInIcon } from '../auth/SignInIcon';
@@ -60,7 +61,7 @@ function SettingsContent({
   setLocale,
 }: {
   displayName: string;
-  user: { avatarUrl: string | null; provider: string | null; tier?: string; countryCode: string | null; canChangeCountry?: boolean } | undefined;
+  user: { avatarUrl: string | null; provider: string | null; tier?: string; countryCode: string | null; canChangeCountry?: boolean; countryChangeAvailableAt?: string | null } | undefined;
   isAnonymous: boolean;
   t: ReturnType<typeof useI18n>['t'];
   locale: string;
@@ -77,7 +78,13 @@ function SettingsContent({
     setNameValue(displayName);
   }, [displayName]);
 
-  const canChangeCountry = user?.canChangeCountry ?? false;
+  // Country changes are throttled to once per 24h server-side. Lock the
+  // selector + show a countdown while the cooldown is active.
+  const countryLockedUntil = user?.countryChangeAvailableAt
+    ? new Date(user.countryChangeAvailableAt)
+    : null;
+  const countryLocked = !!countryLockedUntil && countryLockedUntil.getTime() > Date.now();
+  const canChangeCountry = (user?.canChangeCountry ?? false) && !countryLocked;
 
   const handleCountryChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const code = e.target.value;
@@ -85,8 +92,10 @@ function SettingsContent({
     setSaving(true);
     try {
       await updateMe({ countryCode: code });
-      await queryClient.invalidateQueries({ queryKey: ['me'] });
+    } catch {
+      // e.g. 429 cooldown — refetching `me` surfaces the lock + countdown.
     } finally {
+      await queryClient.invalidateQueries({ queryKey: ['me'] });
       setSaving(false);
     }
   };
@@ -210,7 +219,13 @@ function SettingsContent({
           </div>
         )}
         {user?.countryCode ? (
-          !canChangeCountry && <p className="text-xs text-white/30 mt-1.5">{t.detectedFromIp}</p>
+          countryLocked ? (
+            <p className="text-xs text-white/30 mt-1.5">
+              {t.countryChangeLocked.replace('{time}', formatTimeUntil(user!.countryChangeAvailableAt!, locale as Locale))}
+            </p>
+          ) : (
+            !canChangeCountry && <p className="text-xs text-white/30 mt-1.5">{t.detectedFromIp}</p>
+          )
         ) : (
           <p className="flex items-center gap-1.5 text-xs text-accent/80 mt-1.5">
             <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>

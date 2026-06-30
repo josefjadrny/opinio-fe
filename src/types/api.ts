@@ -32,6 +32,7 @@ export interface MeUser {
   avatarUrl: string | null;
   tier: 'anonymous' | 'registered' | 'supporter' | 'admin';
   canChangeCountry: boolean;
+  countryChangeAvailableAt: string | null;
   language: string | null;
   blockedUntil: string | null;
 }

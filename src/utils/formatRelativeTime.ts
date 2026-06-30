@@ -10,6 +10,15 @@ const LOCALE_TO_BCP47: Record<Locale, string> = {
   pl: 'pl-PL',
 };
 
+// Localized "in 23 hours" / "in 45 minutes" for a future timestamp. Rounds up
+// so the user is never told a smaller wait than is actually enforced.
+export function formatTimeUntil(iso: string, locale: Locale): string {
+  const diffSec = Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 1000));
+  const rtf = new Intl.RelativeTimeFormat(LOCALE_TO_BCP47[locale] ?? 'en-US', { numeric: 'always' });
+  if (diffSec < 3600) return rtf.format(Math.max(1, Math.ceil(diffSec / 60)), 'minute');
+  return rtf.format(Math.ceil(diffSec / 3600), 'hour');
+}
+
 export function formatRelativeTime(iso: string, locale: Locale, justNow: string): string {
   const diffSec = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
   if (diffSec < 60) return justNow;
