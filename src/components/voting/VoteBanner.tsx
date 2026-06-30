@@ -134,7 +134,7 @@ export function VoteBanner() {
             type="button"
             onClick={dismissTeaser}
             aria-label={t.close}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-sm leading-none text-white/30 hover:text-white/60"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-lg leading-none text-white/30 hover:text-white/60"
           >
             ×
           </button>
