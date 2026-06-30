@@ -223,6 +223,8 @@ export interface Strings {
   roles: Record<string, string>;
   votesLeft: string;
   nextVote: string;
+  moreVotesAsk: string;
+  moreVotesTeaser: string;
   agree: string;
   disagree: string;
   breakdownLiking: string;
@@ -532,6 +534,8 @@ const en: Strings = {
   },
   votesLeft: 'votes left',
   nextVote: 'next vote',
+  moreVotesAsk: 'More votes?',
+  moreVotesTeaser: "Sign up - it's free",
   agree: 'Like',
   disagree: 'Dislike',
   breakdownLiking: 'Liking',
@@ -878,6 +882,8 @@ const cs: Strings = {
   },
   votesLeft: 'zbývá hlasů',
   nextVote: 'příští hlas',
+  moreVotesAsk: 'Více hlasů?',
+  moreVotesTeaser: 'Zaregistrujte se zdarma',
   agree: 'Líbí',
   disagree: 'Nelíbí',
   breakdownLiking: 'Líbí se',
@@ -1224,6 +1230,8 @@ const es: Strings = {
   },
   votesLeft: 'votos restantes',
   nextVote: 'próximo voto',
+  moreVotesAsk: '¿Más votos?',
+  moreVotesTeaser: 'Regístrate gratis',
   agree: 'Me gusta',
   disagree: 'No me gusta',
   breakdownLiking: 'A favor',
@@ -1570,6 +1578,8 @@ const de: Strings = {
   },
   votesLeft: 'Stimmen übrig',
   nextVote: 'nächste Stimme',
+  moreVotesAsk: 'Mehr Stimmen?',
+  moreVotesTeaser: 'Kostenlos registrieren',
   agree: 'Like',
   disagree: 'Dislike',
   breakdownLiking: 'Dafür',
@@ -1916,6 +1926,8 @@ const fr: Strings = {
   },
   votesLeft: 'votes restants',
   nextVote: 'prochain vote',
+  moreVotesAsk: 'Plus de votes ?',
+  moreVotesTeaser: "Inscrivez-vous, c'est gratuit",
   agree: "J'aime",
   disagree: "Je n'aime pas",
   breakdownLiking: 'Pour',
@@ -2262,6 +2274,8 @@ const it: Strings = {
   },
   votesLeft: 'voti rimasti',
   nextVote: 'prossimo voto',
+  moreVotesAsk: 'Più voti?',
+  moreVotesTeaser: 'Registrati gratis',
   agree: 'Mi piace',
   disagree: 'Non mi piace',
   breakdownLiking: 'A favore',
@@ -2608,6 +2622,8 @@ const pl: Strings = {
   },
   votesLeft: 'pozostało głosów',
   nextVote: 'następny głos',
+  moreVotesAsk: 'Więcej głosów?',
+  moreVotesTeaser: 'Zarejestruj się za darmo',
   agree: 'Lubię',
   disagree: 'Nie lubię',
   breakdownLiking: 'Lubią',

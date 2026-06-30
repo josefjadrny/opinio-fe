@@ -1,11 +1,21 @@
+import { useState } from 'react';
 import { useMatch } from 'react-router-dom';
 import { useMe } from '../../hooks/useMe';
 import { useCountdown } from '../../hooks/useCountdown';
 import { useVote } from '../../hooks/useVote';
 import { useVoteAnimation } from '../../hooks/useVoteAnimation';
+import { useSignIn } from '../auth/SignInContext';
 import { useI18n } from '../../i18n/I18nContext';
 
 const VOTE_WINDOW_MS = 3600 * 1000;
+
+// Anonymous-only nudge: once they've spent both vote pools, a gentle strip
+// offers sign-up for more votes. Dismissed permanently per-browser via the x;
+// it also vanishes the instant they sign in (tier flips off 'anonymous').
+const TEASER_DISMISSED_KEY = 'opinio_votes_teaser_dismissed_v1';
+function teaserDismissed(): boolean {
+  try { return localStorage.getItem(TEASER_DISMISSED_KEY) === '1'; } catch { return true; }
+}
 
 function VoteSlot({ type, remaining, nextAt, voteOnProfileId }: {
   type: 'like' | 'dislike';
@@ -91,6 +101,8 @@ function VoteSlot({ type, remaining, nextAt, voteOnProfileId }: {
 export function VoteBanner() {
   const { data: me } = useMe();
   const { t } = useI18n();
+  const { promptSignIn } = useSignIn();
+  const [dismissed, setDismissed] = useState(teaserDismissed);
   const detailMatch = useMatch('/p/:id');
   const detailProfileId = detailMatch?.params.id ?? null;
 
@@ -98,12 +110,41 @@ export function VoteBanner() {
 
   const { like, dislike } = me.voteAllowance;
   const allExhausted = like.remaining === 0 && dislike.remaining === 0;
+  const isAnon = me.user?.tier === 'anonymous';
+  const showTeaser = isAnon && allExhausted && !dismissed;
+
+  const dismissTeaser = () => {
+    try { localStorage.setItem(TEASER_DISMISSED_KEY, '1'); } catch { /* private mode - degrade silently */ }
+    setDismissed(true);
+  };
 
   return (
-    <div className="flex items-center justify-center gap-4 py-2 border-t border-white/10 bg-surface/80 backdrop-blur-sm text-sm text-white/50">
-      <span>{allExhausted ? t.nextVote : t.votesLeft}</span>
-      <VoteSlot type="like" remaining={like.remaining} nextAt={like.nextAt} voteOnProfileId={detailProfileId} />
-      <VoteSlot type="dislike" remaining={dislike.remaining} nextAt={dislike.nextAt} voteOnProfileId={detailProfileId} />
+    <div className="border-t border-white/10 bg-surface/80 backdrop-blur-sm">
+      {showTeaser && (
+        <div className="relative flex items-center justify-center gap-1.5 px-8 pt-1.5 text-xs">
+          <span className="text-white/40">{t.moreVotesAsk}</span>
+          <button
+            type="button"
+            onClick={promptSignIn}
+            className="font-medium text-accent transition-colors hover:text-accent/80"
+          >
+            {t.moreVotesTeaser}
+          </button>
+          <button
+            type="button"
+            onClick={dismissTeaser}
+            aria-label={t.close}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-sm leading-none text-white/30 hover:text-white/60"
+          >
+            ×
+          </button>
+        </div>
+      )}
+      <div className="flex items-center justify-center gap-4 py-2 text-sm text-white/50">
+        <span>{allExhausted ? t.nextVote : t.votesLeft}</span>
+        <VoteSlot type="like" remaining={like.remaining} nextAt={like.nextAt} voteOnProfileId={detailProfileId} />
+        <VoteSlot type="dislike" remaining={dislike.remaining} nextAt={dislike.nextAt} voteOnProfileId={detailProfileId} />
+      </div>
     </div>
   );
 }
