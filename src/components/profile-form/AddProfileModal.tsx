@@ -415,7 +415,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   // the raw file locally and ship it on submit. Accepted: JPEG / PNG / WebP up to 10 MB.
   const ACCEPTED_CONTENT_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
   const MAX_CONTENT_UPLOAD_BYTES = 10 * 1024 * 1024;
-  const handleContentFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleContentFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setContentImageError(null);
@@ -430,6 +430,20 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     if (contentPreviewUrl) URL.revokeObjectURL(contentPreviewUrl);
     setContentImageFile(file);
     setContentPreviewUrl(URL.createObjectURL(file));
+
+    // No card avatar chosen yet - reuse this same photo so the opinio isn't
+    // left with the generic placeholder circle. Best-effort: on failure the
+    // avatar just stays unset, same as before this existed.
+    if (!previewUrl) {
+      try {
+        const blob = await resizeImage(file);
+        const dataUrl = await blobToDataUrl(blob);
+        setImageBlob(blob);
+        setPreviewUrl(dataUrl);
+      } catch {
+        // ignore - user can still pick an avatar manually
+      }
+    }
   };
 
   const handlePasteLink = async () => {
@@ -563,44 +577,51 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
         <div>
           <label className={LABEL}>{t.statementLabel}</label>
           <div className="flex items-center gap-2.5">
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="relative w-11 h-11 rounded-full border border-border bg-surface shrink-0 overflow-hidden group hover:border-white/25 transition-colors"
-              title={previewUrl ? t.photoChange : t.photoChoose}
-              aria-label={previewUrl ? t.photoChange : t.photoChoose}
-            >
-              {previewUrl ? (
-                <>
-                  <img src={previewUrl} alt="" className="w-full h-full object-cover" />
-                  <span className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+            {/* Wrapped in its own (non-clipping) relative box so the remove
+                badge, which sits partially outside the circle, isn't cut off
+                by the inner button's overflow-hidden (needed only to mask the
+                photo into a circle). It was previously nested inside that
+                button - both invisible-when-clipped and invalid HTML
+                (interactive content inside a <button>). */}
+            <div className="relative w-11 h-11 shrink-0">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="w-11 h-11 rounded-full border border-border bg-surface overflow-hidden group hover:border-white/25 transition-colors"
+                title={previewUrl ? t.photoChange : t.photoChoose}
+                aria-label={previewUrl ? t.photoChange : t.photoChoose}
+              >
+                {previewUrl ? (
+                  <>
+                    <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                    <span className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                      </svg>
+                    </span>
+                  </>
+                ) : (
+                  <span className="w-full h-full flex items-center justify-center text-white/50 group-hover:text-white/80 transition-colors">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M21 3.75H3A.75.75 0 002.25 4.5v15a.75.75 0 00.75.75h18a.75.75 0 00.75-.75v-15A.75.75 0 0021 3.75z" />
                     </svg>
                   </span>
-                </>
-              ) : (
-                <span className="w-full h-full flex items-center justify-center text-white/50 group-hover:text-white/80 transition-colors">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M21 3.75H3A.75.75 0 002.25 4.5v15a.75.75 0 00.75.75h18a.75.75 0 00.75-.75v-15A.75.75 0 0021 3.75z" />
-                  </svg>
-                </span>
-              )}
+                )}
+              </button>
               {previewUrl && (
-                <span
-                  role="button"
-                  tabIndex={0}
+                <button
+                  type="button"
                   onClick={(e) => { e.stopPropagation(); setImageBlob(null); setPreviewUrl(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setImageBlob(null); setPreviewUrl(null); if (fileInputRef.current) fileInputRef.current.value = ''; } }}
                   aria-label={t.photoRemove}
-                  className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-surface border border-border rounded-full text-white/60 hover:text-white hover:border-white/40 transition-colors"
+                  title={t.photoRemove}
+                  className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-surface border border-border rounded-full text-white/60 hover:text-white hover:border-white/40 transition-colors"
                 >
-                  <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                </span>
+                </button>
               )}
-            </button>
+            </div>
             <input
               type="text"
               placeholder={t.statementPlaceholder}

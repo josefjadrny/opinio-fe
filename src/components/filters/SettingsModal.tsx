@@ -306,37 +306,46 @@ function AvatarEditor({
 
   return (
     <div className="flex flex-col items-center gap-1.5">
-      <button
-        type="button"
-        onClick={handlePick}
-        disabled={isAnonymous || busy}
-        className="relative w-16 h-16 rounded-full group disabled:cursor-not-allowed"
-        title={isAnonymous ? undefined : t.photoChange}
-      >
-        <Avatar name={displayName} imageUrl={avatarUrl} className="w-16 h-16" isAnonymous={isAnonymous} />
-        {!isAnonymous && (
-          <span className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
-            </svg>
-          </span>
-        )}
-        {busy && (
-          <span className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center">
-            <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-          </span>
-        )}
-      </button>
-      {!isAnonymous && avatarUrl && (
+      {/* Same pattern as AddProfileModal's card-image picker: the remove
+          control is a sibling badge in a plain relative wrapper, not nested
+          inside the picker button, so it can't get clipped by (or conflict
+          with) the button's own rounding/hover state. */}
+      <div className="relative w-16 h-16">
         <button
           type="button"
-          onClick={handleReset}
-          disabled={busy}
-          className="text-[11px] text-white/40 hover:text-white/70 transition-colors disabled:opacity-40"
+          onClick={handlePick}
+          disabled={isAnonymous || busy}
+          className="w-16 h-16 rounded-full group disabled:cursor-not-allowed"
+          title={isAnonymous ? undefined : t.photoChange}
         >
-          {t.photoRemove}
+          <Avatar name={displayName} imageUrl={avatarUrl} className="w-16 h-16" isAnonymous={isAnonymous} />
+          {!isAnonymous && (
+            <span className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+              </svg>
+            </span>
+          )}
+          {busy && (
+            <span className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center">
+              <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+            </span>
+          )}
         </button>
-      )}
+        {!isAnonymous && avatarUrl && !busy && (
+          <button
+            type="button"
+            onClick={handleReset}
+            aria-label={t.photoRemove}
+            title={t.photoRemove}
+            className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-surface border border-border rounded-full text-white/60 hover:text-white hover:border-white/40 transition-colors"
+          >
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
       {error && <p className="text-[11px] text-red-400 text-center max-w-[5rem]">{error}</p>}
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
     </div>
