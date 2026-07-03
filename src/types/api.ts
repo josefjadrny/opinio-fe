@@ -104,6 +104,25 @@ export interface TrendingCountriesResponse {
   trendingCountries: TrendingCountry[];
 }
 
+// All-time Leaderboard: entities ranked by lifetime votes received
+// (likes+dislikes combined), distinct from the 24h "trending" rankings above.
+export type LeaderboardBoard = 'opinios' | 'countries' | 'users';
+
+export interface LeaderboardProfilesResponse {
+  leaderboardProfiles: Profile[];
+}
+
+export interface LeaderboardCountry {
+  countryCode: string;
+  profileCount: number;
+  totalLikes: number;
+  totalDislikes: number;
+}
+
+export interface LeaderboardCountriesResponse {
+  leaderboardCountries: LeaderboardCountry[];
+}
+
 export interface UserProfileSummary {
   id: string;
   name: string;

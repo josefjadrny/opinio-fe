@@ -647,8 +647,8 @@ const STATIC_PAGES = {
     description: 'Which countries are generating the most buzz right now - ranked by votes on their active posts, refreshed every 24 hours on Opinio.',
   },
   '/stats/top-voters': {
-    title: 'Top voters leaderboard - Opinio',
-    description: 'The most active voters worldwide and by country, ranked by likes and dislikes cast on Opinio.',
+    title: 'All-time leaderboard - Opinio',
+    description: 'The all-time Opinio leaderboard - top opinions, countries and members ranked by total votes received (likes and dislikes combined).',
   },
   '/support': {
     title: 'Support - Opinio',
@@ -678,7 +678,7 @@ const STATIC_I18N = {
     '/terms': { title: 'Podmínky použití - Opinio', description: 'Podmínky použití Opinio: pravidla pro přispívání, hlasování, předplatné a pozastavení účtů.' },
     '/stats': { title: 'Nejdiskutovanější názory právě teď - Opinio', description: 'Názory, postřehy a nápady, které právě teď získávají nejvíce hlasů na Opinio - řazeno živě a obnovováno každých 24 hodin.' },
     '/stats/trending-countries': { title: 'Trendující země podle hlasů - Opinio', description: 'Které země právě teď vzbuzují největší rozruch - řazeno podle hlasů na jejich aktivních příspěvcích, obnovováno každých 24 hodin na Opinio.' },
-    '/stats/top-voters': { title: 'Žebříček nejaktivnějších hlasujících - Opinio', description: 'Nejaktivnější hlasující po celém světě i podle zemí, řazeno podle udělených lajků a palců dolů na Opinio.' },
+    '/stats/top-voters': { title: 'Žebříček za celou dobu - Opinio', description: 'Žebříček Opinio za celou dobu - nejlepší názory, země a členové podle celkového počtu získaných hlasů (lajky a dislajky dohromady).' },
     '/support': { title: 'Podpora - Opinio', description: 'Kontaktujte podporu Opinio, spravujte své tikety a získejte pomoc s hlasováním, profily a nastavením účtu.' },
   },
   es: {
@@ -688,7 +688,7 @@ const STATIC_I18N = {
     '/terms': { title: 'Términos de uso - Opinio', description: 'Términos de uso de Opinio: reglas de publicación, votación, suscripciones y suspensiones de cuenta.' },
     '/stats': { title: 'Opiniones en tendencia ahora mismo - Opinio', description: 'Las opiniones, ideas y propuestas que más votos reciben ahora mismo en Opinio - clasificadas en vivo y actualizadas cada 24 horas.' },
     '/stats/trending-countries': { title: 'Países en tendencia por votos - Opinio', description: 'Qué países generan más revuelo ahora mismo - clasificados por votos en sus publicaciones activas, actualizado cada 24 horas en Opinio.' },
-    '/stats/top-voters': { title: 'Clasificación de los más votantes - Opinio', description: 'Los votantes más activos del mundo y por país, clasificados por me gusta y no me gusta emitidos en Opinio.' },
+    '/stats/top-voters': { title: 'Clasificación histórica - Opinio', description: 'La clasificación histórica de Opinio - las mejores opiniones, países y miembros por el total de votos recibidos (positivos y negativos combinados).' },
     '/support': { title: 'Soporte - Opinio', description: 'Contacta con el soporte de Opinio, gestiona tus tickets y obtén ayuda con la votación, los perfiles y la configuración de tu cuenta.' },
   },
   de: {
@@ -698,7 +698,7 @@ const STATIC_I18N = {
     '/terms': { title: 'Nutzungsbedingungen - Opinio', description: 'Nutzungsbedingungen von Opinio: Regeln fürs Posten, Abstimmen, Abos und Kontosperren.' },
     '/stats': { title: 'Angesagte Meinungen gerade jetzt - Opinio', description: 'Die Meinungen, Einschätzungen und Ideen mit den meisten Stimmen gerade jetzt auf Opinio - live gewertet und alle 24 Stunden aktualisiert.' },
     '/stats/trending-countries': { title: 'Angesagte Länder nach Stimmen - Opinio', description: 'Welche Länder gerade für den meisten Wirbel sorgen - gewertet nach Stimmen auf ihren aktiven Beiträgen, alle 24 Stunden auf Opinio aktualisiert.' },
-    '/stats/top-voters': { title: 'Bestenliste der aktivsten Abstimmenden - Opinio', description: 'Die aktivsten Abstimmenden weltweit und nach Land, gewertet nach abgegebenen Likes und Dislikes auf Opinio.' },
+    '/stats/top-voters': { title: 'Bestenliste aller Zeiten - Opinio', description: 'Die Opinio-Bestenliste aller Zeiten - Top-Meinungen, Länder und Mitglieder nach der Gesamtzahl erhaltener Stimmen (Likes und Dislikes zusammen).' },
     '/support': { title: 'Support - Opinio', description: 'Kontaktiere den Opinio-Support, verwalte deine Tickets und erhalte Hilfe bei Abstimmungen, Profilen und Kontoeinstellungen.' },
   },
   fr: {
@@ -708,7 +708,7 @@ const STATIC_I18N = {
     '/terms': { title: "Conditions d'utilisation - Opinio", description: "Conditions d'utilisation d'Opinio : règles de publication, vote, abonnements et suspensions de compte." },
     '/stats': { title: 'Opinions tendance en ce moment - Opinio', description: 'Les opinions, analyses et idées qui reçoivent le plus de votes en ce moment sur Opinio - classées en direct et actualisées toutes les 24 heures.' },
     '/stats/trending-countries': { title: 'Pays tendance par votes - Opinio', description: "Quels pays font le plus parler d'eux en ce moment - classés par votes sur leurs publications actives, actualisés toutes les 24 heures sur Opinio." },
-    '/stats/top-voters': { title: 'Classement des plus actifs - Opinio', description: "Les votants les plus actifs dans le monde et par pays, classés selon les j'aime et je n'aime pas attribués sur Opinio." },
+    '/stats/top-voters': { title: 'Classement de tous les temps - Opinio', description: "Le classement Opinio de tous les temps - meilleures opinions, pays et membres selon le total des votes reçus (votes positifs et négatifs confondus)." },
     '/support': { title: 'Assistance - Opinio', description: "Contactez l'assistance Opinio, gérez vos tickets et obtenez de l'aide pour le vote, les profils et les paramètres de compte." },
   },
   it: {
@@ -718,7 +718,7 @@ const STATIC_I18N = {
     '/terms': { title: "Termini di utilizzo - Opinio", description: 'Termini di utilizzo di Opinio: regole per la pubblicazione, voto, abbonamenti e sospensioni degli account.' },
     '/stats': { title: 'Opinioni di tendenza in questo momento - Opinio', description: 'Le opinioni, le analisi e le idee che ricevono più voti in questo momento su Opinio - in classifica in diretta e aggiornate ogni 24 ore.' },
     '/stats/trending-countries': { title: 'Paesi di tendenza per voti - Opinio', description: 'Quali paesi fanno più scalpore in questo momento - in classifica per voti sui loro contenuti attivi, aggiornata ogni 24 ore su Opinio.' },
-    '/stats/top-voters': { title: 'Classifica dei più attivi - Opinio', description: 'I votanti più attivi nel mondo e per paese, in classifica per mi piace e non mi piace assegnati su Opinio.' },
+    '/stats/top-voters': { title: 'Classifica di sempre - Opinio', description: 'La classifica di sempre di Opinio - migliori opinioni, paesi e membri per il totale dei voti ricevuti (mi piace e non mi piace insieme).' },
     '/support': { title: 'Assistenza - Opinio', description: "Contatta l'assistenza Opinio, gestisci i tuoi ticket e ottieni aiuto per il voto, i profili e le impostazioni dell'account." },
   },
   pl: {
@@ -728,7 +728,7 @@ const STATIC_I18N = {
     '/terms': { title: 'Regulamin - Opinio', description: 'Regulamin Opinio: zasady publikowania, głosowanie, subskrypcje i zawieszenia kont.' },
     '/stats': { title: 'Popularne opinie w tej chwili - Opinio', description: 'Opinie, komentarze i pomysły, które właśnie teraz zbierają najwięcej głosów na Opinio - w rankingu na żywo i odświeżane co 24 godziny.' },
     '/stats/trending-countries': { title: 'Popularne kraje według głosów - Opinio', description: 'Które kraje budzą teraz największe poruszenie - w rankingu według głosów na ich aktywnych wpisach, odświeżane co 24 godziny na Opinio.' },
-    '/stats/top-voters': { title: 'Ranking najaktywniejszych głosujących - Opinio', description: 'Najaktywniejsi głosujący na świecie i według krajów, w rankingu według oddanych polubień i niechęci na Opinio.' },
+    '/stats/top-voters': { title: 'Ranking wszech czasów - Opinio', description: 'Ranking Opinio wszech czasów - najlepsze opinie, kraje i członkowie według łącznej liczby otrzymanych głosów (polubienia i niepolubienia razem).' },
     '/support': { title: 'Pomoc - Opinio', description: 'Skontaktuj się z pomocą Opinio, zarządzaj zgłoszeniami i uzyskaj pomoc w głosowaniu, profilach i ustawieniach konta.' },
   },
 };

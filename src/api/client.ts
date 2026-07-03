@@ -193,6 +193,23 @@ export function getTrendingCountries(
   return apiFetch(`/api/stats/trending-countries?metric=${metric}`);
 }
 
+// All-time Leaderboard: opinios ranked by lifetime votes received (combined).
+export function getLeaderboardProfiles(
+  country?: string,
+  lang?: string,
+): Promise<import('../types/api').LeaderboardProfilesResponse> {
+  const params = new URLSearchParams();
+  if (country) params.set('country', country);
+  if (lang) params.set('lang', lang);
+  const qs = params.toString();
+  return apiFetch(`/api/stats/leaderboard-profiles${qs ? `?${qs}` : ''}`);
+}
+
+// All-time Leaderboard: countries ranked by lifetime votes received (combined).
+export function getLeaderboardCountries(): Promise<import('../types/api').LeaderboardCountriesResponse> {
+  return apiFetch('/api/stats/leaderboard-countries');
+}
+
 export function getSupportTickets(): Promise<SupportTicket[]> {
   return apiFetch('/api/support');
 }

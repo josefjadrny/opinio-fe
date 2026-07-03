@@ -5,11 +5,14 @@ import { SelectField } from '../common/SelectField';
 import { Avatar } from '../profile/Avatar';
 import { useI18n } from '../../i18n/I18nContext';
 import { useFilters } from '../../context/useFilters';
-import { useTopVoters, useTrendingCountries, useTrendingProfiles } from '../../hooks/useTopVoters';
+import {
+  useLeaderboardCountries, useLeaderboardProfiles,
+  useTopVoters, useTrendingCountries, useTrendingProfiles,
+} from '../../hooks/useTopVoters';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { RoleBadge } from '../common/RoleBadge';
-import type { CountryMetric, VoterMetric } from '../../types/api';
+import type { CountryMetric, LeaderboardBoard } from '../../types/api';
 import type { Profile } from '../../types/profile';
 import type { StatsCategory } from './statsCategory';
 
@@ -31,7 +34,7 @@ const CATEGORY_PATH: Record<StatsCategory, string> = {
 };
 
 const VALID_METRICS: CountryMetric[] = ['total', 'likes', 'dislikes', 'net'];
-const VALID_VOTER_METRICS: VoterMetric[] = ['given', 'received'];
+const VALID_BOARDS: LeaderboardBoard[] = ['opinios', 'countries', 'users'];
 
 const StatsIcon = () => (
   <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
@@ -94,26 +97,27 @@ const METRIC_ICON: Record<CountryMetric, () => ReactElement> = {
   net: NetMetricIcon,
 };
 
-// SVG polygon triangles give pixel-perfect identical gaps on both icons —
-// <text> glyphs have font-metric variance that makes the tip-to-line gap differ.
-// Both triangles: width=14 (x 5→19), height=13, 2-unit gap to their line.
-const ReceivedVoterIcon = () => (
-  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-    <path stroke="#22c55e" strokeWidth={2} strokeLinecap="round" d="M3 22h18" />
-    <polygon points="12,20 5,7 19,7" fill="#e94560" />
+// Leaderboard board glyphs (two-tone, same family as the category tabs).
+// Opinios = a vote-coloured speech bubble; Countries reuses the globe; Users =
+// a two-tone people glyph (green head over red shoulders).
+const OpiniosBoardIcon = () => (
+  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
+    <path stroke="#e94560" strokeLinecap="round" strokeLinejoin="round" d="M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 0 1-4-.84L3 20l1.4-3.5A7.6 7.6 0 0 1 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
+    <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01" />
   </svg>
 );
 
-const GivenVoterIcon = () => (
-  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-    <path stroke="#e94560" strokeWidth={2} strokeLinecap="round" d="M3 2h18" />
-    <polygon points="12,4 5,17 19,17" fill="#22c55e" />
+const UsersBoardIcon = () => (
+  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
+    <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M12 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+    <path stroke="#e94560" strokeLinecap="round" strokeLinejoin="round" d="M5 20a7 7 0 0 1 14 0" />
   </svg>
 );
 
-const VOTER_METRIC_ICON: Record<VoterMetric, () => ReactElement> = {
-  received: ReceivedVoterIcon,
-  given: GivenVoterIcon,
+const BOARD_ICON: Record<LeaderboardBoard, () => ReactElement> = {
+  opinios: OpiniosBoardIcon,
+  countries: GlobeIcon,
+  users: UsersBoardIcon,
 };
 
 function rankCell(i: number) {
@@ -189,9 +193,10 @@ function StatsCountryRow({ countryCode, rank, subtitle, value, valueLabel }: Sta
   );
 }
 
-// A trending opinio (profile) row: rank medal + card image, the statement as
-// title (country flag + role pill), the description as subtitle, and the
-// selected metric's value on the right. Clicks open the opinio at /p/:id.
+// An opinio (profile) row: rank medal + card image, the statement as title
+// (with role pill), the country flag + name as subtitle, and the selected
+// metric's value on the right. Clicks open the opinio at /p/:id. Shared by the
+// Trending Opinios tab and the all-time Opinios leaderboard.
 function StatsProfileRow({ profile, rank, value, valueLabel }: { profile: Profile; rank: number; value: number; valueLabel: string }) {
   const location = useLocation();
   return (
@@ -202,12 +207,12 @@ function StatsProfileRow({ profile, rank, value, valueLabel }: { profile: Profil
       <span className="w-5 shrink-0 text-center">{rankCell(rank)}</span>
       <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-7 h-7" />
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-white truncate">
-          {profile.name}
-          <FlagImg code={profile.countryCode} className="inline-block align-middle mx-1.5 shrink-0" />
+        <p className="text-sm text-white truncate">{profile.name}</p>
+        <div className="flex items-center gap-1.5 leading-tight min-w-0">
           <RoleBadge role={profile.role} />
-        </p>
-        <p className="text-[11px] text-white/30 truncate leading-tight">{profile.description}</p>
+          <FlagImg code={profile.countryCode} className="shrink-0" />
+          <span className="text-[11px] text-white/40 truncate">{getCountryName(profile.countryCode)}</span>
+        </div>
       </div>
       <span className="text-xs font-medium tabular-nums shrink-0 text-white/80">
         {value.toLocaleString()} <span className="text-white/40">{valueLabel}</span>
@@ -272,10 +277,12 @@ function MetricTabs({ metric, onChange, t }: { metric: CountryMetric; onChange: 
   );
 }
 
-function VoterMetricTabs({ metric, onChange, t }: { metric: VoterMetric; onChange: (m: VoterMetric) => void; t: ReturnType<typeof useI18n>['t'] }) {
-  const tab = (key: VoterMetric, label: string) => {
-    const Icon = VOTER_METRIC_ICON[key];
-    const active = metric === key;
+// The Leaderboard tab's entity picker: which all-time ranking to show
+// (opinios / countries / users), all ranked by lifetime votes received.
+function BoardTabs({ board, onChange, t }: { board: LeaderboardBoard; onChange: (b: LeaderboardBoard) => void; t: ReturnType<typeof useI18n>['t'] }) {
+  const tab = (key: LeaderboardBoard, label: string) => {
+    const Icon = BOARD_ICON[key];
+    const active = board === key;
     return (
       <button
         key={key}
@@ -292,8 +299,9 @@ function VoterMetricTabs({ metric, onChange, t }: { metric: VoterMetric; onChang
   };
   return (
     <div className="flex gap-1 p-0.5 bg-black/20 border border-border rounded-lg overflow-x-auto no-scrollbar">
-      {tab('received', t.statsVoterMetricReceived)}
-      {tab('given', t.statsVoterMetricGiven)}
+      {tab('opinios', t.statsBoardOpinios)}
+      {tab('users', t.statsBoardUsers)}
+      {tab('countries', t.statsBoardCountries)}
     </div>
   );
 }
@@ -324,9 +332,8 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
   const isCountries = category === 'countries';
   const isProfiles = category === 'profiles';
 
-  // ?metric= is shared across tabs, but the valid values are disjoint: profiles
-  // and countries use total|likes|dislikes|net; voters use given|received.
-  // Switching tabs always clears metric so each tab starts at its own default.
+  // ?metric= drives the two Trending tabs (total|likes|dislikes|net). Switching
+  // tabs always clears metric so each tab starts at its own default.
   const rawMetric = searchParams.get('metric');
   const metric: CountryMetric = VALID_METRICS.includes(rawMetric as CountryMetric)
     ? (rawMetric as CountryMetric)
@@ -338,94 +345,103 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
       return next;
     }, { replace: true });
   };
-  const voterMetric: VoterMetric = VALID_VOTER_METRICS.includes(rawMetric as VoterMetric)
-    ? (rawMetric as VoterMetric)
-    : 'received';
-  const setVoterMetric = (m: VoterMetric) => {
+
+  // ?board= drives the Leaderboard tab's entity picker (opinios|countries|users),
+  // all ranked by lifetime votes received. Canonicalled away like ?metric=.
+  const rawBoard = searchParams.get('board');
+  const board: LeaderboardBoard = VALID_BOARDS.includes(rawBoard as LeaderboardBoard)
+    ? (rawBoard as LeaderboardBoard)
+    : 'opinios';
+  const setBoard = (b: LeaderboardBoard) => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
-      if (m === 'received') next.delete('metric'); else next.set('metric', m);
+      if (b === 'opinios') next.delete('board'); else next.set('board', b);
       return next;
     }, { replace: true });
   };
 
-  // Tab clicks change the path. Always clear metric so each tab's default applies.
+  // Tab clicks change the path. Always clear metric + board so each tab's
+  // default applies.
   const goToCategory = (cat: StatsCategory) => {
     const params = new URLSearchParams(location.search);
     params.delete('metric');
+    params.delete('board');
     const qs = params.toString();
     navigate(`${CATEGORY_PATH[cat]}${qs ? `?${qs}` : ''}`, { replace: true });
   };
 
-  const voters = useTopVoters(isVoters ? country : undefined, isVoters ? voterMetric : 'given');
+  // The Leaderboard tab hides the country filter on the Countries board (ranking
+  // countries by a single country is meaningless), like Trending Countries.
+  const showCountryFilter = isProfiles || (isVoters && board !== 'countries');
+
+  // Trending tabs.
   const profiles = useTrendingProfiles(isProfiles ? country : undefined, metric);
   const countries = useTrendingCountries(metric);
+  // Leaderboard boards — each only fetches when it's the active board.
+  const lbUsers = useTopVoters(board === 'users' ? country : undefined, 'received', isVoters && board === 'users');
+  const lbProfiles = useLeaderboardProfiles(board === 'opinios' ? country : undefined, isVoters && board === 'opinios');
+  const lbCountries = useLeaderboardCountries(isVoters && board === 'countries');
 
-  const voterRows = voters.data?.topVoters ?? [];
   const profileRows = profiles.data?.trendingProfiles ?? [];
   const countryRows = countries.data?.trendingCountries ?? [];
+  const lbUserRows = lbUsers.data?.topVoters ?? [];
+  const lbProfileRows = lbProfiles.data?.leaderboardProfiles ?? [];
+  const lbCountryRows = lbCountries.data?.leaderboardCountries ?? [];
 
-  const isLoading = isVoters ? voters.isLoading : isCountries ? countries.isLoading : profiles.isLoading;
-  const isEmpty = isVoters
-    ? voterRows.length === 0
-    : isCountries
-      ? countryRows.length === 0
-      : profileRows.length === 0;
-  const description = isVoters
-    ? (voterMetric === 'received' ? t.statsVotersReceivedDescription : t.statsVotersDescription)
-    : isCountries
-      ? t.statsCountriesDescription
-      : t.statsProfilesDescription;
+  // Active query for the current tab/board drives loading + empty state.
+  const active = isProfiles ? profiles
+    : isCountries ? countries
+    : board === 'users' ? lbUsers
+    : board === 'countries' ? lbCountries
+    : lbProfiles;
+  const activeCount = isProfiles ? profileRows.length
+    : isCountries ? countryRows.length
+    : board === 'users' ? lbUserRows.length
+    : board === 'countries' ? lbCountryRows.length
+    : lbProfileRows.length;
+  const isLoading = active.isLoading;
+  const isEmpty = activeCount === 0;
+
+  const description = isProfiles ? t.statsProfilesDescription
+    : isCountries ? t.statsCountriesDescription
+    : board === 'users' ? t.statsBoardUsersDescription
+    : board === 'countries' ? t.statsBoardCountriesDescription
+    : t.statsBoardOpiniosDescription;
+
+  const countryFilter = (
+    <div>
+      <label className="block text-xs font-medium text-white/80 mb-1.5">{t.country}</label>
+      <SelectField value={country ?? ''} onChange={(e) => setCountry(e.target.value || undefined)}>
+        <option value="" style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{t.allCountries}</option>
+        {ALL_COUNTRIES.map(({ code, name }) => (
+          <option key={code} value={code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
+            {getCountryFlag(code)} {name}
+          </option>
+        ))}
+      </SelectField>
+    </div>
+  );
 
   return (
     <div className="px-6 py-5 space-y-4">
       <CategoryTabs category={category} onChange={goToCategory} t={t} />
 
-      {/* Countries tab: metric picker (country filter is meaningless on a country ranking).
-          Voters tab: voter metric picker + country filter stacked.
-          Profiles tab: metric picker + country filter stacked. */}
-      {isCountries ? (
+      {/* Trending tabs pick a metric; the Leaderboard tab picks an entity board.
+          The country filter shows on both Trending Opinios and the Leaderboard's
+          Opinios/Users boards, and is hidden where a country ranking makes it
+          meaningless (both Countries views). */}
+      {isVoters ? (
+        <div>
+          <label className="block text-xs font-medium text-white/80 mb-1.5">{t.statsBoardLabel}</label>
+          <BoardTabs board={board} onChange={setBoard} t={t} />
+        </div>
+      ) : (
         <div>
           <label className="block text-xs font-medium text-white/80 mb-1.5">{t.statsMetricLabel}</label>
           <MetricTabs metric={metric} onChange={setMetric} t={t} />
         </div>
-      ) : isVoters ? (
-        <>
-          <div>
-            <label className="block text-xs font-medium text-white/80 mb-1.5">{t.statsVoterMetricLabel}</label>
-            <VoterMetricTabs metric={voterMetric} onChange={setVoterMetric} t={t} />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-white/80 mb-1.5">{t.country}</label>
-            <SelectField value={country ?? ''} onChange={(e) => setCountry(e.target.value || undefined)}>
-              <option value="" style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{t.allCountries}</option>
-              {ALL_COUNTRIES.map(({ code, name }) => (
-                <option key={code} value={code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
-                  {getCountryFlag(code)} {name}
-                </option>
-              ))}
-            </SelectField>
-          </div>
-        </>
-      ) : (
-        <>
-          <div>
-            <label className="block text-xs font-medium text-white/80 mb-1.5">{t.statsMetricLabel}</label>
-            <MetricTabs metric={metric} onChange={setMetric} t={t} />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-white/80 mb-1.5">{t.country}</label>
-            <SelectField value={country ?? ''} onChange={(e) => setCountry(e.target.value || undefined)}>
-              <option value="" style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{t.allCountries}</option>
-              {ALL_COUNTRIES.map(({ code, name }) => (
-                <option key={code} value={code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
-                  {getCountryFlag(code)} {name}
-                </option>
-              ))}
-            </SelectField>
-          </div>
-        </>
       )}
+      {showCountryFilter && countryFilter}
 
       <p className="text-xs text-white/50 leading-snug min-h-[3rem]">{description}</p>
 
@@ -439,22 +455,13 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
         <p className="text-sm text-white/30 py-6 text-center">{t.statsNoData}</p>
       ) : (
         <div className="space-y-0.5">
-          {isVoters &&
-            voterRows.map((v, i) => (
-              <StatsRow
-                key={v.id}
-                id={v.id}
-                displayName={v.displayName}
-                avatarUrl={v.avatarUrl}
-                countryCode={v.countryCode}
-                rank={i}
-                subtitle={`${v.activeProfiles} ${t.statsPostsLabel}`}
-                value={voterMetric === 'received'
-                  ? v.totalLikesReceived + v.totalDislikesReceived
-                  : v.totalLikesCast + v.totalDislikesCast}
-                valueLabel={voterMetric === 'received' ? t.statsVotesReceived : t.statsVotesCast}
-              />
-            ))}
+          {isProfiles &&
+            profileRows.map((p, i) => {
+              const { value, valueLabel } = metricValue(p.likes, p.dislikes, metric, t);
+              return (
+                <StatsProfileRow key={p.id} profile={p} rank={i} value={value} valueLabel={valueLabel} />
+              );
+            })}
           {isCountries &&
             countryRows.map((c, i) => {
               const { value, valueLabel } = metricValue(c.totalLikes, c.totalDislikes, metric, t);
@@ -469,19 +476,41 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
                 />
               );
             })}
-          {isProfiles &&
-            profileRows.map((p, i) => {
-              const { value, valueLabel } = metricValue(p.likes, p.dislikes, metric, t);
-              return (
-                <StatsProfileRow
-                  key={p.id}
-                  profile={p}
-                  rank={i}
-                  value={value}
-                  valueLabel={valueLabel}
-                />
-              );
-            })}
+          {isVoters && board === 'opinios' &&
+            lbProfileRows.map((p, i) => (
+              <StatsProfileRow
+                key={p.id}
+                profile={p}
+                rank={i}
+                value={(p.totalLikes ?? 0) + (p.totalDislikes ?? 0)}
+                valueLabel={t.statsVotes}
+              />
+            ))}
+          {isVoters && board === 'countries' &&
+            lbCountryRows.map((c, i) => (
+              <StatsCountryRow
+                key={c.countryCode}
+                countryCode={c.countryCode}
+                rank={i}
+                subtitle={`${c.profileCount} ${t.statsOpiniosLabel}`}
+                value={c.totalLikes + c.totalDislikes}
+                valueLabel={t.statsVotes}
+              />
+            ))}
+          {isVoters && board === 'users' &&
+            lbUserRows.map((v, i) => (
+              <StatsRow
+                key={v.id}
+                id={v.id}
+                displayName={v.displayName}
+                avatarUrl={v.avatarUrl}
+                countryCode={v.countryCode}
+                rank={i}
+                subtitle={`${v.activeProfiles} ${t.statsPostsLabel}`}
+                value={v.totalLikesReceived + v.totalDislikesReceived}
+                valueLabel={t.statsVotes}
+              />
+            ))}
         </div>
       )}
       </div>
