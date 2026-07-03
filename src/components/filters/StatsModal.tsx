@@ -443,16 +443,17 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
       )}
       {showCountryFilter && countryFilter}
 
-      <p className="text-xs text-white/50 leading-snug min-h-[3rem]">{description}</p>
+      <p className="text-xs text-white/50 leading-snug">{description}</p>
 
-      {/* Lock the list to a full 10-row height (LIMIT=10 server-side) so switching
-          tabs/metrics, or a thin pool, doesn't make the modal jump up and down.
-          Looks empty on dev's sparse DB; prod fills all 10. */}
-      <div className="min-h-[436px]">
+      {/* The list sizes to its content (LIMIT=10 server-side). Only the
+          loading/empty placeholders get a small min-height so they don't look
+          cramped; a full pool fills naturally without reserving dead space,
+          which on a thin pool or mobile would leave a big empty block. */}
+      <div>
       {isLoading ? (
-        <p className="text-sm text-white/40 text-center py-6">{t.loading}</p>
+        <p className="text-sm text-white/40 text-center py-16 min-h-[8rem]">{t.loading}</p>
       ) : isEmpty ? (
-        <p className="text-sm text-white/30 py-6 text-center">{t.statsNoData}</p>
+        <p className="text-sm text-white/30 text-center py-16 min-h-[8rem]">{t.statsNoData}</p>
       ) : (
         <div className="space-y-0.5">
           {isProfiles &&
