@@ -85,20 +85,13 @@ export interface TopVotersResponse {
   topVoters: TopVoter[];
 }
 
-export interface OnFireUser {
-  id: string;
-  displayName: string;
-  avatarUrl: string | null;
-  countryCode: string | null;
-  activeProfiles: number;
-  totalVotes: number;
-}
-
-export interface OnFireResponse {
-  onFire: OnFireUser[];
-}
-
 export type CountryMetric = 'total' | 'likes' | 'dislikes' | 'net';
+
+// Trending opinios: top profiles ranked by the selected metric, same Profile
+// shape as the feed so the stats modal renders + links them identically.
+export interface TrendingProfilesResponse {
+  trendingProfiles: Profile[];
+}
 
 export interface TrendingCountry {
   countryCode: string;

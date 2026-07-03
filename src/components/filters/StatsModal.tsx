@@ -5,10 +5,12 @@ import { SelectField } from '../common/SelectField';
 import { Avatar } from '../profile/Avatar';
 import { useI18n } from '../../i18n/I18nContext';
 import { useFilters } from '../../context/useFilters';
-import { useOnFireUsers, useTopVoters, useTrendingCountries } from '../../hooks/useTopVoters';
+import { useTopVoters, useTrendingCountries, useTrendingProfiles } from '../../hooks/useTopVoters';
 import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
-import type { CountryMetric, TrendingCountry, VoterMetric } from '../../types/api';
+import { RoleBadge } from '../common/RoleBadge';
+import type { CountryMetric, VoterMetric } from '../../types/api';
+import type { Profile } from '../../types/profile';
 import type { StatsCategory } from './statsCategory';
 
 export type { StatsCategory };
@@ -23,7 +25,7 @@ interface StatsModalProps {
 // other two get their own keyword paths. Filters (country/metric) ride in query
 // params and are canonicalled away, so these 3 stay the only indexable stats URLs.
 const CATEGORY_PATH: Record<StatsCategory, string> = {
-  onFire: '/stats',
+  profiles: '/stats',
   countries: '/stats/trending-countries',
   voters: '/stats/top-voters',
 };
@@ -187,6 +189,33 @@ function StatsCountryRow({ countryCode, rank, subtitle, value, valueLabel }: Sta
   );
 }
 
+// A trending opinio (profile) row: rank medal + card image, the statement as
+// title (country flag + role pill), the description as subtitle, and the
+// selected metric's value on the right. Clicks open the opinio at /p/:id.
+function StatsProfileRow({ profile, rank, value, valueLabel }: { profile: Profile; rank: number; value: number; valueLabel: string }) {
+  const location = useLocation();
+  return (
+    <Link
+      to={`/p/${profile.id}${location.search}`}
+      className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors"
+    >
+      <span className="w-5 shrink-0 text-center">{rankCell(rank)}</span>
+      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-7 h-7" />
+      <div className="flex-1 min-w-0">
+        <p className="text-sm text-white truncate">
+          {profile.name}
+          <FlagImg code={profile.countryCode} className="inline-block align-middle mx-1.5 shrink-0" />
+          <RoleBadge role={profile.role} />
+        </p>
+        <p className="text-[11px] text-white/30 truncate leading-tight">{profile.description}</p>
+      </div>
+      <span className="text-xs font-medium tabular-nums shrink-0 text-white/80">
+        {value.toLocaleString()} <span className="text-white/40">{valueLabel}</span>
+      </span>
+    </Link>
+  );
+}
+
 function CategoryTabs({ category, onChange, t }: { category: Category; onChange: (c: Category) => void; t: ReturnType<typeof useI18n>['t'] }) {
   const tab = (key: Category, label: string, icon?: ReactElement) => {
     const active = category === key;
@@ -206,7 +235,7 @@ function CategoryTabs({ category, onChange, t }: { category: Category; onChange:
   };
   return (
     <div className="flex gap-1 p-0.5 bg-black/20 border border-border rounded-lg overflow-x-auto no-scrollbar">
-      {tab('onFire', t.statsCategoryProfiles, <FlameIcon />)}
+      {tab('profiles', t.statsCategoryProfiles, <FlameIcon />)}
       {tab('countries', t.statsCategoryCountries, <GlobeIcon />)}
       {tab('voters', t.statsCategoryVoters, <TrophyIcon />)}
     </div>
@@ -269,17 +298,19 @@ function VoterMetricTabs({ metric, onChange, t }: { metric: VoterMetric; onChang
   );
 }
 
-// Maps the selected metric to the value shown for a country row and its label.
-function countryMetricValue(c: TrendingCountry, metric: CountryMetric, t: ReturnType<typeof useI18n>['t']) {
+// Maps the selected metric to the value + label shown for a row, from its
+// like/dislike totals. Shared by the trending-opinios and trending-countries
+// rankings — both rank by the same total|likes|dislikes|net metric.
+function metricValue(totalLikes: number, totalDislikes: number, metric: CountryMetric, t: ReturnType<typeof useI18n>['t']) {
   switch (metric) {
     case 'likes':
-      return { value: c.totalLikes, valueLabel: t.statsLikes };
+      return { value: totalLikes, valueLabel: t.statsLikes };
     case 'dislikes':
-      return { value: c.totalDislikes, valueLabel: t.statsDislikes };
+      return { value: totalDislikes, valueLabel: t.statsDislikes };
     case 'net':
-      return { value: c.totalLikes - c.totalDislikes, valueLabel: t.statsNet };
+      return { value: totalLikes - totalDislikes, valueLabel: t.statsNet };
     default:
-      return { value: c.totalLikes + c.totalDislikes, valueLabel: t.statsVotes };
+      return { value: totalLikes + totalDislikes, valueLabel: t.statsVotes };
   }
 }
 
@@ -291,10 +322,10 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
 
   const isVoters = category === 'voters';
   const isCountries = category === 'countries';
-  const isOnFire = category === 'onFire';
+  const isProfiles = category === 'profiles';
 
-  // ?metric= is shared between the two tabs that use it, but the valid values are
-  // disjoint: countries use total|likes|dislikes|net; voters use given|received.
+  // ?metric= is shared across tabs, but the valid values are disjoint: profiles
+  // and countries use total|likes|dislikes|net; voters use given|received.
   // Switching tabs always clears metric so each tab starts at its own default.
   const rawMetric = searchParams.get('metric');
   const metric: CountryMetric = VALID_METRICS.includes(rawMetric as CountryMetric)
@@ -327,19 +358,19 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
   };
 
   const voters = useTopVoters(isVoters ? country : undefined, isVoters ? voterMetric : 'given');
-  const onFire = useOnFireUsers(isOnFire ? country : undefined);
+  const profiles = useTrendingProfiles(isProfiles ? country : undefined, metric);
   const countries = useTrendingCountries(metric);
 
   const voterRows = voters.data?.topVoters ?? [];
-  const onFireRows = onFire.data?.onFire ?? [];
+  const profileRows = profiles.data?.trendingProfiles ?? [];
   const countryRows = countries.data?.trendingCountries ?? [];
 
-  const isLoading = isVoters ? voters.isLoading : isCountries ? countries.isLoading : onFire.isLoading;
+  const isLoading = isVoters ? voters.isLoading : isCountries ? countries.isLoading : profiles.isLoading;
   const isEmpty = isVoters
     ? voterRows.length === 0
     : isCountries
       ? countryRows.length === 0
-      : onFireRows.length === 0;
+      : profileRows.length === 0;
   const description = isVoters
     ? (voterMetric === 'received' ? t.statsVotersReceivedDescription : t.statsVotersDescription)
     : isCountries
@@ -352,7 +383,7 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
 
       {/* Countries tab: metric picker (country filter is meaningless on a country ranking).
           Voters tab: voter metric picker + country filter stacked.
-          On Fire tab: country filter only. */}
+          Profiles tab: metric picker + country filter stacked. */}
       {isCountries ? (
         <div>
           <label className="block text-xs font-medium text-white/80 mb-1.5">{t.statsMetricLabel}</label>
@@ -377,17 +408,23 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
           </div>
         </>
       ) : (
-        <div>
-          <label className="block text-xs font-medium text-white/80 mb-1.5">{t.country}</label>
-          <SelectField value={country ?? ''} onChange={(e) => setCountry(e.target.value || undefined)}>
-            <option value="" style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{t.allCountries}</option>
-            {ALL_COUNTRIES.map(({ code, name }) => (
-              <option key={code} value={code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
-                {getCountryFlag(code)} {name}
-              </option>
-            ))}
-          </SelectField>
-        </div>
+        <>
+          <div>
+            <label className="block text-xs font-medium text-white/80 mb-1.5">{t.statsMetricLabel}</label>
+            <MetricTabs metric={metric} onChange={setMetric} t={t} />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-white/80 mb-1.5">{t.country}</label>
+            <SelectField value={country ?? ''} onChange={(e) => setCountry(e.target.value || undefined)}>
+              <option value="" style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{t.allCountries}</option>
+              {ALL_COUNTRIES.map(({ code, name }) => (
+                <option key={code} value={code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
+                  {getCountryFlag(code)} {name}
+                </option>
+              ))}
+            </SelectField>
+          </div>
+        </>
       )}
 
       <p className="text-xs text-white/50 leading-snug min-h-[3rem]">{description}</p>
@@ -420,7 +457,7 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
             ))}
           {isCountries &&
             countryRows.map((c, i) => {
-              const { value, valueLabel } = countryMetricValue(c, metric, t);
+              const { value, valueLabel } = metricValue(c.totalLikes, c.totalDislikes, metric, t);
               return (
                 <StatsCountryRow
                   key={c.countryCode}
@@ -432,20 +469,19 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
                 />
               );
             })}
-          {isOnFire &&
-            onFireRows.map((u, i) => (
-              <StatsRow
-                key={u.id}
-                id={u.id}
-                displayName={u.displayName}
-                avatarUrl={u.avatarUrl}
-                countryCode={u.countryCode}
-                rank={i}
-                subtitle={`${u.activeProfiles} ${t.statsPostsLabel}`}
-                value={u.totalVotes}
-                valueLabel={t.statsVotes}
-              />
-            ))}
+          {isProfiles &&
+            profileRows.map((p, i) => {
+              const { value, valueLabel } = metricValue(p.likes, p.dislikes, metric, t);
+              return (
+                <StatsProfileRow
+                  key={p.id}
+                  profile={p}
+                  rank={i}
+                  value={value}
+                  valueLabel={valueLabel}
+                />
+              );
+            })}
         </div>
       )}
       </div>

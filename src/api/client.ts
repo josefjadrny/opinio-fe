@@ -174,11 +174,17 @@ export function getTopVoters(country?: string, metric: import('../types/api').Vo
   return apiFetch(`/api/stats/top-voters${qs ? `?${qs}` : ''}`);
 }
 
-export function getOnFireUsers(country?: string): Promise<import('../types/api').OnFireResponse> {
+export function getTrendingProfiles(
+  country?: string,
+  metric: import('../types/api').CountryMetric = 'total',
+  lang?: string,
+): Promise<import('../types/api').TrendingProfilesResponse> {
   const params = new URLSearchParams();
   if (country) params.set('country', country);
+  if (metric !== 'total') params.set('metric', metric);
+  if (lang) params.set('lang', lang);
   const qs = params.toString();
-  return apiFetch(`/api/stats/on-fire${qs ? `?${qs}` : ''}`);
+  return apiFetch(`/api/stats/trending-profiles${qs ? `?${qs}` : ''}`);
 }
 
 export function getTrendingCountries(

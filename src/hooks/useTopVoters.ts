@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { getOnFireUsers, getTopVoters, getTrendingCountries } from '../api/client';
+import { getTopVoters, getTrendingCountries, getTrendingProfiles } from '../api/client';
+import { useI18n } from '../i18n/I18nContext';
 import type { CountryMetric, VoterMetric } from '../types/api';
 
 export function useTopVoters(country?: string, metric: VoterMetric = 'received') {
@@ -10,10 +11,11 @@ export function useTopVoters(country?: string, metric: VoterMetric = 'received')
   });
 }
 
-export function useOnFireUsers(country?: string) {
+export function useTrendingProfiles(country?: string, metric: CountryMetric = 'total') {
+  const { locale } = useI18n();
   return useQuery({
-    queryKey: ['on-fire', country ?? null],
-    queryFn: () => getOnFireUsers(country),
+    queryKey: ['trending-profiles', country ?? null, metric, locale],
+    queryFn: () => getTrendingProfiles(country, metric, locale),
     staleTime: 60_000,
   });
 }
