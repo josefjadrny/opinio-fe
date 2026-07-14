@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useI18n } from '../../i18n/I18nContext';
 
 interface ProfileNotFoundModalProps {
@@ -12,6 +13,7 @@ interface ProfileNotFoundModalProps {
 export function ProfileNotFoundModal({ onClose }: ProfileNotFoundModalProps) {
   const isMobile = useIsMobile();
   const { t } = useI18n();
+  const { sheetRef, dragHandlers } = useSheetDrag(onClose);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -52,11 +54,11 @@ export function ProfileNotFoundModal({ onClose }: ProfileNotFoundModalProps) {
         onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       >
         <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-        <div className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col">
-          <div className="flex justify-center pt-3 pb-1 shrink-0">
+        <div ref={sheetRef} className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col">
+          <div className="flex justify-center pt-3 pb-1 shrink-0" {...dragHandlers}>
             <div className="w-10 h-1 bg-white/20 rounded-full" />
           </div>
-          <div className="flex items-center justify-between px-6 py-3 border-b border-border shrink-0">
+          <div className="flex items-center justify-between px-6 py-3 border-b border-border shrink-0" {...dragHandlers}>
             <span className="text-sm font-semibold text-white/60">{t.profileNotFoundLabel}</span>
             {CloseButton}
           </div>

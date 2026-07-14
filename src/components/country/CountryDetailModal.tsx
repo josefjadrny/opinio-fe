@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useI18n } from '../../i18n/I18nContext';
 import { useCountries } from '../../hooks/useCountries';
 import { useCountryDiscussed } from '../../hooks/useCountryDiscussed';
@@ -72,6 +73,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   // reaching the detail via a breakdown row, a /c/ link, or a pasted URL leaves
   // the feed filter untouched.
   const close = () => navigate('/' + location.search);
+  const { sheetRef, dragHandlers } = useSheetDrag(close);
   const openProfile = (profileId: string) => navigate('/p/' + profileId + location.search, {
     state: { fromCountryCode: code, fromCountryName: name },
   });
@@ -128,11 +130,11 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
         onClick={(e) => { if (e.target === e.currentTarget) close(); }}
       >
         <div className="absolute inset-0 bg-black/60" onClick={close} />
-        <div className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col">
-          <div className="flex justify-center pt-3 pb-1 shrink-0">
+        <div ref={sheetRef} className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col">
+          <div className="flex justify-center pt-3 pb-1 shrink-0" {...dragHandlers}>
             <div className="w-10 h-1 bg-white/20 rounded-full" />
           </div>
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0" {...dragHandlers}>
             <div className="flex items-center gap-2 min-w-0 flex-1">
               {notFound ? NotFoundLabel : Header}
             </div>

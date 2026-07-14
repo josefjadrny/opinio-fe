@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useUser } from '../../hooks/useUser';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from './Avatar';
 import { CountryFlag } from '../common/CountryFlag';
@@ -64,6 +65,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   const { data: user, isLoading, error } = useUser(userId);
 
   const close = () => navigate('/' + location.search);
+  const { sheetRef, dragHandlers } = useSheetDrag(close);
   const openProfile = (profileId: string) => navigate('/p/' + profileId + location.search, {
     state: { fromUserId: userId, fromUserName: user?.displayName ?? null },
   });
@@ -157,11 +159,11 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
         onClick={(e) => { if (e.target === e.currentTarget) close(); }}
       >
         <div className="absolute inset-0 bg-black/60" onClick={close} />
-        <div className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col">
-          <div className="flex justify-center pt-3 pb-1 shrink-0">
+        <div ref={sheetRef} className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col">
+          <div className="flex justify-center pt-3 pb-1 shrink-0" {...dragHandlers}>
             <div className="w-10 h-1 bg-white/20 rounded-full" />
           </div>
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0" {...dragHandlers}>
             <div className="flex items-center gap-1 min-w-0 flex-1">
               {BackToProfile}
               {user ? Header : <span className="text-sm font-semibold text-white/60">{notFound ? t.userNotFoundLabel : ''}</span>}

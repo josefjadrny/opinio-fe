@@ -18,6 +18,7 @@ import { formatNumber } from '../../utils/formatNumber';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useI18n } from '../../i18n/I18nContext';
 import { useProfileText } from '../../hooks/useProfileText';
+import { useSheetDrag } from '../../hooks/useSheetDrag';
 
 interface ProfileDetailModalProps {
   profile: Profile;
@@ -32,6 +33,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
   const { data: me } = useMe();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const { name, description, hasTranslation, showingOriginal, toggle } = useProfileText(profile);
+  const { sheetRef, dragHandlers } = useSheetDrag(onClose);
   const animatedLikes = useAnimatedValue(profile.likes);
   const animatedDislikes = useAnimatedValue(profile.dislikes);
   useEffect(() => {
@@ -50,11 +52,11 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto pb-11" style={{ animation: 'modal-enter 0.28s ease-out' }}>
-        <div className="flex justify-center pt-3 pb-1">
+      <div ref={sheetRef} className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto pb-11" style={{ animation: 'modal-enter 0.28s ease-out' }}>
+        <div className="flex justify-center pt-3 pb-1" {...dragHandlers}>
           <div className="w-10 h-1 bg-white/20 rounded-full" />
         </div>
-        <div className="px-4 py-2.5 border-b border-border">
+        <div className="px-4 py-2.5 border-b border-border" {...dragHandlers}>
           <div className="flex items-start gap-2.5 min-w-0">
             {(() => {
               const state = location.state as { fromUserId?: string; fromUserName?: string } | null;

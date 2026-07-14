@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useI18n } from '../../i18n/I18nContext';
 
 interface ModalShellProps {
@@ -25,6 +26,7 @@ export function ModalShell({
 }: ModalShellProps) {
   const isMobile = useIsMobile();
   const { t } = useI18n();
+  const { sheetRef, dragHandlers } = useSheetDrag(onClose);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -54,11 +56,11 @@ export function ModalShell({
         onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       >
         <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-        <div className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col pb-11">
-          <div className="flex justify-center pt-3 pb-1 shrink-0">
+        <div ref={sheetRef} className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col pb-11">
+          <div className="flex justify-center pt-3 pb-1 shrink-0" {...dragHandlers}>
             <div className="w-10 h-1 bg-white/20 rounded-full" />
           </div>
-          <div className="flex items-center justify-between px-6 py-3 border-b border-border shrink-0">
+          <div className="flex items-center justify-between px-6 py-3 border-b border-border shrink-0" {...dragHandlers}>
             <div className="flex items-center gap-2">
               {icon}
               <h2 className="text-base font-semibold text-white">{title}</h2>
