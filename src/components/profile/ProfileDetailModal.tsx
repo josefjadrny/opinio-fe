@@ -56,7 +56,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
         <div className="flex justify-center pt-3 pb-1" {...dragHandlers}>
           <div className="w-10 h-1 bg-white/20 rounded-full" />
         </div>
-        <div className="px-4 py-2.5 border-b border-border" {...dragHandlers}>
+        <div className="px-4 pt-2.5 pb-2 border-b border-border" {...dragHandlers}>
           <div className="flex items-start gap-2.5 min-w-0">
             {(() => {
               const state = location.state as { fromUserId?: string; fromUserName?: string } | null;
@@ -106,7 +106,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
           </div>
         </div>
 
-        <div className="px-6 py-5 space-y-4">
+        <div className="px-6 pt-2 pb-5 space-y-4">
           {/* Live votes as a sentiment bar: green = likes' share of the active
               (24h) votes, red = dislikes'. Replaces the old ▲/▼ counts. */}
           {(() => {
