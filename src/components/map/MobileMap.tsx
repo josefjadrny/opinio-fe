@@ -33,7 +33,9 @@ interface ZoomState {
 // decluttering as the desktop WorldMap, but with NO country click, hover, or
 // tooltip. Navigation is touch only - one finger pans, two fingers pinch-zoom -
 // plus the shared +/- zoom control. Lives inside the collapsible MobileMapPanel.
-export function MobileMap() {
+// `open` reflects whether the panel is expanded; it drives the 5-min colour
+// poll so a collapsed (but still-mounted) map doesn't keep hitting the API.
+export function MobileMap({ open = false }: { open?: boolean }) {
   const { locale } = useI18n();
   const [countries, setCountries] = useState<GeoJSON.Feature[]>([]);
   const [zoom, setZoom] = useState<ZoomState>({ scale: 1, tx: 0, ty: 0 });
@@ -47,7 +49,7 @@ export function MobileMap() {
   const pointers = useRef<Map<number, { x: number; y: number }>>(new Map());
   const pinchRef = useRef<{ dist: number; midX: number; midY: number } | null>(null);
 
-  const { data: countriesData } = useCountries();
+  const { data: countriesData } = useCountries(open);
   const countryColors = useMemo(() => {
     const map = new Map<string, string>();
     countriesData?.countries.forEach((c) => map.set(c.code, colorForCountry(c.likes, c.dislikes)));

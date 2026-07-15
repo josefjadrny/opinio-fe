@@ -57,7 +57,8 @@ export function WorldMap() {
   const didDragRef = useRef(false);
 
   const { data, isLoading } = useCountryProfiles(debouncedCountry);
-  const { data: countriesData } = useCountries();
+  // The desktop map is only mounted when it's on screen, so poll while mounted.
+  const { data: countriesData } = useCountries(true);
   const countryColors = useMemo(() => {
     const map = new Map<string, string>();
     countriesData?.countries.forEach((c) => map.set(c.code, colorForCountry(c.likes, c.dislikes)));

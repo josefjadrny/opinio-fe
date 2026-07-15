@@ -94,7 +94,7 @@ export function MobileMapPanel() {
       {hasOpened && (
         <div className="absolute inset-x-0 top-0" style={{ height: Math.max(0, height - HANDLE_H) }}>
           <Suspense fallback={<div className="w-full h-full bg-surface" />}>
-            <MobileMap />
+            <MobileMap open={open} />
           </Suspense>
         </div>
       )}
