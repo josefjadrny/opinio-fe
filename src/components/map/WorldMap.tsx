@@ -24,7 +24,9 @@ import {
   projection,
   pathGenerator,
   buildCityLabelLayout,
+  computeCountryAnchors,
 } from './mapShared';
+import { CountryLabels } from './CountryLabels';
 
 const GEO_URL = '/topojson/world-110m.json';
 
@@ -71,6 +73,8 @@ export function WorldMap() {
     () => buildCityLabelLayout(zoom.scale, locale, labelScale),
     [zoom.scale, locale, labelScale],
   );
+  // Country label anchors (centroid + bbox) - zoom-independent, computed once.
+  const countryAnchors = useMemo(() => computeCountryAnchors(countries), [countries]);
 
   // Track the map's rendered width so labelScale can normalize on-screen label
   // size across resolutions (the flex layout resizes the map independently of
@@ -234,6 +238,9 @@ export function WorldMap() {
               />
             );
           })}
+
+          {/* Country names - quiet layer beneath the city markers. */}
+          <CountryLabels anchors={countryAnchors} scale={zoom.scale} labelScale={labelScale} locale={locale} />
 
           {/* City markers. Non-interactive (pointerEvents none) so hover/click
               still falls through to the country path underneath. Marker + label

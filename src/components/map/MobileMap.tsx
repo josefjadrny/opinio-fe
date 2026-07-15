@@ -10,7 +10,6 @@ import {
   WIDTH,
   HEIGHT,
   MIN_ZOOM,
-  MAX_ZOOM,
   DEFAULT_FILL,
   LABEL_REF_WIDTH,
   MAX_LABEL_SCALE,
@@ -19,9 +18,16 @@ import {
   projection,
   pathGenerator,
   buildCityLabelLayout,
+  computeCountryAnchors,
 } from './mapShared';
+import { CountryLabels } from './CountryLabels';
 
 const GEO_URL = '/topojson/world-110m.json';
+
+// Mobile allows deeper zoom than the desktop map (which caps at 5) so a touch
+// user can pull in close on small countries; the pan clamp scales with zoom, so
+// pan range grows with it automatically.
+const MOBILE_MAX_ZOOM = 10;
 
 interface ZoomState {
   scale: number;
@@ -58,6 +64,7 @@ export function MobileMap({ open = false }: { open?: boolean }) {
 
   // Mobile shows capitals only - fewer dots/labels to place and render.
   const capitals = useMemo(() => CITIES.filter((c) => c.capital), []);
+  const countryAnchors = useMemo(() => computeCountryAnchors(countries), [countries]);
   const cityLabelLayout = useMemo(
     () => buildCityLabelLayout(zoom.scale, locale, labelScale, true),
     [zoom.scale, locale, labelScale],
@@ -86,7 +93,7 @@ export function MobileMap({ open = false }: { open?: boolean }) {
 
   const applyZoom = useCallback((nextScaleFor: (prevScale: number) => number) => {
     setZoom((prev) => {
-      const ns = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, nextScaleFor(prev.scale)));
+      const ns = Math.min(MOBILE_MAX_ZOOM, Math.max(MIN_ZOOM, nextScaleFor(prev.scale)));
       const ratio = ns / prev.scale;
       const cx = WIDTH / 2;
       const cy = HEIGHT / 2;
@@ -141,7 +148,7 @@ export function MobileMap({ open = false }: { open?: boolean }) {
         const panDx = (midX - base.midX) * sx;
         const panDy = (midY - base.midY) * sy;
         setZoom((prev) => {
-          const ns = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, prev.scale * ratioRaw));
+          const ns = Math.min(MOBILE_MAX_ZOOM, Math.max(MIN_ZOOM, prev.scale * ratioRaw));
           const ratio = ns / prev.scale;
           const { tx, ty } = clampTranslate(
             anchorX - ratio * (anchorX - prev.tx) + panDx,
@@ -199,6 +206,9 @@ export function MobileMap({ open = false }: { open?: boolean }) {
               />
             );
           })}
+
+          {/* Country names - quiet layer beneath the city markers. */}
+          <CountryLabels anchors={countryAnchors} scale={zoom.scale} labelScale={labelScale} locale={locale} />
 
           {/* City markers - identical reference layer to the desktop map. */}
           <g

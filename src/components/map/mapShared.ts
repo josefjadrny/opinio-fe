@@ -1,5 +1,7 @@
 import { geoNaturalEarth1, geoPath } from 'd3-geo';
+import polylabel from 'polylabel';
 import { CITIES, cityLabel } from '../../utils/cities';
+import { numericToAlpha2, getCountryName, isKnownCountry } from '../../utils/countries';
 import type { Locale } from '../../i18n/strings';
 
 // Shared map geometry + styling used by both the desktop WorldMap and the mobile
@@ -9,7 +11,7 @@ import type { Locale } from '../../i18n/strings';
 export const WIDTH = 800;
 export const HEIGHT = 500;
 export const MIN_ZOOM = 1;
-export const MAX_ZOOM = 5;
+export const MAX_ZOOM = 6;
 export const DEFAULT_FILL = '#3a3a6a';
 
 // City names fade in progressively as you zoom so labels never pile up: capitals
@@ -117,6 +119,115 @@ export function buildCityLabelLayout(
     for (const { c, p } of projected) {
       if (!c.capital && scale > CITY_LABEL_ZOOM) place(c, p[0], p[1], false);
     }
+  }
+  return layout;
+}
+
+// --- Country name labels ---------------------------------------------------
+// A quiet layer of country names centred on each country, drawn beneath the
+// city layer. Names reveal progressively by fit: a name shows only when it fits
+// inside its country's projected width at the current zoom, so large countries
+// label at overview zoom and small ones appear as you zoom in (which sidesteps
+// the "small country can't hold a label" problem without any manual list).
+
+// Constant on-screen font size (divided by scale like city labels). Uppercase,
+// so a slightly higher width factor than the city labels' 0.55.
+const COUNTRY_FONT_BASE = 6.4;
+const COUNTRY_WIDTH_FACTOR = 0.62;
+
+export interface CountryAnchor {
+  code: string;
+  cx: number;
+  cy: number;
+  bw: number; // projected bounding-box width
+  bh: number; // projected bounding-box height
+  area: number;
+}
+
+// Projected centroid + bbox per country. Zoom-independent, so compute once from
+// the loaded features (the fit-gate below re-runs per zoom/locale). Sorted
+// biggest-first so large countries win slots during decluttering.
+// The country's LARGEST polygon part (as a GeoJSON Polygon). Anchoring on the
+// whole multipolygon is wrong: an area-weighted centroid of France (which
+// includes French Guiana) or the US (Alaska/Hawaii) lands far from the mainland
+// (France ended up over Spain). We label the biggest part instead.
+function largestPolygon(geom: GeoJSON.Geometry): GeoJSON.Polygon | null {
+  if (geom.type === 'Polygon') return geom;
+  if (geom.type !== 'MultiPolygon') return null;
+  let best = geom.coordinates[0];
+  let bestArea = -1;
+  for (const coordinates of geom.coordinates) {
+    const a = pathGenerator.area({ type: 'Polygon', coordinates });
+    if (a > bestArea) { bestArea = a; best = coordinates; }
+  }
+  return { type: 'Polygon', coordinates: best };
+}
+
+export function computeCountryAnchors(features: GeoJSON.Feature[]): CountryAnchor[] {
+  const out: CountryAnchor[] = [];
+  for (const f of features) {
+    const id = String((f as GeoJSON.Feature & { id?: string | number }).id ?? '');
+    const code = numericToAlpha2(id);
+    if (!code || !isKnownCountry(code)) continue;
+    const poly = largestPolygon(f.geometry);
+    if (!poly) continue;
+    const b = pathGenerator.bounds(poly);
+    const bw = b[1][0] - b[0][0];
+    const bh = b[1][1] - b[0][1];
+    if (!isFinite(bw) || !isFinite(bh)) continue;
+
+    // Label point = pole of inaccessibility (visual centre, ALWAYS inside the
+    // shape) of the projected polygon. A plain centroid falls outside concave /
+    // elongated countries (Chile over Argentina, Vietnam over Laos, Croatia over
+    // Bosnia); polylabel keeps the label on the country. Fall back to the
+    // centroid if projection produces a degenerate ring.
+    const rings: [number, number][][] = [];
+    for (const ring of poly.coordinates) {
+      const pr: [number, number][] = [];
+      for (const coord of ring) {
+        const p = projection(coord as [number, number]);
+        if (p) pr.push([p[0], p[1]]);
+      }
+      if (pr.length >= 4) rings.push(pr);
+    }
+    let cx: number, cy: number;
+    if (rings.length) {
+      const pt = polylabel(rings, 1.0) as unknown as [number, number];
+      [cx, cy] = pt;
+    } else {
+      const c = pathGenerator.centroid(poly);
+      [cx, cy] = c;
+    }
+    if (!isFinite(cx) || !isFinite(cy)) continue;
+    out.push({ code, cx, cy, bw, bh, area: bw * bh });
+  }
+  out.sort((a, b) => b.area - a.area);
+  return out;
+}
+
+export type CountryLabelLayout = Map<string, { x: number; y: number; fontSize: number; name: string }>;
+
+export function buildCountryLabelLayout(
+  anchors: CountryAnchor[],
+  scale: number,
+  labelScale: number,
+  locale: Locale,
+): CountryLabelLayout {
+  type Box = { x1: number; y1: number; x2: number; y2: number };
+  const placed: Box[] = [];
+  const layout: CountryLabelLayout = new Map();
+  const fs = (COUNTRY_FONT_BASE / scale) * labelScale;
+  const h = fs;
+  for (const a of anchors) {
+    const name = getCountryName(a.code, locale);
+    const w = name.length * fs * COUNTRY_WIDTH_FACTOR;
+    // Fit-gate: the label must sit inside the country's projected box. As you
+    // zoom in, fs shrinks (constant on-screen), so more countries pass.
+    if (w > a.bw * 0.92 || h > a.bh * 0.8) continue;
+    const box: Box = { x1: a.cx - w / 2, y1: a.cy - h / 2, x2: a.cx + w / 2, y2: a.cy + h / 2 };
+    if (placed.some((o) => box.x1 < o.x2 && box.x2 > o.x1 && box.y1 < o.y2 && box.y2 > o.y1)) continue;
+    placed.push(box);
+    layout.set(a.code, { x: a.cx, y: a.cy, fontSize: fs, name });
   }
   return layout;
 }
