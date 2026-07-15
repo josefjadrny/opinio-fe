@@ -1,4 +1,5 @@
 import { getCountryName, getCountryFlag } from '../../utils/countries';
+import { useI18n } from '../../i18n/I18nContext';
 
 // Cached once — checks whether the browser renders flag emoji as colored glyphs.
 // On Linux/Mac it does; on Windows 11 they render as flat letter-pairs.
@@ -44,10 +45,11 @@ export function FlagImg({ code, className = '' }: { code: string; className?: st
 }
 
 export function CountryFlag({ code, showName = false }: { code: string; showName?: boolean }) {
+  const { locale } = useI18n();
   return (
-    <span className="inline-flex items-center gap-1" title={getCountryName(code)}>
+    <span className="inline-flex items-center gap-1" title={getCountryName(code, locale)}>
       <FlagImg code={code} />
-      {showName && <span className="text-xs text-text-secondary">{getCountryName(code)}</span>}
+      {showName && <span className="text-xs text-text-secondary">{getCountryName(code, locale)}</span>}
     </span>
   );
 }

@@ -9,7 +9,7 @@ import {
   useLeaderboardCountries, useLeaderboardProfiles,
   useTopVoters, useTrendingCountries, useTrendingProfiles,
 } from '../../hooks/useTopVoters';
-import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
+import { getCountryFlag, getCountryName, getCountriesList } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { RoleBadge } from '../common/RoleBadge';
 import type { CountryMetric, LeaderboardBoard } from '../../types/api';
@@ -173,6 +173,7 @@ interface StatsCountryRowProps {
 
 function StatsCountryRow({ countryCode, rank, subtitle, value, valueLabel }: StatsCountryRowProps) {
   const location = useLocation();
+  const { locale } = useI18n();
   return (
     <Link
       to={`/c/${countryCode}${location.search}`}
@@ -181,7 +182,7 @@ function StatsCountryRow({ countryCode, rank, subtitle, value, valueLabel }: Sta
       <span className="w-5 shrink-0 text-center">{rankCell(rank)}</span>
       <span className="w-7 h-7 shrink-0 flex items-center justify-center"><FlagImg code={countryCode} /></span>
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-white truncate">{getCountryName(countryCode)}</p>
+        <p className="text-sm text-white truncate">{getCountryName(countryCode, locale)}</p>
         {subtitle && (
           <p className="text-[11px] text-white/30 truncate leading-tight">{subtitle}</p>
         )}
@@ -199,6 +200,7 @@ function StatsCountryRow({ countryCode, rank, subtitle, value, valueLabel }: Sta
 // Trending Opinios tab and the all-time Opinios leaderboard.
 function StatsProfileRow({ profile, rank, value, valueLabel }: { profile: Profile; rank: number; value: number; valueLabel: string }) {
   const location = useLocation();
+  const { locale } = useI18n();
   return (
     <Link
       to={`/p/${profile.id}${location.search}`}
@@ -211,7 +213,7 @@ function StatsProfileRow({ profile, rank, value, valueLabel }: { profile: Profil
         <div className="flex items-center gap-1.5 leading-tight min-w-0">
           <RoleBadge role={profile.role} />
           <FlagImg code={profile.countryCode} className="shrink-0" />
-          <span className="text-[11px] text-white/40 truncate">{getCountryName(profile.countryCode)}</span>
+          <span className="text-[11px] text-white/40 truncate">{getCountryName(profile.countryCode, locale)}</span>
         </div>
       </div>
       <span className="text-xs font-medium tabular-nums shrink-0 text-white/80">
@@ -325,6 +327,7 @@ function metricValue(totalLikes: number, totalDislikes: number, metric: CountryM
 function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<typeof useI18n>['t'] }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { locale } = useI18n();
   const [searchParams, setSearchParams] = useSearchParams();
   const { country, setCountry } = useFilters();
 
@@ -413,7 +416,7 @@ function StatsContent({ category, t }: { category: StatsCategory; t: ReturnType<
       <label className="block text-xs font-medium text-white/80 mb-1.5">{t.country}</label>
       <SelectField value={country ?? ''} onChange={(e) => setCountry(e.target.value || undefined)}>
         <option value="" style={{ backgroundColor: '#1a1a2e', color: 'white' }}>{t.allCountries}</option>
-        {ALL_COUNTRIES.map(({ code, name }) => (
+        {getCountriesList(locale).map(({ code, name }) => (
           <option key={code} value={code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
             {getCountryFlag(code)} {name}
           </option>

@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ModalShell } from '../common/ModalShell';
 import { addNewProfile, uploadImage, uploadContentImage } from '../../api/client';
-import { ALL_COUNTRIES } from '../../utils/countries';
+import { ALL_COUNTRIES, getCountriesList, getCountryName, isKnownCountry } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { ALL_ROLES, ROLE_COLORS } from '../../utils/roles';
 import { useI18n } from '../../i18n/I18nContext';
@@ -88,20 +88,6 @@ function getDefaultCountryCode() {
   return 'US';
 }
 
-function getCountryOptionLabel(code: string) {
-  const country = ALL_COUNTRIES.find((c) => c.code === code);
-  return country ? `${country.name} (${code})` : code;
-}
-
-function findCountry(value: string) {
-  const normalized = value.trim().toLowerCase();
-  return ALL_COUNTRIES.find((country) => {
-    const optionLabel = `${country.name} (${country.code})`.toLowerCase();
-    return country.code.toLowerCase() === normalized
-      || country.name.toLowerCase() === normalized
-      || optionLabel === normalized;
-  });
-}
 
 // Form palette — matches SettingsModal so the two modals read as one family
 // (label = text-xs font-medium /80; hint = text-xs /30). No uppercase micro-
@@ -240,8 +226,22 @@ function renderTokens(text: string, tokens: Record<string, ReactNode>) {
 
 export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const queryClient = useQueryClient();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { data: me } = useMe();
+
+  // Country label/search close over the active locale so names show + match in
+  // the user's language. Defined here (not module scope) for that reason.
+  const getCountryOptionLabel = (code: string) =>
+    isKnownCountry(code) ? `${getCountryName(code, locale)} (${code})` : code;
+  const findCountry = (value: string) => {
+    const normalized = value.trim().toLowerCase();
+    return getCountriesList(locale).find((country) => {
+      const optionLabel = `${country.name} (${country.code})`.toLowerCase();
+      return country.code.toLowerCase() === normalized
+        || country.name.toLowerCase() === normalized
+        || optionLabel === normalized;
+    });
+  };
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -288,7 +288,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const contentFileInputRef = useRef<HTMLInputElement>(null);
   const countryFieldRef = useRef<HTMLDivElement>(null);
 
-  const filteredCountries = ALL_COUNTRIES.filter((country) => {
+  const filteredCountries = getCountriesList(locale).filter((country) => {
     const query = countryInput.trim().toLowerCase();
     if (!query) return true;
     return country.name.toLowerCase().includes(query) || country.code.toLowerCase().includes(query);

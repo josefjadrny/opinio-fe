@@ -1,21 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
-import { ALL_COUNTRIES } from '../../utils/countries';
+import { getCountriesList } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { useFilters } from '../../context/useFilters';
 import { useI18n } from '../../i18n/I18nContext';
 
 export function CountryFilter() {
   const { country, setCountry } = useFilters();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const selected = ALL_COUNTRIES.find(c => c.code === country);
+  const countries = getCountriesList(locale);
+  const selected = countries.find(c => c.code === country);
   const filtered = query
-    ? ALL_COUNTRIES.filter(c => c.name.toLowerCase().startsWith(query.toLowerCase()))
-    : ALL_COUNTRIES;
+    ? countries.filter(c => c.name.toLowerCase().startsWith(query.toLowerCase()))
+    : countries;
 
   useEffect(() => {
     if (open) inputRef.current?.focus();

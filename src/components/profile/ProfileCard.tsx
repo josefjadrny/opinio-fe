@@ -101,7 +101,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
       role="button"
       tabIndex={0}
       onClick={handleCountryClick}
-      title={`${t.filterBy}: ${getCountryName(profile.countryCode)}`}
+      title={`${t.filterBy}: ${getCountryName(profile.countryCode, locale)}`}
       className="cursor-pointer rounded hover:opacity-70 transition-opacity"
     >
       <CountryFlag code={profile.countryCode} />

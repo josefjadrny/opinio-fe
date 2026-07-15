@@ -56,11 +56,11 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   const code = countryCode.toUpperCase();
   const notFound = !isKnownCountry(code);
-  const name = getCountryName(code);
+  const name = getCountryName(code, locale);
   const { data } = useCountries();
   const counts = data?.countries.find((c) => c.code === code) ?? { likes: 0, dislikes: 0 };
   // Skip the discussed fetch for an unknown code - there's nothing to load and

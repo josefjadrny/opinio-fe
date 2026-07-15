@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ModalShell } from '../common/ModalShell';
-import { ALL_COUNTRIES } from '../../utils/countries';
+import { getCountriesList } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { ALL_ROLES, ROLE_COLORS } from '../../utils/roles';
 import { useFilters } from '../../context/useFilters';
@@ -19,14 +19,15 @@ const FilterIcon = () => (
 );
 
 export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { country, roles, search, setCountry, toggleRole, clearFilters } = useFilters();
   const { value: searchValue, setValue: setSearchValue } = useSearchField();
   const [query, setQuery] = useState('');
 
+  const countries = getCountriesList(locale);
   const filtered = query
-    ? ALL_COUNTRIES.filter(c => c.name.toLowerCase().startsWith(query.toLowerCase()))
-    : ALL_COUNTRIES;
+    ? countries.filter(c => c.name.toLowerCase().startsWith(query.toLowerCase()))
+    : countries;
 
   const hasFilters = !!(country || roles.length || search);
 

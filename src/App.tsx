@@ -145,8 +145,8 @@ function applyProfileSeo(name: string, description: string, id: string) {
   upsertCanonical(canonicalUrl);
 }
 
-function applyCountrySeo(code: string, seo: Strings['seo']) {
-  const name = getCountryName(code);
+function applyCountrySeo(code: string, seo: Strings['seo'], locale: Locale) {
+  const name = getCountryName(code, locale);
   // Localized "how the world feels about <country>" template (mirrors the worker's
   // no-counts COUNTRY_SEO; the runtime SPA has no 24h counts handy). {country} is
   // the only token. Falls back to a plain title if a locale lacks the entry.
@@ -586,15 +586,15 @@ function UserDetailRoute() {
 
 function CountryDetailRoute() {
   const { code } = useParams<{ code: string }>();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const upper = (code ?? '').toUpperCase();
   useEffect(() => {
     if (!upper) return;
     // Unknown code: the worker already serves a 404; don't title the tab with
     // the junk code - mark it as not found instead.
-    if (isKnownCountry(upper)) applyCountrySeo(upper, t.seo);
+    if (isKnownCountry(upper)) applyCountrySeo(upper, t.seo, locale);
     else document.title = `Page not found - ${BRAND}`;
-  }, [upper, t.seo]);
+  }, [upper, t.seo, locale]);
   return <CountryDetailModal countryCode={upper} />;
 }
 

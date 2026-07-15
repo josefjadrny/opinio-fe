@@ -1,3 +1,6 @@
+import type { Locale } from '../i18n/strings';
+import { COUNTRY_NAMES_I18N } from './countryNames.i18n';
+
 const ALL_COUNTRY_NAMES: Record<string, string> = {
   AF: 'Afghanistan', AL: 'Albania', DZ: 'Algeria', AR: 'Argentina', AU: 'Australia',
   AT: 'Austria', BD: 'Bangladesh', BE: 'Belgium', BR: 'Brazil', BG: 'Bulgaria',
@@ -28,7 +31,7 @@ const ALL_COUNTRY_NAMES: Record<string, string> = {
   LB: 'Lebanon', LK: 'Sri Lanka', LR: 'Liberia', LS: 'Lesotho',
   LT: 'Lithuania', LU: 'Luxembourg', LV: 'Latvia', LY: 'Libya',
   MD: 'Moldova', ME: 'Montenegro', MG: 'Madagascar', MK: 'North Macedonia',
-  ML: 'Mali', MM: 'Myanmar', MN: 'Mongolia', MR: 'Mauritania',
+  ML: 'Mali', MM: 'Myanmar', MN: 'Mongolia', MR: 'Mauritania', MV: 'Maldives',
   MW: 'Malawi', MY: 'Malaysia', MZ: 'Mozambique', NA: 'Namibia',
   NC: 'New Caledonia', NE: 'Niger', NI: 'Nicaragua', NP: 'Nepal',
   OM: 'Oman', PA: 'Panama', PG: 'Papua New Guinea', PS: 'Palestine',
@@ -42,8 +45,15 @@ const ALL_COUNTRY_NAMES: Record<string, string> = {
   ZM: 'Zambia', ZW: 'Zimbabwe',
 };
 
-export function getCountryName(code: string): string {
-  return ALL_COUNTRY_NAMES[code] ?? code;
+// Country name in the given UI locale, falling back to English (then the raw
+// code). Pass the active locale from useI18n at call sites; omit for English.
+export function getCountryName(code: string, locale?: Locale): string {
+  const up = code.toUpperCase();
+  if (locale && locale !== 'en') {
+    const translated = COUNTRY_NAMES_I18N[up]?.[locale];
+    if (translated) return translated;
+  }
+  return ALL_COUNTRY_NAMES[up] ?? code;
 }
 
 // True only for the 2-letter codes we actually have a country for. Used to
@@ -122,6 +132,24 @@ export function numericToAlpha2(id: string): string | undefined {
   return NUMERIC_TO_ALPHA2[id];
 }
 
+// English list, sorted by English name. Kept for code-membership checks and as
+// the English default; use getCountriesList(locale) for user-facing dropdowns.
 export const ALL_COUNTRIES = Object.entries(ALL_COUNTRY_NAMES)
   .map(([code, name]) => ({ code, name }))
   .sort((a, b) => a.name.localeCompare(b.name));
+
+const COUNTRY_CODES = Object.keys(ALL_COUNTRY_NAMES);
+
+// Countries as {code, name} translated into `locale` and sorted by the localized
+// name (locale-aware collation), for country pickers/search. Memoized per locale.
+const countriesListCache = new Map<string, { code: string; name: string }[]>();
+export function getCountriesList(locale?: Locale): { code: string; name: string }[] {
+  const key = locale ?? 'en';
+  const cached = countriesListCache.get(key);
+  if (cached) return cached;
+  const list = COUNTRY_CODES.map((code) => ({ code, name: getCountryName(code, locale) })).sort(
+    (a, b) => a.name.localeCompare(b.name, key),
+  );
+  countriesListCache.set(key, list);
+  return list;
+}

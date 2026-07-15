@@ -8,7 +8,7 @@ import { useBillingRedirect } from '../../hooks/useBillingRedirect';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
 import { type Locale } from '../../i18n/strings';
-import { getCountryFlag, getCountryName, ALL_COUNTRIES } from '../../utils/countries';
+import { getCountryFlag, getCountryName, getCountriesList } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { resizeImage } from '../../utils/resizeImage';
 import { formatTimeUntil } from '../../utils/formatRelativeTime';
@@ -64,7 +64,7 @@ function SettingsContent({
   user: { avatarUrl: string | null; provider: string | null; tier?: string; countryCode: string | null; canChangeCountry?: boolean; countryChangeAvailableAt?: string | null } | undefined;
   isAnonymous: boolean;
   t: ReturnType<typeof useI18n>['t'];
-  locale: string;
+  locale: Locale;
   setLocale: (l: Locale) => void;
 }) {
   const queryClient = useQueryClient();
@@ -200,7 +200,7 @@ function SettingsContent({
             disabled={saving}
           >
             <option value="" disabled style={{ backgroundColor: '#1a1a2e', color: 'white' }}>- select -</option>
-            {ALL_COUNTRIES.map(({ code, name }) => (
+            {getCountriesList(locale).map(({ code, name }) => (
               <option key={code} value={code} style={{ backgroundColor: '#1a1a2e', color: 'white' }}>
                 {getCountryFlag(code)} {name}
               </option>
@@ -211,7 +211,7 @@ function SettingsContent({
             {user?.countryCode ? (
               <>
                 <FlagImg code={user.countryCode} className="inline-block align-middle shrink-0" />
-                <span className="text-sm text-white">{getCountryName(user.countryCode)}</span>
+                <span className="text-sm text-white">{getCountryName(user.countryCode, locale)}</span>
               </>
             ) : (
               <span className="text-sm text-white">-</span>
@@ -221,7 +221,7 @@ function SettingsContent({
         {user?.countryCode ? (
           countryLocked ? (
             <p className="text-xs text-white/30 mt-1.5">
-              {t.countryChangeLocked.replace('{time}', formatTimeUntil(user!.countryChangeAvailableAt!, locale as Locale))}
+              {t.countryChangeLocked.replace('{time}', formatTimeUntil(user!.countryChangeAvailableAt!, locale))}
             </p>
           ) : (
             !canChangeCountry && <p className="text-xs text-white/30 mt-1.5">{t.detectedFromIp}</p>
@@ -241,7 +241,7 @@ function SettingsContent({
       {/* Language */}
       <div>
         <label className="block text-xs font-medium text-white/80 mb-1.5">{t.language}</label>
-        <LanguageSelect value={locale as Locale} onChange={setLocale} />
+        <LanguageSelect value={locale} onChange={setLocale} />
         <p className="text-xs text-white/30 mt-1.5">{t.languageHint}</p>
       </div>
     </div>

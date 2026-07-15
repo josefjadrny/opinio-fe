@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { FlagImg } from '../common/CountryFlag';
 import { getCountryName, isKnownCountry } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
+import { useI18n } from '../../i18n/I18nContext';
 
 interface BreakdownRowProps {
   countryCode: string;
@@ -19,6 +20,7 @@ interface BreakdownRowProps {
 export function BreakdownRow({ countryCode, count, max, index, side }: BreakdownRowProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { locale } = useI18n();
   const clickable = isKnownCountry(countryCode);
   const go = () => navigate('/c/' + countryCode + location.search);
 
@@ -31,7 +33,7 @@ export function BreakdownRow({ countryCode, count, max, index, side }: Breakdown
       tabIndex={clickable ? 0 : undefined}
       onClick={clickable ? go : undefined}
       onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } } : undefined}
-      title={clickable ? getCountryName(countryCode) : undefined}
+      title={clickable ? getCountryName(countryCode, locale) : undefined}
       className={`relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden select-none ${clickable ? 'cursor-pointer hover:bg-white/5 transition-colors' : ''}`}
       style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${index * 35}ms` }}
     >
@@ -40,7 +42,7 @@ export function BreakdownRow({ countryCode, count, max, index, side }: Breakdown
         style={{ width: `${(count / max) * 100}%`, animation: 'bar-fill 0.45s ease-out both', transformOrigin: 'left', animationDelay: `${index * 35 + 80}ms` }}
       />
       <FlagImg code={countryCode} className="relative inline-block align-middle shrink-0" />
-      <span className="relative text-xs text-white/60 flex-1 truncate">{getCountryName(countryCode)}</span>
+      <span className="relative text-xs text-white/60 flex-1 truncate">{getCountryName(countryCode, locale)}</span>
       <span className={`relative text-xs ${num} font-semibold tabular-nums`}>{formatNumber(count)}</span>
     </div>
   );

@@ -19,7 +19,7 @@ const TOOLTIP_MAX_HEIGHT = 520;
 const PADDING = 12;
 
 export function CountryTooltip({ countryCode, data, isLoading, position }: CountryTooltipProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const tipRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState<{ left: number; top: number } | null>(null);
   const { data: countriesData } = useCountries();
@@ -62,7 +62,7 @@ export function CountryTooltip({ countryCode, data, isLoading, position }: Count
     >
       <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border">
         <FlagImg code={countryCode} className="inline-block align-middle shrink-0" />
-        <span className="font-bold text-white flex-1 min-w-0 truncate">{getCountryName(countryCode)}</span>
+        <span className="font-bold text-white flex-1 min-w-0 truncate">{getCountryName(countryCode, locale)}</span>
         <div className="shrink-0 flex items-center gap-2 text-sm tabular-nums leading-none">
           <span className="inline-flex items-baseline gap-1 text-positive font-semibold">
             <span className="text-[11px]">▲</span>
