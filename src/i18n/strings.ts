@@ -2005,7 +2005,7 @@ const fr: Strings = {
     },
     country: {
       title: "{country} : qu'en pense le monde ? - Opinio",
-      description: 'Découvrez ce que le monde pense de {country} en ce moment - votes en direct, actualisés toutes les 24 h. Opinio.',
+      description: '{country} : découvrez ce que le monde en pense en ce moment - votes en direct, actualisés toutes les 24 h. Opinio.',
     },
     stats: {
       title: 'Opinions tendance en ce moment - Opinio',
@@ -2355,7 +2355,7 @@ const it: Strings = {
     },
     country: {
       title: '{country}: cosa ne pensa il mondo? - Opinio',
-      description: 'Scopri cosa pensa il mondo di {country} in questo momento - voti in tempo reale, aggiornati ogni 24 h. Opinio.',
+      description: '{country}: scopri cosa ne pensa il mondo in questo momento - voti in tempo reale, aggiornati ogni 24 h. Opinio.',
     },
     stats: {
       title: 'Opinioni di tendenza in questo momento - Opinio',
@@ -2705,7 +2705,7 @@ const pl: Strings = {
     },
     country: {
       title: '{country}: co sądzi o tym świat? - Opinio',
-      description: 'Zobacz, co świat sądzi o {country} w tej chwili - głosowanie na żywo, odświeżane co 24 h. Opinio.',
+      description: '{country}: zobacz, co świat o tym sądzi w tej chwili - głosowanie na żywo, odświeżane co 24 h. Opinio.',
     },
     stats: {
       title: 'Popularne opinie w tej chwili - Opinio',

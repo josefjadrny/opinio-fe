@@ -112,17 +112,17 @@ const COUNTRY_SEO = {
   },
   fr: {
     title: "{country} : qu'en pense le monde ? - Opinio",
-    description: 'Découvrez ce que le monde pense de {country} en ce moment - votes en direct, actualisés toutes les 24 h. Opinio.',
+    description: '{country} : découvrez ce que le monde en pense en ce moment - votes en direct, actualisés toutes les 24 h. Opinio.',
     descriptionCounts: "{country} : ce que le monde en pense - {likes} j'aime, {dislikes} je n'aime pas en 24 h. Opinio.",
   },
   it: {
     title: '{country}: cosa ne pensa il mondo? - Opinio',
-    description: 'Scopri cosa pensa il mondo di {country} in questo momento - voti in tempo reale, aggiornati ogni 24 h. Opinio.',
+    description: '{country}: scopri cosa ne pensa il mondo in questo momento - voti in tempo reale, aggiornati ogni 24 h. Opinio.',
     descriptionCounts: '{country}: cosa ne pensa il mondo - {likes} mi piace, {dislikes} non mi piace nelle ultime 24 h. Opinio.',
   },
   pl: {
     title: '{country}: co sądzi o tym świat? - Opinio',
-    description: 'Zobacz, co świat sądzi o {country} w tej chwili - głosowanie na żywo, odświeżane co 24 h. Opinio.',
+    description: '{country}: zobacz, co świat o tym sądzi w tej chwili - głosowanie na żywo, odświeżane co 24 h. Opinio.',
     descriptionCounts: '{country}: co świat o tym sądzi - {likes} polubień, {dislikes} ocen negatywnych w 24 h. Opinio.',
   },
 };
