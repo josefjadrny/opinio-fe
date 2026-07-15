@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { isOrderLocked } from './utils/voteLock';
 import { Routes, Route, Outlet, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
@@ -16,7 +16,11 @@ import { useIsMobile } from './hooks/useIsMobile';
 import { FilterBar } from './components/filters/FilterBar';
 import { Sidebar } from './components/layout/Sidebar';
 import { MobileFeed } from './components/layout/MobileFeed';
-import { WorldMap } from './components/map/WorldMap';
+// Desktop map is code-split so d3-geo + topojson + the city table stay out of
+// the main bundle (mobile never loads this chunk). MobileMapPanel is a tiny
+// dependency-free shell that itself lazy-loads the shared map on first open.
+const WorldMap = lazy(() => import('./components/map/WorldMap').then((m) => ({ default: m.WorldMap })));
+import { MobileMapPanel } from './components/map/MobileMapPanel';
 import { DesktopProfileModal } from './components/profile/DesktopProfileModal';
 import { ProfileDetailModal } from './components/profile/ProfileDetailModal';
 import { ProfileNotFoundModal } from './components/profile/ProfileNotFoundModal';
@@ -320,10 +324,13 @@ function AppLayout() {
       <FilterBar onAddProfile={() => navigate('/add' + location.search)} />
 
       {isMobile ? (
-        <MobileFeed
-          positiveProfiles={positiveQuery.data?.profiles ?? []}
-          negativeProfiles={negativeQuery.data?.profiles ?? []}
-        />
+        <div className="flex-1 flex flex-col min-h-0">
+          <MobileMapPanel />
+          <MobileFeed
+            positiveProfiles={positiveQuery.data?.profiles ?? []}
+            negativeProfiles={negativeQuery.data?.profiles ?? []}
+          />
+        </div>
       ) : isCompact ? (
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <div className="flex-1 flex min-h-0">
@@ -366,7 +373,9 @@ function AppLayout() {
           <ResizeHandle side="left" onDrag={handleLeftDrag} />
           <div className="flex-1 min-w-0 flex flex-col min-h-0 relative">
             <HotBanner enabled={!isMobile && !isCompact} />
-            <WorldMap />
+            <Suspense fallback={<div className="flex-1 min-h-0" />}>
+              <WorldMap />
+            </Suspense>
             <VoteBanner />
           </div>
           <ResizeHandle side="right" onDrag={handleRightDrag} />

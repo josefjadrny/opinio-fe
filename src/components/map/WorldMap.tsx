@@ -1,6 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { geoNaturalEarth1, geoPath } from 'd3-geo';
 import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import { useCountryProfiles } from '../../hooks/useCountryProfiles';
@@ -12,60 +11,22 @@ import { CountryTooltip } from './CountryTooltip';
 import { MapZoomControl } from './MapZoomControl';
 import { MapLegend } from './MapLegend';
 import { useFilters } from '../../context/useFilters';
+import {
+  WIDTH,
+  HEIGHT,
+  MIN_ZOOM,
+  MAX_ZOOM,
+  DEFAULT_FILL,
+  LABEL_REF_WIDTH,
+  MAX_LABEL_SCALE,
+  colorForCountry,
+  clampTranslate,
+  projection,
+  pathGenerator,
+  buildCityLabelLayout,
+} from './mapShared';
 
 const GEO_URL = '/topojson/world-110m.json';
-const WIDTH = 800;
-const HEIGHT = 500;
-const MIN_ZOOM = 1;
-const MAX_ZOOM = 5;
-const DEFAULT_FILL = '#3a3a6a';
-// City names fade in progressively as you zoom so labels never pile up: capitals
-// first, then secondary cities deeper in (where there's room). Dots are always
-// drawn. Tuned with the higher MAX_ZOOM so dense regions can be pulled apart.
-// Thresholds kept high so a barely-zoomed map (esp. on wide Full HD layouts)
-// doesn't dump the whole capital set at once.
-const CAPITAL_LABEL_ZOOM = 2.0;
-const CITY_LABEL_ZOOM = 2.8;
-
-// City labels/dots are constant in SVG user units, so the map's CSS render width
-// (viewBox is 800 wide) sets their on-screen size: a wide map shows them at a
-// comfortable ~13 px, but a Full HD map (~870 px wide, squeezed between the two
-// sidebars) renders them at ~7.6 px - too small to read. `labelScale` below
-// compensates: at/above LABEL_REF_WIDTH it's 1 (wide screens unchanged), and
-// it grows as the map narrows so labels stay readable, capped by MAX_LABEL_SCALE.
-const LABEL_REF_WIDTH = 1430;
-const MAX_LABEL_SCALE = 2.5;
-
-// Tint a country by like/dislike skew. Pct = (max - min) / min — i.e. how much
-// the leading side outweighs the trailing side. Sub-25% stays neutral so noisy
-// near-ties don't flicker; tiers brighten with skew but stay dark on purpose.
-function colorForCountry(likes: number, dislikes: number): string {
-  if (likes === dislikes) return DEFAULT_FILL;
-  const hi = Math.max(likes, dislikes);
-  const lo = Math.min(likes, dislikes);
-  const pct = lo === 0 ? Infinity : (hi - lo) / lo;
-  if (pct <= 0.25) return DEFAULT_FILL;
-  const positive = likes > dislikes;
-  if (pct <= 0.5) return positive ? '#2c4a38' : '#4a2c38';
-  if (pct <= 1.0) return positive ? '#2e6042' : '#5e2e44';
-  return positive ? '#36784f' : '#763852';
-}
-
-function clampTranslate(tx: number, ty: number, scale: number) {
-  return {
-    tx: Math.min(WIDTH * 0.1, Math.max(-(WIDTH * scale - WIDTH * 0.9), tx)),
-    ty: Math.min(HEIGHT * 0.1, Math.max(-(HEIGHT * scale - HEIGHT * 0.9), ty)),
-  };
-}
-
-// Scale slightly enlarged from default so far Pacific edges crop out, but with
-// enough margin top/bottom that vertical centering reads as centered.
-const projection = geoNaturalEarth1()
-  .scale(170)
-  .center([10, 20])
-  .translate([400, 250]);
-
-const pathGenerator = geoPath(projection);
 
 interface ZoomState {
   scale: number;
@@ -103,70 +64,12 @@ export function WorldMap() {
     return map;
   }, [countriesData]);
 
-  // Label placement + decluttering. Each label tries four positions around its
-  // dot (right, left, above, below) and takes the first whose box is clear, so a
-  // capital crowded on one side (e.g. Vienna next to Bratislava) flips to a free
-  // side instead of overprinting. Capitals are placed first (priority) so they
-  // win slots over secondary cities, but — unlike before — a capital with no
-  // clear slot is DROPPED rather than force-shown: this stops a barely-zoomed map
-  // from dumping all ~197 capitals into a dense wall. Crowded capitals reappear
-  // as you zoom in and the cluster separates. Secondary cities then fill any
-  // remaining gaps. Boxes are in projected (pre-transform) space; label sizes
-  // divide by scale, so zooming in shrinks boxes and frees up positions. Returns
-  // per-key {x, y, anchor} so the render places text identically. Recomputed each
-  // zoom step.
-  const cityLabelLayout = useMemo(() => {
-    const scale = zoom.scale;
-    type Box = { x1: number; y1: number; x2: number; y2: number };
-    const placed: Box[] = [];
-    const layout = new Map<string, { x: number; y: number; anchor: 'start' | 'end' | 'middle' }>();
-    const overlapArea = (b: Box) =>
-      placed.reduce((sum, o) => {
-        const ox = Math.max(0, Math.min(b.x2, o.x2) - Math.max(b.x1, o.x1));
-        const oy = Math.max(0, Math.min(b.y2, o.y2) - Math.max(b.y1, o.y1));
-        return sum + ox * oy;
-      }, 0);
-    const projected = CITIES.map((c) => ({ c, p: projection(c.coords) })).filter(
-      (x): x is { c: (typeof CITIES)[number]; p: [number, number] } => !!x.p,
-    );
-    // forceShow=true: render even when every position overlaps, taking the
-    // least-crowded slot (reserved for nothing now — kept for the option).
-    // forceShow=false: drop the label when no position is clear. Both capitals
-    // and secondary cities use false so dense regions thin out; capitals just go
-    // first, so they claim the open slots before cities do.
-    const place = (c: (typeof CITIES)[number], cx: number, cy: number, forceShow: boolean) => {
-      const fs = ((c.capital ? 7 : 6.2) / scale) * labelScale;
-      const w = cityLabel(c.name, locale).length * fs * 0.55;
-      const h = fs;
-      const gap = (((c.capital ? 0.95 : 0.65) + 1.9) / scale) * labelScale;
-      // [x, y (vertical center), anchor, box] candidates: right, left, above, below.
-      const candidates: [number, number, 'start' | 'end' | 'middle', Box][] = [
-        [cx + gap, cy, 'start', { x1: cx + gap, y1: cy - h / 2, x2: cx + gap + w, y2: cy + h / 2 }],
-        [cx - gap, cy, 'end', { x1: cx - gap - w, y1: cy - h / 2, x2: cx - gap, y2: cy + h / 2 }],
-        [cx, cy - gap - h / 2, 'middle', { x1: cx - w / 2, y1: cy - gap - h, x2: cx + w / 2, y2: cy - gap }],
-        [cx, cy + gap + h / 2, 'middle', { x1: cx - w / 2, y1: cy + gap, x2: cx + w / 2, y2: cy + gap + h }],
-      ];
-      let chosen = candidates.find(([, , , b]) => overlapArea(b) === 0);
-      if (!chosen) {
-        if (!forceShow) return;
-        chosen = candidates.reduce((best, cur) =>
-          overlapArea(cur[3]) < overlapArea(best[3]) ? cur : best,
-        );
-      }
-      placed.push(chosen[3]);
-      layout.set(`${c.code}:${c.name}`, { x: chosen[0], y: chosen[1], anchor: chosen[2] });
-    };
-    // Capitals first (priority — they claim slots before cities), then secondary
-    // cities fill gaps. Capitals are droppable now (forceShow=false) so crowded
-    // regions don't overprint; they reappear as zoom separates the cluster.
-    for (const { c, p } of projected) {
-      if (c.capital && scale > CAPITAL_LABEL_ZOOM) place(c, p[0], p[1], false);
-    }
-    for (const { c, p } of projected) {
-      if (!c.capital && scale > CITY_LABEL_ZOOM) place(c, p[0], p[1], false);
-    }
-    return layout;
-  }, [zoom.scale, locale, labelScale]);
+  // Label placement + decluttering (see buildCityLabelLayout in mapShared).
+  // Recomputed each zoom step / locale / labelScale change.
+  const cityLabelLayout = useMemo(
+    () => buildCityLabelLayout(zoom.scale, locale, labelScale),
+    [zoom.scale, locale, labelScale],
+  );
 
   // Track the map's rendered width so labelScale can normalize on-screen label
   // size across resolutions (the flex layout resizes the map independently of

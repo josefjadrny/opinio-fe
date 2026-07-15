@@ -236,6 +236,7 @@ export interface Strings {
   mapLegendLiked: string;
   mapLegendDisliked: string;
   mapLegendNeutral: string;
+  worldMap: string;
   noVotesYet: string;
   share: string;
   linkCopied: string;
@@ -548,6 +549,7 @@ const en: Strings = {
   mapLegendLiked: 'Popular',
   mapLegendDisliked: 'Unpopular',
   mapLegendNeutral: 'Neutral',
+  worldMap: 'World map',
   noVotesYet: 'No votes yet',
   share: 'Share',
   linkCopied: 'Link copied',
@@ -897,6 +899,7 @@ const cs: Strings = {
   mapLegendLiked: 'Oblíbené',
   mapLegendDisliked: 'Neoblíbené',
   mapLegendNeutral: 'Neutrální',
+  worldMap: 'Mapa světa',
   noVotesYet: 'Zatím bez hlasů',
   share: 'Sdílet',
   linkCopied: 'Odkaz zkopírován',
@@ -1246,6 +1249,7 @@ const es: Strings = {
   mapLegendLiked: 'Popular',
   mapLegendDisliked: 'Impopular',
   mapLegendNeutral: 'Neutral',
+  worldMap: 'Mapa del mundo',
   noVotesYet: 'Sin votos aún',
   share: 'Compartir',
   linkCopied: 'Enlace copiado',
@@ -1595,6 +1599,7 @@ const de: Strings = {
   mapLegendLiked: 'Beliebt',
   mapLegendDisliked: 'Unbeliebt',
   mapLegendNeutral: 'Neutral',
+  worldMap: 'Weltkarte',
   noVotesYet: 'Noch keine Stimmen',
   share: 'Teilen',
   linkCopied: 'Link kopiert',
@@ -1944,6 +1949,7 @@ const fr: Strings = {
   mapLegendLiked: 'Populaire',
   mapLegendDisliked: 'Impopulaire',
   mapLegendNeutral: 'Neutre',
+  worldMap: 'Carte du monde',
   noVotesYet: 'Aucun vote',
   share: 'Partager',
   linkCopied: 'Lien copié',
@@ -2293,6 +2299,7 @@ const it: Strings = {
   mapLegendLiked: 'Popolare',
   mapLegendDisliked: 'Impopolare',
   mapLegendNeutral: 'Neutro',
+  worldMap: 'Mappa del mondo',
   noVotesYet: 'Ancora nessun voto',
   share: 'Condividi',
   linkCopied: 'Link copiato',
@@ -2642,6 +2649,7 @@ const pl: Strings = {
   mapLegendLiked: 'Popularne',
   mapLegendDisliked: 'Niepopularne',
   mapLegendNeutral: 'Neutralne',
+  worldMap: 'Mapa świata',
   noVotesYet: 'Brak głosów',
   share: 'Udostępnij',
   linkCopied: 'Link skopiowany',
