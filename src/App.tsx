@@ -29,6 +29,7 @@ import { UserDetailModal } from './components/profile/UserDetailModal';
 import { CountryDetailModal } from './components/country/CountryDetailModal';
 import { getCountryName, isKnownCountry } from './utils/countries';
 import { AddProfileModal } from './components/profile-form/AddProfileModal';
+import { AddOpinioFab } from './components/ui/AddOpinioFab';
 import { VoteBanner } from './components/voting/VoteBanner';
 import { HotBanner } from './components/banner/HotBanner';
 import { SettingsModal } from './components/filters/SettingsModal';
@@ -249,6 +250,7 @@ function AppLayout() {
   const location = useLocation();
   const isMobile = useIsMobile();
   const isCompact = useIsMobile(1366);
+  const { isLoading: meLoading } = useMe();
   const { country, roles, search } = useFilters();
   const [sidebarWidths, setSidebarWidths] = useState(loadSidebarWidths);
   const { t } = useI18n();
@@ -396,6 +398,13 @@ function AppLayout() {
 
       <WelcomeAutoOpen />
       <ViewerModeAutoOpen />
+
+      {/* Add-opinio FAB - mobile only. Rendered as a top-level sibling (not
+          inside the scrolling feed column) so its backdrop-filter can sample
+          the feed behind it, matching the bottom vote banner. */}
+      {isMobile && !meLoading && (
+        <AddOpinioFab onClick={() => navigate('/add' + location.search)} />
+      )}
 
       {/* Modal routes render here */}
       <Outlet />
