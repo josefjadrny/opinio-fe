@@ -5,12 +5,12 @@ import { useI18n } from '../../i18n/I18nContext';
 // add button below md. Rendered as a top-level sibling (not inside the scrolling
 // feed) so its backdrop-filter samples the feed behind it - see App.tsx.
 //
-// Draggable: press and drag to reposition anywhere on screen (position is
-// remembered per browser); a tap (no drag) opens the add-opinio form. The
-// signature two-tone mark (red speech bubble + green plus, same colours as the
-// vote buttons) sits on a frosted-glass disc matching the vote bar.
+// Draggable: press and drag to reposition anywhere on screen for the current
+// session; the position is not persisted, so a refresh resets it to the default
+// bottom-right spot. A tap (no drag) opens the add-opinio form. The signature
+// two-tone mark (red speech bubble + green plus, same colours as the vote
+// buttons) sits on a frosted-glass disc matching the vote bar.
 
-const POS_KEY = 'opinio_fab_pos_v1';
 const SIZE = 64; // w-16 / h-16
 const MARGIN = 8; // keep this far from the viewport edges
 const DRAG_THRESHOLD = 6; // px of movement before a press counts as a drag
@@ -21,19 +21,9 @@ interface AddOpinioFabProps {
   onClick: () => void;
 }
 
-function loadPos(): Pos | null {
-  try {
-    const raw = localStorage.getItem(POS_KEY);
-    if (!raw) return null;
-    const p = JSON.parse(raw);
-    if (typeof p?.x === 'number' && typeof p?.y === 'number') return p;
-  } catch { /* ignore */ }
-  return null;
-}
-
 export function AddOpinioFab({ onClick }: AddOpinioFabProps) {
   const { t } = useI18n();
-  const [pos, setPos] = useState<Pos | null>(loadPos);
+  const [pos, setPos] = useState<Pos | null>(null);
   // startX/Y = pointer origin, baseX/Y = button top-left at press, moved = past threshold
   const drag = useRef<{ startX: number; startY: number; baseX: number; baseY: number; moved: boolean } | null>(null);
 
@@ -72,11 +62,9 @@ export function AddOpinioFab({ onClick }: AddOpinioFabProps) {
     if (!d) return;
     e.currentTarget.releasePointerCapture?.(e.pointerId);
     if (d.moved) {
-      // Persist the dropped position.
+      // Settle at the dropped position (session only, not persisted).
       const rect = e.currentTarget.getBoundingClientRect();
-      const p = clamp(rect.left, rect.top);
-      setPos(p);
-      try { localStorage.setItem(POS_KEY, JSON.stringify(p)); } catch { /* ignore */ }
+      setPos(clamp(rect.left, rect.top));
     } else {
       onClick(); // it was a tap, not a drag
     }
