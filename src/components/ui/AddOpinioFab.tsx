@@ -1,24 +1,101 @@
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { useI18n } from '../../i18n/I18nContext';
 
 // Floating action button for creating an opinio on mobile. Replaces the header
-// add button below md. Sits just above the bottom vote bar in the bottom-right
-// corner. Rendered as a top-level sibling (not inside the scrolling feed) so its
-// backdrop-filter samples the feed behind it - see App.tsx.
+// add button below md. Rendered as a top-level sibling (not inside the scrolling
+// feed) so its backdrop-filter samples the feed behind it - see App.tsx.
 //
-// The signature two-tone add-opinio mark (red speech bubble + green plus, same
-// colours as the vote buttons) on a frosted-glass disc matching the vote bar.
+// Draggable: press and drag to reposition anywhere on screen (position is
+// remembered per browser); a tap (no drag) opens the add-opinio form. The
+// signature two-tone mark (red speech bubble + green plus, same colours as the
+// vote buttons) sits on a frosted-glass disc matching the vote bar.
+
+const POS_KEY = 'opinio_fab_pos_v1';
+const SIZE = 64; // w-16 / h-16
+const MARGIN = 8; // keep this far from the viewport edges
+const DRAG_THRESHOLD = 6; // px of movement before a press counts as a drag
+
+interface Pos { x: number; y: number }
+
 interface AddOpinioFabProps {
   onClick: () => void;
 }
 
+function loadPos(): Pos | null {
+  try {
+    const raw = localStorage.getItem(POS_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw);
+    if (typeof p?.x === 'number' && typeof p?.y === 'number') return p;
+  } catch { /* ignore */ }
+  return null;
+}
+
 export function AddOpinioFab({ onClick }: AddOpinioFabProps) {
   const { t } = useI18n();
+  const [pos, setPos] = useState<Pos | null>(loadPos);
+  // startX/Y = pointer origin, baseX/Y = button top-left at press, moved = past threshold
+  const drag = useRef<{ startX: number; startY: number; baseX: number; baseY: number; moved: boolean } | null>(null);
+
+  const clamp = useCallback((x: number, y: number): Pos => ({
+    x: Math.max(MARGIN, Math.min(window.innerWidth - SIZE - MARGIN, x)),
+    y: Math.max(MARGIN, Math.min(window.innerHeight - SIZE - MARGIN, y)),
+  }), []);
+
+  // Keep the button on-screen across rotation / resize.
+  useEffect(() => {
+    if (!pos) return;
+    const onResize = () => setPos((p) => (p ? clamp(p.x, p.y) : p));
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [pos, clamp]);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    drag.current = { startX: e.clientX, startY: e.clientY, baseX: rect.left, baseY: rect.top, moved: false };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const d = drag.current;
+    if (!d) return;
+    const dx = e.clientX - d.startX;
+    const dy = e.clientY - d.startY;
+    if (!d.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+    d.moved = true;
+    setPos(clamp(d.baseX + dx, d.baseY + dy));
+  };
+
+  const onPointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const d = drag.current;
+    drag.current = null;
+    if (!d) return;
+    e.currentTarget.releasePointerCapture?.(e.pointerId);
+    if (d.moved) {
+      // Persist the dropped position.
+      const rect = e.currentTarget.getBoundingClientRect();
+      const p = clamp(rect.left, rect.top);
+      setPos(p);
+      try { localStorage.setItem(POS_KEY, JSON.stringify(p)); } catch { /* ignore */ }
+    } else {
+      onClick(); // it was a tap, not a drag
+    }
+  };
+
+  // Keyboard access (drag is pointer-only): Enter / Space open the form.
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); }
+  };
 
   return (
     <button
-      onClick={onClick}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onKeyDown={onKeyDown}
       aria-label={t.addProfileTitle}
-      className="fixed bottom-16 right-4 z-[70] flex items-center justify-center rounded-full w-16 h-16 bg-surface/50 backdrop-blur-md border border-white/10 shadow-lg shadow-black/50 transition-transform active:scale-90 focus:outline-none"
+      style={pos ? { left: pos.x, top: pos.y, right: 'auto', bottom: 'auto' } : undefined}
+      className={`fixed ${pos ? '' : 'bottom-[69px] right-4'} z-[70] flex items-center justify-center rounded-full w-16 h-16 bg-surface/50 backdrop-blur-md border border-white/10 shadow-lg shadow-black/50 transition-[filter] active:brightness-125 focus:outline-none touch-none cursor-grab active:cursor-grabbing`}
     >
       <svg className="w-9 h-9" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
         <path

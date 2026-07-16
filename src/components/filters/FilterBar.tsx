@@ -54,7 +54,13 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
             className="relative md:hidden p-2 text-white"
             aria-label="Filters"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="url(#filterGrad)" strokeWidth={2}>
+              <defs>
+                <linearGradient id="filterGrad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="var(--color-positive)" />
+                  <stop offset="100%" stopColor="var(--color-accent)" />
+                </linearGradient>
+              </defs>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
             </svg>
             {hasFilters && (
