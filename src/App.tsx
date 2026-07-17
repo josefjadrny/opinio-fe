@@ -411,8 +411,8 @@ function AppLayout() {
           behind it, matching the bottom vote banner. Hiding it whenever a
           child route is active keeps it from covering profile/country/user
           detail content (those modals sit below the FAB's z-index). */}
-      {isMobile && !meLoading && isFeedRoute && (
-        <AddOpinioFab onClick={() => navigate('/add' + location.search)} />
+      {isMobile && !meLoading && (
+        <AddOpinioFab visible={isFeedRoute} onClick={() => navigate('/add' + location.search)} />
       )}
 
       {/* Modal routes render here */}

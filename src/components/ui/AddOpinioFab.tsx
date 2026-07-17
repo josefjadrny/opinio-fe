@@ -19,13 +19,38 @@ interface Pos { x: number; y: number }
 
 interface AddOpinioFabProps {
   onClick: () => void;
+  // Drives the enter/exit animation. The button stays mounted (so it can
+  // animate out); when false it scales to nothing, fades, and stops taking
+  // pointer/keyboard input.
+  visible: boolean;
 }
 
-export function AddOpinioFab({ onClick }: AddOpinioFabProps) {
+export function AddOpinioFab({ onClick, visible }: AddOpinioFabProps) {
   const { t } = useI18n();
   const [pos, setPos] = useState<Pos | null>(null);
   // startX/Y = pointer origin, baseX/Y = button top-left at press, moved = past threshold
   const drag = useRef<{ startX: number; startY: number; baseX: number; baseY: number; moved: boolean } | null>(null);
+
+  // Start hidden, then flip on after the first paint so the same pop-in tween
+  // plays on initial load / reload (not just on later route changes). A double
+  // rAF guarantees the browser paints the scale(0) state before it transitions.
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => { raf2 = requestAnimationFrame(() => setEntered(true)); });
+    return () => { cancelAnimationFrame(raf1); cancelAnimationFrame(raf2); };
+  }, []);
+  const shown = visible && entered;
+
+  // Once the exit tween finishes, hard-hide the button so its backdrop-filter
+  // stops compositing while off-screen; restore visibility immediately when it
+  // needs to animate back in. 300ms matches the exit transitionDuration below.
+  const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => {
+    if (shown) { setCollapsed(false); return; }
+    const id = setTimeout(() => setCollapsed(true), 320);
+    return () => clearTimeout(id);
+  }, [shown]);
 
   const clamp = useCallback((x: number, y: number): Pos => ({
     x: Math.max(MARGIN, Math.min(window.innerWidth - SIZE - MARGIN, x)),
@@ -82,8 +107,20 @@ export function AddOpinioFab({ onClick }: AddOpinioFabProps) {
       onPointerUp={onPointerUp}
       onKeyDown={onKeyDown}
       aria-label={t.addProfileTitle}
-      style={pos ? { left: pos.x, top: pos.y, right: 'auto', bottom: 'auto' } : undefined}
-      className={`fixed ${pos ? '' : 'bottom-[69px] right-4'} z-[70] flex items-center justify-center rounded-full w-16 h-16 bg-surface/50 backdrop-blur-md border border-white/25 shadow-lg shadow-black/50 transition-[filter] active:brightness-125 focus:outline-none touch-none cursor-grab active:cursor-grabbing`}
+      aria-hidden={!shown}
+      tabIndex={shown ? 0 : -1}
+      style={{
+        ...(pos ? { left: pos.x, top: pos.y, right: 'auto', bottom: 'auto' } : null),
+        visibility: collapsed ? 'hidden' : 'visible',
+        opacity: shown ? 1 : 0,
+        // Springy overshoot popping in; a quicker accelerate-away going out.
+        transform: shown ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(-90deg)',
+        transitionTimingFunction: shown
+          ? 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+          : 'cubic-bezier(0.4, 0, 1, 1)',
+        transitionDuration: shown ? '520ms' : '300ms',
+      }}
+      className={`fixed ${pos ? '' : 'bottom-[69px] right-4'} z-[70] flex items-center justify-center rounded-full w-16 h-16 bg-surface/50 backdrop-blur-md border border-white/25 shadow-lg shadow-black/50 transition-[transform,opacity,filter] active:brightness-125 focus:outline-none touch-none cursor-grab active:cursor-grabbing ${shown ? '' : 'pointer-events-none'}`}
     >
       <svg className="w-9 h-9" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
         <path
