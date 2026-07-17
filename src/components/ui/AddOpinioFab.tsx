@@ -83,7 +83,7 @@ export function AddOpinioFab({ onClick }: AddOpinioFabProps) {
       onKeyDown={onKeyDown}
       aria-label={t.addProfileTitle}
       style={pos ? { left: pos.x, top: pos.y, right: 'auto', bottom: 'auto' } : undefined}
-      className={`fixed ${pos ? '' : 'bottom-[69px] right-4'} z-[70] flex items-center justify-center rounded-full w-16 h-16 bg-surface/50 backdrop-blur-md border border-white/10 shadow-lg shadow-black/50 transition-[filter] active:brightness-125 focus:outline-none touch-none cursor-grab active:cursor-grabbing`}
+      className={`fixed ${pos ? '' : 'bottom-[69px] right-4'} z-[70] flex items-center justify-center rounded-full w-16 h-16 bg-surface/50 backdrop-blur-md border border-white/25 shadow-lg shadow-black/50 transition-[filter] active:brightness-125 focus:outline-none touch-none cursor-grab active:cursor-grabbing`}
     >
       <svg className="w-9 h-9" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
         <path

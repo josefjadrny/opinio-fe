@@ -256,6 +256,12 @@ function AppLayout() {
   const { t } = useI18n();
   const queryClient = useQueryClient();
 
+  // The FAB shows only on the bare feed. Strip any locale prefix (/fr, /de, ...)
+  // so a prefixed home still counts as the feed; any child modal route (/add,
+  // /p/:id, /settings, ...) leaves a non-'/' remainder and hides it.
+  const feedPrefix = localePrefixOf(location.pathname);
+  const isFeedRoute = (feedPrefix ? location.pathname.slice(feedPrefix.length) || '/' : location.pathname) === '/';
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('registered') === '1') {
@@ -399,10 +405,13 @@ function AppLayout() {
       <WelcomeAutoOpen />
       <ViewerModeAutoOpen />
 
-      {/* Add-opinio FAB - mobile only. Rendered as a top-level sibling (not
-          inside the scrolling feed column) so its backdrop-filter can sample
-          the feed behind it, matching the bottom vote banner. */}
-      {isMobile && !meLoading && (
+      {/* Add-opinio FAB - mobile only, and only on the bare feed (no modal /
+          detail route open). Rendered as a top-level sibling (not inside the
+          scrolling feed column) so its backdrop-filter can sample the feed
+          behind it, matching the bottom vote banner. Hiding it whenever a
+          child route is active keeps it from covering profile/country/user
+          detail content (those modals sit below the FAB's z-index). */}
+      {isMobile && !meLoading && isFeedRoute && (
         <AddOpinioFab onClick={() => navigate('/add' + location.search)} />
       )}
 
