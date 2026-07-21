@@ -81,6 +81,7 @@ export interface Strings {
   aboutMadeInCzechia: string;
   aboutHostedInGermany: string;
   aboutEuOrigin: string;
+  followFacebook: string;
   aboutTiersTitle: string;
   aboutTierAnonymous: string;
   aboutTierRegistered: string;
@@ -375,6 +376,7 @@ const en: Strings = {
   aboutMadeInCzechia: 'Made in Czechia',
   aboutHostedInGermany: 'Hosted in Germany',
   aboutEuOrigin: 'EU origin',
+  followFacebook: 'Follow on Facebook',
   aboutTiersTitle: 'Plans',
   aboutTierAnonymous: 'Anonymous',
   aboutTierRegistered: 'Registered',
@@ -725,6 +727,7 @@ const cs: Strings = {
   aboutMadeInCzechia: 'Vytvořeno v Česku',
   aboutHostedInGermany: 'Hostováno v Německu',
   aboutEuOrigin: 'Původ v EU',
+  followFacebook: 'Sledujte na Facebooku',
   aboutTiersTitle: 'Plány',
   aboutTierAnonymous: 'Anonymní',
   aboutTierRegistered: 'Registrovaný',
@@ -1075,6 +1078,7 @@ const es: Strings = {
   aboutMadeInCzechia: 'Hecho en Chequia',
   aboutHostedInGermany: 'Alojado en Alemania',
   aboutEuOrigin: 'Origen UE',
+  followFacebook: 'Síguenos en Facebook',
   aboutTiersTitle: 'Planes',
   aboutTierAnonymous: 'Anónimo',
   aboutTierRegistered: 'Registrado',
@@ -1425,6 +1429,7 @@ const de: Strings = {
   aboutMadeInCzechia: 'Hergestellt in Tschechien',
   aboutHostedInGermany: 'Gehostet in Deutschland',
   aboutEuOrigin: 'Herkunft EU',
+  followFacebook: 'Auf Facebook folgen',
   aboutTiersTitle: 'Tarife',
   aboutTierAnonymous: 'Anonym',
   aboutTierRegistered: 'Registriert',
@@ -1775,6 +1780,7 @@ const fr: Strings = {
   aboutMadeInCzechia: 'Fait en Tchéquie',
   aboutHostedInGermany: 'Hébergé en Allemagne',
   aboutEuOrigin: 'Origine UE',
+  followFacebook: 'Suivez-nous sur Facebook',
   aboutTiersTitle: 'Offres',
   aboutTierAnonymous: 'Anonyme',
   aboutTierRegistered: 'Inscrit',
@@ -2125,6 +2131,7 @@ const it: Strings = {
   aboutMadeInCzechia: 'Fatto in Cechia',
   aboutHostedInGermany: 'Ospitato in Germania',
   aboutEuOrigin: 'Origine UE',
+  followFacebook: 'Seguici su Facebook',
   aboutTiersTitle: 'Piani',
   aboutTierAnonymous: 'Anonimo',
   aboutTierRegistered: 'Registrato',
@@ -2475,6 +2482,7 @@ const pl: Strings = {
   aboutMadeInCzechia: 'Stworzone w Czechach',
   aboutHostedInGermany: 'Hostowane w Niemczech',
   aboutEuOrigin: 'Pochodzenie z UE',
+  followFacebook: 'Obserwuj na Facebooku',
   aboutTiersTitle: 'Plany',
   aboutTierAnonymous: 'Anonimowy',
   aboutTierRegistered: 'Zarejestrowany',
