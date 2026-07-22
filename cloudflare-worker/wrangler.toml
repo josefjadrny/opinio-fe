@@ -3,6 +3,9 @@ main = "src/index.js"
 compatibility_date = "2025-01-01"
 
 routes = [
+  # Bare home — fronted by the worker so it emits the reciprocal hreflang set
+  # (S3 alone can't inject it). Exact match on "/" only, not a wildcard.
+  { pattern = "opinio.live/", zone_name = "opinio.live" },
   { pattern = "opinio.live/p/*", zone_name = "opinio.live" },
   { pattern = "opinio.live/u/*", zone_name = "opinio.live" },
   { pattern = "opinio.live/c/*", zone_name = "opinio.live" },
