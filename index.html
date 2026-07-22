@@ -54,17 +54,35 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Opinio",
-        "url": "https://opinio.live/",
-        "description": "Opinio is an ad-free social voting platform from Europe. Share and vote on opinions about anything - from the headlines to everyday life - and see how every country feels, country by country, refreshed every 24 hours. Every opinion is translated automatically, so you read and vote in English, Czech, Spanish, German, French, Italian, or Polish.",
-        "inLanguage": ["en", "cs", "es", "de", "fr", "it", "pl"],
-        "sameAs": ["https://www.facebook.com/opinio.live"],
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://opinio.live/?country={country}",
-          "query-input": "required name=country"
-        }
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://opinio.live/#organization",
+            "name": "Opinio",
+            "url": "https://opinio.live/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://opinio.live/pwa-512x512.png",
+              "width": 512,
+              "height": 512
+            },
+            "sameAs": ["https://www.facebook.com/opinio.live"]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://opinio.live/#website",
+            "name": "Opinio",
+            "url": "https://opinio.live/",
+            "description": "Opinio is an ad-free social voting platform from Europe. Share and vote on opinions about anything - from the headlines to everyday life - and see how every country feels, country by country, refreshed every 24 hours. Every opinion is translated automatically, so you read and vote in English, Czech, Spanish, German, French, Italian, or Polish.",
+            "inLanguage": ["en", "cs", "es", "de", "fr", "it", "pl"],
+            "publisher": { "@id": "https://opinio.live/#organization" },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://opinio.live/?country={country}",
+              "query-input": "required name=country"
+            }
+          }
+        ]
       }
     </script>
   </head>

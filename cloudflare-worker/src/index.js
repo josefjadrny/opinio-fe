@@ -951,27 +951,32 @@ async function handleStatic(request, page, path, lang = null) {
   return new Response(html, { status: 200, headers });
 }
 
-// Home page under a language prefix (/<lang>). The bare "/" is served straight
-// from S3 (no worker route), so this only handles the prefixed variant: shell +
-// translated meta scaffolding. Trailing slash on the canonical keeps it byte-
-// identical to the hreflang "/<lang>/" entry.
-async function handleHome(request, lang) {
+// Home page. lang = null → bare English home ("/"): fronted by the worker (not
+// served straight from S3) purely so it can emit the reciprocal hreflang set +
+// alternates that S3 can't inject; title/description stay the shell's English
+// defaults (byte-identical, no copy change). lang set → prefixed home (/<lang>):
+// translated meta scaffolding + og:locale flip. Both are the SPA shell with
+// HEAD-ONLY injection — the visible home UI (including its <h1>) is rendered by
+// the SPA in the active locale, so nothing here is language-specific body text.
+// Trailing slash on the prefixed canonical keeps it byte-identical to the
+// hreflang "/<lang>/" entry.
+async function handleHome(request, lang = null) {
   const shellRes = await fetchShellHtml(request);
   const shellText = await shellRes.text();
   const headers = new Headers();
   headers.set('content-type', 'text/html; charset=utf-8');
   headers.set('cache-control', 'public, max-age=300, s-maxage=300');
-  headers.set('x-opinio-og', 'home-lang');
-  const loc = STATIC_I18N[lang]?.['/'];
+  headers.set('x-opinio-og', lang ? 'home-lang' : 'home');
+  const loc = lang ? STATIC_I18N[lang]?.['/'] : null;
   const html = injectProfileMeta(shellText, {
     title: loc?.title ?? "Opinio - Vote on the world's opinions, country by country",
     description: loc?.description ?? 'An ad-free social voting platform from Europe. Share and vote on opinions about anything - from the headlines to everyday life - and see how every country feels, country by country, refreshed every 24h.',
     image: DEFAULT_OG_IMAGE,
     imageAlt: 'Opinio',
-    url: `${SITE_BASE}/${lang}/`,
+    url: lang ? `${SITE_BASE}/${lang}/` : `${SITE_BASE}/`,
     isAvatar: false,
     alternatesBase: '/',
-    ogLocale: LANG_UI[lang].ogLocale,
+    ogLocale: lang ? LANG_UI[lang].ogLocale : null,
   });
   return new Response(html, { status: 200, headers });
 }
@@ -1072,6 +1077,13 @@ export default {
 
     if (path === '/sitemap.xml') {
       return handleSitemap();
+    }
+
+    // Bare English home — served through the worker (not straight from S3) so it
+    // emits the reciprocal hreflang set. Head-only injection; the SPA still
+    // renders the visible home UI. Query strings (e.g. /?country=US) keep path "/".
+    if (path === '/' || path === '') {
+      return handleHome(request, null);
     }
 
     // /<lang>/p/<id> — server-rendered standalone translated page (checked before
