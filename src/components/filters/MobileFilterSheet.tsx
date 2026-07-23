@@ -4,7 +4,7 @@ import { getCountriesList } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { ALL_ROLES, ROLE_COLORS } from '../../utils/roles';
 import { useFilters } from '../../context/useFilters';
-import { useSearchField } from '../../hooks/useSearchField';
+import { SearchWhisperer } from './SearchWhisperer';
 import { useI18n } from '../../i18n/I18nContext';
 import type { Role } from '../../types/profile';
 
@@ -21,7 +21,6 @@ const FilterIcon = () => (
 export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
   const { t, locale } = useI18n();
   const { country, roles, search, setCountry, toggleRole, clearFilters } = useFilters();
-  const { value: searchValue, setValue: setSearchValue } = useSearchField();
   const [query, setQuery] = useState('');
 
   const countries = getCountriesList(locale);
@@ -108,15 +107,10 @@ export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
           </div>
         </div>
 
-        {/* Search — advanced filter, kept last */}
+        {/* Search — advanced filter with typeahead, kept last */}
         <div>
           <p className="text-xs font-medium text-white/80 mb-2">{t.searchLabel}</p>
-          <input
-            value={searchValue}
-            onChange={e => setSearchValue(e.target.value)}
-            placeholder={t.searchPlaceholder}
-            className="w-full bg-white/5 text-white text-sm rounded-lg px-3 py-2 focus:outline-none placeholder:text-white/30"
-          />
+          <SearchWhisperer variant="mobile" onSelect={onClose} />
         </div>
       </div>
     </ModalShell>

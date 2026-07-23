@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { CountryFilter } from './CountryFilter';
 import { RoleFilter } from './RoleFilter';
-import { SearchFilter } from './SearchFilter';
+import { SearchWhisperer } from './SearchWhisperer';
 import { MobileFilterSheet } from './MobileFilterSheet';
 import { useFilters } from '../../context/useFilters';
 import { ProfileMenu } from './ProfileMenu';
@@ -37,7 +37,7 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
           <div className="hidden md:flex items-center gap-3">
             <CountryFilter />
             <RoleFilter />
-            <SearchFilter />
+            <SearchWhisperer variant="desktop" />
             <button
               onClick={clearFilters}
               disabled={!hasFilters}

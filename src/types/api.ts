@@ -13,6 +13,21 @@ export interface CountryDiscussedResponse {
   profiles: Profile[];
 }
 
+// Search typeahead ("whisperer"). Users + opinios come from the API; country
+// suggestions are matched client-side (translated names + /api/countries totals).
+export interface SuggestUser {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  countryCode: string | null;
+  totalReceived: number;
+}
+
+export interface SearchSuggestResponse {
+  users: SuggestUser[];
+  profiles: Profile[];
+}
+
 export interface VoteAllowance {
   like: {
     remaining: number;

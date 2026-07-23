@@ -42,6 +42,12 @@ export function getProfiles(filters: ProfileFilters, lang?: string): Promise<Pro
   return apiFetch(`/api/profiles?${params}`);
 }
 
+export function getSearchSuggest(q: string, lang?: string): Promise<import('../types/api').SearchSuggestResponse> {
+  const params = new URLSearchParams({ q });
+  if (lang) params.set('lang', lang);
+  return apiFetch(`/api/search/suggest?${params}`);
+}
+
 export function getCountryProfiles(countryCode: string, lang?: string): Promise<CountryProfilesResponse> {
   const qs = lang ? `?lang=${lang}` : '';
   return apiFetch(`/api/profiles/country/${countryCode}${qs}`);

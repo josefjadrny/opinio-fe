@@ -51,6 +51,7 @@ export interface Strings {
   clearSelection: string;
   searchLabel: string;
   searchPlaceholder: string;
+  searchAllOpinios: string;
   nominateTooltip: string;
   profile: string;
   settings: string;
@@ -346,6 +347,7 @@ const en: Strings = {
   clearSelection: 'Clear selection',
   searchLabel: 'Search',
   searchPlaceholder: 'Search opinios…',
+  searchAllOpinios: 'Search all opinios',
   nominateTooltip: 'Sign in to drop an opinio',
   profile: 'Profile',
   settings: 'Settings',
@@ -697,6 +699,7 @@ const cs: Strings = {
   clearSelection: 'Zrušit výběr',
   searchLabel: 'Hledat',
   searchPlaceholder: 'Hledat opinio…',
+  searchAllOpinios: 'Hledat ve všech opinio',
   nominateTooltip: 'Přihlaste se pro přidání opinio',
   profile: 'Profil',
   settings: 'Nastavení',
@@ -1048,6 +1051,7 @@ const es: Strings = {
   clearSelection: 'Borrar selección',
   searchLabel: 'Buscar',
   searchPlaceholder: 'Buscar opinio…',
+  searchAllOpinios: 'Buscar en todos los opinio',
   nominateTooltip: 'Inicia sesión para soltar un opinio',
   profile: 'Perfil',
   settings: 'Ajustes',
@@ -1399,6 +1403,7 @@ const de: Strings = {
   clearSelection: 'Auswahl aufheben',
   searchLabel: 'Suche',
   searchPlaceholder: 'opinio suchen…',
+  searchAllOpinios: 'Alle opinio durchsuchen',
   nominateTooltip: 'Melde dich an, um ein opinio reinzuwerfen',
   profile: 'Profil',
   settings: 'Einstellungen',
@@ -1750,6 +1755,7 @@ const fr: Strings = {
   clearSelection: 'Effacer la sélection',
   searchLabel: 'Rechercher',
   searchPlaceholder: 'Rechercher des opinios…',
+  searchAllOpinios: 'Rechercher dans tous les opinios',
   nominateTooltip: 'Connectez-vous pour balancer un opinio',
   profile: 'Profil',
   settings: 'Paramètres',
@@ -2101,6 +2107,7 @@ const it: Strings = {
   clearSelection: 'Cancella selezione',
   searchLabel: 'Cerca',
   searchPlaceholder: 'Cerca opinios…',
+  searchAllOpinios: 'Cerca in tutti gli opinios',
   nominateTooltip: 'Accedi per lanciare un opinio',
   profile: 'Profilo',
   settings: 'Impostazioni',
@@ -2452,6 +2459,7 @@ const pl: Strings = {
   clearSelection: 'Wyczyść wybór',
   searchLabel: 'Szukaj',
   searchPlaceholder: 'Szukaj opinio…',
+  searchAllOpinios: 'Szukaj we wszystkich opinio',
   nominateTooltip: 'Zaloguj się, aby wrzucić opinio',
   profile: 'Profil',
   settings: 'Ustawienia',

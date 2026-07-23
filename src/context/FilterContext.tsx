@@ -11,6 +11,7 @@ export interface FilterState {
   setRoles: (r: Role[]) => void;
   toggleRole: (r: Role) => void;
   setSearch: (q: string) => void;
+  selectCountry: (c: string) => void;
   clearFilters: () => void;
   setHoveredProfileCountry: (c: string | undefined) => void;
 }
@@ -67,6 +68,19 @@ export function FilterProvider({ children }: { children: ReactNode }) {
     }, { replace: true });
   }, [setSearchParams]);
 
+  // Whisperer country pick: set the country filter AND clear any active ?q= in a
+  // single URL mutation. Doing setCountry + setSearch as two separate
+  // setSearchParams calls would clobber each other — React Router's functional
+  // updater reads the committed params each time, so the second call wins.
+  const selectCountry = useCallback((c: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('country', c);
+      next.delete('q');
+      return next;
+    });
+  }, [setSearchParams]);
+
   const clearFilters = useCallback(() => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
@@ -78,7 +92,7 @@ export function FilterProvider({ children }: { children: ReactNode }) {
   }, [setSearchParams]);
 
   return (
-    <FilterContext.Provider value={{ country, roles, search, hoveredProfileCountry, setCountry, setRoles, toggleRole, setSearch, clearFilters, setHoveredProfileCountry }}>
+    <FilterContext.Provider value={{ country, roles, search, hoveredProfileCountry, setCountry, setRoles, toggleRole, setSearch, selectCountry, clearFilters, setHoveredProfileCountry }}>
       {children}
     </FilterContext.Provider>
   );
