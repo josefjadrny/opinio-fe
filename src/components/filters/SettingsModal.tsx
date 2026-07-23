@@ -109,7 +109,7 @@ function SettingsContent({
   const handleNameBlur = async () => {
     const trimmed = nameValue.trim();
     if (!trimmed || trimmed === displayName) return;
-    if (!/^[a-z0-9_]{3,30}$/.test(trimmed)) {
+    if (!/^[a-z0-9_]{4,30}$/.test(trimmed)) {
       setNameError(t.displayNameFormat);
       return;
     }
