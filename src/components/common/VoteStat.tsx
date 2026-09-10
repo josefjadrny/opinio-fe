@@ -11,8 +11,9 @@ interface VoteStatProps {
   size?: 'sm' | 'md';
 }
 
-// Right-aligned stacked stat used in the user- and country-detail modal headers:
-// ▲ likes  ▼ dislikes over a small uppercase caption.
+// Right-aligned stacked stat used in the user-detail modal header:
+// ▲ likes  ▼ dislikes over a small uppercase caption. The country modal used to
+// carry one too and now shares the opinio modal's VoteHeadline instead.
 export function VoteStat({ likes, dislikes, label, title, size = 'sm' }: VoteStatProps) {
   const md = size === 'md';
   return (

@@ -17,6 +17,7 @@ import { DeleteProfileButton } from './DeleteProfileButton';
 import { VoteHeadline } from './VoteHeadline';
 import { RoleBadge } from '../common/RoleBadge';
 import { IconTip } from '../common/IconTip';
+import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { SourceLink } from './SourceLink';
 import { CountryFlag } from '../common/CountryFlag';
 import { BreakdownRow } from './BreakdownRow';
@@ -173,21 +174,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                 </p>
               </div>
               <div className="flex items-center gap-1 shrink-0">
-                <IconTip label={detailsCollapsed ? t.showDetails : t.hideDetails}>
-                  <button
-                    onClick={toggleDetails}
-                    aria-label={detailsCollapsed ? t.showDetails : t.hideDetails}
-                    aria-expanded={!detailsCollapsed}
-                    className="text-white/40 hover:text-white/80 transition-colors p-1"
-                  >
-                    <svg
-                      className={`w-5 h-5 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${detailsCollapsed ? '' : 'rotate-180'}`}
-                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-                    </svg>
-                  </button>
-                </IconTip>
+                <CollapseDetailsButton collapsed={detailsCollapsed} onToggle={toggleDetails} />
                 <ShareButton profileId={profile.id} profileName={profile.name} />
                 <ReportProfileButton profileId={profile.id} />
                 {me?.user.id && profile.addedById === me.user.id && (

@@ -9,6 +9,14 @@ interface VoteHeadlineProps {
   dislikes: number;
   totalLikes: number;
   totalDislikes: number;
+  /**
+   * What the numbers are about - the only thing that differs between the two
+   * modals sharing this block. It picks which pair of explainer sentences the
+   * panels carry: 'country' names the country as the thing being liked, and
+   * leaves off "Opinios are sorted by this", which is true of an opinio's net
+   * score and of nothing on the country modal.
+   */
+  subject?: 'opinio' | 'country';
 }
 
 const PANEL_W = 236;
@@ -23,8 +31,10 @@ const PANEL_W = 236;
 //
 // Shared by the desktop modal and the mobile sheet, which rendered the same
 // block twice.
-export function VoteHeadline({ likes, dislikes, totalLikes, totalDislikes }: VoteHeadlineProps) {
+export function VoteHeadline({ likes, dislikes, totalLikes, totalDislikes, subject = 'opinio' }: VoteHeadlineProps) {
   const { t } = useI18n();
+  const agreeHelp = subject === 'country' ? t.voteTipAgreeHelpCountry : t.voteTipAgreeHelp;
+  const netHelp = subject === 'country' ? t.voteTipNetHelpCountry : t.voteTipNetHelp;
   const total = likes + dislikes;
   const agreePct = total > 0 ? Math.round((likes / total) * 100) : 0;
   const net = likes - dislikes;
@@ -63,8 +73,8 @@ export function VoteHeadline({ likes, dislikes, totalLikes, totalDislikes }: Vot
     <div className="space-y-2.5" style={{ animation: 'stat-in 0.35s ease-out' }}>
       <div className="flex items-end justify-between">
         <StatTip
-          label={plain(t.voteTipAgreeHelp)}
-          panel={sentence(t.voteTipAgreeHelp)}
+          label={plain(agreeHelp)}
+          panel={sentence(agreeHelp)}
           width={PANEL_W}
           className="flex items-baseline gap-1 px-1 -mx-1 hover:bg-positive/10"
         >
@@ -72,8 +82,8 @@ export function VoteHeadline({ likes, dislikes, totalLikes, totalDislikes }: Vot
           <span className="text-sm text-text-secondary">{t.liked}</span>
         </StatTip>
         <StatTip
-          label={`${t.voteTipNet} ${net > 0 ? '+' : ''}${net}. ${plain(t.voteTipNetHelp)}`}
-          panel={sentence(t.voteTipNetHelp)}
+          label={`${t.voteTipNet} ${net > 0 ? '+' : ''}${net}. ${plain(netHelp)}`}
+          panel={sentence(netHelp)}
           width={PANEL_W}
           className={`text-lg font-bold tabular-nums px-2 py-0.5 !rounded-full ${netTone}`}
         >

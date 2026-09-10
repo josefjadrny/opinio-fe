@@ -167,6 +167,11 @@ export interface CountryCounts {
   code: string;
   likes: number;
   dislikes: number;
+  // Lifetime totals - only getCountries carries them. The two voter-side
+  // tallies below count live vote rows, which are all that survive expiry, so
+  // they have no lifetime figure to report.
+  totalLikes?: number;
+  totalDislikes?: number;
 }
 
 export function getCountries(): Promise<{ countries: CountryCounts[] }> {

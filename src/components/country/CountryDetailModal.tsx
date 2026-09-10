@@ -8,10 +8,10 @@ import { useCountryDiscussed } from '../../hooks/useCountryDiscussed';
 import { useMapPanel } from '../../context/useMapPanel';
 import { useCountryDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { getCountryName, isKnownCountry } from '../../utils/countries';
-import { formatNumber } from '../../utils/formatNumber';
 import { FlagImg } from '../common/CountryFlag';
+import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { IconTip } from '../common/IconTip';
-import { VoteStat } from '../common/VoteStat';
+import { VoteHeadline } from '../profile/VoteHeadline';
 import { ProfileList } from '../profile/ProfileList';
 
 interface CountryDetailModalProps {
@@ -66,7 +66,11 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const notFound = !isKnownCountry(code);
   const name = getCountryName(code, locale);
   const { data } = useCountries();
-  const counts = data?.countries.find((c) => c.code === code) ?? { likes: 0, dislikes: 0 };
+  // Zeros while the shared countries query is still in flight, and for a country
+  // no opinio is about yet - the vote strip renders an empty bar rather than
+  // holding the card back on a fetch the header never needed.
+  const counts = data?.countries.find((c) => c.code === code)
+    ?? { likes: 0, dislikes: 0, totalLikes: 0, totalDislikes: 0 };
   // Skip the discussed fetch for an unknown code - there's nothing to load and
   // the API would just 404.
   const { data: countryData, isLoading: profilesLoading } = useCountryDiscussed(notFound ? '' : code);
@@ -107,9 +111,17 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   // Visible h1 - reuse the localized country title (drop the " - Opinio" brand
   // suffix). A real, catchy, keyword-front-loaded heading in place of the bare
   // country name (which "said nothing"). Wraps rather than truncates.
+  //
+  // The clause after the colon is capitalised HERE and not in the string,
+  // because the same template is the <title>/OG text, where the lowercase form
+  // is the one that reads right; a heading on screen wants the sentence case.
+  // One regex covers all 7 locales - every template is "{country}<colon> lower
+  // case clause", including French, whose typography puts a space before the
+  // colon (the \s* is what absorbs it).
   const countryH1 = t.seo.country.title
     .replace(/\{country\}/g, name)
-    .replace(/\s*-\s*Opinio\s*$/, '');
+    .replace(/\s*-\s*Opinio\s*$/, '')
+    .replace(/:(\s*)(\p{Ll})/u, (_m, gap: string, first: string) => `:${gap}${first.toUpperCase()}`);
 
   const Header = (
     <>
@@ -125,44 +137,57 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
         <FlagImg code={code} size={isMobile ? 26 : 36} />
       </span>
       <div className="flex-1 min-w-0">
-        <h1 className="font-semibold text-white leading-tight">{countryH1}</h1>
+        {/* The opinio modal's title type, per layout: its desktop card sets
+            text-[15px] lg:text-lg and its mobile sheet takes the inherited
+            body size, so the two details read as one heading at every width.
+            This was the only heading in either modal with no size of its own,
+            which left it a step under the opinio's on a wide screen.
+            It still wraps where that one truncates - a country title is a
+            whole sentence ("United States: what the world thinks"), so cutting
+            it loses the half that says anything. */}
+        <h1 className={`font-semibold text-white leading-tight ${isMobile ? '' : 'text-[15px] lg:text-lg'}`}>
+          {countryH1}
+        </h1>
       </div>
-      <VoteStat
-        likes={counts.likes}
-        dislikes={counts.dislikes}
-        label={t.statsVotes}
-        title={`${formatNumber(counts.likes)} likes · ${formatNumber(counts.dislikes)} dislikes`}
-      />
     </>
   );
 
-  // Folds the opinio list away, leaving the header over an unobstructed map -
-  // the profile modal's header chevron, for the same reason and with the same
-  // control. A country with 15 opinios makes a card tall enough to cover most of
-  // the map, and the map is now tinted to THIS country, so the thing being
-  // covered is the answer to the question the page asks. Same icon, same
-  // rotation, same title strings, same fold animation; only the storage key
-  // differs (see useCountryDetailsCollapsed).
+  // The opinio modal's vote strip, on the country's own totals: agree-%, net
+  // badge and the live-vs-lifetime sentiment bar, one component so the two
+  // details cannot drift. The counts mean what /api/countries means - every
+  // opinio ABOUT this country, summed - and the bar's brackets are the lifetime
+  // figure the same endpoint now returns.
+  //
+  // Outside the fold, exactly as in the opinio modal: the chevron hides the
+  // list so the map can be read, and the numbers are the one thing that must
+  // survive that. It replaces the stacked ▲/▼ stat that used to sit in the
+  // header, which gave the live counts and nothing else.
+  //
+  // subject="country" keeps both explainer panels and re-words them: the agree
+  // line names the country rather than an opinio, and the net line drops
+  // "Opinios are sorted by this" - net ranks opinios, and nothing here is
+  // ordered by it. The bar's own live-vs-lifetime panels never name a subject,
+  // so they carry over untouched.
+  const VoteBlock = (
+    <VoteHeadline
+      likes={counts.likes}
+      dislikes={counts.dislikes}
+      totalLikes={counts.totalLikes ?? 0}
+      totalDislikes={counts.totalDislikes ?? 0}
+      subject="country"
+    />
+  );
+
+  // Folds the opinio list away, leaving the header and the vote strip over an
+  // unobstructed map. A country with 15 opinios makes a card tall enough to
+  // cover most of the map, and the map is now tinted to THIS country, so the
+  // thing being covered is the answer to the question the page asks. Literally
+  // the opinio modal's control now (CollapseDetailsButton); only the storage
+  // key differs (see useCountryDetailsCollapsed).
   //
   // Hidden when the code is unknown: the not-found card has nothing worth
   // folding, and the map behind it is untinted anyway.
-  const CollapseButton = (
-    <IconTip label={detailsCollapsed ? t.showDetails : t.hideDetails}>
-      <button
-        onClick={toggleDetails}
-        aria-label={detailsCollapsed ? t.showDetails : t.hideDetails}
-        aria-expanded={!detailsCollapsed}
-        className="text-white/40 hover:text-white/80 transition-colors p-1"
-      >
-        <svg
-          className={`w-5 h-5 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${detailsCollapsed ? '' : 'rotate-180'}`}
-          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-        </svg>
-      </button>
-    </IconTip>
-  );
+  const CollapseButton = <CollapseDetailsButton collapsed={detailsCollapsed} onToggle={toggleDetails} />;
 
   // Same button in the sheet's header and the desktop card's - one definition so
   // the two cannot drift apart.
@@ -245,6 +270,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
               {CloseButton}
             </div>
           </div>
+          {!notFound && <div className="px-4 pt-3 pb-1 shrink-0">{VoteBlock}</div>}
           {/* Collapsing to 0fr animates the SHEET's height, which a max-height
               cannot do without a magic number that is wrong for every other
               country. .details-fold (index.css) owns that, plus the min-h-0 +
@@ -304,23 +330,27 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
             {CloseButton}
           </div>
         </div>
+        {!notFound && <div className="px-6 pt-4 pb-3 border-b border-border shrink-0">{VoteBlock}</div>}
         {/* Same fold as the mobile sheet and as both profile modals. The card is
             anchored to the bottom of the screen (justify-end + mb-16), so folding
             pulls it DOWN and uncovers the map from the top - which is where the
             countries doing the voting are. */}
         <div className="details-fold min-h-0" data-collapsed={detailsCollapsed}>
           <div>
-            {/* Five rows, then scroll - the card must not grow to list all 15,
+            {/* Four rows, then scroll - the card must not grow to list all 15,
                 because what it grows over is the map, and on this route the map
-                is the answer to the question the page asks.
-                420px is that arithmetic: 16px top padding + a 25px list label +
-                five 66px rows on a 4px rhythm (346px) comes to 387, and the
-                remainder leaves a sliver of the sixth row showing, which is what
+                is the answer to the question the page asks. It was five before
+                the vote strip above took its own band off the card's height.
+                350px is that arithmetic: 16px top padding + a 25px list label +
+                four 66px rows on a 4px rhythm (276px) comes to 317, and the
+                remainder leaves a sliver of the fifth row showing, which is what
                 says "this scrolls" without a scrollbar having to.
-                The dvh term keeps it honest on a short window, where five rows
+                The dvh term keeps it honest on a short window, where four rows
                 would be taller than the room the card has: whichever is smaller
-                wins. subtle-scrollbar matches the opinio modal's lists. */}
-            <div className="details-fold-inner overflow-y-auto subtle-scrollbar max-h-[min(420px,calc(100dvh-16rem))] px-6 py-4">
+                wins. Its 21rem is the header, the vote strip and the card's own
+                bottom margin - the reservation grew with the strip.
+                subtle-scrollbar matches the opinio modal's lists. */}
+            <div className="details-fold-inner overflow-y-auto subtle-scrollbar max-h-[min(350px,calc(100dvh-21rem))] px-6 py-4">
               {notFound ? NotFoundView : (
                 <ProfileList
                   profiles={profiles}
