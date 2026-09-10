@@ -113,10 +113,19 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
 
   const Header = (
     <>
-      <FlagImg code={code} className="shrink-0" />
+      {/* The flag sits in a round tile the size of the profile modal's avatar
+          (40 mobile / 56 desktop) rather than at its inline glyph size, so the
+          two detail headers share one silhouette - same slot, same row height.
+          This is MapProfileTitle's country state, at the modal's avatar size:
+          the tile is also what gives the emoji branch a consistent box, since
+          flag emoji are wider than they are tall and vary by platform. */}
+      <span
+        className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} shrink-0 rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center overflow-hidden`}
+      >
+        <FlagImg code={code} size={isMobile ? 26 : 36} />
+      </span>
       <div className="flex-1 min-w-0">
         <h1 className="font-semibold text-white leading-tight">{countryH1}</h1>
-        <p className="text-[11px] text-white/50 uppercase tracking-wider">{code}</p>
       </div>
       <VoteStat
         likes={counts.likes}
