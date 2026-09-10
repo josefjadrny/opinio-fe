@@ -5,6 +5,13 @@
   --color-positive-light: #dcfce7;
   --color-negative: #ef4444;
   --color-negative-light: #fee2e2;
+  /* The brand red lifted 15% toward white, for red text small enough to need
+     the contrast: --color-negative measures 4.22:1 on --color-surface-light,
+     under the 4.5:1 minimum for body text, and it is already at full opacity
+     so there is no alpha left to spend. This reads as the same red and
+     measures 5.32:1 (5.71 on --color-surface). The green needs no twin -
+     --color-positive is 6.98:1 as it is. */
+  --color-negative-soft: #f66761;
   --color-surface: #1a1a2e;
   --color-surface-light: #16213e;
   --color-surface-card: #0f3460;

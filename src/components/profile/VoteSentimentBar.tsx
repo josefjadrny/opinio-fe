@@ -6,12 +6,35 @@ import { AnchoredTip, TIP_TEXT_CLASS } from '../common/AnchoredTip';
 interface VoteSentimentBarProps {
   likes: number;
   dislikes: number;
-  /** All-time totals — shown in muted brackets next to the live counts. */
+  /** All-time totals — shown in brackets next to the live counts. */
   totalLikes?: number;
   totalDislikes?: number;
 }
 
 const PANEL_W = 216;
+
+// The lifetime figure in brackets. It keeps its side's colour and it has to be
+// readable, which rules out fading the brand hue: these were `/40` tints, and a
+// faded brand colour is not a quieter version of the text, it is unreadable
+// text - on surface-light `text-positive/40` measures 2.19:1 and
+// `text-negative/40` 1.60:1 against a 4.5:1 minimum.
+//
+// So the colour stays at full strength and the hierarchy is carried by size and
+// weight instead - 14px normal against the live count's 16px semibold. Green
+// can do that as the brand token (6.98:1); red cannot, because
+// --color-negative is 4.22:1 even at full opacity with no alpha left to spend,
+// which is what --color-negative-soft exists for (5.32:1, same red).
+const TOTAL_BASE = 'text-sm font-normal';
+const TOTAL_LIKE = `${TOTAL_BASE} text-positive`;
+const TOTAL_DISLIKE = `${TOTAL_BASE} text-negative-soft`;
+
+// The side markers run a step above the count they sit against (18px to its
+// 16px), not level with it. They are the one part of the row that is read as a
+// shape rather than a number, and a triangle at the same font-size as a digit
+// draws smaller than one - the glyph carries much less ink than a numeral in
+// the same em box. Baseline alignment does the rest, so the taller glyph does
+// not shift the row.
+const ARROW_CLASS = 'text-lg leading-none';
 
 // Explains one side's numbers: the live (24h) count that actually drives the
 // ranking, and the lifetime total. The panel's chrome, placement and arrow are
@@ -63,9 +86,9 @@ function VoteStatTooltip({
 // Horizontal likes-vs-dislikes proportion bar. The green segment's width is
 // likes' share of the total; red fills the remainder, so the split point reads
 // as the sentiment at a glance. Live counts sit at each end, with the all-time
-// totals (when given) alongside in muted brackets. With no votes the track is a
-// neutral grey with no fill. Each side's counts are a hover/tap target that
-// opens a panel spelling out live-vs-lifetime.
+// totals (when given) alongside in brackets, a size down in the same colour.
+// With no votes the track is a neutral grey with no fill. Each side's counts
+// are a hover/tap target that opens a panel spelling out live-vs-lifetime.
 export function VoteSentimentBar({ likes, dislikes, totalLikes, totalDislikes }: VoteSentimentBarProps) {
   const { t } = useI18n();
   const total = likes + dislikes;
@@ -107,8 +130,8 @@ export function VoteSentimentBar({ likes, dislikes, totalLikes, totalDislikes }:
         onClick={(e) => { e.stopPropagation(); setOpenSide('like'); }}
         className={`${triggerBase} text-positive hover:bg-positive/10`}
       >
-        <span className="text-base">▲</span>{formatNumber(likes)}
-        {totalLikes != null && totalLikes > likes && <span className="text-xs font-normal text-positive/40">({formatNumber(totalLikes)})</span>}
+        <span className={ARROW_CLASS}>▲</span>{formatNumber(likes)}
+        {totalLikes != null && totalLikes > likes && <span className={TOTAL_LIKE}>({formatNumber(totalLikes)})</span>}
       </button>
       <div className={`flex-1 h-2.5 rounded-full overflow-hidden flex ${hasVotes ? 'bg-negative/45' : 'bg-white/10'}`}>
         {hasVotes && likePct > 0 && <div className="h-full bg-positive" style={{ width: `${likePct}%`, animation: 'bar-fill 0.6s ease-out both', transformOrigin: 'left' }} />}
@@ -124,8 +147,8 @@ export function VoteSentimentBar({ likes, dislikes, totalLikes, totalDislikes }:
         onClick={(e) => { e.stopPropagation(); setOpenSide('dislike'); }}
         className={`${triggerBase} text-negative hover:bg-negative/10`}
       >
-        {totalDislikes != null && totalDislikes > dislikes && <span className="text-xs font-normal text-negative/40">({formatNumber(totalDislikes)})</span>}
-        {formatNumber(dislikes)}<span className="text-base">▼</span>
+        {totalDislikes != null && totalDislikes > dislikes && <span className={TOTAL_DISLIKE}>({formatNumber(totalDislikes)})</span>}
+        {formatNumber(dislikes)}<span className={ARROW_CLASS}>▼</span>
       </button>
 
       {openSide === 'like' && (
