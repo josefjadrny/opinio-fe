@@ -160,6 +160,10 @@ export interface UserDetailResponse {
   countryCode: string | null;
   bio: string | null;
   createdAt: string;
+  /** Live 24h votes on every opinio this user reported (trigger-kept counts). */
+  likesReceived: number;
+  dislikesReceived: number;
+  /** Lifetime - never decremented as votes expire. */
   totalLikesReceived: number;
   totalDislikesReceived: number;
   profiles: UserProfileSummary[];

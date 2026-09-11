@@ -337,20 +337,27 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
             countries doing the voting are. */}
         <div className="details-fold min-h-0" data-collapsed={detailsCollapsed}>
           <div>
-            {/* Four rows, then scroll - the card must not grow to list all 15,
-                because what it grows over is the map, and on this route the map
-                is the answer to the question the page asks. It was five before
-                the vote strip above took its own band off the card's height.
+            {/* Four rows at Full HD, then scroll - the card must not grow to
+                list all 15, because what it grows over is the map, and on this
+                route the map is the answer to the question the page asks.
                 350px is that arithmetic: 16px top padding + a 25px list label +
                 four 66px rows on a 4px rhythm (276px) comes to 317, and the
                 remainder leaves a sliver of the fifth row showing, which is what
                 says "this scrolls" without a scrollbar having to.
+                Above 1080px tall the list takes HALF the extra height, not all
+                of it (50dvh-190px is 350 at exactly 1080, and the max() keeps
+                350 the floor below that): a 1440p screen gets ~7 rows, and the
+                602px cap is eight rows plus the sliver, so a 4K screen still
+                folds rather than becoming a wall of 15. The map behind is
+                proportionally larger on those screens, which is why the list
+                may take some of it.
                 The dvh term keeps it honest on a short window, where four rows
                 would be taller than the room the card has: whichever is smaller
                 wins. Its 21rem is the header, the vote strip and the card's own
                 bottom margin - the reservation grew with the strip.
+                Same class in UserDetailModal - keep the two in step.
                 subtle-scrollbar matches the opinio modal's lists. */}
-            <div className="details-fold-inner overflow-y-auto subtle-scrollbar max-h-[min(350px,calc(100dvh-21rem))] px-6 py-4">
+            <div className="details-fold-inner overflow-y-auto subtle-scrollbar max-h-[min(max(350px,calc(50dvh-190px)),calc(100dvh-21rem),602px)] px-6 py-4">
               {notFound ? NotFoundView : (
                 <ProfileList
                   profiles={profiles}

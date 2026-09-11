@@ -267,6 +267,7 @@ export interface Strings {
   // instead of an opinio, and the net line drops "Opinios are sorted by this" -
   // net ranks opinios, and nothing on the country modal is ordered by it.
   voteTipAgreeHelpCountry: string;
+  voteTipAgreeHelpUser: string;
   voteTipNetHelpCountry: string;
   popularIn: string;
   dislikedIn: string;
@@ -281,9 +282,6 @@ export interface Strings {
   sourceLink: string;
   seeTranslation: string;
   userJoined: string;
-  userLikesReceived: string;
-  userDislikesReceived: string;
-  userVotesReceived: string;
   userReportedProfiles: string;
   userNoProfiles: string;
   userNotFoundLabel: string;
@@ -614,6 +612,7 @@ const en: Strings = {
   voteTipNet: 'Net score',
   voteTipNetHelp: '{likes} minus {dislikes} in the {window}. Opinios are sorted by this.',
   voteTipAgreeHelpCountry: '{percent}% of voters in the {window} like this country.',
+  voteTipAgreeHelpUser: '{percent}% of voters in the {window} like this user\'s opinios.',
   voteTipNetHelpCountry: '{likes} minus {dislikes} in the {window}.',
   popularIn: 'Popular in',
   dislikedIn: 'Disliked in',
@@ -628,9 +627,6 @@ const en: Strings = {
   sourceLink: 'Source',
   seeTranslation: 'See translation',
   userJoined: 'Joined {date}',
-  userLikesReceived: 'likes received',
-  userDislikesReceived: 'dislikes received',
-  userVotesReceived: 'Votes received',
   userReportedProfiles: 'Recent opinios',
   userNoProfiles: 'No active opinios',
   userNotFoundLabel: 'Not found',
@@ -997,6 +993,7 @@ const cs: Strings = {
   voteTipNet: 'Čisté skóre',
   voteTipNetHelp: '{likes} minus {dislikes} za {window}. Opinio se řadí podle toho.',
   voteTipAgreeHelpCountry: 'Tato země se líbí {percent} % hlasujících za {window}.',
+  voteTipAgreeHelpUser: 'Opinio tohoto uživatele se líbí {percent} % hlasujících za {window}.',
   voteTipNetHelpCountry: '{likes} minus {dislikes} za {window}.',
   popularIn: 'Populární v',
   dislikedIn: 'Nepopulární v',
@@ -1011,9 +1008,6 @@ const cs: Strings = {
   sourceLink: 'Zdroj',
   seeTranslation: 'Zobrazit překlad',
   userJoined: 'Účet od {date}',
-  userLikesReceived: 'získaných lajků',
-  userDislikesReceived: 'získaných dislajků',
-  userVotesReceived: 'Získané hlasy',
   userReportedProfiles: 'Nedávná opinio',
   userNoProfiles: 'Žádná aktivní opinio',
   userNotFoundLabel: 'Nenalezeno',
@@ -1380,6 +1374,7 @@ const es: Strings = {
   voteTipNet: 'Puntuación neta',
   voteTipNetHelp: '{likes} menos {dislikes} en las {window}. Las opinio se ordenan por esto.',
   voteTipAgreeHelpCountry: 'Al {percent} % de los votantes de las {window} les gusta este país.',
+  voteTipAgreeHelpUser: 'Al {percent} % de los votantes de las {window} les gustan los opinio de este usuario.',
   voteTipNetHelpCountry: '{likes} menos {dislikes} en las {window}.',
   popularIn: 'Popular en',
   dislikedIn: 'Impopular en',
@@ -1394,9 +1389,6 @@ const es: Strings = {
   sourceLink: 'Fuente',
   seeTranslation: 'Ver traducción',
   userJoined: 'Se unió el {date}',
-  userLikesReceived: 'votos positivos recibidos',
-  userDislikesReceived: 'votos negativos recibidos',
-  userVotesReceived: 'Votos recibidos',
   userReportedProfiles: 'Opinio recientes',
   userNoProfiles: 'Sin opinio activos',
   userNotFoundLabel: 'No encontrado',
@@ -1763,6 +1755,7 @@ const de: Strings = {
   voteTipNet: 'Nettowertung',
   voteTipNetHelp: '{likes} minus {dislikes} der {window}. Opinio werden danach sortiert.',
   voteTipAgreeHelpCountry: '{percent} % der Abstimmenden der {window} gefällt dieses Land.',
+  voteTipAgreeHelpUser: '{percent} % der Abstimmenden der {window} gefallen die opinio dieses Nutzers.',
   voteTipNetHelpCountry: '{likes} minus {dislikes} der {window}.',
   popularIn: 'Beliebt in',
   dislikedIn: 'Unbeliebt in',
@@ -1777,9 +1770,6 @@ const de: Strings = {
   sourceLink: 'Quelle',
   seeTranslation: 'Übersetzung anzeigen',
   userJoined: 'Dabei seit {date}',
-  userLikesReceived: 'erhaltene Likes',
-  userDislikesReceived: 'erhaltene Dislikes',
-  userVotesReceived: 'Erhaltene Stimmen',
   userReportedProfiles: 'Aktuelle opinio',
   userNoProfiles: 'Keine aktiven opinio',
   userNotFoundLabel: 'Nicht gefunden',
@@ -2146,6 +2136,7 @@ const fr: Strings = {
   voteTipNet: 'Score net',
   voteTipNetHelp: '{likes} moins {dislikes} des {window}. Les opinios sont triés selon ce nombre.',
   voteTipAgreeHelpCountry: '{percent} % des votants des {window} aiment ce pays.',
+  voteTipAgreeHelpUser: '{percent} % des votants des {window} aiment les opinios de cet utilisateur.',
   voteTipNetHelpCountry: '{likes} moins {dislikes} des {window}.',
   popularIn: 'Populaire en',
   dislikedIn: 'Impopulaire en',
@@ -2160,9 +2151,6 @@ const fr: Strings = {
   sourceLink: 'Source',
   seeTranslation: 'Voir la traduction',
   userJoined: 'Inscrit le {date}',
-  userLikesReceived: "j'aime reçus",
-  userDislikesReceived: "je n'aime pas reçus",
-  userVotesReceived: 'Votes reçus',
   userReportedProfiles: 'Opinios récents',
   userNoProfiles: 'Aucun opinio actif',
   userNotFoundLabel: 'Introuvable',
@@ -2529,6 +2517,7 @@ const it: Strings = {
   voteTipNet: 'Punteggio netto',
   voteTipNetHelp: '{likes} meno {dislikes} delle {window}. Gli opinios sono ordinati per questo.',
   voteTipAgreeHelpCountry: 'Al {percent} % dei votanti delle {window} piace questo Paese.',
+  voteTipAgreeHelpUser: 'Al {percent} % dei votanti delle {window} piacciono gli opinios di questo utente.',
   voteTipNetHelpCountry: '{likes} meno {dislikes} delle {window}.',
   popularIn: 'Popolare in',
   dislikedIn: 'Impopolare in',
@@ -2543,9 +2532,6 @@ const it: Strings = {
   sourceLink: 'Fonte',
   seeTranslation: 'Vedi traduzione',
   userJoined: 'Iscritto il {date}',
-  userLikesReceived: 'mi piace ricevuti',
-  userDislikesReceived: 'non mi piace ricevuti',
-  userVotesReceived: 'Voti ricevuti',
   userReportedProfiles: 'Opinios recenti',
   userNoProfiles: 'Nessun opinio attivo',
   userNotFoundLabel: 'Non trovato',
@@ -2912,6 +2898,7 @@ const pl: Strings = {
   voteTipNet: 'Wynik netto',
   voteTipNetHelp: '{likes} minus {dislikes} z {window}. Opinio są sortowane według tego.',
   voteTipAgreeHelpCountry: 'Ten kraj podoba się {percent} % głosujących z {window}.',
+  voteTipAgreeHelpUser: 'Opinio tego użytkownika podobają się {percent} % głosujących z {window}.',
   voteTipNetHelpCountry: '{likes} minus {dislikes} z {window}.',
   popularIn: 'Popularne w',
   dislikedIn: 'Niepopularne w',
@@ -2926,9 +2913,6 @@ const pl: Strings = {
   sourceLink: 'Źródło',
   seeTranslation: 'Pokaż tłumaczenie',
   userJoined: 'Dołączył {date}',
-  userLikesReceived: 'otrzymanych polubień',
-  userDislikesReceived: 'otrzymanych niechęci',
-  userVotesReceived: 'Otrzymane głosy',
   userReportedProfiles: 'Ostatnie opinio',
   userNoProfiles: 'Brak aktywnych opinio',
   userNotFoundLabel: 'Nie znaleziono',

@@ -13,6 +13,13 @@ const DETAILS_COLLAPSED_KEY = 'opinio_profile_details_collapsed_v1';
 // fold every opinio you open afterwards.
 const COUNTRY_COLLAPSED_KEY = 'opinio_country_details_collapsed_v1';
 
+// The user modal folds the same way as the country one - a list of opinios,
+// not a description - and for the same reason gets its own key rather than
+// borrowing the country's: they are opened from different places for different
+// questions, and folding "what did the world say about Germany" is not a
+// decision about "what did @josef post".
+const USER_COLLAPSED_KEY = 'opinio_user_details_collapsed_v1';
+
 // Whether the modal's body is folded away, leaving just its header. Persisted,
 // so the choice survives moving between subjects and visits; default is
 // expanded. The key is what scopes it - see above.
@@ -34,4 +41,10 @@ export function useDetailsCollapsed(storageKey: string = DETAILS_COLLAPSED_KEY):
 // vote totals) over an unobstructed map.
 export function useCountryDetailsCollapsed(): [boolean, () => void] {
   return useDetailsCollapsed(COUNTRY_COLLAPSED_KEY);
+}
+
+// The user modal's fold: its list of reported opinios, leaving the header
+// (avatar, handle, bio, vote totals).
+export function useUserDetailsCollapsed(): [boolean, () => void] {
+  return useDetailsCollapsed(USER_COLLAPSED_KEY);
 }

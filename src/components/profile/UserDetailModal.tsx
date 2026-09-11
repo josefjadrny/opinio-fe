@@ -4,11 +4,13 @@ import { useUser } from '../../hooks/useUser';
 import { useMe } from '../../hooks/useMe';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSheetDrag } from '../../hooks/useSheetDrag';
+import { useUserDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from './Avatar';
 import { CountryFlag } from '../common/CountryFlag';
+import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { ProfileList } from './ProfileList';
-import { VoteStat } from '../common/VoteStat';
+import { VoteHeadline } from './VoteHeadline';
 import { IconTip } from '../common/IconTip';
 
 interface UserDetailModalProps {
@@ -74,6 +76,9 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   const isMe = !!me?.user && me.user.id === userId && me.user.tier !== 'anonymous';
 
   const close = () => navigate('/' + location.search);
+  // Shared between the mobile sheet and the desktop card - same choice, one
+  // key - exactly as the opinio and country modals' chevrons are.
+  const [detailsCollapsed, toggleDetails] = useUserDetailsCollapsed();
   const { sheetRef, dragHandlers } = useSheetDrag(close);
   const openProfile = (profileId: string) => navigate('/p/' + profileId + location.search, {
     state: { fromUserId: userId, fromUserName: user?.displayName ?? null },
@@ -118,18 +123,34 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
     </IconTip>
   ) : null;
 
-  const StatsBlock = user && (
-    <VoteStat
-      likes={user.totalLikesReceived}
-      dislikes={user.totalDislikesReceived}
-      label={t.userVotesReceived}
-      title={`${t.userLikesReceived} · ${t.userDislikesReceived}`}
-      size="md"
+  // The opinio modal's vote strip, on the user's own numbers: agree-%, net
+  // badge and the live-vs-lifetime sentiment bar, one component so the three
+  // details cannot drift. The live counts are every opinio this user reported,
+  // summed (the API does the SUM, not the 15 rows below), and the brackets are
+  // the lifetime total_*_received the page always had - which used to be the
+  // ONLY figure here, shown as a stacked ▲/▼ stat beside the bio. That stat
+  // gave a lifetime number where the other two modals give a live one, so the
+  // same user read differently depending on which card you opened.
+  //
+  // subject="user" re-words the agree panel to name the user's opinios; the
+  // net panel is the country's (no "sorted by this" - nothing here is ranked).
+  const VoteBlock = user && (
+    <VoteHeadline
+      likes={user.likesReceived}
+      dislikes={user.dislikesReceived}
+      totalLikes={user.totalLikesReceived}
+      totalDislikes={user.totalDislikesReceived}
+      subject="user"
     />
   );
 
+  // Folds the opinio list away, leaving the header and the vote strip - the
+  // same chevron the opinio and country modals fold with, on its own key.
+  const CollapseButton = <CollapseDetailsButton collapsed={detailsCollapsed} onToggle={toggleDetails} />;
+
   const Actions = (
     <div className="flex items-center gap-1 shrink-0">
+      {user && CollapseButton}
       {SettingsButton}
       {user && <ShareUserButton userId={user.id} displayName={user.displayName} />}
       <IconTip label={t.close}>
@@ -148,7 +169,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   // blends identically over the sheet and the desktop modal, which sit on
   // different surfaces. The inner sits 1px lower to hide the panel's top
   // border where the tail meets it.
-  const tailLeft = isMobile ? 15 : 21; // avatar centre minus half the tail
+  const tailLeft = isMobile ? 13 : 21; // avatar centre minus half the tail
   const Bio = user?.bio ? (
     <div className="relative rounded-xl border border-border bg-white/[0.04] px-3.5 py-2.5">
       <span
@@ -166,9 +187,11 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   ) : null;
 
   // Profile card, same shape at both sizes: identity + actions on the first
-  // line, bio and the vote stat sharing the second. Only the avatar changes
-  // size. The stat sits directly under the action icons, and the bio starts at
-  // the card's left edge rather than indenting under the handle.
+  // line, the bio on the second, starting at the card's left edge rather than
+  // indenting under the handle. The vote numbers are no longer up here - they
+  // are the strip below the header, where the other two modals keep theirs.
+  // The avatar is the opinio and country modals' size (40 mobile / 56 desktop)
+  // so the three headers share one silhouette.
   const Header = user && (
     <div className={`flex flex-col min-w-0 ${isMobile ? 'gap-2' : 'gap-2.5'}`}>
       <div className="flex items-start gap-3 min-w-0">
@@ -176,7 +199,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
         <Avatar
           name={user.displayName}
           imageUrl={user.avatarUrl}
-          className={`${isMobile ? 'w-11 h-11' : 'w-14 h-14'} shrink-0`}
+          className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} shrink-0`}
           isAnonymous={!hasAvatar}
         />
         <div className="flex-1 min-w-0">
@@ -192,10 +215,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
         {Actions}
       </div>
 
-      <div className="flex items-start justify-between gap-4 min-w-0">
-        <div className="flex-1 min-w-0">{Bio}</div>
-        {StatsBlock}
-      </div>
+      {Bio}
     </div>
   );
 
@@ -203,7 +223,6 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
     <ProfileList
       profiles={user.profiles}
       label={t.userReportedProfiles}
-      count={user.profiles.length}
       emptyText={t.userNoProfiles}
       onOpen={openProfile}
     />
@@ -236,7 +255,11 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
         onClick={(e) => { if (e.target === e.currentTarget) close(); }}
       >
         <div className="absolute inset-0 bg-black/60" onClick={close} />
-        <div ref={sheetRef} className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col">
+        {/* pb-11 reserves the votes bar's strip on the SHEET, not on the folded
+            body, exactly as the country sheet does: the bar sits above every
+            sheet (z-90) and the reservation has to survive the fold, or
+            collapsing leaves the header itself underneath it. */}
+        <div ref={sheetRef} className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col pb-11">
           <div className="flex justify-center pt-3 pb-1 shrink-0" {...dragHandlers}>
             <div className="w-10 h-1 bg-white/20 rounded-full" />
           </div>
@@ -248,10 +271,18 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
               </div>
             )}
           </div>
-          <div className="flex-1 overflow-y-auto px-4 pt-4 pb-14 space-y-4">
-            {isLoading && LoadingView}
-            {notFound && NotFoundView}
-            {user && ProfilesList}
+          {user && <div className="px-4 pt-3 pb-1 shrink-0">{VoteBlock}</div>}
+          {/* Same fold as the country sheet (.details-fold, index.css): grid
+              rows animate the sheet's own height, and min-h-0 keeps it a
+              well-behaved flex child inside the max-h sheet. */}
+          <div className="details-fold min-h-0" data-collapsed={detailsCollapsed}>
+            <div>
+              <div className="details-fold-inner overflow-y-auto overscroll-y-contain max-h-[60vh] px-4 pt-4 pb-4 space-y-4">
+                {isLoading && LoadingView}
+                {notFound && NotFoundView}
+                {user && ProfilesList}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -270,11 +301,27 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
             </div>
           )}
         </div>
+        {user && <div className="px-6 pt-4 pb-3 border-b border-border shrink-0">{VoteBlock}</div>}
         {isLoading && LoadingView}
         {notFound && NotFoundView}
         {user && (
-          <div className="flex-1 overflow-y-auto px-6 py-4">
-            {ProfilesList}
+          // Same fold as the country card. The card is anchored to the bottom
+          // of the screen (justify-end + mb-16), so folding pulls it DOWN and
+          // uncovers the map from the top.
+          <div className="details-fold min-h-0" data-collapsed={detailsCollapsed}>
+            <div>
+              {/* Four rows at Full HD, then scroll - the country card's
+                  arithmetic (see CountryDetailModal, which carries the full
+                  derivation): 350px is four 66px rows plus label, padding and
+                  a sliver of the fifth; above 1080px tall the list takes half
+                  the extra height up to eight rows (602px); the dvh term keeps
+                  a short window honest. Keep this class identical to the
+                  country card's. Was a free-height list that grew to all 15
+                  rows, on top of the map. */}
+              <div className="details-fold-inner overflow-y-auto subtle-scrollbar max-h-[min(max(350px,calc(50dvh-190px)),calc(100dvh-21rem),602px)] px-6 py-4">
+                {ProfilesList}
+              </div>
+            </div>
           </div>
         )}
       </div>

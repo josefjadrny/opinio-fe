@@ -10,13 +10,14 @@ interface VoteHeadlineProps {
   totalLikes: number;
   totalDislikes: number;
   /**
-   * What the numbers are about - the only thing that differs between the two
+   * What the numbers are about - the only thing that differs between the three
    * modals sharing this block. It picks which pair of explainer sentences the
-   * panels carry: 'country' names the country as the thing being liked, and
-   * leaves off "Opinios are sorted by this", which is true of an opinio's net
-   * score and of nothing on the country modal.
+   * panels carry: 'country' names the country as the thing being liked and
+   * 'user' names the user's opinios, and both leave off "Opinios are sorted by
+   * this", which is true of an opinio's net score and of nothing on the other
+   * two modals - so they share the country's net sentence.
    */
-  subject?: 'opinio' | 'country';
+  subject?: 'opinio' | 'country' | 'user';
 }
 
 const PANEL_W = 236;
@@ -33,8 +34,10 @@ const PANEL_W = 236;
 // block twice.
 export function VoteHeadline({ likes, dislikes, totalLikes, totalDislikes, subject = 'opinio' }: VoteHeadlineProps) {
   const { t } = useI18n();
-  const agreeHelp = subject === 'country' ? t.voteTipAgreeHelpCountry : t.voteTipAgreeHelp;
-  const netHelp = subject === 'country' ? t.voteTipNetHelpCountry : t.voteTipNetHelp;
+  const agreeHelp = subject === 'country' ? t.voteTipAgreeHelpCountry
+    : subject === 'user' ? t.voteTipAgreeHelpUser
+    : t.voteTipAgreeHelp;
+  const netHelp = subject === 'opinio' ? t.voteTipNetHelp : t.voteTipNetHelpCountry;
   const total = likes + dislikes;
   const agreePct = total > 0 ? Math.round((likes / total) * 100) : 0;
   const net = likes - dislikes;

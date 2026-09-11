@@ -67,21 +67,19 @@ interface ProfileListProps {
   label: string;
   emptyText: string;
   onOpen: (id: string) => void;
-  // Appended to the header as " (n)" when > 0 (user detail shows a count).
-  count?: number;
   // While loading with no rows yet, show loadingText instead of emptyText.
   loading?: boolean;
   loadingText?: string;
 }
 
-export function ProfileList({ profiles, label, emptyText, onOpen, count, loading, loadingText }: ProfileListProps) {
+export function ProfileList({ profiles, label, emptyText, onOpen, loading, loadingText }: ProfileListProps) {
   const isMobile = useIsMobile();
   // Wrapped in a single element (not a fragment) so a parent's space-y can't
   // open a gap between the header and the list - the header's own pb controls it.
   return (
     <div>
       <p className="text-[11px] font-semibold uppercase tracking-wider text-white/60 px-3 pb-2">
-        {label}{typeof count === 'number' && count > 0 ? ` (${count})` : ''}
+        {label}
       </p>
       {loading && profiles.length === 0 ? (
         <p className="text-sm text-white/50 py-4 text-center">{loadingText ?? emptyText}</p>
