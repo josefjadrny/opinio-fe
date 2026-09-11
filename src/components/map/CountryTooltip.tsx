@@ -20,6 +20,11 @@ interface CountryTooltipProps {
   // the header already names the hovered country, and the counts mean the same
   // thing either way: "this is how this country voted on what the map is about".
   subjectCounts?: { likes: number; dislikes: number } | null;
+  // What the subject-mode counts are votes ON, so the card can say so: the
+  // header names the voting country and this names the thing voted on. A
+  // country subject brings its code for a flag. Absent while the subject's
+  // name is still loading; the counts are shown either way.
+  subject?: { name: string; code?: string } | null;
 }
 
 const TOOLTIP_WIDTH = 380;
@@ -30,7 +35,7 @@ const TOOLTIP_MAX_HEIGHT = 520;
 const SUBJECT_MIN_WIDTH = 220;
 const PADDING = 12;
 
-export function CountryTooltip({ countryCode, data, isLoading, position, subjectCounts }: CountryTooltipProps) {
+export function CountryTooltip({ countryCode, data, isLoading, position, subjectCounts, subject }: CountryTooltipProps) {
   const { t, locale } = useI18n();
   const tipRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState<{ left: number; top: number } | null>(null);
@@ -61,10 +66,16 @@ export function CountryTooltip({ countryCode, data, isLoading, position, subject
     top = Math.max(PADDING, Math.min(top, window.innerHeight - h - PADDING));
 
     setCoords({ left, top });
-  }, [position.x, position.y, data, isLoading, subjectMode]);
+  }, [position.x, position.y, data, isLoading, subjectMode, subject]);
 
   const total = counts.likes + counts.dislikes;
   const likePct = total > 0 ? (counts.likes / total) * 100 : 0;
+
+  // "Votes on {subject}" - the one line that says what the numbers are. The
+  // subject's name stands in nominative after a colon or a preposition that
+  // does not bend it (names never inflect - see MapProfileTitle), so the
+  // template is split around the placeholder rather than interpolated.
+  const [kickerBefore, kickerAfter] = t.mapTipVotesOn.split('{subject}');
 
   // Both modes fade and settle in from the cursor's corner; the card is keyed
   // on the country at the call site, so crossing a border replays it - the
@@ -88,14 +99,25 @@ export function CountryTooltip({ countryCode, data, isLoading, position, subject
       }}
     >
       {subjectMode ? (
-        // How this country voted on the open subject: name, then the same
-        // likes-bar-dislikes row the detail modals use, read-only and a size
-        // down. With no votes the track is neutral and empty.
+        // How this country voted on the open subject: the country, a muted line
+        // naming what it voted on, then the same likes-bar-dislikes row the
+        // detail modals use, read-only and a size down. With no votes the
+        // track is neutral and empty.
         <>
-          <div className="flex items-center gap-2 mb-2">
+          <div className={`flex items-center gap-2 ${subject ? '' : 'mb-2'}`}>
             <FlagImg code={countryCode} className="inline-block align-middle shrink-0" />
             <span className="font-bold text-white min-w-0 truncate">{getCountryName(countryCode, locale)}</span>
           </div>
+          {subject && (
+            <div className="mt-0.5 mb-2 text-xs text-white/60 truncate">
+              {kickerBefore}
+              <span className="font-semibold text-white/90">
+                {subject.code && <FlagImg code={subject.code} className="inline-block align-middle mr-1" />}
+                {subject.name}
+              </span>
+              {kickerAfter}
+            </div>
+          )}
           <div className="flex items-center gap-2 tabular-nums leading-none text-sm font-semibold">
             <span className="inline-flex items-baseline gap-1 shrink-0 text-positive">
               <span className="text-base leading-none">▲</span>{formatNumber(counts.likes)}

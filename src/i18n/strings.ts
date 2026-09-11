@@ -13,6 +13,7 @@ export interface Strings {
   allCategories: string;
   noProfiles: string;
   mapWorldThinks: string;
+  mapTipVotesOn: string;
   mapGlobalTitle: string;
   mapShowGlobal: string;
   hideDetails: string;
@@ -343,6 +344,7 @@ const en: Strings = {
   allCategories: 'All Categories',
   noProfiles: 'No opinios yet',
   mapWorldThinks: 'What the world thinks',
+  mapTipVotesOn: 'Votes on {subject}',
   mapGlobalTitle: 'Live world opinion on every country',
   mapShowGlobal: 'Back to the global map',
   hideDetails: 'Hide details',
@@ -724,6 +726,7 @@ const cs: Strings = {
   allCategories: 'Všechny kategorie',
   noProfiles: 'Zatím žádná opinio',
   mapWorldThinks: 'Co si myslí svět',
+  mapTipVotesOn: 'Hlasování: {subject}',
   mapGlobalTitle: 'Co si svět myslí o každé zemi',
   mapShowGlobal: 'Zpět na globální mapu',
   hideDetails: 'Skrýt detaily',
@@ -1105,6 +1108,7 @@ const es: Strings = {
   allCategories: 'Todas las categorías',
   noProfiles: 'Aún no hay opinio',
   mapWorldThinks: 'Lo que piensa el mundo',
+  mapTipVotesOn: 'Votos sobre {subject}',
   mapGlobalTitle: 'Qué opina el mundo sobre cada país',
   mapShowGlobal: 'Volver al mapa global',
   hideDetails: 'Ocultar detalles',
@@ -1486,6 +1490,7 @@ const de: Strings = {
   allCategories: 'Alle Kategorien',
   noProfiles: 'Noch keine opinio',
   mapWorldThinks: 'Was die Welt denkt',
+  mapTipVotesOn: 'Stimmen zu {subject}',
   mapGlobalTitle: 'Was die Welt über jedes Land denkt',
   mapShowGlobal: 'Zurück zur globalen Karte',
   hideDetails: 'Details ausblenden',
@@ -1867,6 +1872,7 @@ const fr: Strings = {
   allCategories: 'Toutes les catégories',
   noProfiles: 'Aucun opinio pour le moment',
   mapWorldThinks: 'Ce que le monde en pense',
+  mapTipVotesOn: 'Votes : {subject}',
   mapGlobalTitle: 'Ce que le monde pense de chaque pays',
   mapShowGlobal: 'Retour à la carte mondiale',
   hideDetails: 'Masquer les détails',
@@ -2248,6 +2254,7 @@ const it: Strings = {
   allCategories: 'Tutte le categorie',
   noProfiles: 'Ancora nessun opinio',
   mapWorldThinks: 'Cosa ne pensa il mondo',
+  mapTipVotesOn: 'Voti su {subject}',
   mapGlobalTitle: 'Cosa pensa il mondo di ogni paese',
   mapShowGlobal: 'Torna alla mappa globale',
   hideDetails: 'Nascondi dettagli',
@@ -2629,6 +2636,7 @@ const pl: Strings = {
   allCategories: 'Wszystkie kategorie',
   noProfiles: 'Jeszcze brak opinio',
   mapWorldThinks: 'Co o tym myśli świat',
+  mapTipVotesOn: 'Głosowanie: {subject}',
   mapGlobalTitle: 'Co świat myśli o każdym kraju',
   mapShowGlobal: 'Powrót do mapy globalnej',
   hideDetails: 'Ukryj szczegóły',

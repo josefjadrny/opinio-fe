@@ -537,6 +537,11 @@ export function WorldMap({ bannerVisible = false }: { bannerVisible?: boolean } 
               ? subjectTally?.countries.find((c) => c.code === hoveredCountry) ?? { likes: 0, dislikes: 0 }
               : undefined
           }
+          subject={
+            captionSubject?.kind === 'country' ? { name: captionSubject.name, code: captionSubject.code }
+              : captionSubject?.kind === 'profile' ? { name: captionSubject.profile.name }
+              : null
+          }
         />
       )}
     </div>
