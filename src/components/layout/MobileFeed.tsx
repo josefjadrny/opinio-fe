@@ -40,7 +40,7 @@ export function MobileFeed({
           </svg>
           {t.trending}
         </h2>
-        <div ref={positiveFlipRef} className="space-y-1.5">
+        <div ref={positiveFlipRef} className="flip-compact space-y-1.5">
           {positiveProfiles.map((profile) => (
             <div key={profile.id} data-flip-key={profile.id}>
               <ProfileCard
@@ -61,7 +61,7 @@ export function MobileFeed({
           </svg>
           {t.falling}
         </h2>
-        <div ref={negativeFlipRef} className="space-y-1.5">
+        <div ref={negativeFlipRef} className="flip-compact space-y-1.5">
           {negativeProfiles.map((profile) => (
             <div key={profile.id} data-flip-key={profile.id}>
               <ProfileCard

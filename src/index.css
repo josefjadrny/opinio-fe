@@ -256,6 +256,76 @@ body {
   to   { opacity: 1; transform: translateX(0) scale(1); }
 }
 
+/* ── Feed reorder (useFlipReorder) ───────────────────────────────────────────
+   The hook slides every displaced card (inline transform); these rules mark
+   the one that actually MOVED so the reader can tell it from the cards it
+   pushed aside. data-flip-move is set for ~4.5s after the move (LINGER_MS in
+   the hook); the animation below does the fading, so the attribute's removal
+   at the end never pops anything.
+
+   The ring takes the direction colour - green for a card that climbed the
+   list, red for one that dropped - which is the same up/down language the
+   vote pills and the Rising/Falling headers speak. There is deliberately no
+   rank-delta number on it: the list already carries two numbers per card.
+
+   The ring hugs the card's own radius: default sidebar cards are rounded-xl,
+   the mobile feed's compact cards rounded-lg (.flip-compact on the list).
+   The glow is deliberately modest - the sidebars clip horizontally at their
+   scroller, so a wide blur would just be sliced off at the edges. */
+[data-flip-key] {
+  position: relative;
+  --flip-radius: 0.75rem;
+}
+.flip-compact [data-flip-key] {
+  --flip-radius: 0.5rem;
+}
+[data-flip-move] {
+  z-index: 5;
+  /* The cards are translucent (bg-surface-light/40 over the page), which is
+     fine at rest and wrong in flight: a mover crossing another card showed
+     that card's text through its own. A solid page-colour backing under the
+     card makes it opaque without changing how it looks - /40 over surface is
+     exactly what it is over the page. */
+  background: var(--color-surface);
+  border-radius: var(--flip-radius);
+}
+[data-flip-move='up']   { --flip-tone: var(--color-positive); }
+[data-flip-move='down'] { --flip-tone: var(--color-negative); }
+[data-flip-move]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--flip-radius);
+  pointer-events: none;
+  box-shadow:
+    0 0 0 2px var(--flip-tone),
+    0 0 16px 2px color-mix(in srgb, var(--flip-tone) 50%, transparent);
+  animation: flip-glow 4.5s ease-out forwards;
+}
+/* A card joining the list fades in rather than popping into a slot. */
+[data-flip-enter] {
+  animation: flip-enter 600ms ease-out both;
+}
+/* Starts at take-off (the 1.4s travel is inside these 4.5s), holds for ~3s
+   after landing, then fades. */
+@keyframes flip-glow {
+  0%   { opacity: 0; }
+  10%  { opacity: 1; }
+  72%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes flip-enter {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-flip-move]::before {
+    /* Keep the marker (it is information), drop the motion: it shows at full
+       strength and is simply removed when the hook's linger ends. */
+    animation: none;
+  }
+}
+
 /* ── Profile detail fold ─────────────────────────────────────────────────────
    The chevron in either profile modal's header folds description + image +
    country breakdown away. Both modals share these classes so the two form
