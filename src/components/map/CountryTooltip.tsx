@@ -24,6 +24,10 @@ interface CountryTooltipProps {
 
 const TOOLTIP_WIDTH = 380;
 const TOOLTIP_MAX_HEIGHT = 520;
+// The subject-mode card is sized to its content - two short rows - rather than
+// to the opinio list it does not carry. A floor keeps the bar long enough to
+// read as a proportion when the country's name is short ("Peru").
+const SUBJECT_MIN_WIDTH = 220;
 const PADDING = 12;
 
 export function CountryTooltip({ countryCode, data, isLoading, position, subjectCounts }: CountryTooltipProps) {
@@ -57,22 +61,61 @@ export function CountryTooltip({ countryCode, data, isLoading, position, subject
     top = Math.max(PADDING, Math.min(top, window.innerHeight - h - PADDING));
 
     setCoords({ left, top });
-  }, [position.x, position.y, data, isLoading]);
+  }, [position.x, position.y, data, isLoading, subjectMode]);
 
+  const total = counts.likes + counts.dislikes;
+  const likePct = total > 0 ? (counts.likes / total) * 100 : 0;
+
+  // Both modes fade and settle in from the cursor's corner; the card is keyed
+  // on the country at the call site, so crossing a border replays it - the
+  // change of subject is the moment worth marking, not the pointer drifting
+  // inside one country.
   return (
     <div
       ref={tipRef}
-      className="fixed z-50 bg-surface-light border border-border rounded-xl shadow-2xl p-3 pointer-events-none"
+      className={`fixed z-50 bg-surface-light border border-border shadow-2xl pointer-events-none map-tip ${
+        subjectMode ? 'rounded-lg px-3.5 py-2.5' : 'rounded-xl p-3'
+      }`}
       style={{
         left: coords?.left ?? position.x + PADDING,
         top: coords?.top ?? position.y + PADDING,
-        width: TOOLTIP_WIDTH,
+        width: subjectMode ? 'max-content' : TOOLTIP_WIDTH,
+        minWidth: subjectMode ? SUBJECT_MIN_WIDTH : undefined,
+        maxWidth: TOOLTIP_WIDTH,
         maxHeight: TOOLTIP_MAX_HEIGHT,
-        overflow: 'auto',
+        overflow: subjectMode ? 'hidden' : 'auto',
         visibility: coords ? 'visible' : 'hidden',
       }}
     >
-      <div className={`flex items-center gap-2 ${subjectMode ? 'mb-1.5' : 'mb-3 pb-2 border-b border-border'}`}>
+      {subjectMode ? (
+        // How this country voted on the open subject: name, then the same
+        // likes-bar-dislikes row the detail modals use, read-only and a size
+        // down. With no votes the track is neutral and empty.
+        <>
+          <div className="flex items-center gap-2 mb-2">
+            <FlagImg code={countryCode} className="inline-block align-middle shrink-0" />
+            <span className="font-bold text-white min-w-0 truncate">{getCountryName(countryCode, locale)}</span>
+          </div>
+          <div className="flex items-center gap-2 tabular-nums leading-none text-sm font-semibold">
+            <span className="inline-flex items-baseline gap-1 shrink-0 text-positive">
+              <span className="text-base leading-none">▲</span>{formatNumber(counts.likes)}
+            </span>
+            <div className={`flex-1 h-2 rounded-full overflow-hidden flex ${total > 0 ? 'bg-negative/45' : 'bg-white/10'}`}>
+              {likePct > 0 && (
+                <div
+                  className="h-full bg-positive"
+                  style={{ width: `${likePct}%`, animation: 'bar-fill 0.5s ease-out both', transformOrigin: 'left' }}
+                />
+              )}
+            </div>
+            <span className="inline-flex items-baseline gap-1 shrink-0 text-negative">
+              {formatNumber(counts.dislikes)}<span className="text-base leading-none">▼</span>
+            </span>
+          </div>
+        </>
+      ) : (
+      <>
+      <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border">
         <FlagImg code={countryCode} className="inline-block align-middle shrink-0" />
         <span className="font-bold text-white flex-1 min-w-0 truncate">{getCountryName(countryCode, locale)}</span>
         <div className="shrink-0 flex items-center gap-2 text-sm tabular-nums leading-none">
@@ -87,8 +130,6 @@ export function CountryTooltip({ countryCode, data, isLoading, position, subject
         </div>
       </div>
 
-      {subjectMode ? null : (
-      <>
       {isLoading && (
         <div className="text-center text-text-secondary text-sm py-4">{t.loading}</div>
       )}

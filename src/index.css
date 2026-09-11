@@ -245,6 +245,19 @@ body {
   to   { transform: scaleX(1); }
 }
 
+/* Map hover card (CountryTooltip) — settles in from the cursor's corner. */
+.map-tip {
+  transform-origin: top left;
+  animation: map-tip-in 180ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@keyframes map-tip-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-tip { animation: none; }
+}
+
 /* PersonTooltip (Spotlight) entrance — slides in from the card edge. */
 @keyframes spotlight-in-right {
   from { opacity: 0; transform: translateX(-8px) scale(0.98); }

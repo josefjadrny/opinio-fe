@@ -524,7 +524,10 @@ export function WorldMap({ bannerVisible = false }: { bannerVisible?: boolean } 
       <MapZoomControl scale={zoom.scale} min={MIN_ZOOM} max={MAX_ZOOM} onZoom={zoomToScale} onStep={stepZoom} />
 
       {hoveredCountry && (
+        // Keyed on the country so crossing a border remounts the card and
+        // replays its entrance (and the bar fill) for the new one.
         <CountryTooltip
+          key={hoveredCountry}
           countryCode={hoveredCountry}
           data={data}
           isLoading={isLoading}
