@@ -260,6 +260,10 @@ export interface Strings {
   // 24h window suffix - on the breakdown section headers and the row tip header,
   // since every figure under them is live.
   breakdownWindow: string;
+  // Section header tips: what the country lists are made of. {window} takes
+  // voteTipWindow so each language declines it in place.
+  breakdownLikingHelp: string;
+  breakdownDislikingHelp: string;
   liked: string;
   voteTipLikes: string;
   voteTipDislikes: string;
@@ -610,6 +614,8 @@ const en: Strings = {
   disagree: 'Dislike',
   breakdownLiking: 'Liking',
   breakdownDisliking: 'Disliking',
+  breakdownLikingHelp: 'Countries whose voters liked this opinio in the {window}, ranked by votes. Top 10 shown.',
+  breakdownDislikingHelp: 'Countries whose voters disliked this opinio in the {window}, ranked by votes. Top 10 shown.',
   breakdownTipVoters: 'Voters',
   breakdownTipVotes: 'Votes',
   breakdownWindow: '(24h)',
@@ -995,6 +1001,8 @@ const cs: Strings = {
   disagree: 'Nelíbí',
   breakdownLiking: 'Líbí se',
   breakdownDisliking: 'Nelíbí se',
+  breakdownLikingHelp: 'Země hlasujících, kterým se toto opinio za {window} líbilo, seřazené podle počtu hlasů. Prvních 10.',
+  breakdownDislikingHelp: 'Země hlasujících, kterým se toto opinio za {window} nelíbilo, seřazené podle počtu hlasů. Prvních 10.',
   breakdownTipVoters: 'Hlasující',
   breakdownTipVotes: 'Hlasy',
   breakdownWindow: '(24 h)',
@@ -1380,6 +1388,8 @@ const es: Strings = {
   disagree: 'No me gusta',
   breakdownLiking: 'A favor',
   breakdownDisliking: 'En contra',
+  breakdownLikingHelp: 'Países de los votantes a los que les gustó este opinio en las {window}, ordenados por votos. Los 10 primeros.',
+  breakdownDislikingHelp: 'Países de los votantes a los que no les gustó este opinio en las {window}, ordenados por votos. Los 10 primeros.',
   breakdownTipVoters: 'Votantes',
   breakdownTipVotes: 'Votos',
   breakdownWindow: '(24 h)',
@@ -1765,6 +1775,8 @@ const de: Strings = {
   disagree: 'Dislike',
   breakdownLiking: 'Dafür',
   breakdownDisliking: 'Dagegen',
+  breakdownLikingHelp: 'Länder der Abstimmenden, denen dieses Opinio in den {window} gefallen hat, sortiert nach Stimmen. Top 10.',
+  breakdownDislikingHelp: 'Länder der Abstimmenden, denen dieses Opinio in den {window} nicht gefallen hat, sortiert nach Stimmen. Top 10.',
   breakdownTipVoters: 'Abstimmende',
   breakdownTipVotes: 'Stimmen',
   breakdownWindow: '(24 Std.)',
@@ -2150,6 +2162,8 @@ const fr: Strings = {
   disagree: "Je n'aime pas",
   breakdownLiking: 'Pour',
   breakdownDisliking: 'Contre',
+  breakdownLikingHelp: 'Pays des votants qui ont aimé cet opinio au cours des {window}, classés par votes. Top 10.',
+  breakdownDislikingHelp: "Pays des votants qui n'ont pas aimé cet opinio au cours des {window}, classés par votes. Top 10.",
   breakdownTipVoters: 'Votants',
   breakdownTipVotes: 'Votes',
   breakdownWindow: '(24h)',
@@ -2535,6 +2549,8 @@ const it: Strings = {
   disagree: 'Non mi piace',
   breakdownLiking: 'A favore',
   breakdownDisliking: 'Contro',
+  breakdownLikingHelp: 'Paesi dei votanti a cui è piaciuto questo opinio nelle {window}, ordinati per voti. Primi 10.',
+  breakdownDislikingHelp: 'Paesi dei votanti a cui non è piaciuto questo opinio nelle {window}, ordinati per voti. Primi 10.',
   breakdownTipVoters: 'Votanti',
   breakdownTipVotes: 'Voti',
   breakdownWindow: '(24 h)',
@@ -2920,6 +2936,8 @@ const pl: Strings = {
   disagree: 'Nie lubię',
   breakdownLiking: 'Lubią',
   breakdownDisliking: 'Nie lubią',
+  breakdownLikingHelp: 'Kraje głosujących, którym to opinio spodobało się w ciągu {window}, uporządkowane według głosów. Pierwsze 10.',
+  breakdownDislikingHelp: 'Kraje głosujących, którym to opinio nie spodobało się w ciągu {window}, uporządkowane według głosów. Pierwsze 10.',
   breakdownTipVoters: 'Głosujący',
   breakdownTipVotes: 'Głosy',
   breakdownWindow: '(24 h)',

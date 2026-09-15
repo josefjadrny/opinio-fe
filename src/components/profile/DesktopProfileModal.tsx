@@ -21,6 +21,7 @@ import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { SourceLink } from './SourceLink';
 import { CountryFlag } from '../common/CountryFlag';
 import { BreakdownRow } from './BreakdownRow';
+import { BreakdownHeader } from './BreakdownHeader';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 
@@ -269,7 +270,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                         {breakdown && (breakdown.topLiking.length > 0 || breakdown.topDisliking.length > 0) ? (
                           <div className="grid grid-cols-2 gap-6 h-full">
                             <div className="flex flex-col min-h-0">
-                              <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-2 shrink-0">▲ {t.breakdownLiking} {t.breakdownWindow}</p>
+                              <BreakdownHeader side="like" />
                               <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
                                 {(() => {
                                   const max = Math.max(1, ...breakdown.topLiking.map(r => r.count));
@@ -280,7 +281,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                               </div>
                             </div>
                             <div className="flex flex-col min-h-0">
-                              <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-2 shrink-0">▼ {t.breakdownDisliking} {t.breakdownWindow}</p>
+                              <BreakdownHeader side="dislike" />
                               <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
                                 {(() => {
                                   const max = Math.max(1, ...breakdown.topDisliking.map(r => r.count));
