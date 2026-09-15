@@ -6,6 +6,7 @@ import { useAnimatedValue } from '../../hooks/useAnimatedValue';
 import { useVoteAnimation } from '../../hooks/useVoteAnimation';
 import { useI18n } from '../../i18n/I18nContext';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
+import { HoverTip } from '../common/HoverTip';
 
 interface VoteButtonsProps {
   profileId: string;
@@ -67,11 +68,11 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
           {p.streak >= 5 ? '🔥' : p.streak >= 3 ? `+${p.streak}` : '+1'}
         </span>
       ))}
+      <HoverTip label={!online ? t.offlineVote : !hasCountry ? noCountryMsg : (likeCountdown.text ? `${t.nextVote} ${likeCountdown.text}` : null)} className="contents">
       <button
         key={likeAnim.bumpKey}
         onClick={(e) => handleVote(e, 'like')}
         disabled={!canLike}
-        title={!online ? t.offlineVote : !hasCountry ? noCountryMsg : (likeCountdown.text ? `${t.nextVote} ${likeCountdown.text}` : undefined)}
         className={`vote-bump ${btnBase} ${
           canLike
             ? 'bg-positive/20 text-positive hover:bg-positive/30 cursor-pointer'
@@ -81,6 +82,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
         <span>&#9650;&#xFE0E;</span>
         <span className="tabular-nums inline-block text-right min-w-[3ch]">{formatNumber(animatedLikes)}</span>
       </button>
+      </HoverTip>
     </div>
   );
 
@@ -98,11 +100,11 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
           {p.streak >= 5 ? '💥' : p.streak >= 3 ? `+${p.streak}` : '+1'}
         </span>
       ))}
+      <HoverTip label={!online ? t.offlineVote : !hasCountry ? noCountryMsg : (dislikeCountdown.text ? `${t.nextVote} ${dislikeCountdown.text}` : null)} className="contents">
       <button
         key={dislikeAnim.bumpKey}
         onClick={(e) => handleVote(e, 'dislike')}
         disabled={!canDislike}
-        title={!online ? t.offlineVote : !hasCountry ? noCountryMsg : (dislikeCountdown.text ? `${t.nextVote} ${dislikeCountdown.text}` : undefined)}
         className={`vote-bump ${btnBase} ${
           canDislike
             ? 'bg-negative/20 text-negative hover:bg-negative/30 cursor-pointer'
@@ -112,6 +114,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
         <span>&#9660;&#xFE0E;</span>
         <span className="tabular-nums inline-block text-right min-w-[3ch]">{formatNumber(animatedDislikes)}</span>
       </button>
+      </HoverTip>
     </div>
   );
 

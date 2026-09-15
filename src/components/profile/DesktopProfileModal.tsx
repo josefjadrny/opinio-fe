@@ -16,7 +16,7 @@ import { ReportProfileButton } from './ReportProfileButton';
 import { DeleteProfileButton } from './DeleteProfileButton';
 import { VoteHeadline } from './VoteHeadline';
 import { RoleBadge } from '../common/RoleBadge';
-import { IconTip } from '../common/IconTip';
+import { HoverTip } from '../common/HoverTip';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { SourceLink } from './SourceLink';
 import { CountryFlag } from '../common/CountryFlag';
@@ -98,30 +98,32 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                 } | null;
                 if (state?.fromUserId) {
                   return (
-                    <Link
-                      to={`/u/${state.fromUserId}${location.search}`}
-                      title={state.fromUserName ? `← @${state.fromUserName}` : 'Back'}
-                      aria-label={state.fromUserName ? `Back to @${state.fromUserName}` : 'Back'}
-                      className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0"
-                    >
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </Link>
+                    <HoverTip label={state.fromUserName ? `← @${state.fromUserName}` : 'Back'}>
+                      <Link
+                        to={`/u/${state.fromUserId}${location.search}`}
+                        aria-label={state.fromUserName ? `Back to @${state.fromUserName}` : 'Back'}
+                        className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </Link>
+                    </HoverTip>
                   );
                 }
                 if (state?.fromCountryCode) {
                   return (
-                    <Link
-                      to={`/c/${state.fromCountryCode}${location.search}`}
-                      title={state.fromCountryName ? `← ${state.fromCountryName}` : 'Back'}
-                      aria-label={state.fromCountryName ? `Back to ${state.fromCountryName}` : 'Back'}
-                      className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0"
-                    >
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </Link>
+                    <HoverTip label={state.fromCountryName ? `← ${state.fromCountryName}` : 'Back'}>
+                      <Link
+                        to={`/c/${state.fromCountryCode}${location.search}`}
+                        aria-label={state.fromCountryName ? `Back to ${state.fromCountryName}` : 'Back'}
+                        className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </Link>
+                    </HoverTip>
                   );
                 }
                 return null;
@@ -184,7 +186,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                     onDeleted={close}
                   />
                 )}
-                <IconTip label={t.close}>
+                <HoverTip label={t.close}>
                   <button
                     onClick={close}
                     aria-label={t.close}
@@ -194,7 +196,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
-                </IconTip>
+                </HoverTip>
               </div>
             </div>
 
@@ -314,11 +316,11 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                     {p.streak >= 5 ? '🔥' : p.streak >= 3 ? `+${p.streak}` : '+1'}
                   </span>
                 ))}
+                <HoverTip label={!hasCountry ? noCountryMsg : null} className="contents">
                 <button
                   key={likeAnim.bumpKey}
                   onClick={() => handleVote('like')}
                   disabled={!canLike}
-                  title={!hasCountry ? noCountryMsg : undefined}
                   className={`vote-bump w-full flex items-center justify-center gap-2.5 py-4 text-base font-semibold transition-colors rounded-none tabular-nums ${
                     canLike
                       ? 'cursor-pointer bg-positive/10 hover:bg-positive/20 text-positive'
@@ -332,6 +334,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                     <span>{t.agree}</span>
                   )}
                 </button>
+                </HoverTip>
               </div>
               <div className="relative flex-1">
                 {dislikeAnim.particles.map((p) => (
@@ -346,11 +349,11 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                     {p.streak >= 5 ? '💥' : p.streak >= 3 ? `+${p.streak}` : '+1'}
                   </span>
                 ))}
+                <HoverTip label={!hasCountry ? noCountryMsg : null} className="contents">
                 <button
                   key={dislikeAnim.bumpKey}
                   onClick={() => handleVote('dislike')}
                   disabled={!canDislike}
-                  title={!hasCountry ? noCountryMsg : undefined}
                   className={`vote-bump w-full flex items-center justify-center gap-2.5 py-4 text-base font-semibold transition-colors rounded-none tabular-nums ${
                     canDislike
                       ? 'cursor-pointer bg-negative/10 hover:bg-negative/20 text-negative'
@@ -364,6 +367,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                     <span>{t.disagree}</span>
                   )}
                 </button>
+                </HoverTip>
               </div>
             </div>
           </>

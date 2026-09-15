@@ -1,5 +1,5 @@
 import { useI18n } from '../../i18n/I18nContext';
-import { IconTip } from './IconTip';
+import { HoverTip } from './HoverTip';
 
 interface CollapseDetailsButtonProps {
   collapsed: boolean;
@@ -19,7 +19,7 @@ export function CollapseDetailsButton({ collapsed, onToggle }: CollapseDetailsBu
   const { t } = useI18n();
   const label = collapsed ? t.showDetails : t.hideDetails;
   return (
-    <IconTip label={label}>
+    <HoverTip label={label}>
       <button
         onClick={onToggle}
         aria-label={label}
@@ -33,6 +33,6 @@ export function CollapseDetailsButton({ collapsed, onToggle }: CollapseDetailsBu
           <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
         </svg>
       </button>
-    </IconTip>
+    </HoverTip>
   );
 }

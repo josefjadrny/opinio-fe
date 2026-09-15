@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FlagImg } from '../common/CountryFlag';
+import { HoverTip } from '../common/HoverTip';
 import { getCountryName, isKnownCountry } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
 import { useI18n } from '../../i18n/I18nContext';
@@ -28,22 +29,23 @@ export function BreakdownRow({ countryCode, count, max, index, side }: Breakdown
   const num = side === 'like' ? 'text-positive' : 'text-negative';
 
   return (
-    <div
-      role={clickable ? 'button' : undefined}
-      tabIndex={clickable ? 0 : undefined}
-      onClick={clickable ? go : undefined}
-      onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } } : undefined}
-      title={clickable ? getCountryName(countryCode, locale) : undefined}
-      className={`relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden select-none ${clickable ? 'cursor-pointer hover:bg-white/5 transition-colors' : ''}`}
-      style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${index * 35}ms` }}
-    >
+    <HoverTip label={clickable ? getCountryName(countryCode, locale) : null} className="contents">
       <div
-        className={`absolute inset-y-0 left-0 ${bar} rounded`}
-        style={{ width: `${(count / max) * 100}%`, animation: 'bar-fill 0.45s ease-out both', transformOrigin: 'left', animationDelay: `${index * 35 + 80}ms` }}
-      />
-      <FlagImg code={countryCode} className="relative inline-block align-middle shrink-0" />
-      <span className="relative text-xs text-white/60 flex-1 truncate">{getCountryName(countryCode, locale)}</span>
-      <span className={`relative text-xs ${num} font-semibold tabular-nums`}>{formatNumber(count)}</span>
-    </div>
+        role={clickable ? 'button' : undefined}
+        tabIndex={clickable ? 0 : undefined}
+        onClick={clickable ? go : undefined}
+        onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } } : undefined}
+        className={`relative flex items-center gap-1.5 mb-1 px-1.5 py-0.5 rounded overflow-hidden select-none ${clickable ? 'cursor-pointer hover:bg-white/5 transition-colors' : ''}`}
+        style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${index * 35}ms` }}
+      >
+        <div
+          className={`absolute inset-y-0 left-0 ${bar} rounded`}
+          style={{ width: `${(count / max) * 100}%`, animation: 'bar-fill 0.45s ease-out both', transformOrigin: 'left', animationDelay: `${index * 35 + 80}ms` }}
+        />
+        <FlagImg code={countryCode} className="relative inline-block align-middle shrink-0" />
+        <span className="relative text-xs text-white/60 flex-1 truncate">{getCountryName(countryCode, locale)}</span>
+        <span className={`relative text-xs ${num} font-semibold tabular-nums`}>{formatNumber(count)}</span>
+      </div>
+    </HoverTip>
   );
 }

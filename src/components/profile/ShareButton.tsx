@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useI18n } from '../../i18n/I18nContext';
-import { IconTip } from '../common/IconTip';
+import { HoverTip } from '../common/HoverTip';
 
 interface ShareButtonProps {
   profileId: string;
@@ -36,7 +36,7 @@ export function ShareButton({ profileId, profileName }: ShareButtonProps) {
   // The label follows the button's state: for the two seconds the icon is a
   // check, hovering it reads "link copied" instead of "share".
   return (
-    <IconTip label={copied ? t.linkCopied : t.share}>
+    <HoverTip label={copied ? t.linkCopied : t.share}>
       <button
         onClick={handleShare}
         aria-label={t.share}
@@ -52,6 +52,6 @@ export function ShareButton({ profileId, profileName }: ShareButtonProps) {
           </svg>
         )}
       </button>
-    </IconTip>
+    </HoverTip>
   );
 }

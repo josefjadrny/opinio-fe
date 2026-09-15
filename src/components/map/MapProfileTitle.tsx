@@ -1,7 +1,7 @@
 import type { AnimationEvent } from 'react';
 import { Avatar } from '../profile/Avatar';
 import { FlagImg } from '../common/CountryFlag';
-import { IconTip } from '../common/IconTip';
+import { HoverTip } from '../common/HoverTip';
 import { useI18n } from '../../i18n/I18nContext';
 import { useSubjectSwap } from '../../hooks/useSubjectSwap';
 import type { Profile } from '../../types/profile';
@@ -231,7 +231,7 @@ export function MapProfileTitle({
             stacked for the length of the swap. */}
         {current.value && (
           <span className="pointer-events-auto absolute top-1.5 right-1.5">
-            <IconTip label={t.mapShowGlobal}>
+            <HoverTip label={t.mapShowGlobal}>
               <button
                 onClick={onDismiss}
                 aria-label={t.mapShowGlobal}
@@ -241,7 +241,7 @@ export function MapProfileTitle({
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-            </IconTip>
+            </HoverTip>
           </span>
         )}
       </div>

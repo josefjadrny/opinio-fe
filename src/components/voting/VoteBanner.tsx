@@ -7,6 +7,7 @@ import { useVoteAnimation } from '../../hooks/useVoteAnimation';
 import { useSignIn } from '../auth/SignInContext';
 import { useI18n } from '../../i18n/I18nContext';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
+import { HoverTip } from '../common/HoverTip';
 
 const VOTE_WINDOW_MS = 3600 * 1000;
 
@@ -62,6 +63,7 @@ function VoteSlot({ type, remaining, nextAt, voteOnProfileId }: {
     );
   } else if (voteOnProfileId) {
     body = (
+      <HoverTip label={!online ? t.offlineVote : null} className="contents">
       <button
         key={anim.bumpKey}
         type="button"
@@ -70,12 +72,12 @@ function VoteSlot({ type, remaining, nextAt, voteOnProfileId }: {
           anim.trigger();
         }}
         disabled={voteMutation.isPending || !online}
-        title={!online ? t.offlineVote : undefined}
         className={`vote-bump ${baseClasses} ${bgActive} ${color} active:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity`}
       >
         <span>{arrow}</span>
         <span className="tabular-nums">{remaining}</span>
       </button>
+      </HoverTip>
     );
   } else {
     body = (

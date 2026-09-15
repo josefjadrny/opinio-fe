@@ -11,7 +11,7 @@ import { CountryFlag } from '../common/CountryFlag';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { ProfileList } from './ProfileList';
 import { VoteHeadline } from './VoteHeadline';
-import { IconTip } from '../common/IconTip';
+import { HoverTip } from '../common/HoverTip';
 
 interface UserDetailModalProps {
   userId: string;
@@ -42,7 +42,7 @@ function ShareUserButton({ userId, displayName }: { userId: string; displayName:
     }
   }
   return (
-    <IconTip label={copied ? t.linkCopied : t.share}>
+    <HoverTip label={copied ? t.linkCopied : t.share}>
       <button
         onClick={handleShare}
         aria-label={t.share}
@@ -58,7 +58,7 @@ function ShareUserButton({ userId, displayName }: { userId: string; displayName:
           </svg>
         )}
       </button>
-    </IconTip>
+    </HoverTip>
   );
 }
 
@@ -96,20 +96,21 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
 
   const fromProfileState = location.state as { fromProfileId?: string; fromProfileName?: string } | null;
   const BackToProfile = fromProfileState?.fromProfileId ? (
-    <Link
-      to={`/p/${fromProfileState.fromProfileId}${location.search}`}
-      title={fromProfileState.fromProfileName ? `← ${fromProfileState.fromProfileName}` : 'Back'}
-      aria-label={fromProfileState.fromProfileName ? `Back to ${fromProfileState.fromProfileName}` : 'Back'}
-      className="text-white/60 hover:text-white/90 transition-colors p-0.5 -ml-1 shrink-0"
-    >
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-      </svg>
-    </Link>
+    <HoverTip label={fromProfileState.fromProfileName ? `← ${fromProfileState.fromProfileName}` : 'Back'}>
+      <Link
+        to={`/p/${fromProfileState.fromProfileId}${location.search}`}
+        aria-label={fromProfileState.fromProfileName ? `Back to ${fromProfileState.fromProfileName}` : 'Back'}
+        className="text-white/60 hover:text-white/90 transition-colors p-0.5 -ml-1 shrink-0"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </Link>
+    </HoverTip>
   ) : null;
 
   const SettingsButton = isMe ? (
-    <IconTip label={t.settings}>
+    <HoverTip label={t.settings}>
       <button
         onClick={() => navigate('/settings' + location.search)}
         aria-label={t.settings}
@@ -120,7 +121,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       </button>
-    </IconTip>
+    </HoverTip>
   ) : null;
 
   // The opinio modal's vote strip, on the user's own numbers: agree-%, net
@@ -153,13 +154,13 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
       {user && CollapseButton}
       {SettingsButton}
       {user && <ShareUserButton userId={user.id} displayName={user.displayName} />}
-      <IconTip label={t.close}>
+      <HoverTip label={t.close}>
         <button onClick={close} aria-label={t.close} className="text-white/60 hover:text-white/90 transition-colors p-1">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-      </IconTip>
+      </HoverTip>
     </div>
   );
 

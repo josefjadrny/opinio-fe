@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { Profile } from '../../types/profile';
 import { RoleBadge } from '../common/RoleBadge';
 import { CountryFlag } from '../common/CountryFlag';
+import { HoverTip } from '../common/HoverTip';
 import { VoteButtons } from '../voting/VoteButtons';
 import { LabelBadge } from './LabelBadge';
 import { PersonTooltip } from './PersonTooltip';
@@ -97,29 +98,31 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   const flagEl = isMobile ? (
     <CountryFlag code={profile.countryCode} />
   ) : (
-    <span
-      role="button"
-      tabIndex={0}
-      onClick={handleCountryClick}
-      title={`${t.filterBy}: ${getCountryName(profile.countryCode, locale)}`}
-      className="cursor-pointer rounded hover:opacity-70 transition-opacity"
-    >
-      <CountryFlag code={profile.countryCode} />
-    </span>
+    <HoverTip label={`${t.filterBy}: ${getCountryName(profile.countryCode, locale)}`}>
+      <span
+        role="button"
+        tabIndex={0}
+        onClick={handleCountryClick}
+        className="cursor-pointer rounded hover:opacity-70 transition-opacity"
+      >
+        <CountryFlag code={profile.countryCode} tip={false} />
+      </span>
+    </HoverTip>
   );
 
   const roleEl = isMobile ? (
     <RoleBadge role={profile.role} />
   ) : (
-    <span
-      role="button"
-      tabIndex={0}
-      onClick={handleRoleClick}
-      title={`${t.filterBy}: ${t.roles[profile.role]}`}
-      className="cursor-pointer hover:opacity-70 transition-opacity"
-    >
-      <RoleBadge role={profile.role} />
-    </span>
+    <HoverTip label={`${t.filterBy}: ${t.roles[profile.role]}`}>
+      <span
+        role="button"
+        tabIndex={0}
+        onClick={handleRoleClick}
+        className="cursor-pointer hover:opacity-70 transition-opacity"
+      >
+        <RoleBadge role={profile.role} />
+      </span>
+    </HoverTip>
   );
 
   const handleMouseLeave = useCallback(() => {

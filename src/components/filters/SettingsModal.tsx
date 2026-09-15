@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ModalShell } from '../common/ModalShell';
+import { HoverTip } from '../common/HoverTip';
 import { LanguageSelect } from '../common/LanguageSelect';
 import { CountryPicker } from '../common/CountryPicker';
 import { Avatar } from '../profile/Avatar';
@@ -367,12 +368,12 @@ function AvatarEditor({
           inside the picker button, so it can't get clipped by (or conflict
           with) the button's own rounding/hover state. */}
       <div className="relative w-16 h-16">
+        <HoverTip label={isAnonymous ? null : t.photoChange} className="contents">
         <button
           type="button"
           onClick={handlePick}
           disabled={isAnonymous || busy}
           className="w-16 h-16 rounded-full group disabled:cursor-not-allowed"
-          title={isAnonymous ? undefined : t.photoChange}
         >
           <Avatar name={displayName} imageUrl={avatarUrl} className="w-16 h-16" isAnonymous={isAnonymous} />
           {!isAnonymous && (
@@ -388,18 +389,20 @@ function AvatarEditor({
             </span>
           )}
         </button>
+        </HoverTip>
         {!isAnonymous && avatarUrl && !busy && (
+          <HoverTip label={t.photoRemove} className="contents">
           <button
             type="button"
             onClick={handleReset}
             aria-label={t.photoRemove}
-            title={t.photoRemove}
             className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-surface border border-border rounded-full text-white/60 hover:text-white hover:border-white/40 transition-colors"
           >
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
+          </HoverTip>
         )}
       </div>
       {error && <p className="text-[11px] text-red-400 text-center max-w-[5rem]">{error}</p>}

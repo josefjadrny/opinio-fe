@@ -11,7 +11,7 @@ import { VoteHeadline } from './VoteHeadline';
 import { ContentImageLightbox } from './ContentImageLightbox';
 import { useMe } from '../../hooks/useMe';
 import { RoleBadge } from '../common/RoleBadge';
-import { IconTip } from '../common/IconTip';
+import { HoverTip } from '../common/HoverTip';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { SourceLink } from './SourceLink';
 import { CountryFlag } from '../common/CountryFlag';
@@ -94,16 +94,17 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
               const state = location.state as { fromUserId?: string; fromUserName?: string } | null;
               if (!state?.fromUserId) return null;
               return (
-                <Link
-                  to={`/u/${state.fromUserId}${location.search}`}
-                  title={state.fromUserName ? `← @${state.fromUserName}` : 'Back'}
-                  aria-label={state.fromUserName ? `Back to @${state.fromUserName}` : 'Back'}
-                  className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0 self-center"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                  </svg>
-                </Link>
+                <HoverTip label={state.fromUserName ? `← @${state.fromUserName}` : 'Back'} className="inline-flex shrink-0 self-center">
+                  <Link
+                    to={`/u/${state.fromUserId}${location.search}`}
+                    aria-label={state.fromUserName ? `Back to @${state.fromUserName}` : 'Back'}
+                    className="text-white/40 hover:text-white/80 transition-colors p-1 -ml-1 shrink-0"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </Link>
+                </HoverTip>
               );
             })()}
             <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-10 h-10 shrink-0" />
@@ -123,7 +124,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                       onDeleted={onClose}
                     />
                   )}
-                  <IconTip label={t.close}>
+                  <HoverTip label={t.close}>
                     <button
                       onClick={onClose}
                       aria-label={t.close}
@@ -133,7 +134,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
-                  </IconTip>
+                  </HoverTip>
                 </div>
               </div>
             </div>

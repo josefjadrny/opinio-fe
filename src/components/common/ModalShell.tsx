@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from 'react';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useI18n } from '../../i18n/I18nContext';
-import { IconTip } from './IconTip';
+import { HoverTip } from './HoverTip';
 
 interface ModalShellProps {
   onClose: () => void;
@@ -44,7 +44,7 @@ export function ModalShell({
   }, [onClose]);
 
   const closeBtn = (
-    <IconTip label={t.close}>
+    <HoverTip label={t.close}>
       <button
         onClick={onClose}
         aria-label={t.close}
@@ -54,7 +54,7 @@ export function ModalShell({
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
-    </IconTip>
+    </HoverTip>
   );
 
   if (isMobile) {

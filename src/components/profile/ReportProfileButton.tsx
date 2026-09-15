@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ModalShell } from '../common/ModalShell';
-import { IconTip } from '../common/IconTip';
+import { HoverTip } from '../common/HoverTip';
 import { useI18n } from '../../i18n/I18nContext';
 import { useReportProfile } from '../../hooks/useReports';
 
@@ -45,7 +45,7 @@ export function ReportProfileButton({ profileId }: ReportProfileButtonProps) {
 
   return (
     <>
-      <IconTip label={t.report}>
+      <HoverTip label={t.report}>
         <button
           onClick={() => setOpen(true)}
           aria-label={t.report}
@@ -53,7 +53,7 @@ export function ReportProfileButton({ profileId }: ReportProfileButtonProps) {
         >
           <FlagIcon />
         </button>
-      </IconTip>
+      </HoverTip>
 
       {open && createPortal(
         <ModalShell

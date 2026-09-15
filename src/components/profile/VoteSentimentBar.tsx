@@ -38,7 +38,7 @@ const ARROW_CLASS = 'text-lg leading-none';
 
 // Explains one side's numbers: the live (24h) count that actually drives the
 // ranking, and the lifetime total. The panel's chrome, placement and arrow are
-// AnchoredTip's - shared with the icon-button labels (IconTip).
+// AnchoredTip's - shared with the icon-button labels (HoverTip).
 function VoteStatTooltip({
   tone,
   live,

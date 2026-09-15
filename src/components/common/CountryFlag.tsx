@@ -1,5 +1,6 @@
 import { getCountryName, getCountryFlag } from '../../utils/countries';
 import { useI18n } from '../../i18n/I18nContext';
+import { HoverTip } from './HoverTip';
 
 // Cached once — checks whether the browser renders flag emoji as colored glyphs.
 // On Linux/Mac it does; on Windows 11 they render as flat letter-pairs.
@@ -47,17 +48,23 @@ export function FlagImg({ code, className = '', size }: { code: string; classNam
     <span
       className={`fi fi-${code.toLowerCase()} inline-block shrink-0 ${className}`}
       style={{ width: size ?? 20, height: size ? Math.round(size * 0.75) : 15, fontSize: 'initial' }}
-      title={code}
     />
   );
 }
 
-export function CountryFlag({ code, showName = false }: { code: string; showName?: boolean }) {
+// A flag names its country on hover - most people cannot read every flag.
+// `tip={false}` is for a parent that already explains itself on hover (the
+// sidebar card's filter chip), so the two panels never stack. `showName`
+// needs no tip either: the name is already printed beside the flag.
+export function CountryFlag({ code, showName = false, tip = true }: { code: string; showName?: boolean; tip?: boolean }) {
   const { locale } = useI18n();
+  const name = getCountryName(code, locale);
   return (
-    <span className="inline-flex items-center gap-1" title={getCountryName(code, locale)}>
-      <FlagImg code={code} />
-      {showName && <span className="text-xs text-text-secondary">{getCountryName(code, locale)}</span>}
-    </span>
+    <HoverTip label={tip && !showName ? name : null} className="inline-flex shrink-0 align-middle">
+      <span className="inline-flex items-center gap-1">
+        <FlagImg code={code} />
+        {showName && <span className="text-xs text-text-secondary">{name}</span>}
+      </span>
+    </HoverTip>
   );
 }

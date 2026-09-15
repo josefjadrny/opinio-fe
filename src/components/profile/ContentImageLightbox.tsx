@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useI18n } from '../../i18n/I18nContext';
-import { IconTip } from '../common/IconTip';
+import { HoverTip } from '../common/HoverTip';
 
 const API_URL = import.meta.env.OPINIO_API_URL as string;
 
@@ -54,7 +54,7 @@ export function ContentImageLightbox({ imageUrl, alt, onClose }: ContentImageLig
         >
           {t.lightboxDownload}
         </a>
-        <IconTip label={t.close}>
+        <HoverTip label={t.close}>
           <button
             type="button"
             onClick={onClose}
@@ -65,7 +65,7 @@ export function ContentImageLightbox({ imageUrl, alt, onClose }: ContentImageLig
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-        </IconTip>
+        </HoverTip>
       </div>
     </div>
   );

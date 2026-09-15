@@ -16,11 +16,11 @@ interface StatTipProps {
 }
 
 // A number that explains itself: hover (or tap) it and a panel spells out what
-// it is made of. IconTip's sibling - same panel, different trigger contract,
+// it is made of. HoverTip's sibling - same panel, different trigger contract,
 // because these are readable figures rather than actions:
 //
 //   - Touch DOES open it. There is no action to run instead, so a tap is the
-//     only way to read the explanation on a phone; IconTip's touch guard exists
+//     only way to read the explanation on a phone; HoverTip's touch guard exists
 //     precisely because tapping an icon button already does something.
 //   - Which means it needs an outside-pointerdown close: touch has no
 //     mouseleave, so a tapped-open panel would otherwise stay up for good.
