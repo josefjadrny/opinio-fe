@@ -220,7 +220,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
           {breakdown && (breakdown.topLiking.length > 0 || breakdown.topDisliking.length > 0) && (
             <div className="grid grid-cols-2 gap-4 pt-1 border-t border-border">
               <div className="pt-3 flex flex-col">
-                <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-2 shrink-0">▲ {t.breakdownLiking}</p>
+                <p className="text-[10px] font-bold text-positive uppercase tracking-wider mb-2 shrink-0">▲ {t.breakdownLiking} {t.breakdownWindow}</p>
                 <div className="overflow-y-auto max-h-[180px] pr-1 subtle-scrollbar">
                   {(() => {
                     const max = Math.max(1, ...breakdown.topLiking.map(r => r.count));
@@ -231,7 +231,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 </div>
               </div>
               <div className="pt-3 flex flex-col">
-                <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-2 shrink-0">▼ {t.breakdownDisliking}</p>
+                <p className="text-[10px] font-bold text-negative uppercase tracking-wider mb-2 shrink-0">▼ {t.breakdownDisliking} {t.breakdownWindow}</p>
                 <div className="overflow-y-auto max-h-[180px] pr-1 subtle-scrollbar">
                   {(() => {
                     const max = Math.max(1, ...breakdown.topDisliking.map(r => r.count));

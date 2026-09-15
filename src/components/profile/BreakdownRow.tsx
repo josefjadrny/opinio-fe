@@ -43,7 +43,7 @@ export function BreakdownRow({ countryCode, count, voters, max, index, side }: B
 
   return (
     <HoverTip
-      label={`${sideLabel} ${t.breakdownTipWindow} - ${name}: ${t.breakdownTipVotes} ${count}, ${t.breakdownTipVoters} ${voters}`}
+      label={`${sideLabel} ${t.breakdownWindow} - ${name}: ${t.breakdownTipVotes} ${count}, ${t.breakdownTipVoters} ${voters}`}
       className="contents"
       panelClassName="px-3 py-2.5"
       panelWidth={TIP_PANEL_W}
@@ -51,7 +51,7 @@ export function BreakdownRow({ countryCode, count, voters, max, index, side }: B
         <>
           <div className={`flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider ${num}`}>
             <span className="text-base leading-none">{side === 'like' ? '▲' : '▼'}</span>
-            <span>{sideLabel} {t.breakdownTipWindow}</span>
+            <span>{sideLabel} {t.breakdownWindow}</span>
           </div>
           <div className="flex items-center gap-1.5 mt-1 mb-2 text-sm font-semibold text-white">
             <FlagImg code={countryCode} />

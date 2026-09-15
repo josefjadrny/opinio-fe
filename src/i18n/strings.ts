@@ -257,8 +257,9 @@ export interface Strings {
   // Breakdown row hover - label/value rows, so no plural forms needed.
   breakdownTipVoters: string;
   breakdownTipVotes: string;
-  // Window suffix for the tip header - scopes both figures under it.
-  breakdownTipWindow: string;
+  // 24h window suffix - on the breakdown section headers and the row tip header,
+  // since every figure under them is live.
+  breakdownWindow: string;
   liked: string;
   voteTipLikes: string;
   voteTipDislikes: string;
@@ -611,7 +612,7 @@ const en: Strings = {
   breakdownDisliking: 'Disliking',
   breakdownTipVoters: 'Voters',
   breakdownTipVotes: 'Votes',
-  breakdownTipWindow: '(24h)',
+  breakdownWindow: '(24h)',
   liked: 'liked',
   voteTipLikes: 'Likes',
   voteTipDislikes: 'Dislikes',
@@ -996,7 +997,7 @@ const cs: Strings = {
   breakdownDisliking: 'Nelíbí se',
   breakdownTipVoters: 'Hlasující',
   breakdownTipVotes: 'Hlasy',
-  breakdownTipWindow: '(24 h)',
+  breakdownWindow: '(24 h)',
   liked: 'líbí se',
   voteTipLikes: 'Líbí se',
   voteTipDislikes: 'Nelíbí se',
@@ -1381,7 +1382,7 @@ const es: Strings = {
   breakdownDisliking: 'En contra',
   breakdownTipVoters: 'Votantes',
   breakdownTipVotes: 'Votos',
-  breakdownTipWindow: '(24 h)',
+  breakdownWindow: '(24 h)',
   liked: 'les gusta',
   voteTipLikes: 'Me gusta',
   voteTipDislikes: 'No me gusta',
@@ -1766,7 +1767,7 @@ const de: Strings = {
   breakdownDisliking: 'Dagegen',
   breakdownTipVoters: 'Abstimmende',
   breakdownTipVotes: 'Stimmen',
-  breakdownTipWindow: '(24 Std.)',
+  breakdownWindow: '(24 Std.)',
   liked: 'gefällt',
   voteTipLikes: 'Likes',
   voteTipDislikes: 'Dislikes',
@@ -2151,7 +2152,7 @@ const fr: Strings = {
   breakdownDisliking: 'Contre',
   breakdownTipVoters: 'Votants',
   breakdownTipVotes: 'Votes',
-  breakdownTipWindow: '(24h)',
+  breakdownWindow: '(24h)',
   liked: 'aiment',
   voteTipLikes: "J'aime",
   voteTipDislikes: "Je n'aime pas",
@@ -2536,7 +2537,7 @@ const it: Strings = {
   breakdownDisliking: 'Contro',
   breakdownTipVoters: 'Votanti',
   breakdownTipVotes: 'Voti',
-  breakdownTipWindow: '(24 h)',
+  breakdownWindow: '(24 h)',
   liked: 'apprezzato',
   voteTipLikes: 'Mi piace',
   voteTipDislikes: 'Non mi piace',
@@ -2921,7 +2922,7 @@ const pl: Strings = {
   breakdownDisliking: 'Nie lubią',
   breakdownTipVoters: 'Głosujący',
   breakdownTipVotes: 'Głosy',
-  breakdownTipWindow: '(24 h)',
+  breakdownWindow: '(24 h)',
   liked: 'lubi',
   voteTipLikes: 'Polubienia',
   voteTipDislikes: 'Niepolubienia',
