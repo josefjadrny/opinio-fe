@@ -77,7 +77,10 @@ export type VoteType = 'like' | 'dislike';
 
 export interface CountryBreakdown {
   countryCode: string;
+  /** Votes on this side from this country (live, 24h). */
   count: number;
+  /** Distinct voters behind those votes - one person can vote several times. */
+  voters: number;
 }
 
 export interface PersonBreakdownResponse {

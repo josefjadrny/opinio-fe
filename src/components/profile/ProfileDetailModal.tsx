@@ -224,8 +224,8 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 <div className="overflow-y-auto max-h-[180px] pr-1 subtle-scrollbar">
                   {(() => {
                     const max = Math.max(1, ...breakdown.topLiking.map(r => r.count));
-                    return breakdown.topLiking.map(({ countryCode, count }, i) => (
-                      <BreakdownRow key={countryCode} countryCode={countryCode} count={count} max={max} index={i} side="like" />
+                    return breakdown.topLiking.map(({ countryCode, count, voters }, i) => (
+                      <BreakdownRow key={countryCode} countryCode={countryCode} count={count} voters={voters} max={max} index={i} side="like" />
                     ));
                   })()}
                 </div>
@@ -235,8 +235,8 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 <div className="overflow-y-auto max-h-[180px] pr-1 subtle-scrollbar">
                   {(() => {
                     const max = Math.max(1, ...breakdown.topDisliking.map(r => r.count));
-                    return breakdown.topDisliking.map(({ countryCode, count }, i) => (
-                      <BreakdownRow key={countryCode} countryCode={countryCode} count={count} max={max} index={i} side="dislike" />
+                    return breakdown.topDisliking.map(({ countryCode, count, voters }, i) => (
+                      <BreakdownRow key={countryCode} countryCode={countryCode} count={count} voters={voters} max={max} index={i} side="dislike" />
                     ));
                   })()}
                 </div>

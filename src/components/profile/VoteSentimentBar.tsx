@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { formatNumber } from '../../utils/formatNumber';
 import { useI18n } from '../../i18n/I18nContext';
-import { AnchoredTip, TIP_TEXT_CLASS } from '../common/AnchoredTip';
+import { AnchoredTip, TIP_TEXT_CLASS, TIP_PANEL_W } from '../common/AnchoredTip';
 
 interface VoteSentimentBarProps {
   likes: number;
@@ -11,7 +11,6 @@ interface VoteSentimentBarProps {
   totalDislikes?: number;
 }
 
-const PANEL_W = 216;
 
 // The lifetime figure in brackets. It keeps its side's colour and it has to be
 // readable, which rules out fading the brand hue: these were `/40` tints, and a
@@ -61,7 +60,7 @@ function VoteStatTooltip({
   const livePct = total > 0 ? Math.min(100, (live / total) * 100) : live > 0 ? 100 : 0;
 
   return (
-    <AnchoredTip anchorEl={anchorEl} width={PANEL_W} content={live + ':' + total} className="px-3 py-2.5">
+    <AnchoredTip anchorEl={anchorEl} width={TIP_PANEL_W} content={live + ':' + total} className="px-3 py-2.5">
       <div className={`flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider mb-2 ${accent}`}>
         <span>{arrowChar}</span>
         <span>{title}</span>

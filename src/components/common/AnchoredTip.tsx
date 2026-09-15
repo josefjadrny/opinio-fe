@@ -13,6 +13,10 @@ const MARGIN = 10; // viewport clamp margin
 // those rows keep their own colours and sizes.
 export const TIP_TEXT_CLASS = 'text-sm text-white/80';
 
+// Fixed width of the label/value stat panels (sentiment bar, breakdown rows),
+// so sibling panels line up instead of each sizing to its longest label.
+export const TIP_PANEL_W = 216;
+
 interface TipLayout {
   left: number;
   top: number;

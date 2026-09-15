@@ -9,6 +9,13 @@ interface HoverTipProps {
    *  `contents` when the child sizes itself (w-full buttons, absolutely
    *  positioned badges) and the wrapper must not add a box of its own. */
   className?: string;
+  /** Multi-line contents instead of the plain `label` line; `label` then
+   *  only keys re-measurement. Keep it short - this is still a tooltip. */
+  panel?: ReactNode;
+  /** Padding for a `panel`; the one-line default is tighter. */
+  panelClassName?: string;
+  /** Fixed width for a `panel`; the default sizes to the content. */
+  panelWidth?: number;
   /** The trigger - a button, link, chip or any hoverable element. */
   children: ReactNode;
 }
@@ -38,7 +45,7 @@ interface HoverTipProps {
 // control, and the default wrapper's box coincides with the child's anyway.
 // Enter/leave are computed on the DOM tree, so a `contents` wrapper still
 // receives them.
-export function HoverTip({ label, className = 'inline-flex shrink-0', children }: HoverTipProps) {
+export function HoverTip({ label, panel, panelClassName = 'px-2.5 py-1.5', panelWidth, className = 'inline-flex shrink-0', children }: HoverTipProps) {
   // The open state IS the anchor: resolved from the ref inside the event
   // handler (not during render), null when closed.
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
@@ -63,8 +70,8 @@ export function HoverTip({ label, className = 'inline-flex shrink-0', children }
     >
       {children}
       {anchor && (
-        <AnchoredTip anchorEl={anchor} content={label} className="px-2.5 py-1.5">
-          <span className={`block whitespace-nowrap ${TIP_TEXT_CLASS}`}>{label}</span>
+        <AnchoredTip anchorEl={anchor} width={panelWidth} content={label} className={panelClassName}>
+          {panel ?? <span className={`block whitespace-nowrap ${TIP_TEXT_CLASS}`}>{label}</span>}
         </AnchoredTip>
       )}
     </span>
