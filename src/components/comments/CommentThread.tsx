@@ -41,12 +41,19 @@ function CommentBody({ body, mentions, backState }: { body: string; mentions: Co
 // Same shape as the "reported by" link in the detail header.
 type BackState = { fromProfileId: string; fromProfileName?: string };
 
-function CommentRow({ c, backState }: { c: Comment; backState: BackState }) {
+// `index` staggers the entrance the way the country rows do (same `stat-in`
+// keyframe and 35ms step). Capped so a long thread does not keep the rows
+// below the fold waiting on ones nobody has scrolled to yet; a comment
+// prepended after a post mounts alone and simply fades in.
+function CommentRow({ c, index, backState }: { c: Comment; index: number; backState: BackState }) {
   const { locale, t } = useI18n();
   const location = useLocation();
   const userTo = `/u/${c.user.id}${location.search}`;
   return (
-    <div className="flex gap-2.5 py-2.5">
+    <div
+      className="flex gap-2.5 py-2.5"
+      style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${Math.min(index, 12) * 35}ms` }}
+    >
       <Link to={userTo} state={backState} className="shrink-0 mt-0.5" aria-label={`@${c.user.handle}`}>
         <Avatar name={c.user.handle} imageUrl={c.user.avatarUrl} className="w-7 h-7" />
       </Link>
@@ -80,7 +87,7 @@ export function CommentList({ profileId, profileName, className = '' }: { profil
   }
   return (
     <div className={`divide-y divide-white/[0.06] ${className}`}>
-      {comments.map((c) => <CommentRow key={c.id} c={c} backState={backState} />)}
+      {comments.map((c, i) => <CommentRow key={c.id} c={c} index={i} backState={backState} />)}
     </div>
   );
 }
