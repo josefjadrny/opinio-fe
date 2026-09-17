@@ -16,6 +16,7 @@ import { formatNumber } from '../../utils/formatNumber';
 import { useProfileText } from '../../hooks/useProfileText';
 import { useI18n } from '../../i18n/I18nContext';
 import { getCountryName } from '../../utils/countries';
+import { CommentCount } from '../comments/CommentCount';
 
 // Hover dwell before the popup opens (ms). Short enough to feel responsive,
 // long enough not to flash while sweeping the pointer across the list.
@@ -191,6 +192,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
                 {flagEl}
                 {roleEl}
                 {profile.label && <LabelBadge label={profile.label} />}
+                <CommentCount count={profile.commentCount ?? 0} size="xs" onClick={openDetail} />
               </div>
             </div>
           </div>
@@ -266,14 +268,18 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
           </div>
         </div>
         <p className="text-[13px] text-text-secondary leading-snug line-clamp-2 mt-0.5 mb-1.5">{description}</p>
-        <div className="w-fit" onClick={(e) => e.stopPropagation()}>
-          <VoteButtons
-            profileId={profile.id}
-            likes={profile.likes}
-            dislikes={profile.dislikes}
-            showOnly={showOnly}
-            reverseVotes={reverseVotes}
-          />
+        <div className="flex items-center justify-between gap-2">
+          <div className="w-fit" onClick={(e) => e.stopPropagation()}>
+            <VoteButtons
+              profileId={profile.id}
+              likes={profile.likes}
+              dislikes={profile.dislikes}
+              showOnly={showOnly}
+              reverseVotes={reverseVotes}
+            />
+          </div>
+          {/* Bottom-right was empty space; the count sits there, muted. */}
+          <CommentCount count={profile.commentCount ?? 0} onClick={openDetail} />
         </div>
       </div>
       {tooltipEl}

@@ -42,4 +42,8 @@ export interface Profile {
   totalLikes?: number;
   totalDislikes?: number;
   label?: 'new' | 'rising' | 'falling';
+  // Lifetime comment count. ABSENT means the API does not serve comments yet
+  // and the whole comment UI stays off; 0 means "none" and the UI is live. The
+  // FE shipped ahead of the BE on purpose - this field is the switch.
+  commentCount?: number;
 }

@@ -23,6 +23,8 @@ import { useProfileText } from '../../hooks/useProfileText';
 import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { useMapPanel } from '../../context/useMapPanel';
+import { CommentIcon } from '../comments/CommentCount';
+import { CommentsSheet } from '../comments/CommentsSheet';
 
 interface ProfileDetailModalProps {
   profile: Profile;
@@ -36,6 +38,11 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
   const { t, locale } = useI18n();
   const { data: me } = useMe();
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
+  // Absent from the response = the API does not serve comments yet: no row.
+  const commentsEnabled = profile.commentCount !== undefined;
+  const commentCount = profile.commentCount ?? 0;
+  const isRegistered = !!me?.user && me.user.tier !== 'anonymous';
   const { registerSheet } = useMapPanel();
   // The chevron folds this sheet's own description, image and country breakdown
   // away, exactly like the desktop modal's - and nothing else. The map panel at
@@ -152,6 +159,30 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
             totalDislikes={profile.totalDislikes ?? 0}
           />
 
+          {/* Comments entry, above the fold. On real data this sheet is at its
+              85vh cap with the breakdown already below the fold, so the thread
+              lives in its own sheet and this row is how you get there. Hidden
+              at zero for visitors who cannot write; a quiet "write" line at
+              zero for those who can, so a thread can be started. */}
+          {commentsEnabled && (commentCount > 0 || isRegistered) && (
+            <button
+              type="button"
+              onClick={() => setCommentsOpen(true)}
+              className="-mt-1 w-full flex items-center gap-2 rounded-lg px-2.5 py-1.5 -mx-2.5 text-base text-white/70 hover:text-white hover:bg-white/5 active:bg-white/10 transition-colors"
+              style={{ width: 'calc(100% + 1.25rem)' }}
+            >
+              {/* Same 20px glyph + 16px figure as the list cards. */}
+              <CommentIcon className="w-5 h-5" />
+              <span className="flex-1 text-left font-medium tabular-nums leading-none">
+                {commentCount > 0 ? t.comments : t.commentsWrite}
+                {commentCount > 0 && <span className="font-normal text-white/50"> ({commentCount})</span>}
+              </span>
+              <svg className="w-5 h-5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+
 
           {/* Collapsing to 0fr animates the sheet's height, which max-height
               cannot do without a magic number that is wrong for every other
@@ -255,6 +286,14 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
           alt={profile.name}
           onClose={() => setLightboxOpen(false)}
         />
+      )}
+      {commentsOpen && (
+        // The wrapper above is pointer-events-none so the feed stays live;
+        // pointer-events inherits, so this contents box hands them back to the
+        // sheet the way the lightbox does for itself.
+        <div className="contents pointer-events-auto">
+          <CommentsSheet profileId={profile.id} count={commentCount} onClose={() => setCommentsOpen(false)} />
+        </div>
       )}
     </div>
   );

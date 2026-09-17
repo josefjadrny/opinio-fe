@@ -24,6 +24,9 @@ import { BreakdownRow } from './BreakdownRow';
 import { BreakdownHeader } from './BreakdownHeader';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
+import { CommentIcon } from '../comments/CommentCount';
+import { commentCountLabel } from '../comments/commentCountLabel';
+import { CommentList, CommentComposer } from '../comments/CommentThread';
 
 interface DesktopProfileModalProps {
   profileId: string;
@@ -42,6 +45,14 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
   const animatedLikes = useAnimatedValue(profile?.likes ?? 0);
   const animatedDislikes = useAnimatedValue(profile?.dislikes ?? 0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  // Right column: country breakdown or the comment thread. Same box either
+  // way - its height comes from the description column, so neither view can
+  // grow the modal.
+  const [rightTab, setRightTab] = useState<'countries' | 'comments'>('countries');
+  // Absent from the response = the API does not serve comments yet; the tab
+  // row is not rendered at all and the column is the plain breakdown.
+  const commentsEnabled = profile?.commentCount !== undefined;
+  const commentCount = profile?.commentCount ?? 0;
   // Collapsing drops the description + country breakdown, shrinking this
   // bottom-anchored card so the map behind it is actually usable - at a Full HD
   // viewport the expanded modal leaves only ~40% of the map visible, and the
@@ -265,10 +276,57 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                         column. The lists then scroll to fit that height instead of
                         growing the modal just to list 10 countries. A min-height
                         floor keeps it usable when the opinion text is very short. */}
-                    <div className="relative min-h-[200px]">
-                      <div className="absolute inset-0 px-6 py-4">
-                        {breakdown && (breakdown.topLiking.length > 0 || breakdown.topDisliking.length > 0) ? (
-                          <div className="grid grid-cols-2 gap-6 h-full">
+                    {/* The 200px floor is for the breakdown when the text is
+                        short. A thread needs more than one visible comment
+                        under its composer, so comments mode floors at 360 -
+                        on production text (150-250 chars + a 240px image) the
+                        column is already ~400px and neither floor applies. */}
+                    <div className={`relative ${commentsEnabled && rightTab === 'comments' ? 'min-h-[360px]' : 'min-h-[200px]'}`}>
+                      <div className="absolute inset-0 px-6 py-4 flex flex-col">
+                        {/* Segmented switch over the column. Countries is the
+                            default; the count on the other segment is the only
+                            place the detail advertises comments. */}
+                        {commentsEnabled && <div className="flex items-center gap-1 mb-3 shrink-0 -mx-1">
+                          {(['countries', 'comments'] as const).map((tab) => {
+                            const active = rightTab === tab;
+                            return (
+                              <button
+                                key={tab}
+                                type="button"
+                                onClick={() => setRightTab(tab)}
+                                className={`inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-bold uppercase tracking-wider transition-colors ${
+                                  active ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80 hover:bg-white/5'
+                                }`}
+                              >
+                                {tab === 'comments' ? (
+                                  <CommentIcon className="w-3.5 h-3.5" />
+                                ) : (
+                                  // The app's stats glyph (StatsModal / ProfileMenu): the
+                                  // two-tone red/green bars already mean "vote breakdown".
+                                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} aria-hidden>
+                                    <path stroke="#ef4444" strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z" />
+                                    <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M9 19V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                  </svg>
+                                )}
+                                {tab === 'countries' ? t.commentsTabCountries : t.commentsTabComments}
+                                {tab === 'comments' && commentCount > 0 && (
+                                  <span className={`tabular-nums normal-case tracking-normal font-normal ${active ? 'text-white/70' : 'text-white/40'}`}>({commentCount})</span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>}
+                        {commentsEnabled && rightTab === 'comments' ? (
+                          <div className="flex-1 min-h-0 flex flex-col">
+                            <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar" aria-label={commentCountLabel(t, commentCount)}>
+                              <CommentList profileId={profileId} />
+                            </div>
+                            <div className="shrink-0 pt-3 mt-1 border-t border-border">
+                              <CommentComposer profileId={profileId} />
+                            </div>
+                          </div>
+                        ) : breakdown && (breakdown.topLiking.length > 0 || breakdown.topDisliking.length > 0) ? (
+                          <div className="grid grid-cols-2 gap-6 flex-1 min-h-0">
                             <div className="flex flex-col min-h-0">
                               <BreakdownHeader side="like" />
                               <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">

@@ -83,6 +83,27 @@ export interface CountryBreakdown {
   voters: number;
 }
 
+// A comment on an opinio. `mentions` carries the handles referenced in the
+// body so the FE can link them; the BE stores mentions by user id and renders
+// the current handle at read time (handles are renamable).
+export interface Comment {
+  id: string;
+  body: string;
+  createdAt: string;
+  user: {
+    id: string;
+    handle: string;
+    avatarUrl: string | null;
+    countryCode: string | null;
+  };
+  mentions: { userId: string; handle: string }[];
+}
+
+export interface CommentsResponse {
+  comments: Comment[];
+  total: number;
+}
+
 export interface PersonBreakdownResponse {
   topLiking: CountryBreakdown[];
   topDisliking: CountryBreakdown[];

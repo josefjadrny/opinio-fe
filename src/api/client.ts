@@ -158,6 +158,17 @@ export function getPersonBreakdown(profileId: string): Promise<PersonBreakdownRe
   return apiFetch(`/api/profiles/${profileId}/breakdown`);
 }
 
+export function getComments(profileId: string): Promise<import('../types/api').CommentsResponse> {
+  return apiFetch(`/api/profiles/${profileId}/comments`);
+}
+
+export function postComment(profileId: string, body: string): Promise<import('../types/api').Comment> {
+  return apiFetch(`/api/profiles/${profileId}/comments`, {
+    method: 'POST',
+    body: JSON.stringify({ body }),
+  });
+}
+
 export function getUser(userId: string, lang?: string): Promise<UserDetailResponse> {
   const qs = lang ? `?lang=${lang}` : '';
   return apiFetch(`/api/users/${userId}${qs}`);
