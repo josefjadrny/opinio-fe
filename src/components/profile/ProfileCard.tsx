@@ -47,7 +47,10 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   // only in the profile detail modal.
   const { name, description } = useProfileText(profile);
 
-  const openDetail = useCallback(() => {
+  // `comments` lands the detail on its thread (desktop tab / mobile sheet)
+  // instead of the country breakdown - the count is a link to the comments,
+  // not a second way to open the card.
+  const openDetail = useCallback((comments = false) => {
     // Dismiss the hover popup so it doesn't sit on top of the detail modal
     // (the tooltip portal is z-[9999], above the modal).
     clearTimeout(hoverTimer.current);
@@ -57,8 +60,12 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
     setHoveredId(null);
     setHoveredProfileCountry(undefined);
     queryClient.setQueryData(['profile', profile.id, locale], profile);
-    navigate('/p/' + profile.id + location.search);
+    navigate('/p/' + profile.id + location.search, comments ? { state: { comments: true } } : undefined);
   }, [navigate, profile, location.search, queryClient, locale, setHoveredProfileCountry]);
+
+  // The card's own onClick also opens the detail; stop the bubble so the
+  // count's navigation (with state) is the one that sticks.
+  const openComments = useCallback((e: React.MouseEvent) => { e.stopPropagation(); openDetail(true); }, [openDetail]);
 
   // Arm the open timer once. Crucially we do NOT reset it on every mouse move —
   // continuous movement used to perpetually restart the timer so the popup only
@@ -176,7 +183,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
         onMouseEnter={handleMouseEnter}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        onClick={openDetail}
+        onClick={() => openDetail()}
       >
         {rank != null && (
           <span className="text-xs font-bold text-text-secondary w-5 text-right shrink-0">
@@ -192,7 +199,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
                 {flagEl}
                 {roleEl}
                 {profile.label && <LabelBadge label={profile.label} />}
-                <CommentCount count={profile.commentCount ?? 0} size="xs" onClick={openDetail} />
+                <CommentCount count={profile.commentCount ?? 0} size="xs" onClick={openComments} />
               </div>
             </div>
           </div>
@@ -244,7 +251,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      onClick={openDetail}
+      onClick={() => openDetail()}
       className="group relative flex items-start gap-2.5 px-2.5 py-2.5 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 hover:-translate-y-0.5 transition-all duration-200 overflow-hidden cursor-pointer select-none"
     >
       <div
@@ -279,7 +286,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
             />
           </div>
           {/* Bottom-right was empty space; the count sits there, muted. */}
-          <CommentCount count={profile.commentCount ?? 0} onClick={openDetail} />
+          <CommentCount count={profile.commentCount ?? 0} onClick={openComments} />
         </div>
       </div>
       {tooltipEl}

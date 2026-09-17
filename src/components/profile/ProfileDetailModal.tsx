@@ -38,7 +38,8 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
   const { t, locale } = useI18n();
   const { data: me } = useMe();
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [commentsOpen, setCommentsOpen] = useState(false);
+  // Opened from a list card's comment count -> the sheet is up right away.
+  const [commentsOpen, setCommentsOpen] = useState(!!(location.state as { comments?: boolean } | null)?.comments);
   // Absent from the response = the API does not serve comments yet: no row.
   const commentsEnabled = profile.commentCount !== undefined;
   const commentCount = profile.commentCount ?? 0;

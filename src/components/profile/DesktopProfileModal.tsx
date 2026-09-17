@@ -48,7 +48,10 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
   // Right column: country breakdown or the comment thread. Same box either
   // way - its height comes from the description column, so neither view can
   // grow the modal.
-  const [rightTab, setRightTab] = useState<'countries' | 'comments'>('countries');
+  // Opened from a list card's comment count -> start on the thread.
+  const [rightTab, setRightTab] = useState<'countries' | 'comments'>(
+    (location.state as { comments?: boolean } | null)?.comments ? 'comments' : 'countries',
+  );
   // Absent from the response = the API does not serve comments yet; the tab
   // row is not rendered at all and the column is the plain breakdown.
   const commentsEnabled = profile?.commentCount !== undefined;
