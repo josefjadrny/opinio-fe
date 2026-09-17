@@ -162,6 +162,10 @@ export function getComments(profileId: string): Promise<import('../types/api').C
   return apiFetch(`/api/profiles/${profileId}/comments`);
 }
 
+export function searchUsers(q: string): Promise<{ users: import('../types/api').MentionUser[] }> {
+  return apiFetch(`/api/users/search?q=${encodeURIComponent(q)}`);
+}
+
 export function postComment(profileId: string, body: string): Promise<import('../types/api').Comment> {
   return apiFetch(`/api/profiles/${profileId}/comments`, {
     method: 'POST',

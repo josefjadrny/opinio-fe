@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getComments, postComment, isNotFound } from '../api/client';
+import { getComments, postComment, searchUsers, isNotFound } from '../api/client';
 import type { Comment, CommentsResponse, ProfilesResponse } from '../types/api';
 import type { Profile } from '../types/profile';
 
@@ -32,5 +32,18 @@ export function usePostComment(profileId: string) {
         old ? { ...old, profiles: old.profiles.map(bump) } : old,
       );
     },
+  });
+}
+
+// Mention autocomplete. `q` is the handle prefix after the "@" at the caret;
+// empty means no popover, so nothing is asked. A prefix stays fresh for a
+// minute - the handle list does not move fast enough to matter.
+export function useUserSearch(q: string) {
+  return useQuery({
+    queryKey: ['userSearch', q],
+    queryFn: () => searchUsers(q),
+    enabled: q.length > 0,
+    staleTime: 60_000,
+    placeholderData: (prev) => prev,
   });
 }

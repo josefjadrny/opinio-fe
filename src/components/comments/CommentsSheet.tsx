@@ -8,7 +8,7 @@ import { CommentList, CommentComposer } from './CommentThread';
 // below the fold, so an inline thread would be a third screen of scrolling and
 // a composer at its end would sit under the keyboard. ModalShell's footer is
 // pinned and keyboard-safe, which is exactly what the composer needs.
-export function CommentsSheet({ profileId, count, onClose }: { profileId: string; count: number; onClose: () => void }) {
+export function CommentsSheet({ profileId, profileName, count, onClose }: { profileId: string; profileName?: string; count: number; onClose: () => void }) {
   const { t } = useI18n();
   return (
     <ModalShell
@@ -20,7 +20,7 @@ export function CommentsSheet({ profileId, count, onClose }: { profileId: string
       footer={<CommentComposer profileId={profileId} compact />}
     >
       <div className="px-6 py-1">
-        <CommentList profileId={profileId} />
+        <CommentList profileId={profileId} profileName={profileName} />
       </div>
     </ModalShell>
   );

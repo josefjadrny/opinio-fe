@@ -1,25 +1,34 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
-import { useComments, usePostComment } from '../../hooks/useComments';
+import { useComments, usePostComment, useUserSearch } from '../../hooks/useComments';
 import { Avatar } from '../profile/Avatar';
 import { CountryFlag } from '../common/CountryFlag';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
-import type { Comment } from '../../types/api';
+import type { Comment, MentionUser } from '../../types/api';
 
 const MAX_LEN = 280;
 
 // Renders the "@handle" tokens the BE lists in `mentions` as links; any other
 // "@word" in the body is plain text, so a typo cannot fabricate a mention.
-function CommentBody({ body, mentions }: { body: string; mentions: Comment['mentions'] }) {
+function CommentBody({ body, mentions, backState }: { body: string; mentions: Comment['mentions']; backState: BackState }) {
+  const location = useLocation();
   if (mentions.length === 0) return <>{body}</>;
   const handles = mentions.map((m) => m.handle);
+  const idFor = (handle: string) => mentions.find((m) => m.handle === handle)?.userId;
   const re = new RegExp(`(@(?:${handles.map((h) => h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')}))\\b`, 'g');
   return (
     <>
       {body.split(re).map((part, i) =>
         part.startsWith('@') && handles.includes(part.slice(1)) ? (
-          <span key={i} className="text-accent font-medium hover:underline underline-offset-2 cursor-pointer">{part}</span>
+          <Link
+            key={i}
+            to={`/u/${idFor(part.slice(1))}${location.search}`}
+            state={backState}
+            onClick={(e) => e.stopPropagation()}
+            className="text-accent font-medium hover:underline underline-offset-2"
+          >{part}</Link>
         ) : (
           <Fragment key={i}>{part}</Fragment>
         ),
@@ -28,19 +37,27 @@ function CommentBody({ body, mentions }: { body: string; mentions: Comment['ment
   );
 }
 
-function CommentRow({ c }: { c: Comment }) {
+// Where a user link should come back to: the opinio the thread belongs to.
+// Same shape as the "reported by" link in the detail header.
+type BackState = { fromProfileId: string; fromProfileName?: string };
+
+function CommentRow({ c, backState }: { c: Comment; backState: BackState }) {
   const { locale, t } = useI18n();
+  const location = useLocation();
+  const userTo = `/u/${c.user.id}${location.search}`;
   return (
     <div className="flex gap-2.5 py-2.5">
-      <Avatar name={c.user.handle} imageUrl={c.user.avatarUrl} className="w-7 h-7 shrink-0 mt-0.5" />
+      <Link to={userTo} state={backState} className="shrink-0 mt-0.5" aria-label={`@${c.user.handle}`}>
+        <Avatar name={c.user.handle} imageUrl={c.user.avatarUrl} className="w-7 h-7" />
+      </Link>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5 text-xs leading-none mb-1">
-          <span className="font-semibold text-white/90">@{c.user.handle}</span>
+          <Link to={userTo} state={backState} className="font-semibold text-white/90 hover:underline underline-offset-2">@{c.user.handle}</Link>
           {c.user.countryCode && <CountryFlag code={c.user.countryCode} tip={false} />}
           <span className="text-white/50">{formatRelativeTime(c.createdAt, locale, t.justNow)}</span>
         </div>
         <p className="text-[13px] text-white/80 leading-snug break-words">
-          <CommentBody body={c.body} mentions={c.mentions} />
+          <CommentBody body={c.body} mentions={c.mentions} backState={backState} />
         </p>
       </div>
     </div>
@@ -50,8 +67,9 @@ function CommentRow({ c }: { c: Comment }) {
 // The list only. Height and scrolling are the caller's: the desktop column
 // pins it to the description's height, the mobile sheet lets ModalShell
 // scroll it.
-export function CommentList({ profileId, className = '' }: { profileId: string; className?: string }) {
+export function CommentList({ profileId, profileName, className = '' }: { profileId: string; profileName?: string; className?: string }) {
   const { t } = useI18n();
+  const backState: BackState = { fromProfileId: profileId, fromProfileName: profileName };
   const { data, isLoading } = useComments(profileId, true);
   if (isLoading) {
     return <p className={`text-xs text-white/50 py-3 ${className}`}>{t.loading}</p>;
@@ -62,9 +80,29 @@ export function CommentList({ profileId, className = '' }: { profileId: string; 
   }
   return (
     <div className={`divide-y divide-white/[0.06] ${className}`}>
-      {comments.map((c) => <CommentRow key={c.id} c={c} />)}
+      {comments.map((c) => <CommentRow key={c.id} c={c} backState={backState} />)}
     </div>
   );
+}
+
+// The "@prefix" token the caret is inside of, if any. `start` is the index
+// of the "@" so a pick can splice the handle in; the prefix must be at least
+// one character, so a bare "@" never asks the API for the whole user list.
+function mentionAtCaret(text: string, caret: number): { start: number; query: string } | null {
+  const m = text.slice(0, caret).match(/(^|[^a-z0-9_])@([a-z0-9_]{1,30})$/i);
+  if (!m) return null;
+  return { start: caret - m[2].length - 1, query: m[2].toLowerCase() };
+}
+
+// Keystrokes arrive faster than the search is worth asking; the last value
+// wins after a short pause.
+function useDebounced<T>(value: T, ms: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), ms);
+    return () => clearTimeout(id);
+  }, [value, ms]);
+  return debounced;
 }
 
 // One-line composer that grows to three. Registered and above only - anonymous
@@ -74,8 +112,26 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
   const { t } = useI18n();
   const { data: me } = useMe();
   const [value, setValue] = useState('');
+  const [mention, setMention] = useState<{ start: number; query: string } | null>(null);
+  const [active, setActive] = useState(0);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // Caret to restore after a pick splices the handle in - React re-renders the
+  // textarea with the new value before the caret can be placed.
+  const pendingCaret = useRef<number | null>(null);
   const post = usePostComment(profileId);
   const isRegistered = !!me?.user && me.user.tier !== 'anonymous';
+
+  const query = useDebounced(mention?.query ?? '', 150);
+  const { data: search } = useUserSearch(query);
+  const suggestions: MentionUser[] = mention && query ? (search?.users ?? []) : [];
+  const popoverOpen = suggestions.length > 0;
+
+  useEffect(() => {
+    if (pendingCaret.current === null) return;
+    const ta = textareaRef.current;
+    if (ta) { ta.focus(); ta.setSelectionRange(pendingCaret.current, pendingCaret.current); }
+    pendingCaret.current = null;
+  }, [value]);
 
   if (!isRegistered) {
     return (
@@ -84,6 +140,23 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
       </div>
     );
   }
+
+  const syncMention = (text: string, caret: number) => {
+    const next = mentionAtCaret(text, caret);
+    setMention(next);
+    if (next?.query !== mention?.query) setActive(0);
+  };
+
+  const pick = (u: MentionUser) => {
+    if (!mention) return;
+    const ta = textareaRef.current;
+    const caret = ta?.selectionStart ?? value.length;
+    const head = `${value.slice(0, mention.start)}@${u.handle} `;
+    const next = (head + value.slice(caret)).slice(0, MAX_LEN);
+    pendingCaret.current = Math.min(head.length, next.length);
+    setValue(next);
+    setMention(null);
+  };
 
   const submit = () => {
     const body = value.trim();
@@ -95,13 +168,50 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
     <div className="flex items-center gap-2">
       <Avatar name={me.user.displayName} imageUrl={me.user.avatarUrl ?? null} className="w-7 h-7 shrink-0" />
       <div className="flex-1 min-w-0 relative">
+        {/* Mention picker. Opens upward - the desktop column has the
+            description above, the mobile sheet its thread - and the list
+            is the API's answer, so an unknown handle simply shows nothing. */}
+        {popoverOpen && (
+          <ul
+            role="listbox"
+            className="absolute bottom-full left-0 mb-1 w-full max-h-48 overflow-y-auto rounded-lg bg-surface ring-1 ring-white/15 shadow-2xl py-1 z-20"
+          >
+            {suggestions.map((u, i) => (
+              <li key={u.id} role="option" aria-selected={i === active}>
+                <button
+                  type="button"
+                  onMouseDown={(e) => { e.preventDefault(); pick(u); }}
+                  onMouseEnter={() => setActive(i)}
+                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-left text-[13px] ${i === active ? 'bg-white/[0.08] text-white' : 'text-white/80'}`}
+                >
+                  <Avatar name={u.handle} imageUrl={u.avatarUrl} className="w-6 h-6 shrink-0" />
+                  <span className="font-medium truncate">@{u.handle}</span>
+                  {u.countryCode && <CountryFlag code={u.countryCode} tip={false} />}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
         {/* The narrow sheet gets the short placeholder - the @ hint wraps to
             a second line there and collides with the counter, which only
             appears once there is something to count. */}
         <textarea
+          ref={textareaRef}
           value={value}
-          onChange={(e) => setValue(e.target.value.slice(0, MAX_LEN))}
+          onChange={(e) => {
+            const next = e.target.value.slice(0, MAX_LEN);
+            setValue(next);
+            syncMention(next, Math.min(e.target.selectionStart ?? next.length, next.length));
+          }}
+          onSelect={(e) => syncMention(value, e.currentTarget.selectionStart ?? value.length)}
+          onBlur={() => setMention(null)}
           onKeyDown={(e) => {
+            if (popoverOpen) {
+              if (e.key === 'ArrowDown') { e.preventDefault(); setActive((a) => (a + 1) % suggestions.length); return; }
+              if (e.key === 'ArrowUp') { e.preventDefault(); setActive((a) => (a - 1 + suggestions.length) % suggestions.length); return; }
+              if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); pick(suggestions[active]); return; }
+              if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); setMention(null); return; }
+            }
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); }
           }}
           rows={1}

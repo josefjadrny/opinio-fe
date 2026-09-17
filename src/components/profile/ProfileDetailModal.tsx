@@ -293,7 +293,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
         // pointer-events inherits, so this contents box hands them back to the
         // sheet the way the lightbox does for itself.
         <div className="contents pointer-events-auto">
-          <CommentsSheet profileId={profile.id} count={commentCount} onClose={() => setCommentsOpen(false)} />
+          <CommentsSheet profileId={profile.id} profileName={profile.name} count={commentCount} onClose={() => setCommentsOpen(false)} />
         </div>
       )}
     </div>

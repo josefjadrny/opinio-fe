@@ -322,7 +322,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                         {commentsEnabled && rightTab === 'comments' ? (
                           <div className="flex-1 min-h-0 flex flex-col">
                             <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar" aria-label={commentCountLabel(t, commentCount)}>
-                              <CommentList profileId={profileId} />
+                              <CommentList profileId={profileId} profileName={profile.name} />
                             </div>
                             <div className="shrink-0 pt-3 mt-1 border-t border-border">
                               <CommentComposer profileId={profileId} />

@@ -104,6 +104,13 @@ export interface CommentsResponse {
   total: number;
 }
 
+export interface MentionUser {
+  id: string;
+  handle: string;
+  avatarUrl: string | null;
+  countryCode: string | null;
+}
+
 export interface PersonBreakdownResponse {
   topLiking: CountryBreakdown[];
   topDisliking: CountryBreakdown[];
