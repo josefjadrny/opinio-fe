@@ -5,6 +5,7 @@ import { HoverTip } from '../common/HoverTip';
 import { useI18n } from '../../i18n/I18nContext';
 import { useSubjectSwap } from '../../hooks/useSubjectSwap';
 import type { Profile } from '../../types/profile';
+import { LogoMark } from '../common/LogoMark';
 
 // What the caption is currently about. The two subject kinds are the two
 // voter-side map tints (see WorldMap): one opinio, or one country's opinios.
@@ -324,17 +325,7 @@ function CaptionRow({
            wordmark is a plain span, NOT a heading: on home the h1 is FilterBar's
            wordmark and a second one here would double it. */
         <>
-          {/* The mark inline, not /favicon.svg: every logo asset we ship bakes
-              in an opaque #1a1a2e background circle (favicons and launcher
-              icons need one), which on this lighter card reads as a dark disc
-              around the logo. Same shapes, minus that circle, cropped to the
-              bubble so it fills the box. */}
-          <svg viewBox="4 5 24 23" aria-hidden="true" className="caption-mark w-[52px] h-[52px] shrink-0">
-            <rect x="4" y="5" width="24" height="17" rx="4" fill="#0f3460" />
-            <path d="M9 22 L6 28 L16 22 Z" fill="#0f3460" />
-            <polygon points="16,7 11,13 21,13" fill="#22c55e" />
-            <polygon points="16,20 11,14 21,14" fill="#ef4444" />
-          </svg>
+          <LogoMark className="caption-mark w-[52px] h-[52px] shrink-0" />
           <div className={`${COLUMN} caption-text`}>
             <span style={{ fontSize: NAME_SIZE }} className={`${NAME} text-accent`}>
               {t.appName}

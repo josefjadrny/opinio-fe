@@ -2,7 +2,8 @@ import { Fragment, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { CountryFlag } from '../common/CountryFlag';
-import { CommentIcon, OpinioIcon } from '../comments/CommentCount';
+import { CommentIcon } from '../comments/CommentCount';
+import { LogoMark } from '../common/LogoMark';
 import { CommentBody } from '../comments/CommentThread';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import type { UserActivityItem } from '../../types/api';
@@ -67,10 +68,10 @@ function ActivityRow({ item, handle, isMe, onOpen, onOpenProfile }: {
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
       className="group flex gap-2.5 md:gap-3 px-2 md:px-2.5 py-2 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 transition-all duration-200 cursor-pointer select-none"
     >
-      {/* Kind glyph, bare - the app's own two: the comment bubble, or the
-          opinio bubble-with-plus a shared opinio is added with. */}
+      {/* Kind glyph, bare: the comment bubble, or the Opinio mark for a
+          shared opinio (not the bubble-with-plus - that one means "add"). */}
       <span className="shrink-0 mt-px">
-        {isComment ? <CommentIcon className="w-5 h-5" /> : <OpinioIcon className="w-5 h-5" />}
+        {isComment ? <CommentIcon className="w-5 h-5" /> : <LogoMark className="w-5 h-5" />}
       </span>
       <div className="flex-1 min-w-0">
         {/* Time flows after the caption instead of sitting at the right edge:
