@@ -1061,7 +1061,7 @@ const cs: Strings = {
   commentsTabComments: 'Komentáře',
   commentsEmpty: 'Zatím bez komentářů',
   commentsWrite: 'Napsat komentář',
-  commentsPlaceholder: 'Řekni proč... @ pro označení uživatele',
+  commentsPlaceholder: 'Řekni, co si myslíš... @ pro označení uživatele',
   commentsSend: 'Odeslat',
   commentsSignIn: 'Pro komentování se přihlaste',
   commentsNew: 'nové',

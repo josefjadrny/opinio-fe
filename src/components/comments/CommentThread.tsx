@@ -2,6 +2,7 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
+import { useSignIn } from '../auth/SignInContext';
 import { useComments, usePostComment, useUserSearch } from '../../hooks/useComments';
 import { Avatar } from '../profile/Avatar';
 import { CountryFlag } from '../common/CountryFlag';
@@ -118,6 +119,7 @@ function useDebounced<T>(value: T, ms: number): T {
 export function CommentComposer({ profileId, compact = false }: { profileId: string; compact?: boolean }) {
   const { t } = useI18n();
   const { data: me } = useMe();
+  const { promptSignIn } = useSignIn();
   const [value, setValue] = useState('');
   const [mention, setMention] = useState<{ start: number; query: string } | null>(null);
   const [active, setActive] = useState(0);
@@ -143,7 +145,7 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
   if (!isRegistered) {
     return (
       <div className={`text-xs text-white/50 ${compact ? 'py-2' : 'py-3'}`}>
-        <button type="button" className="text-accent hover:underline underline-offset-2">{t.commentsSignIn}</button>
+        <button type="button" onClick={promptSignIn} className="text-accent hover:underline underline-offset-2">{t.commentsSignIn}</button>
       </div>
     );
   }
@@ -223,7 +225,10 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
           }}
           rows={1}
           placeholder={compact ? t.commentsWrite : t.commentsPlaceholder}
-          className={`w-full resize-none rounded-lg bg-white/[0.04] ring-1 ring-white/10 focus:ring-accent/60 focus:outline-none px-3 py-2 text-[13px] text-white placeholder:text-white/40 leading-snug max-h-20 ${value ? 'pr-12' : 'overflow-hidden'}`}
+          // `block`: an inline textarea leaves a descender strip under itself,
+          // which made its wrapper 7px taller than the box - the avatar and the
+          // stretched button centred on the wrapper, the input sat high.
+          className={`block w-full resize-none rounded-lg bg-white/[0.04] ring-1 ring-white/10 focus:ring-accent/60 focus:outline-none px-3 py-2 text-[13px] text-white placeholder:text-white/40 leading-snug max-h-20 ${value ? 'pr-12' : 'overflow-hidden'}`}
           style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}
         />
         {value.length > 0 && (
