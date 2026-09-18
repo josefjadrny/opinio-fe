@@ -281,10 +281,13 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                         floor keeps it usable when the opinion text is very short. */}
                     {/* The 200px floor is for the breakdown when the text is
                         short. A thread needs more than one visible comment
-                        under its composer, so comments mode floors at 360 -
+                        under its composer, so with comments the floor is 360 -
                         on production text (150-250 chars + a 240px image) the
-                        column is already ~400px and neither floor applies. */}
-                    <div className={`relative ${commentsEnabled && rightTab === 'comments' ? 'min-h-[360px]' : 'min-h-[200px]'}`}>
+                        column is already ~400px and neither floor applies.
+                        The floor follows the feature, NOT the open tab: keyed
+                        on the tab it made the whole modal jump on every
+                        Countries <-> Comments switch when the text was short. */}
+                    <div className={`relative ${commentsEnabled ? 'min-h-[360px]' : 'min-h-[200px]'}`}>
                       <div className="absolute inset-0 px-6 py-4 flex flex-col">
                         {/* Segmented switch over the column. Countries is the
                             default; the count on the other segment is the only
