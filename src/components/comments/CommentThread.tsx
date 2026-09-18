@@ -15,7 +15,9 @@ const MAX_LEN = 280;
 
 // Renders the "@handle" tokens the BE lists in `mentions` as links; any other
 // "@word" in the body is plain text, so a typo cannot fabricate a mention.
-function CommentBody({ body, mentions, backState }: { body: string; mentions: Comment['mentions']; backState: BackState }) {
+// Also used by the user page's activity list, which has no opinio to come
+// back to - hence the optional back state.
+export function CommentBody({ body, mentions, backState }: { body: string; mentions: Comment['mentions']; backState?: BackState }) {
   const location = useLocation();
   if (mentions.length === 0) return <>{body}</>;
   const handles = mentions.map((m) => m.handle);

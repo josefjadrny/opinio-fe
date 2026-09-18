@@ -45,9 +45,13 @@ export function useVote() {
       // poll in useProfile lands. That poll reconciles anyway.
       queryClient.setQueriesData<UserDetailResponse>({ queryKey: ['user'] }, (old) => {
         if (!old) return old;
-        const profilesPatched = old.profiles.some((p) => p.id === data.profile.id)
-          ? old.profiles.map((p) => p.id === data.profile.id ? { ...p, likes: data.profile.likes, dislikes: data.profile.dislikes } : p)
-          : old.profiles;
+        // Every activity row carrying this opinio (a post and its comments
+        // share one profile) takes the new counts.
+        const activityPatched = old.activity.map((a) =>
+          a.profile.id === data.profile.id
+            ? { ...a, profile: { ...a.profile, likes: data.profile.likes, dislikes: data.profile.dislikes } }
+            : a,
+        );
         // Received counts belong to the profile's author — bump them (live and
         // lifetime alike) when the user page being viewed is that author's.
         const isAuthorDetail = data.profile.addedById !== null && old.id === data.profile.addedById;
@@ -55,7 +59,7 @@ export function useVote() {
         const dislikeBump = isAuthorDetail && vars.type === 'dislike' ? 1 : 0;
         return {
           ...old,
-          profiles: profilesPatched,
+          activity: activityPatched,
           likesReceived: old.likesReceived + likeBump,
           dislikesReceived: old.dislikesReceived + dislikeBump,
           totalLikesReceived: old.totalLikesReceived + likeBump,

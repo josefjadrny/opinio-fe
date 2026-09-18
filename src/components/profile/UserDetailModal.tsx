@@ -9,7 +9,7 @@ import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from './Avatar';
 import { CountryFlag } from '../common/CountryFlag';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
-import { ProfileList } from './ProfileList';
+import { UserActivityList } from './UserActivityList';
 import { VoteHeadline } from './VoteHeadline';
 import { HoverTip } from '../common/HoverTip';
 
@@ -80,9 +80,11 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   // key - exactly as the opinio and country modals' chevrons are.
   const [detailsCollapsed, toggleDetails] = useUserDetailsCollapsed();
   const { sheetRef, dragHandlers } = useSheetDrag(close);
-  const openProfile = (profileId: string) => navigate('/p/' + profileId + location.search, {
-    state: { fromUserId: userId, fromUserName: user?.displayName ?? null },
-  });
+  const backState = { fromUserId: userId, fromUserName: user?.displayName ?? null };
+  const openProfile = (profileId: string) => navigate('/p/' + profileId + location.search, { state: backState });
+  // A comment row lands on the thread it came from (same `comments` flag a
+  // card's comment count sets), not on the country breakdown.
+  const openThread = (profileId: string) => navigate('/p/' + profileId + location.search, { state: { ...backState, comments: true } });
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
@@ -220,12 +222,14 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
     </div>
   );
 
+  // What the user did, newest first - posts and comments, one stream.
   const ProfilesList = user && (
-    <ProfileList
-      profiles={user.profiles}
-      label={t.userReportedProfiles}
-      emptyText={t.userNoProfiles}
-      onOpen={openProfile}
+    <UserActivityList
+      items={user.activity ?? []}
+      handle={user.displayName}
+      isMe={isMe}
+      onOpenProfile={openProfile}
+      onOpenThread={openThread}
     />
   );
 

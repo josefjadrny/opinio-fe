@@ -315,6 +315,13 @@ export interface Strings {
   userJoined: string;
   userReportedProfiles: string;
   userNoProfiles: string;
+  userActivity: string;
+  userNoActivity: string;
+  // Feed captions on /u/:id. {actor} = the handle (the *You variants have none), {target} = the opinio.
+  activityPosted: string;
+  activityPostedYou: string;
+  activityCommented: string;
+  activityCommentedYou: string;
   userNotFoundLabel: string;
   userNotFoundTitle: string;
   userNotFoundBody: string;
@@ -683,6 +690,12 @@ const en: Strings = {
   userJoined: 'Joined {date}',
   userReportedProfiles: 'Recent opinios',
   userNoProfiles: 'No active opinios',
+  userActivity: 'Recent activity',
+  userNoActivity: 'No recent activity',
+  activityPosted: '{actor} shared {target}',
+  activityPostedYou: 'You shared {target}',
+  activityCommented: '{actor} commented on {target}',
+  activityCommentedYou: 'You commented on {target}',
   userNotFoundLabel: 'Not found',
   userNotFoundTitle: 'This person has left the building',
   userNotFoundBody: 'Their account is no longer here - maybe they took a break, or the link is a little off.',
@@ -1087,6 +1100,12 @@ const cs: Strings = {
   userJoined: 'Účet od {date}',
   userReportedProfiles: 'Nedávná opinio',
   userNoProfiles: 'Žádná aktivní opinio',
+  userActivity: 'Poslední aktivita',
+  userNoActivity: 'Zatím žádná aktivita',
+  activityPosted: 'Opinio od {actor}: {target}',
+  activityPostedYou: 'Tvoje opinio: {target}',
+  activityCommented: 'Komentář od {actor} k {target}',
+  activityCommentedYou: 'Tvůj komentář k {target}',
   userNotFoundLabel: 'Nenalezeno',
   userNotFoundTitle: 'Tento člověk tu už není',
   userNotFoundBody: 'Tento účet už neexistuje - třeba si dal pauzu, nebo je odkaz mírně přepsaný.',
@@ -1491,6 +1510,12 @@ const es: Strings = {
   userJoined: 'Se unió el {date}',
   userReportedProfiles: 'Opinio recientes',
   userNoProfiles: 'Sin opinio activos',
+  userActivity: 'Actividad reciente',
+  userNoActivity: 'Sin actividad reciente',
+  activityPosted: '{actor} compartió {target}',
+  activityPostedYou: 'Compartiste {target}',
+  activityCommented: '{actor} comentó en {target}',
+  activityCommentedYou: 'Comentaste en {target}',
   userNotFoundLabel: 'No encontrado',
   userNotFoundTitle: 'Esta persona ha salido del edificio',
   userNotFoundBody: 'Esta cuenta ya no está aquí - puede que se haya tomado un descanso o que el enlace no sea del todo correcto.',
@@ -1895,6 +1920,12 @@ const de: Strings = {
   userJoined: 'Dabei seit {date}',
   userReportedProfiles: 'Aktuelle opinio',
   userNoProfiles: 'Keine aktiven opinio',
+  userActivity: 'Letzte Aktivität',
+  userNoActivity: 'Keine aktuelle Aktivität',
+  activityPosted: '{actor} hat {target} geteilt',
+  activityPostedYou: 'Du hast {target} geteilt',
+  activityCommented: '{actor} hat {target} kommentiert',
+  activityCommentedYou: 'Du hast {target} kommentiert',
   userNotFoundLabel: 'Nicht gefunden',
   userNotFoundTitle: 'Diese Person hat das Gebäude verlassen',
   userNotFoundBody: 'Dieses Konto ist nicht mehr hier - vielleicht macht die Person eine Pause, oder der Link stimmt nicht ganz.',
@@ -2299,6 +2330,12 @@ const fr: Strings = {
   userJoined: 'Inscrit le {date}',
   userReportedProfiles: 'Opinios récents',
   userNoProfiles: 'Aucun opinio actif',
+  userActivity: 'Activité récente',
+  userNoActivity: 'Aucune activité récente',
+  activityPosted: '{actor} a partagé {target}',
+  activityPostedYou: 'Vous avez partagé {target}',
+  activityCommented: '{actor} a commenté {target}',
+  activityCommentedYou: 'Vous avez commenté {target}',
   userNotFoundLabel: 'Introuvable',
   userNotFoundTitle: 'Cette personne a quitté les lieux',
   userNotFoundBody: "Ce compte n'est plus là - peut-être une pause, ou le lien n'est pas tout à fait correct.",
@@ -2703,6 +2740,12 @@ const it: Strings = {
   userJoined: 'Iscritto il {date}',
   userReportedProfiles: 'Opinios recenti',
   userNoProfiles: 'Nessun opinio attivo',
+  userActivity: 'Attività recente',
+  userNoActivity: 'Nessuna attività recente',
+  activityPosted: '{actor} ha condiviso {target}',
+  activityPostedYou: 'Hai condiviso {target}',
+  activityCommented: '{actor} ha commentato {target}',
+  activityCommentedYou: 'Hai commentato {target}',
   userNotFoundLabel: 'Non trovato',
   userNotFoundTitle: 'Questa persona ha lasciato la stanza',
   userNotFoundBody: 'Questo account non c\'è più - forse una pausa, o il link non è del tutto corretto.',
@@ -3107,6 +3150,12 @@ const pl: Strings = {
   userJoined: 'Dołączył {date}',
   userReportedProfiles: 'Ostatnie opinio',
   userNoProfiles: 'Brak aktywnych opinio',
+  userActivity: 'Ostatnia aktywność',
+  userNoActivity: 'Brak ostatniej aktywności',
+  activityPosted: 'Opinio od {actor}: {target}',
+  activityPostedYou: 'Twoje opinio: {target}',
+  activityCommented: 'Komentarz od {actor} do {target}',
+  activityCommentedYou: 'Twój komentarz do {target}',
   userNotFoundLabel: 'Nie znaleziono',
   userNotFoundTitle: 'Tej osoby już tu nie ma',
   userNotFoundBody: 'Tego konta już tu nie ma - może zrobiło sobie przerwę, albo link jest trochę nie taki.',

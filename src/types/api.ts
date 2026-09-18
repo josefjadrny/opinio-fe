@@ -179,9 +179,17 @@ export interface UserProfileSummary {
   imageUrl: string | null;
   countryCode: string;
   description: string;
-  createdAt: string;
   likes: number;
   dislikes: number;
+  commentCount: number;
+}
+
+/** One thing the user did, newest first. `comment` is set for kind 'comment'. */
+export interface UserActivityItem {
+  kind: 'post' | 'comment';
+  at: string;
+  profile: UserProfileSummary;
+  comment: { id: string; body: string; mentions: Comment['mentions'] } | null;
 }
 
 export interface UserDetailResponse {
@@ -197,7 +205,9 @@ export interface UserDetailResponse {
   /** Lifetime - never decremented as votes expire. */
   totalLikesReceived: number;
   totalDislikesReceived: number;
-  profiles: UserProfileSummary[];
+  /** Total opinios posted; `activity` is capped. */
+  profileCount: number;
+  activity: UserActivityItem[];
 }
 
 export type SupportTicketStatus = 'new' | 'investigating' | 'waiting' | 'done';

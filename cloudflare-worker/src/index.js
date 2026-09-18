@@ -802,7 +802,8 @@ async function handleUser(request, id, lang = null) {
   headers.set('x-opinio-og', lang ? 'user-lang' : 'user');
 
   const title = `@${user.displayName} - Opinio`;
-  const profileCount = Array.isArray(user.profiles) ? user.profiles.length : 0;
+  // profileCount is the true total; `profiles` is the older list-shaped field.
+  const profileCount = user.profileCount ?? (Array.isArray(user.profiles) ? user.profiles.length : 0);
   // A written bio is unique per user, so it beats the generated sentence.
   // The fallback counts votes RECEIVED: /api/users/:id never returned
   // totalLikesCast, so the old wording said "0 likes cast" for everyone.
