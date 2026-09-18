@@ -2,7 +2,7 @@ import { Fragment, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { CountryFlag } from '../common/CountryFlag';
-import { CommentIcon } from '../comments/CommentCount';
+import { CommentIcon, OpinioIcon } from '../comments/CommentCount';
 import { CommentBody } from '../comments/CommentThread';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import type { UserActivityItem } from '../../types/api';
@@ -37,14 +37,6 @@ function fill(template: string, parts: { actor: ReactNode; target: ReactNode }):
   );
 }
 
-function PlusIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-    </svg>
-  );
-}
-
 function ActivityRow({ item, handle, isMe, onOpen, onOpenProfile }: {
   item: UserActivityItem; handle: string; isMe: boolean; onOpen: () => void; onOpenProfile: () => void;
 }) {
@@ -75,9 +67,10 @@ function ActivityRow({ item, handle, isMe, onOpen, onOpenProfile }: {
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
       className="group flex gap-2.5 md:gap-3 px-2 md:px-2.5 py-2 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 transition-all duration-200 cursor-pointer select-none"
     >
-      {/* Kind chip - the one glyph that says post vs comment at a glance. */}
-      <span className="shrink-0 mt-0.5 flex items-center justify-center w-7 h-7 rounded-full bg-white/[0.06] ring-1 ring-white/10 text-white/70">
-        {isComment ? <CommentIcon className="w-3.5 h-3.5" /> : <PlusIcon className="w-4 h-4" />}
+      {/* Kind glyph, bare - the app's own two: the comment bubble, or the
+          opinio bubble-with-plus a shared opinio is added with. */}
+      <span className="shrink-0 mt-px">
+        {isComment ? <CommentIcon className="w-5 h-5" /> : <OpinioIcon className="w-5 h-5" />}
       </span>
       <div className="flex-1 min-w-0">
         {/* Time flows after the caption instead of sitting at the right edge:
