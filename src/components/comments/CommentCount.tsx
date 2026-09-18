@@ -27,7 +27,7 @@ interface CommentCountProps {
 // opinio glyph the detail uses. (The owner's "unseen comments" signal is
 // deliberately NOT here - it will live elsewhere.)
 export function CommentCount({ count, size = 'sm', onClick }: CommentCountProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   if (count <= 0) return null;
   // Sized to the flag beside the name (20px glyph): icon 20, number 16, on
   // both cards. 'xs' only drops the padding - inside the mobile badge row the
@@ -37,7 +37,7 @@ export function CommentCount({ count, size = 'sm', onClick }: CommentCountProps)
     <button
       type="button"
       onClick={onClick}
-      aria-label={commentCountLabel(t, count)}
+      aria-label={commentCountLabel(t, locale, count)}
       className={`inline-flex items-center rounded-lg text-base font-medium tabular-nums leading-none transition-colors text-white/50 hover:text-white/80 ${dims}`}
     >
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>

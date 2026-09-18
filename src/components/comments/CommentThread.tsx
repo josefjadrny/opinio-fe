@@ -239,11 +239,11 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
           // `block`: an inline textarea leaves a descender strip under itself,
           // which made its wrapper 7px taller than the box - the avatar and the
           // stretched button centred on the wrapper, the input sat high.
-          className={`block w-full resize-none rounded-lg bg-white/[0.04] ring-1 ring-white/10 focus:ring-accent/60 focus:outline-none px-3 py-2 text-[13px] text-white placeholder:text-white/40 leading-snug max-h-20 ${value ? 'pr-12' : 'overflow-hidden'}`}
+          className={`block w-full resize-none rounded-lg bg-white/[0.04] ring-1 ring-white/10 focus:ring-accent/60 focus:outline-none px-3 py-2 text-[13px] text-white placeholder:text-white/50 leading-snug max-h-20 ${value ? 'pr-12' : 'overflow-hidden'}`}
           style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}
         />
         {value.length > 0 && (
-          <span className="absolute right-2.5 bottom-2.5 text-[10px] tabular-nums text-white/40">{MAX_LEN - value.length}</span>
+          <span className="absolute right-2.5 bottom-2.5 text-[10px] tabular-nums text-white/50">{MAX_LEN - value.length}</span>
         )}
       </div>
       <button

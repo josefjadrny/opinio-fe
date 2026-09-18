@@ -313,7 +313,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                                 )}
                                 {tab === 'countries' ? t.commentsTabCountries : t.commentsTabComments}
                                 {tab === 'comments' && commentCount > 0 && (
-                                  <span className={`tabular-nums normal-case tracking-normal font-normal ${active ? 'text-white/70' : 'text-white/40'}`}>({commentCount})</span>
+                                  <span className={`tabular-nums normal-case tracking-normal font-normal ${active ? 'text-white/70' : 'text-white/50'}`}>({commentCount})</span>
                                 )}
                               </button>
                             );
@@ -321,7 +321,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                         </div>}
                         {commentsEnabled && rightTab === 'comments' ? (
                           <div className="flex-1 min-h-0 flex flex-col">
-                            <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar" aria-label={commentCountLabel(t, commentCount)}>
+                            <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar" aria-label={commentCountLabel(t, locale, commentCount)}>
                               <CommentList profileId={profileId} profileName={profile.name} />
                             </div>
                             <div className="shrink-0 pt-3 mt-1 border-t border-border">
