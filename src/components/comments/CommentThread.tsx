@@ -173,7 +173,16 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
     post.mutate(body, { onSuccess: () => setValue('') });
   };
 
+  // The text stays in the box on failure so nothing is lost; the line under
+  // it says why, and the next keystroke clears it.
+  const errorStatus = (post.error as { status?: number } | null)?.status;
+  const errorText = !post.isError ? null
+    : errorStatus === 429 ? t.commentsTooMany
+    : errorStatus === 409 ? t.commentsDuplicate
+    : t.commentsFailed;
+
   return (
+    <div>
     <div className="flex items-center gap-2">
       <Avatar name={me.user.displayName} imageUrl={me.user.avatarUrl ?? null} className="w-7 h-7 shrink-0" />
       <div className="flex-1 min-w-0 relative">
@@ -210,6 +219,7 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
           onChange={(e) => {
             const next = e.target.value.slice(0, MAX_LEN);
             setValue(next);
+            if (post.isError) post.reset();
             syncMention(next, Math.min(e.target.selectionStart ?? next.length, next.length));
           }}
           onSelect={(e) => syncMention(value, e.currentTarget.selectionStart ?? value.length)}
@@ -243,6 +253,10 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
       >
         {t.commentsSend}
       </button>
+    </div>
+    {errorText && (
+      <p role="alert" className="mt-1.5 text-xs text-negative-soft">{errorText}</p>
+    )}
     </div>
   );
 }

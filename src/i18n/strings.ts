@@ -303,6 +303,11 @@ export interface Strings {
   commentsSend: string;
   commentsSignIn: string;
   commentsNew: string;
+  // Composer errors by status: 429 (two posts a minute), 409 (same text
+  // already in this thread), anything else.
+  commentsTooMany: string;
+  commentsDuplicate: string;
+  commentsFailed: string;
   sourceLink: string;
   seeTranslation: string;
   userJoined: string;
@@ -666,6 +671,9 @@ const en: Strings = {
   commentsSend: 'Send',
   commentsSignIn: 'Sign in to comment',
   commentsNew: 'new',
+  commentsTooMany: 'Too many comments - wait a minute and try again',
+  commentsDuplicate: 'You already posted this here',
+  commentsFailed: 'Could not send, try again',
   sourceLink: 'Source',
   seeTranslation: 'See translation',
   userJoined: 'Joined {date}',
@@ -1065,6 +1073,9 @@ const cs: Strings = {
   commentsSend: 'Odeslat',
   commentsSignIn: 'Pro komentování se přihlaste',
   commentsNew: 'nové',
+  commentsTooMany: 'Příliš mnoho komentářů - počkej minutu a zkus to znovu',
+  commentsDuplicate: 'Tohle už jsi sem napsal',
+  commentsFailed: 'Nepodařilo se odeslat, zkus to znovu',
   sourceLink: 'Zdroj',
   seeTranslation: 'Zobrazit překlad',
   userJoined: 'Účet od {date}',
@@ -1464,6 +1475,9 @@ const es: Strings = {
   commentsSend: 'Enviar',
   commentsSignIn: 'Inicia sesión para comentar',
   commentsNew: 'nuevo',
+  commentsTooMany: 'Demasiados comentarios - espera un minuto e inténtalo de nuevo',
+  commentsDuplicate: 'Ya publicaste esto aquí',
+  commentsFailed: 'No se pudo enviar, inténtalo de nuevo',
   sourceLink: 'Fuente',
   seeTranslation: 'Ver traducción',
   userJoined: 'Se unió el {date}',
@@ -1863,6 +1877,9 @@ const de: Strings = {
   commentsSend: 'Senden',
   commentsSignIn: 'Zum Kommentieren anmelden',
   commentsNew: 'neu',
+  commentsTooMany: 'Zu viele Kommentare - warte eine Minute und versuch es nochmal',
+  commentsDuplicate: 'Das hast du hier schon gepostet',
+  commentsFailed: 'Senden fehlgeschlagen, versuch es nochmal',
   sourceLink: 'Quelle',
   seeTranslation: 'Übersetzung anzeigen',
   userJoined: 'Dabei seit {date}',
@@ -2262,6 +2279,9 @@ const fr: Strings = {
   commentsSend: 'Envoyer',
   commentsSignIn: 'Connectez-vous pour commenter',
   commentsNew: 'nouveau',
+  commentsTooMany: 'Trop de commentaires - attendez une minute et réessayez',
+  commentsDuplicate: 'Vous avez déjà publié ceci ici',
+  commentsFailed: 'Envoi impossible, réessayez',
   sourceLink: 'Source',
   seeTranslation: 'Voir la traduction',
   userJoined: 'Inscrit le {date}',
@@ -2661,6 +2681,9 @@ const it: Strings = {
   commentsSend: 'Invia',
   commentsSignIn: 'Accedi per commentare',
   commentsNew: 'nuovo',
+  commentsTooMany: 'Troppi commenti - aspetta un minuto e riprova',
+  commentsDuplicate: "L'hai già scritto qui",
+  commentsFailed: 'Invio non riuscito, riprova',
   sourceLink: 'Fonte',
   seeTranslation: 'Vedi traduzione',
   userJoined: 'Iscritto il {date}',
@@ -3060,6 +3083,9 @@ const pl: Strings = {
   commentsSend: 'Wyślij',
   commentsSignIn: 'Zaloguj się, aby komentować',
   commentsNew: 'nowe',
+  commentsTooMany: 'Za dużo komentarzy - odczekaj minutę i spróbuj ponownie',
+  commentsDuplicate: 'Już to tutaj napisałeś',
+  commentsFailed: 'Nie udało się wysłać, spróbuj ponownie',
   sourceLink: 'Źródło',
   seeTranslation: 'Pokaż tłumaczenie',
   userJoined: 'Dołączył {date}',
