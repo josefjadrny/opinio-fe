@@ -11,6 +11,11 @@ export function useComments(profileId: string, enabled: boolean) {
     queryFn: () => getComments(profileId),
     enabled,
     staleTime: 30_000,
+    // Same cadence as the profile poll that moves the count, so the list and
+    // the count converge. Stops while the tab is hidden (react-query default).
+    // The WS socket is not an option here: it is owned by HotBanner and is
+    // closed on mobile and on /p/:id, the routes a thread is open on.
+    refetchInterval: 30_000,
     retry: (failureCount, error) => !isNotFound(error) && failureCount < 3,
   });
 }
