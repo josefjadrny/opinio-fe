@@ -113,9 +113,10 @@ function useDebounced<T>(value: T, ms: number): T {
   return debounced;
 }
 
-// One-line composer that grows to three. Registered and above only - anonymous
-// visitors get a sign-in line instead of a disabled box, so the thread never
-// dangles a control that does nothing.
+// Single-line composer: a comment is one paragraph, so Enter sends and a
+// pasted line break becomes a space (the BE collapses whitespace anyway).
+// Registered and above only - anonymous visitors get a sign-in line instead
+// of a disabled box, so the thread never dangles a control that does nothing.
 export function CommentComposer({ profileId, compact = false }: { profileId: string; compact?: boolean }) {
   const { t } = useI18n();
   const { data: me } = useMe();
@@ -217,7 +218,7 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
           ref={textareaRef}
           value={value}
           onChange={(e) => {
-            const next = e.target.value.slice(0, MAX_LEN);
+            const next = e.target.value.replace(/[\r\n]+/g, ' ').slice(0, MAX_LEN);
             setValue(next);
             if (post.isError) post.reset();
             syncMention(next, Math.min(e.target.selectionStart ?? next.length, next.length));
@@ -231,7 +232,7 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
               if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); pick(suggestions[active]); return; }
               if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); setMention(null); return; }
             }
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); }
+            if (e.key === 'Enter') { e.preventDefault(); submit(); }
           }}
           rows={1}
           placeholder={compact ? t.commentsWrite : t.commentsPlaceholder}
