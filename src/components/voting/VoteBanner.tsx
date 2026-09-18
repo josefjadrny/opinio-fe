@@ -146,8 +146,10 @@ export function VoteBanner() {
           </button>
         </div>
       )}
-      <div className="flex items-center justify-center gap-4 py-2 text-sm text-white/50">
-        <span>{allExhausted ? t.nextVote : t.votesLeft}</span>
+      <div className="flex items-center justify-center gap-4 py-2">
+        {/* Same size as the slots and semibold: at text-sm /50 the label read
+            as a footnote and the counters lost their meaning. */}
+        <span className="text-base font-semibold text-white/70">{allExhausted ? t.nextVote : t.votesLeft}</span>
         <VoteSlot type="like" remaining={like.remaining} nextAt={like.nextAt} voteOnProfileId={detailProfileId} />
         <VoteSlot type="dislike" remaining={dislike.remaining} nextAt={dislike.nextAt} voteOnProfileId={detailProfileId} />
       </div>
