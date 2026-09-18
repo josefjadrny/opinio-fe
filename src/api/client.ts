@@ -173,6 +173,17 @@ export function postComment(profileId: string, body: string): Promise<import('..
   });
 }
 
+export async function deleteComment(commentId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/api/comments/${commentId}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok && res.status !== 204) {
+    const body = await res.json().catch(() => ({}));
+    throw Object.assign(new Error(body.error ?? res.statusText), { status: res.status });
+  }
+}
+
 export function getUser(userId: string, lang?: string): Promise<UserDetailResponse> {
   const qs = lang ? `?lang=${lang}` : '';
   return apiFetch(`/api/users/${userId}${qs}`);

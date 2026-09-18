@@ -3,8 +3,10 @@ import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
 import { useSignIn } from '../auth/SignInContext';
-import { useComments, usePostComment, useUserSearch } from '../../hooks/useComments';
+import { useComments, usePostComment, useDeleteComment, useUserSearch } from '../../hooks/useComments';
 import { Avatar } from '../profile/Avatar';
+import { TrashIcon } from '../profile/DeleteProfileButton';
+import { ConfirmModal } from '../common/ConfirmModal';
 import { CountryFlag } from '../common/CountryFlag';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import type { Comment, MentionUser } from '../../types/api';
@@ -46,13 +48,19 @@ type BackState = { fromProfileId: string; fromProfileName?: string };
 // keyframe and 35ms step). Capped so a long thread does not keep the rows
 // below the fold waiting on ones nobody has scrolled to yet; a comment
 // prepended after a post mounts alone and simply fades in.
-function CommentRow({ c, index, backState }: { c: Comment; index: number; backState: BackState }) {
+function CommentRow({ c, index, profileId, backState }: { c: Comment; index: number; profileId: string; backState: BackState }) {
   const { locale, t } = useI18n();
   const location = useLocation();
+  const { data: me } = useMe();
+  const remove = useDeleteComment(profileId);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  // Own comment, or admin (the BE allows both). Same trash + confirm as the
+  // opinio delete in the detail header, sized to the row.
+  const canDelete = !!me?.user && (me.user.id === c.user.id || me.user.tier === 'admin');
   const userTo = `/u/${c.user.id}${location.search}`;
   return (
     <div
-      className="flex gap-2.5 py-2.5"
+      className="group flex gap-2.5 py-2.5"
       style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${Math.min(index, 12) * 35}ms` }}
     >
       <Link to={userTo} state={backState} className="shrink-0 mt-0.5" aria-label={`@${c.user.handle}`}>
@@ -63,11 +71,36 @@ function CommentRow({ c, index, backState }: { c: Comment; index: number; backSt
           <Link to={userTo} state={backState} className="font-semibold text-white/90 hover:underline underline-offset-2">@{c.user.handle}</Link>
           {c.user.countryCode && <CountryFlag code={c.user.countryCode} tip={false} />}
           <span className="text-white/50">{formatRelativeTime(c.createdAt, locale, t.justNow)}</span>
+          {canDelete && (
+            <button
+              type="button"
+              onClick={() => setConfirmOpen(true)}
+              aria-label={t.deleteComment}
+              title={t.deleteComment}
+              className="ml-auto -my-1 p-1 text-white/40 hover:text-accent transition-colors"
+            >
+              <TrashIcon className="w-4 h-4" />
+            </button>
+          )}
         </div>
         <p className="text-[13px] text-white/80 leading-snug break-words">
           <CommentBody body={c.body} mentions={c.mentions} backState={backState} />
         </p>
       </div>
+      {canDelete && (
+        <ConfirmModal
+          open={confirmOpen}
+          onClose={() => setConfirmOpen(false)}
+          onConfirm={() => remove.mutate(c.id, { onSuccess: () => setConfirmOpen(false) })}
+          title={t.deleteComment}
+          message={t.deleteCommentConfirm}
+          confirmLabel={remove.isPending ? t.deleting : t.delete}
+          cancelLabel={t.cancel}
+          variant="destructive"
+          icon={<TrashIcon className="w-5 h-5 text-white/40" />}
+          isPending={remove.isPending}
+        />
+      )}
     </div>
   );
 }
@@ -88,7 +121,7 @@ export function CommentList({ profileId, profileName, className = '' }: { profil
   }
   return (
     <div className={`divide-y divide-white/[0.06] ${className}`}>
-      {comments.map((c, i) => <CommentRow key={c.id} c={c} index={i} backState={backState} />)}
+      {comments.map((c, i) => <CommentRow key={c.id} c={c} index={i} profileId={profileId} backState={backState} />)}
     </div>
   );
 }

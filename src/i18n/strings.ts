@@ -308,6 +308,8 @@ export interface Strings {
   commentsTooMany: string;
   commentsDuplicate: string;
   commentsFailed: string;
+  deleteComment: string;
+  deleteCommentConfirm: string;
   sourceLink: string;
   seeTranslation: string;
   userJoined: string;
@@ -674,6 +676,8 @@ const en: Strings = {
   commentsTooMany: 'Too many comments - wait a minute and try again',
   commentsDuplicate: 'You already posted this here',
   commentsFailed: 'Could not send, try again',
+  deleteComment: 'Delete comment',
+  deleteCommentConfirm: 'Delete this comment?',
   sourceLink: 'Source',
   seeTranslation: 'See translation',
   userJoined: 'Joined {date}',
@@ -1076,6 +1080,8 @@ const cs: Strings = {
   commentsTooMany: 'Příliš mnoho komentářů - počkej minutu a zkus to znovu',
   commentsDuplicate: 'Tohle už jsi sem napsal',
   commentsFailed: 'Nepodařilo se odeslat, zkus to znovu',
+  deleteComment: 'Smazat komentář',
+  deleteCommentConfirm: 'Smazat tento komentář?',
   sourceLink: 'Zdroj',
   seeTranslation: 'Zobrazit překlad',
   userJoined: 'Účet od {date}',
@@ -1478,6 +1484,8 @@ const es: Strings = {
   commentsTooMany: 'Demasiados comentarios - espera un minuto e inténtalo de nuevo',
   commentsDuplicate: 'Ya publicaste esto aquí',
   commentsFailed: 'No se pudo enviar, inténtalo de nuevo',
+  deleteComment: 'Eliminar comentario',
+  deleteCommentConfirm: '¿Eliminar este comentario?',
   sourceLink: 'Fuente',
   seeTranslation: 'Ver traducción',
   userJoined: 'Se unió el {date}',
@@ -1880,6 +1888,8 @@ const de: Strings = {
   commentsTooMany: 'Zu viele Kommentare - warte eine Minute und versuch es nochmal',
   commentsDuplicate: 'Das hast du hier schon gepostet',
   commentsFailed: 'Senden fehlgeschlagen, versuch es nochmal',
+  deleteComment: 'Kommentar löschen',
+  deleteCommentConfirm: 'Diesen Kommentar löschen?',
   sourceLink: 'Quelle',
   seeTranslation: 'Übersetzung anzeigen',
   userJoined: 'Dabei seit {date}',
@@ -2282,6 +2292,8 @@ const fr: Strings = {
   commentsTooMany: 'Trop de commentaires - attendez une minute et réessayez',
   commentsDuplicate: 'Vous avez déjà publié ceci ici',
   commentsFailed: 'Envoi impossible, réessayez',
+  deleteComment: 'Supprimer le commentaire',
+  deleteCommentConfirm: 'Supprimer ce commentaire ?',
   sourceLink: 'Source',
   seeTranslation: 'Voir la traduction',
   userJoined: 'Inscrit le {date}',
@@ -2684,6 +2696,8 @@ const it: Strings = {
   commentsTooMany: 'Troppi commenti - aspetta un minuto e riprova',
   commentsDuplicate: "L'hai già scritto qui",
   commentsFailed: 'Invio non riuscito, riprova',
+  deleteComment: 'Elimina commento',
+  deleteCommentConfirm: 'Eliminare questo commento?',
   sourceLink: 'Fonte',
   seeTranslation: 'Vedi traduzione',
   userJoined: 'Iscritto il {date}',
@@ -3086,6 +3100,8 @@ const pl: Strings = {
   commentsTooMany: 'Za dużo komentarzy - odczekaj minutę i spróbuj ponownie',
   commentsDuplicate: 'Już to tutaj napisałeś',
   commentsFailed: 'Nie udało się wysłać, spróbuj ponownie',
+  deleteComment: 'Usuń komentarz',
+  deleteCommentConfirm: 'Usunąć ten komentarz?',
   sourceLink: 'Źródło',
   seeTranslation: 'Pokaż tłumaczenie',
   userJoined: 'Dołączył {date}',

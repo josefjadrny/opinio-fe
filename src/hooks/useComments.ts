@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getComments, postComment, searchUsers, isNotFound } from '../api/client';
+import { getComments, postComment, deleteComment, searchUsers, isNotFound } from '../api/client';
 import type { Comment, CommentsResponse, ProfilesResponse } from '../types/api';
 import type { Profile } from '../types/profile';
 
@@ -25,14 +25,33 @@ export function usePostComment(profileId: string) {
       queryClient.setQueryData<CommentsResponse>(['comments', profileId], (old) =>
         old ? { comments: [comment, ...old.comments], total: old.total + 1 } : { comments: [comment], total: 1 },
       );
-      const bump = (p: Profile) =>
-        p.id === profileId && p.commentCount !== undefined ? { ...p, commentCount: p.commentCount + 1 } : p;
-      queryClient.setQueriesData<Profile>({ queryKey: ['profile', profileId] }, (old) => (old ? bump(old) : old));
-      queryClient.setQueriesData<ProfilesResponse>({ queryKey: ['profiles'] }, (old) =>
-        old ? { ...old, profiles: old.profiles.map(bump) } : old,
-      );
+      bumpCommentCount(queryClient, profileId, 1);
     },
   });
+}
+
+// Soft delete of one's own comment (the BE also lets an admin). The row
+// leaves the thread at once and the count drops where the profile is cached.
+export function useDeleteComment(profileId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (commentId: string) => deleteComment(commentId),
+    onSuccess: (_data, commentId) => {
+      queryClient.setQueryData<CommentsResponse>(['comments', profileId], (old) =>
+        old ? { comments: old.comments.filter((c) => c.id !== commentId), total: Math.max(0, old.total - 1) } : old,
+      );
+      bumpCommentCount(queryClient, profileId, -1);
+    },
+  });
+}
+
+function bumpCommentCount(queryClient: ReturnType<typeof useQueryClient>, profileId: string, delta: number) {
+  const bump = (p: Profile) =>
+    p.id === profileId && p.commentCount !== undefined ? { ...p, commentCount: Math.max(0, p.commentCount + delta) } : p;
+  queryClient.setQueriesData<Profile>({ queryKey: ['profile', profileId] }, (old) => (old ? bump(old) : old));
+  queryClient.setQueriesData<ProfilesResponse>({ queryKey: ['profiles'] }, (old) =>
+    old ? { ...old, profiles: old.profiles.map(bump) } : old,
+  );
 }
 
 // Mention autocomplete. `q` is the handle prefix after the "@" at the caret;
