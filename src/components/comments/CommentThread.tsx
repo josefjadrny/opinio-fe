@@ -68,9 +68,21 @@ function CommentRow({ c, index, profileId, backState }: { c: Comment; index: num
   // opinio delete in the detail header, sized to the row.
   const canDelete = !!me?.user && (me.user.id === c.user.id || me.user.tier === 'admin');
   const userTo = `/u/${c.user.id}${location.search}`;
+  // The feed's ProfileCard shape - rounded, soft ring, staggered `stat-in`
+  // entrance - so a thread reads as a stack of cards like the rest of the app
+  // instead of rows split by hairlines. It stops at the shape: no hover lift,
+  // ring change or side glow, because the feed card earns those by opening the
+  // opinio on click and a comment card goes nowhere. Only the controls inside
+  // it (handle, avatar, trash) react to the cursor.
+  //
+  // The fill is a white overlay, NOT the feed card's `bg-surface-light/40`: both
+  // the desktop modal and the mobile sheet are themselves `bg-surface-light`, so
+  // tinting with the same token produced a card the exact hue of its own parent
+  // - no visible edge at all, only the ring. White lightens whatever sits
+  // behind it, which is the idiom the composer below already uses.
   return (
     <div
-      className="group flex gap-2.5 py-2.5"
+      className="group flex gap-2.5 px-2.5 py-2.5 rounded-xl bg-white/[0.035] ring-1 ring-white/10"
       style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${Math.min(index, 12) * 35}ms` }}
     >
       <Link to={userTo} state={backState} className="shrink-0 mt-0.5" aria-label={`@${c.user.handle}`}>
@@ -82,15 +94,20 @@ function CommentRow({ c, index, profileId, backState }: { c: Comment; index: num
           {c.user.countryCode && <CountryFlag code={c.user.countryCode} tip={false} />}
           <span className="text-white/50">{formatRelativeTime(c.createdAt, locale, t.justNow)}</span>
           {canDelete && (
-            <button
-              type="button"
-              onClick={() => setConfirmOpen(true)}
-              aria-label={t.deleteComment}
-              title={t.deleteComment}
-              className="ml-auto -my-1 p-1 text-white/40 hover:text-accent transition-colors"
-            >
-              <TrashIcon className="w-4 h-4" />
-            </button>
+            // `contents` so the wrapper adds no box and the button keeps its own
+            // ml-auto. The tip says just "Delete" - the row it points at is the
+            // comment; the long form stays on aria-label, where the screen
+            // reader has no row context.
+            <HoverTip label={t.delete} className="contents">
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(true)}
+                aria-label={t.deleteComment}
+                className="ml-auto -my-1 p-1 text-white/40 hover:text-accent transition-colors"
+              >
+                <TrashIcon className="w-4 h-4" />
+              </button>
+            </HoverTip>
           )}
         </div>
         <p className="text-[13px] text-white/80 leading-snug break-words">
@@ -129,8 +146,9 @@ export function CommentList({ profileId, profileName, className = '' }: { profil
   if (comments.length === 0) {
     return <p className={`text-xs text-white/50 py-3 ${className}`}>{t.commentsEmpty}</p>;
   }
+  // Card gap, not a divider: same 1.5 step the mobile feed stacks opinios at.
   return (
-    <div className={`divide-y divide-white/[0.06] ${className}`}>
+    <div className={`space-y-1.5 ${className}`}>
       {comments.map((c, i) => <CommentRow key={c.id} c={c} index={i} profileId={profileId} backState={backState} />)}
     </div>
   );
