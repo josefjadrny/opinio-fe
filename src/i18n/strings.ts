@@ -72,7 +72,6 @@ export interface Strings {
   nominateTooltip: string;
   profile: string;
   myProfile: string;
-  myProfileSub: string;
   settings: string;
   about: string;
   logout: string;
@@ -440,7 +439,6 @@ const en: Strings = {
   nominateTooltip: 'Sign in to drop an opinio',
   profile: 'Profile',
   myProfile: 'My profile',
-  myProfileSub: 'Your activity',
   settings: 'Settings',
   about: 'About',
   logout: 'Log out',
@@ -850,7 +848,6 @@ const cs: Strings = {
   nominateTooltip: 'Přihlaste se pro přidání opinio',
   profile: 'Profil',
   myProfile: 'Můj profil',
-  myProfileSub: 'Tvoje aktivita',
   settings: 'Nastavení',
   about: 'O aplikaci',
   logout: 'Odhlásit',
@@ -1260,7 +1257,6 @@ const es: Strings = {
   nominateTooltip: 'Inicia sesión para soltar un opinio',
   profile: 'Perfil',
   myProfile: 'Mi perfil',
-  myProfileSub: 'Tu actividad',
   settings: 'Ajustes',
   about: 'Acerca de',
   logout: 'Cerrar sesión',
@@ -1670,7 +1666,6 @@ const de: Strings = {
   nominateTooltip: 'Melde dich an, um ein opinio reinzuwerfen',
   profile: 'Profil',
   myProfile: 'Mein Profil',
-  myProfileSub: 'Deine Aktivität',
   settings: 'Einstellungen',
   about: 'Über uns',
   logout: 'Abmelden',
@@ -2080,7 +2075,6 @@ const fr: Strings = {
   nominateTooltip: 'Connectez-vous pour balancer un opinio',
   profile: 'Profil',
   myProfile: 'Mon profil',
-  myProfileSub: 'Votre activité',
   settings: 'Paramètres',
   about: 'À propos',
   logout: 'Se déconnecter',
@@ -2490,7 +2484,6 @@ const it: Strings = {
   nominateTooltip: 'Accedi per lanciare un opinio',
   profile: 'Profilo',
   myProfile: 'Il mio profilo',
-  myProfileSub: 'La tua attività',
   settings: 'Impostazioni',
   about: 'Informazioni',
   logout: 'Esci',
@@ -2900,7 +2893,6 @@ const pl: Strings = {
   nominateTooltip: 'Zaloguj się, aby wrzucić opinio',
   profile: 'Profil',
   myProfile: 'Mój profil',
-  myProfileSub: 'Twoja aktywność',
   settings: 'Ustawienia',
   about: 'O aplikacji',
   logout: 'Wyloguj',

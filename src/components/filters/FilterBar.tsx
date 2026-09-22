@@ -9,6 +9,7 @@ import { useFilters } from '../../context/useFilters';
 import { ProfileMenu } from './ProfileMenu';
 import { useMe } from '../../hooks/useMe';
 import { HeaderButton } from '../ui/HeaderButton';
+import { HoverTip } from '../common/HoverTip';
 
 interface FilterBarProps {
   onAddProfile: () => void;
@@ -31,7 +32,8 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
   // per page.
   const barePath = location.pathname.replace(/^\/(cs|es|de|fr|it|pl)(?=\/|$)/, '').replace(/\/$/, '');
   const isHome = barePath === '' || HOME_OVERLAY_PATHS.includes(barePath);
-  const { isLoading: meLoading } = useMe();
+  const { data: me, isLoading: meLoading } = useMe();
+  const isAnonymous = !me?.user || me.user.tier === 'anonymous';
   const { country, roles, fresh, search, clearFilters } = useFilters();
   const hasFilters = !!(country || roles.length || fresh || search);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
@@ -69,7 +71,8 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
           {/* Mobile filter icon - hidden at md+ */}
           <HeaderButton
             onClick={() => setFilterSheetOpen(true)}
-            className="relative md:hidden px-2.5 py-2 text-positive"
+            shape="circle"
+            className="relative md:hidden text-positive"
             aria-label="Filters"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -79,17 +82,23 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
               <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-accent" />
             )}
           </HeaderButton>
+          {/* Desktop only - mobile drops an opinio from the FAB. Anonymous
+              visitors get the disabled disc with the sign-in line on hover
+              rather than a modal that only tells them to sign in. */}
           {!meLoading && (
-            <HeaderButton
-              onClick={() => { setFilterSheetOpen(false); onAddProfile(); }}
-              className="hidden md:flex items-center gap-1.5 text-sm font-medium px-3 py-2 text-white"
-            >
-              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75}>
-                <path stroke="var(--color-negative)" strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
-                <path stroke="var(--color-positive)" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v6M9 12h6" />
-              </svg>
-              <span className="hidden lg:inline">{t.addProfile}</span>
-            </HeaderButton>
+            <HoverTip label={isAnonymous ? t.nominateTooltip : t.addProfileTitle} className="hidden md:inline-flex">
+              <HeaderButton
+                shape="circle"
+                disabled={isAnonymous}
+                onClick={() => { setFilterSheetOpen(false); onAddProfile(); }}
+                aria-label={t.addProfileTitle}
+              >
+                <svg className="w-5 h-5 md:w-6 md:h-6 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75}>
+                  <path stroke="var(--color-negative)" strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
+                  <path stroke="var(--color-positive)" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v6M9 12h6" />
+                </svg>
+              </HeaderButton>
+            </HoverTip>
           )}
           <ProfileMenu onOpen={() => setFilterSheetOpen(false)} />
         </div>
