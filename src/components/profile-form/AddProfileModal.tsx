@@ -17,7 +17,7 @@ import { RoleBadge } from '../common/RoleBadge';
 import { LabelBadge } from '../profile/LabelBadge';
 import type { Role } from '../../types/profile';
 import { stripEmoji } from '../../utils/emoji';
-import { EmojiPickerPopover } from './EmojiPickerPopover';
+import { EmojiPickerPopover } from '../common/EmojiPickerPopover';
 
 // Draft persisted to localStorage so a half-composed opinio survives closing
 // the modal (or a reload). The card image (already resized to 128x128 JPEG, a

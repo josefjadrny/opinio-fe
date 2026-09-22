@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
@@ -8,10 +8,18 @@ import { Avatar } from '../profile/Avatar';
 import { TrashIcon } from '../profile/DeleteProfileButton';
 import { ConfirmModal } from '../common/ConfirmModal';
 import { CountryFlag } from '../common/CountryFlag';
+import { EmojiPickerPopover } from '../common/EmojiPickerPopover';
+import { HoverTip } from '../common/HoverTip';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import type { Comment, MentionUser } from '../../types/api';
 
 const MAX_LEN = 280;
+
+// Tallest the composer grows to before it scrolls - about four lines at the
+// 13px/snug type. Kept here rather than as a `max-h-*` class because the
+// auto-grow below has to know the same number to decide when to hand the box
+// back to its own scrollbar.
+const MAX_COMPOSER_H = 80;
 
 // Renders the "@handle" tokens the BE lists in `mentions` as links; any other
 // "@word" in the body is plain text, so a typo cannot fabricate a mention.
@@ -159,7 +167,9 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
   const [value, setValue] = useState('');
   const [mention, setMention] = useState<{ start: number; query: string } | null>(null);
   const [active, setActive] = useState(0);
+  const [emojiOpen, setEmojiOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const emojiWrapRef = useRef<HTMLDivElement>(null);
   // Caret to restore after a pick splices the handle in - React re-renders the
   // textarea with the new value before the caret can be placed.
   const pendingCaret = useRef<number | null>(null);
@@ -177,6 +187,41 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
     if (ta) { ta.focus(); ta.setSelectionRange(pendingCaret.current, pendingCaret.current); }
     pendingCaret.current = null;
   }, [value]);
+
+  // A `rows={1}` box does not grow, so the moment the text wrapped to a second
+  // line the first one scrolled out of sight behind a scrollbar in a one-line
+  // window. Grow to fit instead, and only hand the box its own scrollbar once
+  // it hits the cap. Layout effect so the height is set in the same frame as
+  // the character that caused the wrap - in a plain effect the box visibly
+  // jumps a frame later.
+  useLayoutEffect(() => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    ta.style.height = 'auto';
+    const full = ta.scrollHeight;
+    ta.style.height = `${Math.min(full, MAX_COMPOSER_H)}px`;
+    ta.style.overflowY = full > MAX_COMPOSER_H ? 'auto' : 'hidden';
+  }, [value, isRegistered]);
+
+  // Close the emoji popover on an outside click or Escape. Escape is handled in
+  // the capture phase so it dismisses the picker without also bubbling up to
+  // ModalShell's Escape-to-close (otherwise one keypress would shut both the
+  // picker and the thread sheet).
+  useEffect(() => {
+    if (!emojiOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (!emojiWrapRef.current?.contains(e.target as Node)) setEmojiOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); setEmojiOpen(false); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [emojiOpen]);
 
   if (!isRegistered) {
     return (
@@ -203,6 +248,20 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
     setMention(null);
   };
 
+  // Insert at the caret (or over the selection), same as the opinio body's
+  // picker: counted in the UTF-16 units the counter and the BE use, and dropped
+  // whole rather than truncated mid-glyph if it would not fit.
+  const insertEmoji = (emoji: string) => {
+    const ta = textareaRef.current;
+    const start = ta?.selectionStart ?? value.length;
+    const end = ta?.selectionEnd ?? value.length;
+    const next = value.slice(0, start) + emoji + value.slice(end);
+    if (next.length > MAX_LEN) return;
+    pendingCaret.current = start + emoji.length;
+    setValue(next);
+    setMention(null);
+  };
+
   const submit = () => {
     const body = value.trim();
     if (!body || post.isPending) return;
@@ -221,7 +280,7 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
     <div>
     <div className="flex items-center gap-2">
       <Avatar name={me.user.displayName} imageUrl={me.user.avatarUrl ?? null} className="w-7 h-7 shrink-0" />
-      <div className="flex-1 min-w-0 relative">
+      <div ref={emojiWrapRef} className="flex-1 min-w-0 relative">
         {/* Mention picker. Opens upward - the desktop column has the
             description above, the mobile sheet its thread - and the list
             is the API's answer, so an unknown handle simply shows nothing. */}
@@ -274,18 +333,43 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
           // `block`: an inline textarea leaves a descender strip under itself,
           // which made its wrapper 7px taller than the box - the avatar and the
           // stretched button centred on the wrapper, the input sat high.
-          className={`block w-full resize-none rounded-lg bg-white/[0.04] ring-1 ring-white/10 focus:ring-accent/60 focus:outline-none px-3 py-2 text-[13px] text-white placeholder:text-white/50 leading-snug max-h-20 ${value ? 'pr-12' : 'overflow-hidden'}`}
+          // The right padding clears the emoji button, plus the counter once
+          // there is something to count; height/overflow are the auto-grow's.
+          className={`block w-full resize-none rounded-lg bg-white/[0.04] ring-1 ring-white/10 focus:ring-accent/60 focus:outline-none px-3 py-2 text-[13px] text-white placeholder:text-white/50 leading-snug ${value ? 'pr-16' : 'pr-9'}`}
           style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}
         />
         {value.length > 0 && (
-          <span className="absolute right-2.5 bottom-2.5 text-[10px] tabular-nums text-white/50">{MAX_LEN - value.length}</span>
+          <span className="absolute right-9 bottom-2.5 text-[10px] tabular-nums text-white/50">{MAX_LEN - value.length}</span>
+        )}
+        {/* Same picker as the opinio body, bottom-pinned so it stays put as the
+            box grows. It opens upward - the thread is above the composer in
+            both the desktop column and the mobile sheet. */}
+        <HoverTip label={t.emojiAdd} className="contents">
+        <button
+          type="button"
+          onClick={() => setEmojiOpen((v) => !v)}
+          aria-label={t.emojiAdd}
+          className={`absolute bottom-1 right-1 flex items-center justify-center w-7 h-7 rounded-md text-white/40 hover:text-white/80 hover:bg-white/5 transition-colors ${emojiOpen ? 'bg-white/5 text-white/80' : ''}`}
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+          </svg>
+        </button>
+        </HoverTip>
+        {emojiOpen && (
+          <div className="absolute bottom-full right-0 mb-2 z-30">
+            <EmojiPickerPopover onPick={insertEmoji} />
+          </div>
         )}
       </div>
+      {/* Bottom-aligned, not stretched: the box grows now, and a Send button
+          that grew with it turned into a four-line slab. The explicit leading
+          makes it exactly as tall as the one-line composer it sits beside. */}
       <button
         type="button"
         onClick={submit}
         disabled={value.trim().length === 0 || post.isPending}
-        className="shrink-0 self-stretch rounded-lg px-3 text-xs font-semibold bg-accent text-white disabled:bg-white/[0.06] disabled:text-white/30 transition-colors"
+        className="shrink-0 self-end rounded-lg px-3 py-2 text-xs leading-[18px] font-semibold bg-accent text-white disabled:bg-white/[0.06] disabled:text-white/30 transition-colors"
       >
         {t.commentsSend}
       </button>

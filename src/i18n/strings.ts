@@ -850,7 +850,7 @@ const cs: Strings = {
   nominateTooltip: 'Přihlaste se pro přidání opinio',
   profile: 'Profil',
   myProfile: 'Můj profil',
-  myProfileSub: 'Vaše aktivita',
+  myProfileSub: 'Tvoje aktivita',
   settings: 'Nastavení',
   about: 'O aplikaci',
   logout: 'Odhlásit',
