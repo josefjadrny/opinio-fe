@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { isTwa } from '../../utils/twa';
+import { LogoMark } from '../common/LogoMark';
 import { isPlayAppInstalled, PLAY_STORE_URL, rememberAppBannerDismissed, shouldOfferAndroidApp } from '../../utils/androidApp';
 
 // Held back from first paint on purpose: a promo that is already on screen when
@@ -107,21 +108,23 @@ export function AndroidAppBanner() {
     <div className="app-banner shrink-0" data-open={open}>
       <div>
         <div ref={innerRef} className="app-banner-inner flex items-center gap-3 border-b border-white/10 bg-white/[0.04] px-3 py-2">
-          <img src="/pwa-192x192.png" alt="" width={36} height={36} className="w-9 h-9 shrink-0 rounded-lg" />
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-white/90">{t.appBannerTitle}</p>
-            {/* Wraps rather than truncates: the German and Polish strings are the
-                longest and a clipped half-sentence sells nothing. */}
-            <p className="line-clamp-2 text-xs leading-snug text-white/50">{t.appBannerBody}</p>
-          </div>
+          {/* The mark, not /pwa-192x192.png: that asset is still the older flat
+              drawing, so the banner was offering an app whose icon did not look
+              like the one in the store. */}
+          <LogoMark className="w-9 h-9 shrink-0" />
+          {/* The name is the whole pitch. A second line selling it as free and
+              one tap from the home screen read as ad copy on a strip this
+              small, and it is what wrapped the banner to two lines in German
+              and Polish. */}
+          <p className="min-w-0 flex-1 line-clamp-2 text-base leading-tight font-semibold text-white/90">{t.appBannerTitle}</p>
           <a
             href={PLAY_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
             onClick={close}
-            className="shrink-0 flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-white transition-opacity active:opacity-70"
+            className="shrink-0 flex items-center gap-1.5 rounded-full bg-accent px-3.5 py-2 text-sm font-semibold text-white transition-opacity active:opacity-70"
           >
-            <PlayIcon className="w-3.5 h-3.5" />
+            <PlayIcon className="w-4 h-4" />
             {t.appBannerCta}
           </a>
           <button

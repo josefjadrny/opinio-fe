@@ -19,7 +19,6 @@ export interface Strings {
   hideDetails: string;
   showDetails: string;
   appBannerTitle: string;
-  appBannerBody: string;
   appBannerCta: string;
   appBannerDismiss: string;
   offlineBanner: string;
@@ -386,7 +385,6 @@ const en: Strings = {
   hideDetails: 'Hide details',
   showDetails: 'Show details',
   appBannerTitle: 'Opinio for Android',
-  appBannerBody: 'Free - one tap from your home screen',
   appBannerCta: 'Install',
   appBannerDismiss: 'Dismiss',
   offlineBanner: 'You are offline - showing the last data you loaded',
@@ -795,7 +793,6 @@ const cs: Strings = {
   hideDetails: 'Skrýt detaily',
   showDetails: 'Zobrazit detaily',
   appBannerTitle: 'Opinio pro Android',
-  appBannerBody: 'Zdarma - jedním klepnutím z plochy',
   appBannerCta: 'Instalovat',
   appBannerDismiss: 'Zavřít',
   offlineBanner: 'Jste offline - zobrazujeme naposledy načtená data',
@@ -1204,7 +1201,6 @@ const es: Strings = {
   hideDetails: 'Ocultar detalles',
   showDetails: 'Mostrar detalles',
   appBannerTitle: 'Opinio para Android',
-  appBannerBody: 'Gratis - a un toque desde tu inicio',
   appBannerCta: 'Instalar',
   appBannerDismiss: 'Descartar',
   offlineBanner: 'Estás sin conexión - mostrando los últimos datos cargados',
@@ -1613,7 +1609,6 @@ const de: Strings = {
   hideDetails: 'Details ausblenden',
   showDetails: 'Details anzeigen',
   appBannerTitle: 'Opinio für Android',
-  appBannerBody: 'Kostenlos - ein Tipp vom Homescreen',
   appBannerCta: 'Installieren',
   appBannerDismiss: 'Schließen',
   offlineBanner: 'Du bist offline - es werden die zuletzt geladenen Daten angezeigt',
@@ -2022,7 +2017,6 @@ const fr: Strings = {
   hideDetails: 'Masquer les détails',
   showDetails: 'Afficher les détails',
   appBannerTitle: 'Opinio pour Android',
-  appBannerBody: "Gratuite - un appui depuis l'accueil",
   appBannerCta: 'Installer',
   appBannerDismiss: 'Fermer',
   offlineBanner: 'Vous êtes hors ligne - affichage des dernières données chargées',
@@ -2431,7 +2425,6 @@ const it: Strings = {
   hideDetails: 'Nascondi dettagli',
   showDetails: 'Mostra dettagli',
   appBannerTitle: 'Opinio per Android',
-  appBannerBody: 'Gratis - a un tocco dalla tua home',
   appBannerCta: 'Installa',
   appBannerDismiss: 'Chiudi',
   offlineBanner: 'Sei offline - mostriamo gli ultimi dati caricati',
@@ -2840,7 +2833,6 @@ const pl: Strings = {
   hideDetails: 'Ukryj szczegóły',
   showDetails: 'Pokaż szczegóły',
   appBannerTitle: 'Opinio na Androida',
-  appBannerBody: 'Za darmo - prosto z ekranu głównego',
   appBannerCta: 'Zainstaluj',
   appBannerDismiss: 'Zamknij',
   offlineBanner: 'Jesteś offline - pokazujemy ostatnio wczytane dane',
