@@ -10,6 +10,7 @@ import { ProfileMenu } from './ProfileMenu';
 import { useMe } from '../../hooks/useMe';
 import { HeaderButton } from '../ui/HeaderButton';
 import { HoverTip } from '../common/HoverTip';
+import { LogoMark } from '../common/LogoMark';
 
 interface FilterBarProps {
   onAddProfile: () => void;
@@ -46,11 +47,15 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
             onClick={() => navigate('/')}
             className="flex items-center gap-1.5 mr-2 hover:opacity-80 transition-opacity shrink-0 cursor-pointer"
           >
-            <img src="/favicon.svg" alt="Opinio" className="w-7 h-7" />
+            {/* The store mark, inline: /favicon.svg is the flat older drawing
+                and carries its own dark disc. Desktop takes the bigger pair -
+                the 44px discs at the other end left the wordmark looking
+                undersized - and still fits inside the header's own height. */}
+            <LogoMark className="w-7 h-7 md:w-9 md:h-9 shrink-0" />
             {isHome ? (
-              <h1 className="text-xl font-bold text-accent tracking-tight">{t.appName}</h1>
+              <h1 className="text-xl md:text-2xl font-bold text-accent tracking-tight">{t.appName}</h1>
             ) : (
-              <span className="text-xl font-bold text-accent tracking-tight">{t.appName}</span>
+              <span className="text-xl md:text-2xl font-bold text-accent tracking-tight">{t.appName}</span>
             )}
           </button>
           {/* Desktop filters - md+ only */}
