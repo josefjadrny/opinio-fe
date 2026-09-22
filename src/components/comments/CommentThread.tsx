@@ -16,10 +16,10 @@ import type { Comment, MentionUser } from '../../types/api';
 const MAX_LEN = 280;
 
 // Tallest the composer grows to before it scrolls - about four lines at the
-// 13px/snug type. Kept here rather than as a `max-h-*` class because the
+// 14px/snug type. Kept here rather than as a `max-h-*` class because the
 // auto-grow below has to know the same number to decide when to hand the box
 // back to its own scrollbar.
-const MAX_COMPOSER_H = 80;
+const MAX_COMPOSER_H = 96;
 
 // Renders the "@handle" tokens the BE lists in `mentions` as links; any other
 // "@word" in the body is plain text, so a typo cannot fabricate a mention.
@@ -89,7 +89,7 @@ function CommentRow({ c, index, profileId, backState }: { c: Comment; index: num
         <Avatar name={c.user.handle} imageUrl={c.user.avatarUrl} className="w-7 h-7" />
       </Link>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5 text-xs leading-none mb-1">
+        <div className="flex items-center gap-1.5 text-[13px] leading-none mb-1">
           <Link to={userTo} state={backState} className="font-semibold text-white/90 hover:underline underline-offset-2">@{c.user.handle}</Link>
           {c.user.countryCode && <CountryFlag code={c.user.countryCode} tip={false} />}
           <span className="text-white/50">{formatRelativeTime(c.createdAt, locale, t.justNow)}</span>
@@ -110,7 +110,7 @@ function CommentRow({ c, index, profileId, backState }: { c: Comment; index: num
             </HoverTip>
           )}
         </div>
-        <p className="text-[13px] text-white/80 leading-snug break-words">
+        <p className="text-sm text-white/80 leading-relaxed break-words">
           <CommentBody body={c.body} mentions={c.mentions} backState={backState} />
         </p>
       </div>
@@ -140,11 +140,11 @@ export function CommentList({ profileId, profileName, className = '' }: { profil
   const backState: BackState = { fromProfileId: profileId, fromProfileName: profileName };
   const { data, isLoading } = useComments(profileId, true);
   if (isLoading) {
-    return <p className={`text-xs text-white/50 py-3 ${className}`}>{t.loading}</p>;
+    return <p className={`text-[13px] text-white/50 py-3 ${className}`}>{t.loading}</p>;
   }
   const comments = data?.comments ?? [];
   if (comments.length === 0) {
-    return <p className={`text-xs text-white/50 py-3 ${className}`}>{t.commentsEmpty}</p>;
+    return <p className={`text-[13px] text-white/50 py-3 ${className}`}>{t.commentsEmpty}</p>;
   }
   // Card gap, not a divider: same 1.5 step the mobile feed stacks opinios at.
   return (
@@ -243,7 +243,7 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
 
   if (!isRegistered) {
     return (
-      <div className={`text-xs text-white/50 ${compact ? 'py-2' : 'py-3'}`}>
+      <div className={`text-[13px] text-white/50 ${compact ? 'py-2' : 'py-3'}`}>
         <button type="button" onClick={promptSignIn} className="text-accent hover:underline underline-offset-2">{t.commentsSignIn}</button>
       </div>
     );
@@ -313,7 +313,7 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
                   type="button"
                   onMouseDown={(e) => { e.preventDefault(); pick(u); }}
                   onMouseEnter={() => setActive(i)}
-                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-left text-[13px] ${i === active ? 'bg-white/[0.08] text-white' : 'text-white/80'}`}
+                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-left text-sm ${i === active ? 'bg-white/[0.08] text-white' : 'text-white/80'}`}
                 >
                   <Avatar name={u.handle} imageUrl={u.avatarUrl} className="w-6 h-6 shrink-0" />
                   <span className="font-medium truncate">@{u.handle}</span>
@@ -353,11 +353,11 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
           // stretched button centred on the wrapper, the input sat high.
           // The right padding clears the emoji button, plus the counter once
           // there is something to count; height/overflow are the auto-grow's.
-          className={`block w-full resize-none rounded-lg bg-white/[0.04] ring-1 ring-white/10 focus:ring-accent/60 focus:outline-none px-3 py-2 text-[13px] text-white placeholder:text-white/50 leading-snug ${value ? 'pr-16' : 'pr-9'}`}
+          className={`block w-full resize-none rounded-lg bg-white/[0.04] ring-1 ring-white/10 focus:ring-accent/60 focus:outline-none px-3 py-2 text-sm text-white placeholder:text-white/50 leading-snug ${value ? 'pr-16' : 'pr-9'}`}
           style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}
         />
         {value.length > 0 && (
-          <span className="absolute right-9 bottom-2.5 text-[10px] tabular-nums text-white/50">{MAX_LEN - value.length}</span>
+          <span className="absolute right-9 bottom-2.5 text-[11px] tabular-nums text-white/50">{MAX_LEN - value.length}</span>
         )}
         {/* Same picker as the opinio body, bottom-pinned so it stays put as the
             box grows. It opens upward - the thread is above the composer in
@@ -387,13 +387,13 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
         type="button"
         onClick={submit}
         disabled={value.trim().length === 0 || post.isPending}
-        className="shrink-0 self-end rounded-lg px-3 py-2 text-xs leading-[18px] font-semibold bg-accent text-white disabled:bg-white/[0.06] disabled:text-white/30 transition-colors"
+        className="shrink-0 self-end rounded-lg px-3 py-2 text-[13px] leading-[19px] font-semibold bg-accent text-white disabled:bg-white/[0.06] disabled:text-white/30 transition-colors"
       >
         {t.commentsSend}
       </button>
     </div>
     {errorText && (
-      <p role="alert" className="mt-1.5 text-xs text-negative-soft">{errorText}</p>
+      <p role="alert" className="mt-1.5 text-[13px] text-negative-soft">{errorText}</p>
     )}
     </div>
   );
