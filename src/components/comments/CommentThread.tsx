@@ -10,6 +10,8 @@ import { ConfirmModal } from '../common/ConfirmModal';
 import { CountryFlag } from '../common/CountryFlag';
 import { EmojiPickerPopover } from '../common/EmojiPickerPopover';
 import { HoverTip } from '../common/HoverTip';
+import { TIP_TEXT_CLASS } from '../common/AnchoredTip';
+import { LinkIcon, ExternalIcon } from '../profile/SourceLink';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import type { Comment, MentionUser } from '../../types/api';
 
@@ -25,15 +27,30 @@ const MAX_COMPOSER_H = 96;
 // "@word" in the body is plain text, so a typo cannot fabricate a mention.
 // Also used by the user page's activity list, which has no opinio to come
 // back to - hence the optional back state.
+//
+// Links are split out first, so an "@" inside a URL (medium.com/@someone) is
+// never read as a mention.
 export function CommentBody({ body, mentions, backState }: { body: string; mentions: Comment['mentions']; backState?: BackState }) {
+  return (
+    <>
+      {splitLinks(body).map((part, i) =>
+        typeof part === 'string'
+          ? <MentionText key={i} text={part} mentions={mentions} backState={backState} />
+          : <CommentLink key={i} {...part} />,
+      )}
+    </>
+  );
+}
+
+function MentionText({ text, mentions, backState }: { text: string; mentions: Comment['mentions']; backState?: BackState }) {
   const location = useLocation();
-  if (mentions.length === 0) return <>{body}</>;
+  if (mentions.length === 0) return <>{text}</>;
   const handles = mentions.map((m) => m.handle);
   const idFor = (handle: string) => mentions.find((m) => m.handle === handle)?.userId;
   const re = new RegExp(`(@(?:${handles.map((h) => h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')}))\\b`, 'g');
   return (
     <>
-      {body.split(re).map((part, i) =>
+      {text.split(re).map((part, i) =>
         part.startsWith('@') && handles.includes(part.slice(1)) ? (
           <Link
             key={i}
@@ -47,6 +64,75 @@ export function CommentBody({ body, mentions, backState }: { body: string; menti
         ),
       )}
     </>
+  );
+}
+
+type BodyLink = { href: string; host: string };
+
+// "http(s)://..." or a bare "www....". Trailing sentence punctuation is not
+// part of the link ("see bbc.com/x." ends the sentence, not the path), and a
+// closing paren is kept only when the URL opened one itself (Wikipedia's
+// "..._(disambiguation)"). Anything that fails to parse stays plain text, and
+// only http(s) ever becomes an href - the body is arbitrary user input.
+const URL_RE = /\b(?:https?:\/\/|www\.)[^\s<>"]+/gi;
+
+function splitLinks(text: string): (string | BodyLink)[] {
+  const out: (string | BodyLink)[] = [];
+  let last = 0;
+  for (const m of text.matchAll(URL_RE)) {
+    let raw = m[0];
+    for (;;) {
+      const trimmed = raw.replace(/[.,;:!?'"]+$/, '');
+      const unbalanced = trimmed.endsWith(')') && (trimmed.match(/\(/g)?.length ?? 0) < (trimmed.match(/\)/g)?.length ?? 0);
+      const next = unbalanced ? trimmed.slice(0, -1) : trimmed;
+      if (next === raw) break;
+      raw = next;
+    }
+    let url: URL;
+    try {
+      url = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);
+    } catch {
+      continue;
+    }
+    if (!/^https?:$/.test(url.protocol) || !url.hostname.includes('.')) continue;
+    const start = m.index;
+    if (start > last) out.push(text.slice(last, start));
+    out.push({ href: url.href, host: url.hostname.replace(/^www\./, '') });
+    last = start + raw.length;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out;
+}
+
+// A pasted URL shows as a small chip naming its host - the same look and the
+// same anti-phishing signal as the opinio's source chip, sized to sit inside
+// a line of text. The full URL is on the hover tip (wrapped, it can be long)
+// and the aria-label. It opens the URL directly: unlike the opinio link there
+// is no /l/:id redirect for comments, and the BE still stores and counts the
+// body as typed. `ugc` on top of nofollow marks it as user-generated.
+function CommentLink({ href, host }: BodyLink) {
+  return (
+    <HoverTip
+      label={href}
+      panel={<span className={`block break-all ${TIP_TEXT_CLASS}`}>{href}</span>}
+      panelWidth={280}
+      // `align-middle`: the chip is shorter than the relaxed line, and
+      // align-bottom pinned it to the line box's floor, ~2px under the text.
+      className="inline-flex max-w-full align-middle"
+    >
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer nofollow ugc"
+        aria-label={href}
+        onClick={(e) => e.stopPropagation()}
+        className="inline-flex items-center gap-1 max-w-full min-w-0 text-[13px] font-medium leading-5 text-accent/90 hover:text-accent bg-accent/10 hover:bg-accent/15 rounded-md px-1.5 transition-colors"
+      >
+        <LinkIcon className="w-3.5 h-3.5 shrink-0" />
+        <span className="truncate">{host}</span>
+        <ExternalIcon className="w-3 h-3 shrink-0 opacity-70" />
+      </a>
+    </HoverTip>
   );
 }
 
