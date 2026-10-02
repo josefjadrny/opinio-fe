@@ -10,7 +10,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate', // new SW activates + reloads on next visit; no stale shell
       injectRegister: 'auto', // injects the registration snippet; no code change in main.tsx
-      includeAssets: ['favicon.png', 'favicon.svg', 'apple-touch-icon.png', 'icon.svg'],
+      includeAssets: ['favicon-v2.png', 'favicon.svg', 'apple-touch-icon-v2.png', 'icon.svg'],
       manifest: {
         name: 'Opinio',
         short_name: 'Opinio',
@@ -34,10 +34,12 @@ export default defineConfig({
           { platform: 'play', id: 'live.opinio.app', url: 'https://play.google.com/store/apps/details?id=live.opinio.app' },
         ],
         prefer_related_applications: false,
+        // Root PNGs deploy with a year-long immutable cache, so a redrawn icon
+        // takes a new filename (-v2 = the Play store artwork), never an overwrite.
         icons: [
-          { src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-          { src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-          { src: '/maskable-icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: '/pwa-192x192-v2.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/pwa-512x512-v2.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: '/maskable-icon-512x512-v2.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
         // Long-press the installed launcher icon (Android) / taskbar icon
         // (desktop) to jump straight into a route. Bubblewrap mirrors these

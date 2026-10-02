@@ -108,9 +108,8 @@ export function AndroidAppBanner() {
     <div className="app-banner shrink-0" data-open={open}>
       <div>
         <div ref={innerRef} className="app-banner-inner flex items-center gap-3 border-b border-white/10 bg-white/[0.04] px-3 py-2">
-          {/* The mark, not /pwa-192x192.png: that asset is still the older flat
-              drawing, so the banner was offering an app whose icon did not look
-              like the one in the store. */}
+          {/* The mark, not the launcher PNG: that one carries its own dark
+              circle, which reads as a tile on this strip. */}
           <LogoMark className="w-9 h-9 shrink-0" />
           {/* The name is the whole pitch. A second line selling it as free and
               one tap from the home screen read as ad copy on a strip this
