@@ -4,6 +4,7 @@ import { useI18n } from '../../i18n/I18nContext';
 import { CountryFlag } from '../common/CountryFlag';
 import { CommentIcon } from '../comments/CommentCount';
 import { LogoMark } from '../common/LogoMark';
+import { VotePairIcon } from '../common/VotePairIcon';
 import { CommentBody } from '../comments/CommentThread';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import type { UserActivityItem } from '../../types/api';
@@ -16,8 +17,8 @@ import type { UserActivityItem } from '../../types/api';
 // i18n string per kind with {actor}/{target} tokens, so each language
 // orders the sentence its own way; the *You variants carry no {actor} at
 // all, because "you" declines differently from a handle in half the
-// languages. A new kind (likes) is one more icon, two more strings and one
-// more branch below.
+// languages. A vote row never says like or dislike - the API does not send
+// it - so its glyph is the ▲/▼ pair (Stats' net score), not either side.
 
 interface UserActivityListProps {
   items: UserActivityItem[];
@@ -46,7 +47,9 @@ function ActivityRow({ item, handle, isMe, onOpen, onOpenProfile }: {
   const isComment = item.kind === 'comment';
   const template = isComment
     ? (isMe ? t.activityCommentedYou : t.activityCommented)
-    : (isMe ? t.activityPostedYou : t.activityPosted);
+    : item.kind === 'vote'
+      ? (isMe ? t.activityVotedYou : t.activityVoted)
+      : (isMe ? t.activityPostedYou : t.activityPosted);
   const actor = <span className="font-semibold text-white">@{handle}</span>;
   // The target always opens the opinio itself (its country view) even on a
   // comment row - the row as a whole is what opens the thread.
@@ -68,10 +71,14 @@ function ActivityRow({ item, handle, isMe, onOpen, onOpenProfile }: {
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
       className="group flex gap-2.5 md:gap-3 px-2 md:px-2.5 py-2 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 transition-all duration-200 cursor-pointer select-none"
     >
-      {/* Kind glyph, bare: the comment bubble, or the Opinio mark for a
-          shared opinio (not the bubble-with-plus - that one means "add"). */}
+      {/* Kind glyph, bare: the comment bubble, the ▲/▼ pair for a vote (the stats
+          net-score glyph),
+          or the Opinio mark for a shared opinio (not the bubble-with-plus -
+          that one means "add"). */}
       <span className="shrink-0 mt-px">
-        {isComment ? <CommentIcon className="w-5 h-5" /> : <LogoMark className="w-5 h-5" />}
+        {isComment ? <CommentIcon className="w-5 h-5" />
+          : item.kind === 'vote' ? <span className="w-5 h-5 flex items-center justify-center"><VotePairIcon className="text-sm" /></span>
+          : <LogoMark className="w-5 h-5" />}
       </span>
       <div className="flex-1 min-w-0">
         {/* Time flows after the caption instead of sitting at the right edge:
@@ -104,7 +111,7 @@ export function UserActivityList({ items, handle, isMe, onOpenProfile, onOpenThr
         <div className="space-y-1">
           {items.map((item) => (
             <ActivityRow
-              key={item.comment ? `c-${item.comment.id}` : `p-${item.profile.id}`}
+              key={item.comment ? `c-${item.comment.id}` : `${item.kind}-${item.profile.id}`}
               item={item}
               handle={handle}
               isMe={isMe}

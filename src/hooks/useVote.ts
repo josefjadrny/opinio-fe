@@ -66,6 +66,12 @@ export function useVote() {
           totalDislikesReceived: old.totalDislikesReceived + dislikeBump,
         };
       });
+      // The voter's own user page lists the opinios they voted on, so a new
+      // vote can add a row there - refetch it (the API busts its cache for
+      // the voter on every registered vote). Anonymous voters have no page;
+      // invalidating a query that does not exist is a no-op.
+      const myId = queryClient.getQueryData<MeResponse>(['me'])?.user.id;
+      if (myId) queryClient.invalidateQueries({ queryKey: ['user', myId] });
       lockOrderFor5s(() => {
         queryClient.invalidateQueries({ queryKey: ['profiles'] });
         queryClient.invalidateQueries({ queryKey: ['countryProfiles'] });

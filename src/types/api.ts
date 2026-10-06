@@ -186,7 +186,7 @@ export interface UserProfileSummary {
 
 /** One thing the user did, newest first. `comment` is set for kind 'comment'. */
 export interface UserActivityItem {
-  kind: 'post' | 'comment';
+  kind: 'post' | 'comment' | 'vote';
   at: string;
   profile: UserProfileSummary;
   comment: { id: string; body: string; mentions: Comment['mentions'] } | null;

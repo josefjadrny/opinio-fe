@@ -15,6 +15,7 @@ import { RoleBadge } from '../common/RoleBadge';
 import type { CountryMetric, LeaderboardBoard } from '../../types/api';
 import type { Profile } from '../../types/profile';
 import type { StatsCategory } from './statsCategory';
+import { VotePairIcon } from '../common/VotePairIcon';
 
 export type { StatsCategory };
 type Category = StatsCategory;
@@ -83,12 +84,7 @@ const TotalMetricIcon = () => (
 );
 const LikeMetricIcon = () => <span className="text-positive text-xs leading-none">▲</span>;
 const DislikeMetricIcon = () => <span className="text-negative text-xs leading-none">▼</span>;
-const NetMetricIcon = () => (
-  <span className="text-xs leading-none tracking-[-0.25em]">
-    <span className="text-positive">▲</span>
-    <span className="text-negative">▼</span>
-  </span>
-);
+const NetMetricIcon = () => <VotePairIcon />;
 
 const METRIC_ICON: Record<CountryMetric, () => ReactElement> = {
   total: TotalMetricIcon,
