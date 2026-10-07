@@ -5,15 +5,13 @@ import { CountryFlag } from '../common/CountryFlag';
 import { CommentIcon } from '../comments/CommentCount';
 import { LogoMark } from '../common/LogoMark';
 import { VotePairIcon } from '../common/VotePairIcon';
-import { CommentBody } from '../comments/CommentThread';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import type { UserActivityItem } from '../../types/api';
 
 // The user's timeline, activity-log style: every row is a caption naming
-// who did what to which opinio ("@josef commented on Elon Musk"). A comment
-// row adds one truncated line of the comment - four rows all reading
-// "commented on Elon Musk" are indistinguishable without it; a post row is
-// the caption alone, the opinio itself is a click away. The caption is one
+// who did what to which opinio ("@josef commented on Elon Musk"). Every row
+// is the caption alone - the comment text is not quoted, the thread is a
+// click away. The caption is one
 // i18n string per kind with {actor}/{target} tokens, so each language
 // orders the sentence its own way; the *You variants carry no {actor} at
 // all, because "you" declines differently from a handle in half the
@@ -88,11 +86,6 @@ function ActivityRow({ item, handle, isMe, onOpen, onOpenProfile }: {
           {fill(template, { actor, target })}
           <span className="text-xs text-white/50 whitespace-nowrap"> · {formatRelativeTime(item.at, locale, t.justNow)}</span>
         </p>
-        {isComment && item.comment && (
-          <p className="text-[13px] text-white/60 leading-snug truncate mt-0.5">
-            <CommentBody body={item.comment.body} mentions={item.comment.mentions} />
-          </p>
-        )}
       </div>
     </div>
   );
@@ -111,7 +104,7 @@ export function UserActivityList({ items, handle, isMe, onOpenProfile, onOpenThr
         <div className="space-y-1">
           {items.map((item) => (
             <ActivityRow
-              key={item.comment ? `c-${item.comment.id}` : `${item.kind}-${item.profile.id}`}
+              key={item.comment ? `c-${item.comment.id}` : `${item.kind}-${item.profile.id}-${item.at}`}
               item={item}
               handle={handle}
               isMe={isMe}
