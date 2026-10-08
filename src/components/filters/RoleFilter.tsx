@@ -67,7 +67,7 @@ export function RoleFilter() {
             })}
             {/* NEW is not a category - it filters by age (< 2h), the same
                 condition that earns the NEW badge. Kept last so it reads as
-                the badge it already is, not as a 9th category. */}
+                the badge it already is, not as another category. */}
             <button
               onClick={toggleFresh}
               className={`bg-orange-500 text-white text-[11px] leading-none font-semibold px-2 py-1 rounded-full uppercase tracking-wide transition-opacity ${

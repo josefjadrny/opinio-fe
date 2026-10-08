@@ -6,6 +6,7 @@ export type Role =
   | 'media'
   | 'health'
   | 'science'
+  | 'environment'
   | 'tech';
 
 export interface Profile {

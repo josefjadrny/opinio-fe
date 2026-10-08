@@ -8,17 +8,19 @@ export const ROLE_LABELS: Record<Role, string> = {
   media: 'Media',
   health: 'Health',
   science: 'Science',
+  environment: 'Environment',
   tech: 'Tech',
 };
 
 export const ROLE_COLORS: Record<Role, string> = {
   politics: 'bg-blue-600',
   entertainment: 'bg-purple-600',
-  sports: 'bg-green-600',
+  sports: 'bg-fuchsia-600',
   business: 'bg-yellow-600',
   media: 'bg-cyan-600',
   health: 'bg-rose-600',
   science: 'bg-indigo-600',
+  environment: 'bg-emerald-600',
   tech: 'bg-slate-500',
 };
 
