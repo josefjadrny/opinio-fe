@@ -308,6 +308,8 @@ export interface Strings {
   commentsFailed: string;
   deleteComment: string;
   deleteCommentConfirm: string;
+  commentsReply: string;
+  deleteCommentWithRepliesConfirm: string;
   sourceLink: string;
   seeTranslation: string;
   userJoined: string;
@@ -684,6 +686,8 @@ const en: Strings = {
   commentsFailed: 'Could not send, try again',
   deleteComment: 'Delete comment',
   deleteCommentConfirm: 'Delete this comment?',
+  commentsReply: 'Reply',
+  deleteCommentWithRepliesConfirm: 'Delete this comment and its replies?',
   sourceLink: 'Source',
   seeTranslation: 'See translation',
   userJoined: 'Joined {date}',
@@ -1095,6 +1099,8 @@ const cs: Strings = {
   commentsFailed: 'Nepodařilo se odeslat, zkus to znovu',
   deleteComment: 'Smazat komentář',
   deleteCommentConfirm: 'Smazat tento komentář?',
+  commentsReply: 'Odpovědět',
+  deleteCommentWithRepliesConfirm: 'Smazat tento komentář i odpovědi na něj?',
   sourceLink: 'Zdroj',
   seeTranslation: 'Zobrazit překlad',
   userJoined: 'Účet od {date}',
@@ -1506,6 +1512,8 @@ const es: Strings = {
   commentsFailed: 'No se pudo enviar, inténtalo de nuevo',
   deleteComment: 'Eliminar comentario',
   deleteCommentConfirm: '¿Eliminar este comentario?',
+  commentsReply: 'Responder',
+  deleteCommentWithRepliesConfirm: '¿Eliminar este comentario y sus respuestas?',
   sourceLink: 'Fuente',
   seeTranslation: 'Ver traducción',
   userJoined: 'Se unió el {date}',
@@ -1917,6 +1925,8 @@ const de: Strings = {
   commentsFailed: 'Senden fehlgeschlagen, versuch es nochmal',
   deleteComment: 'Kommentar löschen',
   deleteCommentConfirm: 'Diesen Kommentar löschen?',
+  commentsReply: 'Antworten',
+  deleteCommentWithRepliesConfirm: 'Diesen Kommentar und seine Antworten löschen?',
   sourceLink: 'Quelle',
   seeTranslation: 'Übersetzung anzeigen',
   userJoined: 'Dabei seit {date}',
@@ -2328,6 +2338,8 @@ const fr: Strings = {
   commentsFailed: 'Envoi impossible, réessayez',
   deleteComment: 'Supprimer le commentaire',
   deleteCommentConfirm: 'Supprimer ce commentaire ?',
+  commentsReply: 'Répondre',
+  deleteCommentWithRepliesConfirm: 'Supprimer ce commentaire et ses réponses ?',
   sourceLink: 'Source',
   seeTranslation: 'Voir la traduction',
   userJoined: 'Inscrit le {date}',
@@ -2739,6 +2751,8 @@ const it: Strings = {
   commentsFailed: 'Invio non riuscito, riprova',
   deleteComment: 'Elimina commento',
   deleteCommentConfirm: 'Eliminare questo commento?',
+  commentsReply: 'Rispondi',
+  deleteCommentWithRepliesConfirm: 'Eliminare questo commento e le sue risposte?',
   sourceLink: 'Fonte',
   seeTranslation: 'Vedi traduzione',
   userJoined: 'Iscritto il {date}',
@@ -3150,6 +3164,8 @@ const pl: Strings = {
   commentsFailed: 'Nie udało się wysłać, spróbuj ponownie',
   deleteComment: 'Usuń komentarz',
   deleteCommentConfirm: 'Usunąć ten komentarz?',
+  commentsReply: 'Odpowiedz',
+  deleteCommentWithRepliesConfirm: 'Usunąć ten komentarz i odpowiedzi na niego?',
   sourceLink: 'Źródło',
   seeTranslation: 'Pokaż tłumaczenie',
   userJoined: 'Dołączył {date}',

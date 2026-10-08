@@ -26,7 +26,7 @@ import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { CommentIcon } from '../comments/CommentCount';
 import { commentCountLabel } from '../comments/commentCountLabel';
-import { CommentList, CommentComposer } from '../comments/CommentThread';
+import { CommentList, CommentComposer, CommentThreadProvider } from '../comments/CommentThread';
 
 interface DesktopProfileModalProps {
   profileId: string;
@@ -323,6 +323,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                           })}
                         </div>}
                         {commentsEnabled && rightTab === 'comments' ? (
+                          <CommentThreadProvider key={profileId}>
                           <div className="flex-1 min-h-0 flex flex-col">
                             <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar" aria-label={commentCountLabel(t, locale, commentCount)}>
                               <CommentList profileId={profileId} profileName={profile.name} />
@@ -331,6 +332,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                               <CommentComposer profileId={profileId} />
                             </div>
                           </div>
+                          </CommentThreadProvider>
                         ) : breakdown && (breakdown.topLiking.length > 0 || breakdown.topDisliking.length > 0) ? (
                           <div className="grid grid-cols-2 gap-6 flex-1 min-h-0">
                             <div className="flex flex-col min-h-0">

@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Fragment, createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
@@ -22,6 +22,24 @@ const MAX_LEN = 280;
 // auto-grow below has to know the same number to decide when to hand the box
 // back to its own scrollbar.
 const MAX_COMPOSER_H = 96;
+
+// Replies are one level deep. `rootId` is where the reply lands - answering a
+// reply joins its root's thread rather than nesting under it (the BE enforces
+// the same). `commentId`/`handle` are the comment actually answered: it gets
+// the highlight, and its author the @mention the composer starts with.
+type ReplyTarget = { rootId: string; commentId: string; userId: string; handle: string };
+type ReplyState = { target: ReplyTarget | null; setTarget: (t: ReplyTarget | null) => void };
+
+// Shared by the list (the Reply buttons) and the composer (the "Replying to"
+// bar), which the callers render apart - the composer is the mobile sheet's
+// pinned footer. Callers key it by profile id so a target never carries over
+// to another opinio. Without a provider the list simply shows no Reply.
+const ReplyContext = createContext<ReplyState | null>(null);
+
+export function CommentThreadProvider({ children }: { children: ReactNode }) {
+  const [target, setTarget] = useState<ReplyTarget | null>(null);
+  return <ReplyContext.Provider value={{ target, setTarget }}>{children}</ReplyContext.Provider>;
+}
 
 // Renders the "@handle" tokens the BE lists in `mentions` as links; any other
 // "@word" in the body is plain text, so a typo cannot fabricate a mention.
@@ -140,15 +158,29 @@ function CommentLink({ href, host }: BodyLink) {
 // Same shape as the "reported by" link in the detail header.
 type BackState = { fromProfileId: string; fromProfileName?: string };
 
+// Curved "reply" arrow (heroicons arrow-uturn-left), shared by the row
+// action and the composer's "Replying to" line so the two read as one control.
+export function ReplyIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+    </svg>
+  );
+}
+
 // `index` staggers the entrance the way the country rows do (same `stat-in`
 // keyframe and 35ms step). Capped so a long thread does not keep the rows
 // below the fold waiting on ones nobody has scrolled to yet; a comment
 // prepended after a post mounts alone and simply fades in.
-function CommentRow({ c, index, profileId, backState }: { c: Comment; index: number; profileId: string; backState: BackState }) {
+function CommentRow({ c, index, profileId, backState, replyCount = 0 }: { c: Comment; index: number; profileId: string; backState: BackState; replyCount?: number }) {
   const { locale, t } = useI18n();
   const location = useLocation();
   const { data: me } = useMe();
+  const { promptSignIn } = useSignIn();
+  const reply = useContext(ReplyContext);
   const remove = useDeleteComment(profileId);
+  const isReply = c.parentId !== null;
+  const isTarget = reply?.target?.commentId === c.id;
   const [confirmOpen, setConfirmOpen] = useState(false);
   // Own comment, or admin (the BE allows both). Same trash + confirm as the
   // opinio delete in the detail header, sized to the row.
@@ -166,13 +198,23 @@ function CommentRow({ c, index, profileId, backState }: { c: Comment; index: num
   // tinting with the same token produced a card the exact hue of its own parent
   // - no visible edge at all, only the ring. White lightens whatever sits
   // behind it, which is the idiom the composer below already uses.
+  //
+  // A reply is the same card a step smaller (avatar, padding); the indent and
+  // the thread line come from the wrapper in CommentList. The comment being
+  // answered takes the composer's focus ring - it is the only "replying to"
+  // marker outside the box itself, so the reader sees which comment the
+  // @mention in the composer answers.
+  //
+  // `ring-inset`: the list is a scroll container, which clips a ring drawn
+  // outside the box - the first card lost its top edge, the last its bottom
+  // one and every card its left, worst on the accent ring.
   return (
     <div
-      className="group flex gap-2.5 px-2.5 py-2.5 rounded-xl bg-white/[0.035] ring-1 ring-white/10"
+      className={`group flex gap-2.5 rounded-xl bg-white/[0.035] ring-1 ring-inset transition-shadow ${isReply ? 'px-2 py-2' : 'px-2.5 py-2.5'} ${isTarget ? 'ring-accent/60' : 'ring-white/10'}`}
       style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${Math.min(index, 12) * 35}ms` }}
     >
       <Link to={userTo} state={backState} className="shrink-0 mt-0.5" aria-label={`@${c.user.handle}`}>
-        <Avatar name={c.user.handle} imageUrl={c.user.avatarUrl} className="w-7 h-7" />
+        <Avatar name={c.user.handle} imageUrl={c.user.avatarUrl} className={isReply ? 'w-6 h-6' : 'w-7 h-7'} />
       </Link>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5 text-[13px] leading-none mb-1">
@@ -199,14 +241,45 @@ function CommentRow({ c, index, profileId, backState }: { c: Comment; index: num
         <p className="text-sm text-white/80 leading-relaxed break-words">
           <CommentBody body={c.body} mentions={c.mentions} backState={backState} />
         </p>
+        {reply && (
+          // Anonymous gets the sign-in prompt, the same answer the composer
+          // gives them, rather than a Reply that does nothing. On the comment
+          // already being answered it toggles the reply off - with the bar
+          // above the composer gone, this and Escape are the ways out.
+          <button
+            type="button"
+            onClick={() => {
+              if (!me?.user || me.user.tier === 'anonymous') { promptSignIn(); return; }
+              reply.setTarget(isTarget ? null : { rootId: c.parentId ?? c.id, commentId: c.id, userId: c.user.id, handle: c.user.handle });
+            }}
+            aria-pressed={isTarget}
+            // Stays neutral on the target - the card's ring already marks it.
+            // Block-level `flex w-fit`, not inline-flex: inline, it sat on a
+            // 16px/24px text line of its parent and that line's descent added
+            // ~7px under it. `leading-none` + `-mb-1` against its own `py-1`
+            // keep the hover pad without adding layout below the glyphs, so the
+            // gap under Reply matches the card's gap over the handle.
+            className="mt-0.5 -mb-1 -ml-1.5 flex w-fit items-center gap-1 rounded-md px-1.5 py-1 leading-none text-[12px] font-semibold text-white/50 hover:text-white/90 hover:bg-white/5 transition-colors"
+          >
+            <ReplyIcon />
+            {t.commentsReply}
+          </button>
+        )}
       </div>
       {canDelete && (
         <ConfirmModal
           open={confirmOpen}
           onClose={() => setConfirmOpen(false)}
-          onConfirm={() => remove.mutate(c.id, { onSuccess: () => setConfirmOpen(false) })}
+          onConfirm={() => remove.mutate(c.id, {
+            onSuccess: () => {
+              setConfirmOpen(false);
+              // The composer must not go on answering a comment that is gone.
+              const t0 = reply?.target;
+              if (t0 && (t0.commentId === c.id || t0.rootId === c.id)) reply.setTarget(null);
+            },
+          })}
           title={t.deleteComment}
-          message={t.deleteCommentConfirm}
+          message={replyCount > 0 ? t.deleteCommentWithRepliesConfirm : t.deleteCommentConfirm}
           confirmLabel={remove.isPending ? t.deleting : t.delete}
           cancelLabel={t.cancel}
           variant="destructive"
@@ -232,10 +305,34 @@ export function CommentList({ profileId, profileName, className = '' }: { profil
   if (comments.length === 0) {
     return <p className={`text-[13px] text-white/50 py-3 ${className}`}>{t.commentsEmpty}</p>;
   }
+  // The BE sends roots newest first, each followed by its replies; group them
+  // back. A reply whose root is not on the page is dropped, never promoted.
+  const replies = new Map<string, Comment[]>();
+  for (const c of comments) {
+    if (c.parentId) replies.set(c.parentId, [...(replies.get(c.parentId) ?? []), c]);
+  }
+  let i = 0;
   // Card gap, not a divider: same 1.5 step the mobile feed stacks opinios at.
+  //
+  // Replies are their own cards, indented so the card edge lines up with the
+  // root's TEXT column (root padding 10 + avatar 28 + gap 10 = 48px), with a
+  // thread line down the centre of the root's avatar (10 + 14 = 24px). Hence
+  // 23px margin + 2px line + 23px padding = 48.
   return (
     <div className={`space-y-1.5 ${className}`}>
-      {comments.map((c, i) => <CommentRow key={c.id} c={c} index={i} profileId={profileId} backState={backState} />)}
+      {comments.filter((c) => !c.parentId).map((root) => {
+        const own = replies.get(root.id) ?? [];
+        return (
+          <div key={root.id}>
+            <CommentRow c={root} index={i++} profileId={profileId} backState={backState} replyCount={own.length} />
+            {own.length > 0 && (
+              <div className="ml-[23px] pt-1.5 pl-[23px] border-l-2 border-white/10 space-y-1.5">
+                {own.map((r) => <CommentRow key={r.id} c={r} index={i++} profileId={profileId} backState={backState} />)}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -279,6 +376,32 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
   const pendingCaret = useRef<number | null>(null);
   const post = usePostComment(profileId);
   const isRegistered = !!me?.user && me.user.tier !== 'anonymous';
+  const reply = useContext(ReplyContext);
+  const target = reply?.target ?? null;
+
+  // Picking Reply starts the box with "@handle " of the author answered - the
+  // thread is one level, so the mention is what says who a reply in a long
+  // thread is talking to (and it is what will notify them). Switching to
+  // another comment swaps the old prefix for the new one; whatever was typed
+  // after it stays. Adjusted during render (React's "state from a changed
+  // prop" pattern), not in an effect, which would render twice.
+  const [seenTarget, setSeenTarget] = useState<ReplyTarget | null>(null);
+  if (target !== seenTarget) {
+    setSeenTarget(target);
+    const prefix = (r: ReplyTarget | null) => (r && r.userId !== me?.user?.id ? `@${r.handle} ` : '');
+    const oldPrefix = prefix(seenTarget);
+    const rest = oldPrefix && value.startsWith(oldPrefix) ? value.slice(oldPrefix.length) : value;
+    const nextPrefix = prefix(target);
+    setValue(rest.startsWith(nextPrefix) ? rest : (nextPrefix + rest).slice(0, MAX_LEN));
+  }
+
+  // Focus the box with the caret at the end once a Reply is picked - the
+  // button sits up in the thread and the reader's next move is to type.
+  useEffect(() => {
+    if (!target) return;
+    const ta = textareaRef.current;
+    if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+  }, [target]);
 
   const query = useDebounced(mention?.query ?? '', 150);
   const { data: search } = useUserSearch(query);
@@ -369,7 +492,12 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
   const submit = () => {
     const body = value.trim();
     if (!body || post.isPending) return;
-    post.mutate(body, { onSuccess: () => setValue('') });
+    post.mutate({ body, parentId: target?.rootId }, {
+      onSuccess: () => {
+        setValue('');
+        reply?.setTarget(null);
+      },
+    });
   };
 
   // The text stays in the box on failure so nothing is lost; the line under
@@ -430,10 +558,13 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
               if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); pick(suggestions[active]); return; }
               if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); setMention(null); return; }
             }
+            // Escape drops the reply first; only a second one reaches
+            // ModalShell and closes the sheet.
+            if (e.key === 'Escape' && target) { e.preventDefault(); e.stopPropagation(); reply?.setTarget(null); return; }
             if (e.key === 'Enter') { e.preventDefault(); submit(); }
           }}
           rows={1}
-          placeholder={compact ? t.commentsWrite : t.commentsPlaceholder}
+          placeholder={target ? `${t.commentsReply} @${target.handle}` : compact ? t.commentsWrite : t.commentsPlaceholder}
           // `block`: an inline textarea leaves a descender strip under itself,
           // which made its wrapper 7px taller than the box - the avatar and the
           // stretched button centred on the wrapper, the input sat high.

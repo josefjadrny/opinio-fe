@@ -166,10 +166,10 @@ export function searchUsers(q: string): Promise<{ users: import('../types/api').
   return apiFetch(`/api/users/search?q=${encodeURIComponent(q)}`);
 }
 
-export function postComment(profileId: string, body: string): Promise<import('../types/api').Comment> {
+export function postComment(profileId: string, body: string, parentId?: string | null): Promise<import('../types/api').Comment> {
   return apiFetch(`/api/profiles/${profileId}/comments`, {
     method: 'POST',
-    body: JSON.stringify({ body }),
+    body: JSON.stringify({ body, parentId: parentId ?? null }),
   });
 }
 

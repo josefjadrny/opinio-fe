@@ -1,7 +1,7 @@
 import { ModalShell } from '../common/ModalShell';
 import { useI18n } from '../../i18n/I18nContext';
 import { CommentIcon } from './CommentCount';
-import { CommentList, CommentComposer } from './CommentThread';
+import { CommentList, CommentComposer, CommentThreadProvider } from './CommentThread';
 
 // Mobile: the thread lives in its own sheet over the detail, not inside it. On
 // real data the detail sheet is already at its 85vh cap with the breakdown
@@ -11,6 +11,7 @@ import { CommentList, CommentComposer } from './CommentThread';
 export function CommentsSheet({ profileId, profileName, count, onClose }: { profileId: string; profileName?: string; count: number; onClose: () => void }) {
   const { t } = useI18n();
   return (
+    <CommentThreadProvider key={profileId}>
     <ModalShell
       onClose={onClose}
       title={count > 0 ? `${t.comments} (${count})` : t.comments}
@@ -23,5 +24,6 @@ export function CommentsSheet({ profileId, profileName, count, onClose }: { prof
         <CommentList profileId={profileId} profileName={profileName} />
       </div>
     </ModalShell>
+    </CommentThreadProvider>
   );
 }

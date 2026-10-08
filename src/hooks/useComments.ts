@@ -23,13 +23,21 @@ export function useComments(profileId: string, enabled: boolean) {
 export function usePostComment(profileId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: string) => postComment(profileId, body),
+    mutationFn: ({ body, parentId }: { body: string; parentId?: string | null }) => postComment(profileId, body, parentId),
     onSuccess: (comment: Comment) => {
-      // Prepend locally so the thread answers at once, and bump the count
-      // everywhere the profile is cached; the next poll reconciles.
-      queryClient.setQueryData<CommentsResponse>(['comments', profileId], (old) =>
-        old ? { comments: [comment, ...old.comments], total: old.total + 1 } : { comments: [comment], total: 1 },
-      );
+      // Patch locally so the thread answers at once, and bump the count
+      // everywhere the profile is cached; the next poll reconciles. A root is
+      // prepended (newest first); a reply goes after the last reply of its
+      // root, matching the BE's flat order (root, then its replies oldest first).
+      queryClient.setQueryData<CommentsResponse>(['comments', profileId], (old) => {
+        if (!old) return { comments: [comment], total: 1 };
+        if (!comment.parentId) return { comments: [comment, ...old.comments], total: old.total + 1 };
+        const rootAt = old.comments.findIndex((c) => c.id === comment.parentId);
+        if (rootAt < 0) return { comments: [comment, ...old.comments], total: old.total + 1 };
+        let at = rootAt + 1;
+        while (at < old.comments.length && old.comments[at].parentId === comment.parentId) at++;
+        return { comments: [...old.comments.slice(0, at), comment, ...old.comments.slice(at)], total: old.total + 1 };
+      });
       bumpCommentCount(queryClient, profileId, 1);
     },
   });
@@ -37,15 +45,18 @@ export function usePostComment(profileId: string) {
 
 // Soft delete of one's own comment (the BE also lets an admin). The row
 // leaves the thread at once and the count drops where the profile is cached.
+// A root takes its replies with it, as it does on the BE.
 export function useDeleteComment(profileId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (commentId: string) => deleteComment(commentId),
     onSuccess: (_data, commentId) => {
+      const gone = (c: Comment) => c.id === commentId || c.parentId === commentId;
+      const removed = queryClient.getQueryData<CommentsResponse>(['comments', profileId])?.comments.filter(gone).length || 1;
       queryClient.setQueryData<CommentsResponse>(['comments', profileId], (old) =>
-        old ? { comments: old.comments.filter((c) => c.id !== commentId), total: Math.max(0, old.total - 1) } : old,
+        old ? { comments: old.comments.filter((c) => !gone(c)), total: Math.max(0, old.total - removed) } : old,
       );
-      bumpCommentCount(queryClient, profileId, -1);
+      bumpCommentCount(queryClient, profileId, -removed);
     },
   });
 }

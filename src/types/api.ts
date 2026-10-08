@@ -88,6 +88,9 @@ export interface CountryBreakdown {
 // the current handle at read time (handles are renamable).
 export interface Comment {
   id: string;
+  /** The thread root this replies to; null on a root. Never a reply's id -
+   *  the BE re-points a reply-to-a-reply at its root, so threads are one level. */
+  parentId: string | null;
   body: string;
   createdAt: string;
   user: {
