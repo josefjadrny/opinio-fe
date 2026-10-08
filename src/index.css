@@ -460,3 +460,52 @@ body {
     animation-delay: 0ms;
   }
 }
+
+/* Comment thread motion. A comment you just posted rises in and its edge
+   flashes brand red before settling to the normal ring; a reply also lights
+   the thread line it joined. The send button swaps its label for a spinner,
+   then a check that draws itself. All of it is off under reduced motion. */
+@keyframes comment-arrive {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+.comment-arrive {
+  animation: comment-arrive 320ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@keyframes comment-flash {
+  0%, 55% { opacity: 1; }
+  100%    { opacity: 0; }
+}
+.comment-flash {
+  animation: comment-flash 1.6s ease-out both;
+  pointer-events: none;
+}
+@keyframes thread-flash {
+  0%, 40% { border-color: rgb(233 69 96 / 0.7); }
+  100%    { border-color: rgb(255 255 255 / 0.1); }
+}
+.thread-flash {
+  animation: thread-flash 1.6s ease-out;
+}
+/* A comment count that just changed - the vote counters' bump. */
+.comment-bump {
+  animation: vote-bump 0.25s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+/* Mention picker - opens upward, so it settles from the composer below. */
+.comment-pop {
+  transform-origin: bottom left;
+  animation: map-tip-in 150ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@keyframes check-draw {
+  to { stroke-dashoffset: 0; }
+}
+.send-check path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: check-draw 280ms ease-out 40ms forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .comment-arrive, .thread-flash, .comment-pop, .comment-bump { animation: none; }
+  .comment-flash { animation: none; opacity: 0; }
+  .send-check path { animation: none; stroke-dashoffset: 0; }
+}

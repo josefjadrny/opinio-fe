@@ -43,20 +43,28 @@ export function usePostComment(profileId: string) {
   });
 }
 
+// How long the thread's collapse animation runs before the row really leaves
+// the cache. CommentThread animates against the same number.
+export const COMMENT_LEAVE_MS = 300;
+
 // Soft delete of one's own comment (the BE also lets an admin). The row
-// leaves the thread at once and the count drops where the profile is cached.
-// A root takes its replies with it, as it does on the BE.
+// leaves the thread once its collapse has played and the count drops where
+// the profile is cached. A root takes its replies with it, as it does on the BE.
 export function useDeleteComment(profileId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (commentId: string) => deleteComment(commentId),
     onSuccess: (_data, commentId) => {
+      // Counted now, not when the timer fires: a poll landing inside the
+      // collapse may already have dropped the rows from the list.
       const gone = (c: Comment) => c.id === commentId || c.parentId === commentId;
       const removed = queryClient.getQueryData<CommentsResponse>(['comments', profileId])?.comments.filter(gone).length || 1;
-      queryClient.setQueryData<CommentsResponse>(['comments', profileId], (old) =>
-        old ? { comments: old.comments.filter((c) => !gone(c)), total: Math.max(0, old.total - removed) } : old,
-      );
-      bumpCommentCount(queryClient, profileId, -removed);
+      window.setTimeout(() => {
+        queryClient.setQueryData<CommentsResponse>(['comments', profileId], (old) =>
+          old ? { comments: old.comments.filter((c) => !gone(c)), total: Math.max(0, old.total - removed) } : old,
+        );
+        bumpCommentCount(queryClient, profileId, -removed);
+      }, COMMENT_LEAVE_MS);
     },
   });
 }

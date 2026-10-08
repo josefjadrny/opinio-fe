@@ -1,9 +1,9 @@
-import { Fragment, createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { Fragment, createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
 import { useSignIn } from '../auth/SignInContext';
-import { useComments, usePostComment, useDeleteComment, useUserSearch } from '../../hooks/useComments';
+import { useComments, usePostComment, useDeleteComment, useUserSearch, COMMENT_LEAVE_MS } from '../../hooks/useComments';
 import { Avatar } from '../profile/Avatar';
 import { TrashIcon } from '../profile/DeleteProfileButton';
 import { ConfirmModal } from '../common/ConfirmModal';
@@ -28,17 +28,63 @@ const MAX_COMPOSER_H = 96;
 // the same). `commentId`/`handle` are the comment actually answered: it gets
 // the highlight, and its author the @mention the composer starts with.
 type ReplyTarget = { rootId: string; commentId: string; userId: string; handle: string };
-type ReplyState = { target: ReplyTarget | null; setTarget: (t: ReplyTarget | null) => void };
+type ReplyState = {
+  target: ReplyTarget | null;
+  setTarget: (t: ReplyTarget | null) => void;
+  // The comment this viewer just posted: it rises in with an accent flash,
+  // and a reply also lights its thread line. Cleared once the flash is over.
+  freshId: string | null;
+  markFresh: (id: string) => void;
+  // Comments whose delete succeeded and which are collapsing out; the cache
+  // drops them once the collapse has played (COMMENT_LEAVE_MS).
+  leaving: ReadonlySet<string>;
+  markLeaving: (id: string) => void;
+};
 
-// Shared by the list (the Reply buttons) and the composer (the "Replying to"
-// bar), which the callers render apart - the composer is the mobile sheet's
-// pinned footer. Callers key it by profile id so a target never carries over
-// to another opinio. Without a provider the list simply shows no Reply.
+// How long a fresh comment keeps its flash - matches `comment-flash` in index.css.
+const FRESH_MS = 1600;
+
+// Shared by the list (the Reply buttons) and the composer (the @mention it
+// starts with), which the callers render apart - the composer is the mobile
+// sheet's pinned footer. Callers key it by profile id so a target never
+// carries over to another opinio. Without a provider the list simply shows
+// no Reply.
 const ReplyContext = createContext<ReplyState | null>(null);
 
 export function CommentThreadProvider({ children }: { children: ReactNode }) {
   const [target, setTarget] = useState<ReplyTarget | null>(null);
-  return <ReplyContext.Provider value={{ target, setTarget }}>{children}</ReplyContext.Provider>;
+  const [freshId, setFreshId] = useState<string | null>(null);
+  const [leaving, setLeaving] = useState<ReadonlySet<string>>(() => new Set());
+  const markFresh = useCallback((id: string) => {
+    setFreshId(id);
+    window.setTimeout(() => setFreshId((cur) => (cur === id ? null : cur)), FRESH_MS);
+  }, []);
+  const markLeaving = useCallback((id: string) => setLeaving((prev) => new Set(prev).add(id)), []);
+  return (
+    <ReplyContext.Provider value={{ target, setTarget, freshId, markFresh, leaving, markLeaving }}>
+      {children}
+    </ReplyContext.Provider>
+  );
+}
+
+// Smooth unless the reader asked for less motion.
+function scrollBehavior(): ScrollBehavior {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+}
+
+// Height collapse for a leaving comment: the grid row eases from 1fr to 0fr,
+// so the cards below glide up instead of jumping. The clip is applied only
+// while leaving - at rest it would cut the card's entrance and focus rings.
+// Spacing lives inside (`pt-1.5`) so it collapses with the card.
+function Collapse({ leaving, children }: { leaving: boolean; children: ReactNode }) {
+  return (
+    <div
+      className={`grid transition-[grid-template-rows,opacity] ease-out motion-reduce:transition-none ${leaving ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100'}`}
+      style={{ transitionDuration: `${COMMENT_LEAVE_MS}ms` }}
+    >
+      <div className={`min-h-0 pt-1.5 ${leaving ? 'overflow-hidden' : ''}`}>{children}</div>
+    </div>
+  );
 }
 
 // Renders the "@handle" tokens the BE lists in `mentions` as links; any other
@@ -181,17 +227,36 @@ function CommentRow({ c, index, profileId, backState, replyCount = 0 }: { c: Com
   const remove = useDeleteComment(profileId);
   const isReply = c.parentId !== null;
   const isTarget = reply?.target?.commentId === c.id;
+  const isFresh = reply?.freshId === c.id;
+  // Which entrance this row played is fixed at mount: switching the animation
+  // later (when the fresh flag clears) would replay it.
+  const [arrivedFresh] = useState(isFresh);
+  const cardRef = useRef<HTMLDivElement>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  // A comment you just posted may land out of view (a root goes to the top of
+  // a list scrolled down; a reply under a long thread) - bring it in.
+  useEffect(() => {
+    if (isFresh) cardRef.current?.scrollIntoView({ block: 'nearest', behavior: scrollBehavior() });
+  }, [isFresh]);
+
+  // Picking Reply focuses the composer, and on a phone the keyboard then
+  // covers half the sheet - keep the comment being answered in sight once it
+  // has opened. `nearest` leaves it alone when it is already visible.
+  useEffect(() => {
+    if (!isTarget) return;
+    const id = window.setTimeout(() => cardRef.current?.scrollIntoView({ block: 'nearest', behavior: scrollBehavior() }), 350);
+    return () => window.clearTimeout(id);
+  }, [isTarget]);
   // Own comment, or admin (the BE allows both). Same trash + confirm as the
   // opinio delete in the detail header, sized to the row.
   const canDelete = !!me?.user && (me.user.id === c.user.id || me.user.tier === 'admin');
   const userTo = `/u/${c.user.id}${location.search}`;
   // The feed's ProfileCard shape - rounded, soft ring, staggered `stat-in`
   // entrance - so a thread reads as a stack of cards like the rest of the app
-  // instead of rows split by hairlines. It stops at the shape: no hover lift,
-  // ring change or side glow, because the feed card earns those by opening the
-  // opinio on click and a comment card goes nowhere. Only the controls inside
-  // it (handle, avatar, trash) react to the cursor.
+  // instead of rows split by hairlines. Hover only brightens the fill a step:
+  // no lift or glow, because the feed card earns those by opening the opinio
+  // on click and a comment card goes nowhere.
   //
   // The fill is a white overlay, NOT the feed card's `bg-surface-light/40`: both
   // the desktop modal and the mobile sheet are themselves `bg-surface-light`, so
@@ -210,9 +275,11 @@ function CommentRow({ c, index, profileId, backState, replyCount = 0 }: { c: Com
   // one and every card its left, worst on the accent ring.
   return (
     <div
-      className={`group flex gap-2.5 rounded-xl bg-white/[0.035] ring-1 ring-inset transition-shadow ${isReply ? 'px-2 py-2' : 'px-2.5 py-2.5'} ${isTarget ? 'ring-accent/60' : 'ring-white/10'}`}
-      style={{ animation: 'stat-in 0.25s ease-out both', animationDelay: `${Math.min(index, 12) * 35}ms` }}
+      ref={cardRef}
+      className={`relative group flex gap-2.5 rounded-xl bg-white/[0.035] hover:bg-white/[0.05] ring-1 ring-inset transition-[box-shadow,background-color] duration-300 ${isReply ? 'px-2 py-2' : 'px-2.5 py-2.5'} ${isTarget ? 'ring-accent/60' : 'ring-white/10'} ${arrivedFresh ? 'comment-arrive' : ''}`}
+      style={arrivedFresh ? undefined : { animation: 'stat-in 0.25s ease-out both', animationDelay: `${Math.min(index, 12) * 35}ms` }}
     >
+      {isFresh && <span aria-hidden className="comment-flash absolute inset-0 rounded-xl ring-1 ring-inset ring-accent bg-accent/[0.07]" />}
       <Link to={userTo} state={backState} className="shrink-0 mt-0.5" aria-label={`@${c.user.handle}`}>
         <Avatar name={c.user.handle} imageUrl={c.user.avatarUrl} className={isReply ? 'w-6 h-6' : 'w-7 h-7'} />
       </Link>
@@ -259,9 +326,9 @@ function CommentRow({ c, index, profileId, backState, replyCount = 0 }: { c: Com
             // ~7px under it. `leading-none` + `-mb-1` against its own `py-1`
             // keep the hover pad without adding layout below the glyphs, so the
             // gap under Reply matches the card's gap over the handle.
-            className="mt-0.5 -mb-1 -ml-1.5 flex w-fit items-center gap-1 rounded-md px-1.5 py-1 leading-none text-[12px] font-semibold text-white/50 hover:text-white/90 hover:bg-white/5 transition-colors"
+            className="group/reply mt-0.5 -mb-1 -ml-1.5 flex w-fit items-center gap-1 rounded-md px-1.5 py-1 leading-none text-[12px] font-semibold text-white/50 hover:text-white/90 hover:bg-white/5 transition-colors"
           >
-            <ReplyIcon />
+            <ReplyIcon className="w-3.5 h-3.5 transition-transform duration-200 group-hover/reply:-translate-x-0.5" />
             {t.commentsReply}
           </button>
         )}
@@ -273,6 +340,7 @@ function CommentRow({ c, index, profileId, backState, replyCount = 0 }: { c: Com
           onConfirm={() => remove.mutate(c.id, {
             onSuccess: () => {
               setConfirmOpen(false);
+              reply?.markLeaving(c.id);
               // The composer must not go on answering a comment that is gone.
               const t0 = reply?.target;
               if (t0 && (t0.commentId === c.id || t0.rootId === c.id)) reply.setTarget(null);
@@ -298,6 +366,7 @@ export function CommentList({ profileId, profileName, className = '' }: { profil
   const { t } = useI18n();
   const backState: BackState = { fromProfileId: profileId, fromProfileName: profileName };
   const { data, isLoading } = useComments(profileId, true);
+  const motion = useContext(ReplyContext);
   if (isLoading) {
     return <p className={`text-[13px] text-white/50 py-3 ${className}`}>{t.loading}</p>;
   }
@@ -312,25 +381,34 @@ export function CommentList({ profileId, profileName, className = '' }: { profil
     if (c.parentId) replies.set(c.parentId, [...(replies.get(c.parentId) ?? []), c]);
   }
   let i = 0;
+  const isLeaving = (id: string) => !!motion?.leaving.has(id);
+  // The thread whose line lights up: the one a fresh reply just joined.
+  const freshRoot = comments.find((c) => c.id === motion?.freshId)?.parentId ?? null;
   // Card gap, not a divider: same 1.5 step the mobile feed stacks opinios at.
+  // Each card carries its gap inside its Collapse (`pt-1.5`) so the gap goes
+  // with it on delete; the list's `-mt-1.5` takes the first one back.
   //
   // Replies are their own cards, indented so the card edge lines up with the
   // root's TEXT column (root padding 10 + avatar 28 + gap 10 = 48px), with a
   // thread line down the centre of the root's avatar (10 + 14 = 24px). Hence
   // 23px margin + 2px line + 23px padding = 48.
   return (
-    <div className={`space-y-1.5 ${className}`}>
+    <div className={`-mt-1.5 ${className}`}>
       {comments.filter((c) => !c.parentId).map((root) => {
         const own = replies.get(root.id) ?? [];
         return (
-          <div key={root.id}>
+          <Collapse key={root.id} leaving={isLeaving(root.id)}>
             <CommentRow c={root} index={i++} profileId={profileId} backState={backState} replyCount={own.length} />
             {own.length > 0 && (
-              <div className="ml-[23px] pt-1.5 pl-[23px] border-l-2 border-white/10 space-y-1.5">
-                {own.map((r) => <CommentRow key={r.id} c={r} index={i++} profileId={profileId} backState={backState} />)}
+              <div className={`ml-[23px] pl-[23px] border-l-2 border-white/10 ${freshRoot === root.id ? 'thread-flash' : ''}`}>
+                {own.map((r) => (
+                  <Collapse key={r.id} leaving={isLeaving(r.id)}>
+                    <CommentRow c={r} index={i++} profileId={profileId} backState={backState} />
+                  </Collapse>
+                ))}
               </div>
             )}
-          </div>
+          </Collapse>
         );
       })}
     </div>
@@ -377,6 +455,8 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
   const post = usePostComment(profileId);
   const isRegistered = !!me?.user && me.user.tier !== 'anonymous';
   const reply = useContext(ReplyContext);
+  // Brief check on the Send button after a post lands.
+  const [sent, setSent] = useState(false);
   const target = reply?.target ?? null;
 
   // Picking Reply starts the box with "@handle " of the author answered - the
@@ -493,9 +573,12 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
     const body = value.trim();
     if (!body || post.isPending) return;
     post.mutate({ body, parentId: target?.rootId }, {
-      onSuccess: () => {
+      onSuccess: (comment) => {
         setValue('');
         reply?.setTarget(null);
+        reply?.markFresh(comment.id);
+        setSent(true);
+        window.setTimeout(() => setSent(false), 900);
       },
     });
   };
@@ -519,7 +602,7 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
         {popoverOpen && (
           <ul
             role="listbox"
-            className="absolute bottom-full left-0 mb-1 w-full max-h-48 overflow-y-auto rounded-lg bg-surface ring-1 ring-white/15 shadow-2xl py-1 z-20"
+            className="comment-pop absolute bottom-full left-0 mb-1 w-full max-h-48 overflow-y-auto rounded-lg bg-surface ring-1 ring-white/15 shadow-2xl py-1 z-20"
           >
             {suggestions.map((u, i) => (
               <li key={u.id} role="option" aria-selected={i === active}>
@@ -600,13 +683,32 @@ export function CommentComposer({ profileId, compact = false }: { profileId: str
       {/* Bottom-aligned, not stretched: the box grows now, and a Send button
           that grew with it turned into a four-line slab. The explicit leading
           makes it exactly as tall as the one-line composer it sits beside. */}
+      {/* While posting the label gives way to a spinner, then a check that
+          draws itself; the label stays in the box (invisible) so the button
+          never changes width. It keeps the accent through both - greyed out
+          would read as "refused". `submit` already ignores a second press. */}
       <button
         type="button"
         onClick={submit}
-        disabled={value.trim().length === 0 || post.isPending}
-        className="shrink-0 self-end rounded-lg px-3 py-2 text-[13px] leading-[19px] font-semibold bg-accent text-white disabled:bg-white/[0.06] disabled:text-white/30 transition-colors"
+        disabled={value.trim().length === 0 && !post.isPending && !sent}
+        aria-busy={post.isPending}
+        className="relative shrink-0 self-end rounded-lg px-3 py-2 text-[13px] leading-[19px] font-semibold bg-accent text-white disabled:bg-white/[0.06] disabled:text-white/30 transition-colors active:scale-95 motion-reduce:active:scale-100"
       >
-        {t.commentsSend}
+        <span className={post.isPending || sent ? 'invisible' : ''}>{t.commentsSend}</span>
+        {(post.isPending || sent) && (
+          <span className="absolute inset-0 flex items-center justify-center" aria-hidden>
+            {post.isPending ? (
+              <svg className="w-4 h-4 animate-spin motion-reduce:animate-none" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.3" strokeWidth="3" />
+                <path d="M21 12a9 9 0 00-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg className="send-check w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </span>
+        )}
       </button>
     </div>
     {errorText && (

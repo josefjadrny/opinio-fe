@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useI18n } from '../../i18n/I18nContext';
 import { formatNumber } from '../../utils/formatNumber';
 import { commentCountLabel } from './commentCountLabel';
@@ -46,4 +47,19 @@ export function CommentCount({ count, size = 'sm', onClick }: CommentCountProps)
       <span>{formatNumber(count)}</span>
     </button>
   );
+}
+
+// A count that bumps when it changes (a comment posted or deleted), with the
+// vote counters' `vote-bump` keyframe. Never on first render: opening a
+// detail or switching its tab must not make every number jump. Re-keying
+// the span is what replays the animation; the counter is adjusted during
+// render (React's "state from a changed prop"), not in an effect.
+export function BumpNumber({ value }: { value: number }) {
+  const [prev, setPrev] = useState(value);
+  const [bumps, setBumps] = useState(0);
+  if (value !== prev) {
+    setPrev(value);
+    setBumps(bumps + 1);
+  }
+  return <span key={bumps} className={`inline-block ${bumps > 0 ? 'comment-bump' : ''}`}>{value}</span>;
 }

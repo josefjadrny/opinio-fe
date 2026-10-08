@@ -23,7 +23,7 @@ import { useProfileText } from '../../hooks/useProfileText';
 import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { useMapPanel } from '../../context/useMapPanel';
-import { CommentIcon } from '../comments/CommentCount';
+import { CommentIcon, BumpNumber } from '../comments/CommentCount';
 import { CommentsSheet } from '../comments/CommentsSheet';
 
 interface ProfileDetailModalProps {
@@ -239,7 +239,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 <CommentIcon className="w-5 h-5" />
                 <span className="flex-1 text-left font-medium tabular-nums leading-none">
                   {commentCount > 0 ? t.comments : t.commentsWrite}
-                  {commentCount > 0 && <span className="font-normal text-white/50"> ({commentCount})</span>}
+                  {commentCount > 0 && <span className="font-normal text-white/50"> (<BumpNumber value={commentCount} />)</span>}
                 </span>
                 <svg className="w-5 h-5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

@@ -24,7 +24,7 @@ import { BreakdownRow } from './BreakdownRow';
 import { BreakdownHeader } from './BreakdownHeader';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
-import { CommentIcon } from '../comments/CommentCount';
+import { CommentIcon, BumpNumber } from '../comments/CommentCount';
 import { commentCountLabel } from '../comments/commentCountLabel';
 import { CommentList, CommentComposer, CommentThreadProvider } from '../comments/CommentThread';
 
@@ -316,7 +316,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                                 )}
                                 {tab === 'countries' ? t.commentsTabCountries : t.commentsTabComments}
                                 {tab === 'comments' && commentCount > 0 && (
-                                  <span className={`tabular-nums normal-case tracking-normal font-normal ${active ? 'text-white/70' : 'text-white/50'}`}>({commentCount})</span>
+                                  <span className={`tabular-nums normal-case tracking-normal font-normal ${active ? 'text-white/70' : 'text-white/50'}`}>(<BumpNumber value={commentCount} />)</span>
                                 )}
                               </button>
                             );
