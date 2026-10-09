@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { Fragment, useEffect, useState, type CSSProperties } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useUser } from '../../hooks/useUser';
 import { useMe } from '../../hooks/useMe';
@@ -121,24 +121,27 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   } as CSSProperties;
   // What the ring means, on hover (tap on a phone): the window it reads, then
   // the split it draws. Percent via Intl so cs/de/fr/pl get their spacing.
-  const ringTipTitle = liveTotal > 0 ? t.avatarRingLive : lifeTotal > 0 ? t.avatarRingLifetime : t.avatarRingNone;
-  const pct = (n: number) => new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }).format(n);
-  const ringTipSplit = likeShare === null ? null : {
-    likes: `${pct(likeShare)} ${t.voteTipLikes}`,
-    dislikes: `${pct(1 - likeShare)} ${t.voteTipDislikes}`,
-  };
-  const ringTipLabel = ringTipSplit ? `${ringTipTitle}: ${ringTipSplit.likes}, ${ringTipSplit.dislikes}` : ringTipTitle;
+  // Names whose opinios the votes are on (the handle, or "your" on your own
+  // page) - without it the line reads as votes this user cast.
+  const ringTipText = (isMe
+    ? (liveTotal > 0 ? t.avatarRingLiveYou : lifeTotal > 0 ? t.avatarRingLifetimeYou : t.avatarRingNoneYou)
+    : (liveTotal > 0 ? t.avatarRingLive : lifeTotal > 0 ? t.avatarRingLifetime : t.avatarRingNone)
+  ).replace('{handle}', `@${user?.displayName ?? ''}`);
+  // One plain sentence with the like share in it; the dislike share is just
+  // the rest, so it is not spelled out. Intl gives each locale its own
+  // percent spacing ("59 %" in cs/de/fr).
+  const ringPercent = likeShare === null ? ''
+    : new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }).format(likeShare);
+  const ringTipLabel = ringTipText.replace('{percent}', ringPercent);
   const ringTipPanel = (
-    <div className="space-y-1">
-      <p className="text-sm text-white/80 leading-snug">{ringTipTitle}</p>
-      {ringTipSplit && (
-        <p className="text-sm font-semibold leading-snug">
-          <span className="text-positive">▲ {ringTipSplit.likes}</span>
-          <span className="text-white/40 mx-1.5">·</span>
-          <span className="text-negative-soft">▼ {ringTipSplit.dislikes}</span>
-        </p>
-      )}
-    </div>
+    <p className="text-sm text-white/80 leading-snug">
+      {ringTipText.split('{percent}').map((part, i) => (
+        <Fragment key={i}>
+          {i > 0 && <strong className="font-semibold text-positive">{ringPercent}</strong>}
+          {part}
+        </Fragment>
+      ))}
+    </p>
   );
   const washStyle = {
     '--wash-a': likeShare === null ? 'rgba(255,255,255,0.04)' : leansLike ? 'rgba(34,197,94,0.13)' : 'rgba(239,68,68,0.13)',
@@ -261,7 +264,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
       {largeAvatar ? (
         // 96px in all: a 3px sentiment ring, a 2px gap in the card's colour,
         // and the picture inside.
-        <StatTip label={ringTipLabel} panel={ringTipPanel} width={260} className="!rounded-full shrink-0">
+        <StatTip label={ringTipLabel} panel={ringTipPanel} width={280} className="!rounded-full shrink-0">
         <div
           className="sentiment-ring w-24 h-24 shrink-0 rounded-full p-[3px]"
           data-empty={likeShare === null}
