@@ -127,17 +127,19 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
     ? (liveTotal > 0 ? t.avatarRingLiveYou : lifeTotal > 0 ? t.avatarRingLifetimeYou : t.avatarRingNoneYou)
     : (liveTotal > 0 ? t.avatarRingLive : lifeTotal > 0 ? t.avatarRingLifetime : t.avatarRingNone)
   ).replace('{handle}', `@${user?.displayName ?? ''}`);
-  // One plain sentence with the like share in it; the dislike share is just
-  // the rest, so it is not spelled out. Intl gives each locale its own
-  // percent spacing ("59 %" in cs/de/fr).
-  const ringPercent = likeShare === null ? ''
-    : new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }).format(likeShare);
-  const ringTipLabel = ringTipText.replace('{percent}', ringPercent);
+  // One plain sentence with the like count - no percentages, no sums to do.
+  // The count is the like votes in the same window the ring reads, and the
+  // noun after it follows the locale's plural rules (1 lajk, 2 lajky, 5 lajků).
+  const ringLikes = liveTotal > 0 ? (user?.likesReceived ?? 0) : (user?.totalLikesReceived ?? 0);
+  const likesCategory = new Intl.PluralRules(locale).select(ringLikes);
+  const ringLikesText = (likesCategory === 'one' ? t.avatarRingLikesOne : likesCategory === 'few' ? t.avatarRingLikesFew : t.avatarRingLikesMany)
+    .replace('{n}', new Intl.NumberFormat(locale).format(ringLikes));
+  const ringTipLabel = ringTipText.replace('{likes}', ringLikesText);
   const ringTipPanel = (
     <p className="text-sm text-white/80 leading-snug">
-      {ringTipText.split('{percent}').map((part, i) => (
+      {ringTipText.split('{likes}').map((part, i) => (
         <Fragment key={i}>
-          {i > 0 && <strong className="font-semibold text-positive">{ringPercent}</strong>}
+          {i > 0 && <strong className="font-semibold text-positive">{ringLikesText}</strong>}
           {part}
         </Fragment>
       ))}
