@@ -7,6 +7,7 @@ import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useUserDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from './Avatar';
+import { StatTip } from '../common/StatTip';
 import { googleAvatarAtSize } from '../../utils/avatarUrl';
 import { CountryFlag } from '../common/CountryFlag';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
@@ -118,6 +119,27 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
     '--ring-target': `${Math.round((likeShare ?? 0) * 100)}%`,
     '--ring-glow': likeShare === null ? 'transparent' : leansLike ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
   } as CSSProperties;
+  // What the ring means, on hover (tap on a phone): the window it reads, then
+  // the split it draws. Percent via Intl so cs/de/fr/pl get their spacing.
+  const ringTipTitle = liveTotal > 0 ? t.avatarRingLive : lifeTotal > 0 ? t.avatarRingLifetime : t.avatarRingNone;
+  const pct = (n: number) => new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }).format(n);
+  const ringTipSplit = likeShare === null ? null : {
+    likes: `${pct(likeShare)} ${t.voteTipLikes}`,
+    dislikes: `${pct(1 - likeShare)} ${t.voteTipDislikes}`,
+  };
+  const ringTipLabel = ringTipSplit ? `${ringTipTitle}: ${ringTipSplit.likes}, ${ringTipSplit.dislikes}` : ringTipTitle;
+  const ringTipPanel = (
+    <div className="space-y-1">
+      <p className="text-sm text-white/80 leading-snug">{ringTipTitle}</p>
+      {ringTipSplit && (
+        <p className="text-sm font-semibold leading-snug">
+          <span className="text-positive">▲ {ringTipSplit.likes}</span>
+          <span className="text-white/40 mx-1.5">·</span>
+          <span className="text-negative-soft">▼ {ringTipSplit.dislikes}</span>
+        </p>
+      )}
+    </div>
+  );
   const washStyle = {
     '--wash-a': likeShare === null ? 'rgba(255,255,255,0.04)' : leansLike ? 'rgba(34,197,94,0.13)' : 'rgba(239,68,68,0.13)',
     '--wash-b': likeShare === null ? 'transparent' : leansLike ? 'rgba(239,68,68,0.06)' : 'rgba(34,197,94,0.06)',
@@ -239,6 +261,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
       {largeAvatar ? (
         // 96px in all: a 3px sentiment ring, a 2px gap in the card's colour,
         // and the picture inside.
+        <StatTip label={ringTipLabel} panel={ringTipPanel} width={260} className="!rounded-full shrink-0">
         <div
           className="sentiment-ring w-24 h-24 shrink-0 rounded-full p-[3px]"
           data-empty={likeShare === null}
@@ -254,6 +277,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
             />
           </div>
         </div>
+        </StatTip>
       ) : (
         <Avatar
           name={user.displayName}
