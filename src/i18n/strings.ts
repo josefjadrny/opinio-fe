@@ -42,6 +42,7 @@ export interface Strings {
   descriptionTooShort: string;
   photoChoose: string;
   photoChange: string;
+  profilePictureChange: string;
   photoRemove: string;
   contentImageAdd: string;
   contentImageChange: string;
@@ -412,6 +413,7 @@ const en: Strings = {
   descriptionTooShort: 'Add a bit more - at least 5 characters.',
   photoChoose: 'Choose avatar',
   photoChange: 'Change avatar',
+  profilePictureChange: 'Change profile picture',
   photoRemove: 'Remove',
   contentImageAdd: 'Add an image',
   contentImageChange: 'Change image',
@@ -825,6 +827,7 @@ const cs: Strings = {
   descriptionTooShort: 'Přidejte trochu víc - alespoň 5 znaků.',
   photoChoose: 'Vybrat avatar',
   photoChange: 'Změnit avatar',
+  profilePictureChange: 'Změnit profilovou fotku',
   photoRemove: 'Odebrat',
   contentImageAdd: 'Přidat obrázek',
   contentImageChange: 'Změnit obrázek',
@@ -1238,6 +1241,7 @@ const es: Strings = {
   descriptionTooShort: 'Añade un poco más - al menos 5 caracteres.',
   photoChoose: 'Elegir avatar',
   photoChange: 'Cambiar avatar',
+  profilePictureChange: 'Cambiar foto de perfil',
   photoRemove: 'Eliminar',
   contentImageAdd: 'Añadir imagen',
   contentImageChange: 'Cambiar imagen',
@@ -1651,6 +1655,7 @@ const de: Strings = {
   descriptionTooShort: 'Etwas mehr bitte - mindestens 5 Zeichen.',
   photoChoose: 'Avatar wählen',
   photoChange: 'Avatar ändern',
+  profilePictureChange: 'Profilbild ändern',
   photoRemove: 'Entfernen',
   contentImageAdd: 'Bild hinzufügen',
   contentImageChange: 'Bild ändern',
@@ -2064,6 +2069,7 @@ const fr: Strings = {
   descriptionTooShort: 'Ajoutez un peu plus - au moins 5 caractères.',
   photoChoose: 'Choisir un avatar',
   photoChange: "Changer d'avatar",
+  profilePictureChange: 'Changer la photo de profil',
   photoRemove: 'Retirer',
   contentImageAdd: 'Ajouter une image',
   contentImageChange: "Changer d'image",
@@ -2477,6 +2483,7 @@ const it: Strings = {
   descriptionTooShort: 'Aggiungi un po\' di più - almeno 5 caratteri.',
   photoChoose: 'Scegli un avatar',
   photoChange: 'Cambia avatar',
+  profilePictureChange: 'Cambia foto profilo',
   photoRemove: 'Rimuovi',
   contentImageAdd: 'Aggiungi immagine',
   contentImageChange: 'Cambia immagine',
@@ -2890,6 +2897,7 @@ const pl: Strings = {
   descriptionTooShort: 'Dodaj trochę więcej - co najmniej 5 znaków.',
   photoChoose: 'Wybierz awatar',
   photoChange: 'Zmień awatar',
+  profilePictureChange: 'Zmień zdjęcie profilowe',
   photoRemove: 'Usuń',
   contentImageAdd: 'Dodaj obraz',
   contentImageChange: 'Zmień obraz',

@@ -172,7 +172,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   // blends identically over the sheet and the desktop modal, which sit on
   // different surfaces. The inner sits 1px lower to hide the panel's top
   // border where the tail meets it.
-  const tailLeft = isMobile ? 13 : 21; // avatar centre minus half the tail
+  const tailLeft = isMobile ? 25 : 33; // avatar centre minus half the tail
   const Bio = user?.bio ? (
     <div className="relative rounded-xl border border-border bg-white/[0.04] px-3.5 py-2.5">
       <span
@@ -193,8 +193,10 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   // line, the bio on the second, starting at the card's left edge rather than
   // indenting under the handle. The vote numbers are no longer up here - they
   // are the strip below the header, where the other two modals keep theirs.
-  // The avatar is the opinio and country modals' size (40 mobile / 56 desktop)
-  // so the three headers share one silhouette.
+  // The avatar is larger than the opinio and country modals' (64 mobile / 80
+  // desktop vs 40 / 56): this page is about the person, so the picture leads.
+  // Uploads are stored at 128px, so 64 is the sharp ceiling on 2x screens and
+  // 80 is slightly soft there - going bigger needs a larger stored copy first.
   const Header = user && (
     <div className={`flex flex-col min-w-0 ${isMobile ? 'gap-2' : 'gap-2.5'}`}>
       <div className="flex items-start gap-3 min-w-0">
@@ -202,7 +204,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
         <Avatar
           name={user.displayName}
           imageUrl={user.avatarUrl}
-          className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} shrink-0`}
+          className={`${isMobile ? 'w-16 h-16' : 'w-20 h-20'} shrink-0`}
           isAnonymous={!hasAvatar}
         />
         <div className="flex-1 min-w-0">

@@ -368,7 +368,7 @@ function AvatarEditor({
           inside the picker button, so it can't get clipped by (or conflict
           with) the button's own rounding/hover state. */}
       <div className="relative w-16 h-16">
-        <HoverTip label={isAnonymous ? null : t.photoChange} className="contents">
+        <HoverTip label={isAnonymous ? null : t.profilePictureChange} className="contents">
         <button
           type="button"
           onClick={handlePick}
