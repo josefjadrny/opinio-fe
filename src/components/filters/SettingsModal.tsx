@@ -337,7 +337,7 @@ function AvatarEditor({
     setError(null);
     setBusy(true);
     try {
-      const blob = await resizeImage(file);
+      const blob = await resizeImage(file, 256);
       await uploadAvatar(blob);
       await refreshIdentity(queryClient);
     } catch (err) {

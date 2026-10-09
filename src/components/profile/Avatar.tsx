@@ -5,6 +5,9 @@ interface AvatarProps {
   imageUrl: string | null;
   className?: string;
   isAnonymous?: boolean;
+  // Told when the image fails and the fallback renders instead, for a parent
+  // whose layout depends on whether a real picture is showing.
+  onLoadError?: () => void;
 }
 
 const COLORS = [
@@ -19,7 +22,7 @@ function colorFromName(name: string): string {
   return COLORS[Math.abs(hash) % COLORS.length];
 }
 
-export function Avatar({ name, imageUrl, className = '', isAnonymous = false }: AvatarProps) {
+export function Avatar({ name, imageUrl, className = '', isAnonymous = false, onLoadError }: AvatarProps) {
   const [errored, setErrored] = useState(false);
 
   // Reset the error flag whenever the source changes so a new URL gets a fresh chance.
@@ -61,7 +64,7 @@ export function Avatar({ name, imageUrl, className = '', isAnonymous = false }: 
       src={imageUrl}
       alt={name}
       className={`rounded-full object-cover shrink-0 ${className}`}
-      onError={() => setErrored(true)}
+      onError={() => { setErrored(true); onLoadError?.(); }}
     />
   );
 }

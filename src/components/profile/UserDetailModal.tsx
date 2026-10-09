@@ -96,6 +96,16 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
 
   const notFound = !!error;
   const hasAvatar = !!user?.avatarUrl;
+  // A picture link that fails to load renders the initials fallback, which
+  // reads as "no picture" just like an empty link. Keyed by the URL so the
+  // flag resets when the user (or their picture) changes.
+  const [failedAvatarUrl, setFailedAvatarUrl] = useState<string | null>(null);
+  const avatarSrc = googleAvatarAtSize(user?.avatarUrl ?? null, 256);
+  const showsPicture = hasAvatar && failedAvatarUrl !== avatarSrc;
+  // The picture is shown large only when there is something to fill the
+  // column beside it: a real picture or a bio. A bare placeholder with an
+  // empty column beside it keeps the opinio and country modals' size.
+  const largeAvatar = showsPicture || !!user?.bio;
 
   const fromProfileState = location.state as { fromProfileId?: string; fromProfileName?: string } | null;
   const BackToProfile = fromProfileState?.fromProfileId ? (
@@ -167,61 +177,65 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
     </div>
   );
 
-  // Speech bubble: the tail points up at the avatar so the bio reads as the
+  // Speech bubble: the tail points left at the avatar so the bio reads as the
   // person saying it. Two stacked CSS triangles - the outer one is the border,
   // the inner one repeats the panel's rgba fill (not a solid colour) so it
   // blends identically over the sheet and the desktop modal, which sit on
-  // different surfaces. The inner sits 1px lower to hide the panel's top
-  // border where the tail meets it.
-  const tailLeft = isMobile ? 25 : 33; // avatar centre minus half the tail
+  // different surfaces. The inner sits 1px further in to hide the panel's
+  // left border where the tail meets it.
   const Bio = user?.bio ? (
-    <div className="relative rounded-xl border border-border bg-white/[0.04] px-3.5 py-2.5">
+    <div className="relative self-start max-w-full rounded-xl border border-border bg-white/[0.04] px-3 py-1.5">
       <span
         aria-hidden
-        className="absolute w-0 h-0 border-x-[7px] border-x-transparent border-b-[7px] -top-[7px]"
-        style={{ left: tailLeft, borderBottomColor: 'var(--color-border)' }}
+        className="absolute w-0 h-0 border-y-[7px] border-y-transparent border-r-[7px] top-2.5 -left-[7px]"
+        style={{ borderRightColor: 'var(--color-border)' }}
       />
       <span
         aria-hidden
-        className="absolute w-0 h-0 border-x-[7px] border-x-transparent border-b-[7px] -top-[6px]"
-        style={{ left: tailLeft, borderBottomColor: 'rgba(255,255,255,0.04)' }}
+        className="absolute w-0 h-0 border-y-[7px] border-y-transparent border-r-[7px] top-2.5 -left-[6px]"
+        style={{ borderRightColor: 'rgba(255,255,255,0.04)' }}
       />
       <p className="text-sm text-white/80 leading-relaxed whitespace-pre-line break-words">{user.bio}</p>
     </div>
   ) : null;
 
-  // Profile card, same shape at both sizes: identity + actions on the first
-  // line, the bio on the second, starting at the card's left edge rather than
-  // indenting under the handle. The vote numbers are no longer up here - they
-  // are the strip below the header, where the other two modals keep theirs.
-  // The avatar is larger than the opinio and country modals' (64 mobile / 80
-  // desktop vs 40 / 56): this page is about the person, so the picture leads.
-  // Uploads are stored at 128px, so 64 is the sharp ceiling on 2x screens and
-  // 80 is slightly soft there - going bigger needs a larger stored copy first.
+  // Profile card, same shape at both sizes: the picture on the left, and
+  // beside it the handle + actions, the join date, then the bio. Live bios
+  // are short (one or two lines), so the column lands at about the picture's
+  // height and the bio costs no row of its own. The vote numbers are not up
+  // here - they are the strip below the header, where the other two modals
+  // keep theirs. The avatar is larger than the opinio and country modals'
+  // (96 vs 40 / 56): this page is about the person, so the picture leads -
+  // unless there is neither a picture nor a bio, see largeAvatar above.
+  // Google pictures load at 256px (googleAvatarAtSize) and new uploads are
+  // stored at 256px; uploads older than that are 128px and slightly soft here
+  // on 2x screens.
   const Header = user && (
-    <div className={`flex flex-col min-w-0 ${isMobile ? 'gap-2' : 'gap-2.5'}`}>
-      <div className="flex items-start gap-3 min-w-0">
-        {BackToProfile}
-        <Avatar
-          name={user.displayName}
-          imageUrl={googleAvatarAtSize(user.avatarUrl, 256)}
-          className={`${isMobile ? 'w-16 h-16' : 'w-20 h-20'} shrink-0`}
-          isAnonymous={!hasAvatar}
-        />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 flex-nowrap min-w-0">
-            {/* Just the handle - this is a profile card, and the searchable
-                context lives in <title> + description (the bio feeds the
-                latter when the user wrote one). */}
-            <h1 className="font-semibold text-white truncate min-w-0">@{user.displayName}</h1>
-            {user.countryCode && <CountryFlag code={user.countryCode} />}
+    <div className="flex items-start gap-3 min-w-0">
+      {BackToProfile}
+      <Avatar
+        name={user.displayName}
+        imageUrl={avatarSrc}
+        className={`${largeAvatar ? 'w-24 h-24' : isMobile ? 'w-10 h-10' : 'w-14 h-14'} shrink-0`}
+        isAnonymous={!hasAvatar}
+        onLoadError={() => setFailedAvatarUrl(avatarSrc)}
+      />
+      <div className="flex-1 min-w-0 flex flex-col gap-2">
+        <div className="flex items-start gap-2 min-w-0">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 flex-nowrap min-w-0">
+              {/* Just the handle - this is a profile card, and the searchable
+                  context lives in <title> + description (the bio feeds the
+                  latter when the user wrote one). */}
+              <h1 className="font-semibold text-white truncate min-w-0">@{user.displayName}</h1>
+              {user.countryCode && <CountryFlag code={user.countryCode} />}
+            </div>
+            <p className="text-[11px] text-white/60 truncate">{t.userJoined.replace('{date}', formatJoinDate(user.createdAt, locale))}</p>
           </div>
-          <p className="text-[11px] text-white/60 truncate">{t.userJoined.replace('{date}', formatJoinDate(user.createdAt, locale))}</p>
+          {Actions}
         </div>
-        {Actions}
+        {Bio}
       </div>
-
-      {Bio}
     </div>
   );
 
