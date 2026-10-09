@@ -7,6 +7,7 @@ import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useUserDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from './Avatar';
+import { googleAvatarAtSize } from '../../utils/avatarUrl';
 import { CountryFlag } from '../common/CountryFlag';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { UserActivityList } from './UserActivityList';
@@ -203,7 +204,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
         {BackToProfile}
         <Avatar
           name={user.displayName}
-          imageUrl={user.avatarUrl}
+          imageUrl={googleAvatarAtSize(user.avatarUrl, 256)}
           className={`${isMobile ? 'w-16 h-16' : 'w-20 h-20'} shrink-0`}
           isAnonymous={!hasAvatar}
         />
