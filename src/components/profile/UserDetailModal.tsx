@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useUser } from '../../hooks/useUser';
 import { useMe } from '../../hooks/useMe';
@@ -107,6 +107,22 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   // empty column beside it keeps the opinio and country modals' size.
   const largeAvatar = showsPicture || !!user?.bio;
 
+  // The sentiment ring and header wash read the user's like share: the live
+  // 24h counts when there are any, else lifetime, else no split at all.
+  const liveTotal = (user?.likesReceived ?? 0) + (user?.dislikesReceived ?? 0);
+  const lifeTotal = (user?.totalLikesReceived ?? 0) + (user?.totalDislikesReceived ?? 0);
+  const likeShare = liveTotal > 0 ? (user!.likesReceived / liveTotal)
+    : lifeTotal > 0 ? (user!.totalLikesReceived / lifeTotal) : null;
+  const leansLike = likeShare !== null && likeShare >= 0.5;
+  const ringStyle = {
+    '--ring-target': `${Math.round((likeShare ?? 0) * 100)}%`,
+    '--ring-glow': likeShare === null ? 'transparent' : leansLike ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
+  } as CSSProperties;
+  const washStyle = {
+    '--wash-a': likeShare === null ? 'rgba(255,255,255,0.04)' : leansLike ? 'rgba(34,197,94,0.13)' : 'rgba(239,68,68,0.13)',
+    '--wash-b': likeShare === null ? 'transparent' : leansLike ? 'rgba(239,68,68,0.06)' : 'rgba(34,197,94,0.06)',
+  } as CSSProperties;
+
   const fromProfileState = location.state as { fromProfileId?: string; fromProfileName?: string } | null;
   const BackToProfile = fromProfileState?.fromProfileId ? (
     <HoverTip label={fromProfileState.fromProfileName ? `← ${fromProfileState.fromProfileName}` : 'Back'}>
@@ -211,15 +227,42 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   // stored at 256px; uploads older than that are 128px and slightly soft here
   // on 2x screens.
   const Header = user && (
-    <div className="flex items-start gap-3 min-w-0">
-      {BackToProfile}
-      <Avatar
-        name={user.displayName}
-        imageUrl={avatarSrc}
-        className={`${largeAvatar ? 'w-24 h-24' : isMobile ? 'w-10 h-10' : 'w-14 h-14'} shrink-0`}
-        isAnonymous={!hasAvatar}
-        onLoadError={() => setFailedAvatarUrl(avatarSrc)}
+    <div className="relative isolate flex items-start gap-3 min-w-0">
+      {/* Colour wash, spilled out over the header's own padding; isolate +
+          -z-10 keep it under the content but above the card's background. */}
+      <div
+        aria-hidden
+        className={`user-header-wash absolute -z-10 pointer-events-none ${isMobile ? '-inset-x-4 -inset-y-3' : '-inset-x-6 -inset-y-4'}`}
+        style={washStyle}
       />
+      {BackToProfile}
+      {largeAvatar ? (
+        // 96px in all: a 3px sentiment ring, a 2px gap in the card's colour,
+        // and the picture inside.
+        <div
+          className="sentiment-ring w-24 h-24 shrink-0 rounded-full p-[3px]"
+          data-empty={likeShare === null}
+          style={ringStyle}
+        >
+          <div className={`w-full h-full rounded-full p-[2px] ${isMobile ? 'bg-surface' : 'bg-surface-light'}`}>
+            <Avatar
+              name={user.displayName}
+              imageUrl={avatarSrc}
+              className="w-full h-full"
+              isAnonymous={!hasAvatar}
+              onLoadError={() => setFailedAvatarUrl(avatarSrc)}
+            />
+          </div>
+        </div>
+      ) : (
+        <Avatar
+          name={user.displayName}
+          imageUrl={avatarSrc}
+          className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} shrink-0`}
+          isAnonymous={!hasAvatar}
+          onLoadError={() => setFailedAvatarUrl(avatarSrc)}
+        />
+      )}
       <div className="flex-1 min-w-0 flex flex-col gap-2">
         <div className="flex items-start gap-2 min-w-0">
           <div className="flex-1 min-w-0">

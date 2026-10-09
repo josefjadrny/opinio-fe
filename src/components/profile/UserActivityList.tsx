@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from 'react';
+import { Fragment, type CSSProperties, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { CountryFlag } from '../common/CountryFlag';
@@ -37,8 +37,8 @@ function fill(template: string, parts: { actor: ReactNode; target: ReactNode }):
   );
 }
 
-function ActivityRow({ item, handle, isMe, onOpen, onOpenProfile }: {
-  item: UserActivityItem; handle: string; isMe: boolean; onOpen: () => void; onOpenProfile: () => void;
+function ActivityRow({ item, handle, isMe, index, onOpen, onOpenProfile }: {
+  item: UserActivityItem; handle: string; isMe: boolean; index: number; onOpen: () => void; onOpenProfile: () => void;
 }) {
   const { t, locale } = useI18n();
   const location = useLocation();
@@ -67,16 +67,21 @@ function ActivityRow({ item, handle, isMe, onOpen, onOpenProfile }: {
       tabIndex={0}
       onClick={onOpen}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
-      className="group flex gap-2.5 md:gap-3 px-2 md:px-2.5 py-2 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 transition-all duration-200 cursor-pointer select-none"
+      // Rows rise in one after another (--i, capped at 8 so a long list is not
+      // left waiting) and lean right a touch on hover.
+      style={{ '--i': Math.min(index, 8) } as CSSProperties}
+      className="activity-row-in group flex gap-2.5 md:gap-3 px-2 md:px-2.5 py-2 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 hover:bg-surface-light/70 hover:translate-x-0.5 transition-all duration-200 cursor-pointer select-none"
     >
       {/* Kind glyph, bare: the comment bubble, the ▲/▼ pair for a vote (the stats
           net-score glyph),
           or the Opinio mark for a shared opinio (not the bubble-with-plus -
           that one means "add"). */}
-      <span className="shrink-0 mt-px">
-        {isComment ? <CommentIcon className="w-5 h-5" />
-          : item.kind === 'vote' ? <span className="w-5 h-5 flex items-center justify-center"><VotePairIcon className="text-sm" /></span>
-          : <LogoMark className="w-5 h-5" />}
+      {/* One neutral chip for every kind - the glyphs carry their own colour,
+          and a tinted chip muddied them (the blue mark on a red disc). */}
+      <span className="shrink-0 -my-0.5 w-7 h-7 rounded-full flex items-center justify-center bg-white/[0.06] ring-1 ring-white/10 transition-transform duration-200 group-hover:scale-110">
+        {isComment ? <CommentIcon className="w-4 h-4" />
+          : item.kind === 'vote' ? <VotePairIcon className="text-xs" />
+          : <LogoMark className="w-4 h-4" />}
       </span>
       <div className="flex-1 min-w-0">
         {/* Time flows after the caption instead of sitting at the right edge:
@@ -102,8 +107,9 @@ export function UserActivityList({ items, handle, isMe, onOpenProfile, onOpenThr
         <p className="text-sm text-white/50 py-4 text-center">{t.userNoActivity}</p>
       ) : (
         <div className="space-y-1">
-          {items.map((item) => (
+          {items.map((item, i) => (
             <ActivityRow
+              index={i}
               key={item.comment ? `c-${item.comment.id}` : `${item.kind}-${item.profile.id}-${item.at}`}
               item={item}
               handle={handle}
