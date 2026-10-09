@@ -142,10 +142,10 @@ export function HotBanner({
         onMouseLeave={mobile ? undefined : onHoverEnd}
         data-testid="hot-banner"
         className={`cursor-pointer border border-orange-500/70 rounded-2xl
-                   flex items-center gap-3 px-4 py-3 select-none
+                   flex items-center select-none ${mobile ? 'gap-3 px-4 py-3' : 'gap-4 px-5 py-3.5'}
                    transition-colors pointer-events-auto ${
                      mobile
-                       ? 'bg-surface/70 backdrop-blur-sm hover:bg-surface/80'
+                       ? 'bg-surface/90 backdrop-blur-sm hover:bg-surface/95'
                        : 'bg-surface/85 backdrop-blur-md hover:bg-surface/95'
                    }`}
         style={{
@@ -154,19 +154,39 @@ export function HotBanner({
           boxShadow: '0 0 0 1px rgba(249,115,22,0.35), 0 10px 30px -10px rgba(249,115,22,0.55), 0 18px 50px -20px rgba(0,0,0,0.6)',
         }}
       >
-        <Avatar name={next.name} imageUrl={next.imageUrl} className="w-12 h-12" />
+        {/* Desktop sizes up: the banner is 700px wide over the map, and at
+            the mobile sizes its headline came out smaller than the sidebar
+            cards beneath it. */}
+        <Avatar name={next.name} imageUrl={next.imageUrl} className={mobile ? 'w-12 h-12' : 'w-14 h-14'} />
         <div className="min-w-0 flex-1">
-          <div className="text-[10px] uppercase font-bold tracking-widest text-orange-400 mb-1">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-orange-400 mr-1.5 align-middle animate-pulse" />
-            {t.justReported}
+          <div className="flex items-center gap-2 mb-1">
+            <div className={`uppercase font-bold text-orange-400 ${mobile ? 'text-[11px] tracking-widest' : 'text-xs tracking-[0.16em]'}`}>
+              <span className={`inline-block rounded-full bg-orange-400 mr-1.5 align-middle animate-pulse ${mobile ? 'w-1.5 h-1.5' : 'w-2 h-2'}`} />
+              {t.justReported}
+            </div>
+            {/* On a phone the category rides the label row, which has room to
+                spare, so the title below gets the full width. */}
+            {mobile && <RoleBadge role={next.role} />}
           </div>
-          <div className="flex items-center gap-2 mb-0.5">
-            <RoleBadge role={next.role} />
-            <span className="text-white text-sm font-semibold truncate">{next.name}</span>
-          </div>
-          <div className="text-white/60 text-xs line-clamp-2">{next.description}</div>
+          {mobile ? (
+            // On a phone the badge and a one-line title left the title cut
+            // short; the badge moved up to the label row, the title may take
+            // two lines, and the description drops to one.
+            <>
+              <div className="line-clamp-2 mb-0.5 text-white text-sm font-semibold leading-snug">{next.name}</div>
+              <div className="line-clamp-1 text-white/60 text-xs">{next.description}</div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-2 mb-0.5">
+                <RoleBadge role={next.role} />
+                <span className="text-white font-semibold truncate text-lg leading-snug">{next.name}</span>
+              </div>
+              <div className="line-clamp-2 text-white/70 text-sm leading-snug">{next.description}</div>
+            </>
+          )}
         </div>
-        <FlagImg code={next.countryCode} className="shrink-0 inline-block align-middle" />
+        <FlagImg code={next.countryCode} className="shrink-0 inline-block align-middle" size={mobile ? undefined : 24} />
       </div>
     </div>
   );
