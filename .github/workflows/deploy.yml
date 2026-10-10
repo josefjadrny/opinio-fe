@@ -41,6 +41,9 @@ jobs:
             --exclude "index.html" \
             --exclude "favicon.svg" \
             --exclude "icon.svg" \
+            --exclude "favicon.ico" \
+            --exclude "favicon.png" \
+            --exclude "apple-touch-icon.png" \
             --exclude "sw.js" \
             --exclude "registerSW.js" \
             --exclude "manifest.webmanifest" \
@@ -51,6 +54,9 @@ jobs:
             --exclude "index.html" \
             --exclude "favicon.svg" \
             --exclude "icon.svg" \
+            --exclude "favicon.ico" \
+            --exclude "favicon.png" \
+            --exclude "apple-touch-icon.png" \
             --exclude "sw.js" \
             --exclude "registerSW.js" \
             --exclude "manifest.webmanifest" \
@@ -86,6 +92,17 @@ jobs:
             --cache-control "public, max-age=86400"
           aws s3 cp dist/icon.svg s3://www.opinio.live/icon.svg \
             --cache-control "public, max-age=86400"
+          # Unversioned favicons (the URLs Google remembers): 1-day cache, never
+          # immutable, so a new artwork can replace them under the same name.
+          for bucket in opinio.live www.opinio.live; do
+            aws s3 cp dist/favicon.ico "s3://$bucket/favicon.ico" \
+              --content-type "image/x-icon" \
+              --cache-control "public, max-age=86400"
+            aws s3 cp dist/favicon.png "s3://$bucket/favicon.png" \
+              --cache-control "public, max-age=86400"
+            aws s3 cp dist/apple-touch-icon.png "s3://$bucket/apple-touch-icon.png" \
+              --cache-control "public, max-age=86400"
+          done
 
   deploy-worker:
     name: Cloudflare Worker (OG meta)

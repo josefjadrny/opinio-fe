@@ -647,6 +647,12 @@ async function handleProfile(request, id) {
   return new Response(html, { status: 200, headers });
 }
 
+// Same icon set as index.html's head - keep the two in sync.
+const FAVICON_LINKS =
+  '<link rel="icon" href="/favicon.ico" sizes="48x48" />\n    ' +
+  '<link rel="icon" type="image/png" href="/favicon.png" sizes="192x192" />\n    ' +
+  '<link rel="apple-touch-icon" href="/apple-touch-icon.png" />';
+
 // Shared <head> for the standalone language pages: translated meta, a
 // self-referencing canonical (the suffixed URL — NEVER the bare one, or Google
 // would fold the page into English), and the reciprocal hreflang set.
@@ -654,6 +660,7 @@ function langPageHead({ lang, title, description, image, canonical, basePath }) 
   const ui = LANG_UI[lang];
   return [
     `<title>${escapeHtml(title)}</title>`,
+    FAVICON_LINKS,
     `<meta name="description" content="${escapeHtml(description)}" />`,
     `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
     `    ${hreflangLinks(basePath)}`,
@@ -745,7 +752,7 @@ function renderLangMiss(lang, id, notFound) {
   return '<!DOCTYPE html>\n' +
     `<html lang="${lang}">\n<head>\n    <meta charset="utf-8" />\n` +
     '    <meta name="viewport" content="width=device-width, initial-scale=1" />\n' +
-    `    <title>Opinio</title>\n    <meta name="robots" content="${notFound ? 'noindex' : 'noindex'}" />\n` +
+    `    <title>Opinio</title>\n    ${FAVICON_LINKS}\n    <meta name="robots" content="${notFound ? 'noindex' : 'noindex'}" />\n` +
     `    <style>${LANG_PAGE_CSS}</style>\n</head>\n<body>\n  <div class="wrap">\n` +
     `    <header><a href="${SITE_BASE}/">Opin<span>io</span></a></header>\n` +
     `    <p class="tag" style="margin-top:48px">${escapeHtml(msg)}</p>\n` +

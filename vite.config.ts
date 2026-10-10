@@ -10,7 +10,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate', // new SW activates + reloads on next visit; no stale shell
       injectRegister: 'auto', // injects the registration snippet; no code change in main.tsx
-      includeAssets: ['favicon-v2.png', 'favicon.svg', 'apple-touch-icon-v2.png', 'icon.svg'],
+      includeAssets: ['favicon.ico', 'favicon.png', 'favicon.svg', 'apple-touch-icon.png', 'icon.svg'],
       manifest: {
         name: 'Opinio',
         short_name: 'Opinio',

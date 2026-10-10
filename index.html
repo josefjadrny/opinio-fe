@@ -2,8 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon-v2.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon-v2.png" />
+    <!-- Unversioned on purpose: Google keeps the favicon URL it last saw and drops
+         the icon from search when that URL 404s. These names ship with a 1-day
+         cache (deploy.yml), not the immutable one, so the artwork can change in
+         place without a rename. -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" href="/favicon.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <!-- viewport-fit=cover: Android 16 (targetSdk 36) forces every app edge-to-edge
          and the opt-out is ignored, so the installed app draws behind the status
          and gesture bars. Opting in here is what exposes env(safe-area-inset-*)
