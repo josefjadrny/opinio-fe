@@ -8,6 +8,7 @@ import { HoverTip } from '../common/HoverTip';
 import { ModalShell } from '../common/ModalShell';
 import { useSignIn } from '../auth/SignInContext';
 import { NotificationList, BellIcon } from './NotificationList';
+import { WASH } from './wash';
 import type { NotificationItem } from '../../types/api';
 
 interface NotificationBellProps {
@@ -108,18 +109,21 @@ export function NotificationBell({ onOpen }: NotificationBellProps) {
 
       {open && !isMobile && (
         // z-[85]: the ProfileMenu's level - above an open ModalShell (z-80).
-        <div className="absolute right-0 top-full mt-1.5 w-[380px] bg-surface border border-border rounded-xl shadow-xl z-[85] flex flex-col max-h-[min(560px,calc(100vh-6rem))]">
-          <div className="px-4 py-3 border-b border-border shrink-0">
-            <h2 className="text-sm font-semibold text-white">{t.notifications}</h2>
+        <div className="absolute right-0 top-full mt-2 w-[400px] bg-surface border border-border rounded-2xl shadow-2xl shadow-black/50 z-[85] flex flex-col max-h-[min(600px,calc(100vh-6rem))]" style={{ animation: 'modal-enter 0.2s ease-out' }}>
+          <div className="user-header-wash flex items-center gap-2.5 px-4 py-3 border-b border-border shrink-0 rounded-t-2xl" style={WASH}>
+            <span className="w-8 h-8 rounded-full bg-white/[0.07] ring-1 ring-white/15 flex items-center justify-center shrink-0">
+              <BellIcon className="w-[18px] h-[18px]" />
+            </span>
+            <h2 className="text-base font-semibold text-white">{t.notifications}</h2>
           </div>
-          <div className="overflow-y-auto overscroll-y-contain p-1.5">
+          <div className="overflow-y-auto overscroll-y-contain subtle-scrollbar p-2">
             <NotificationList onOpenProfile={openProfile} />
           </div>
         </div>
       )}
       {open && isMobile && (
         <ModalShell onClose={() => setOpen(false)} title={t.notifications} icon={<BellIcon className="w-5 h-5" />}>
-          <div className="p-2">
+          <div className="p-3">
             <NotificationList onOpenProfile={openProfile} />
           </div>
         </ModalShell>
