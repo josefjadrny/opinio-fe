@@ -184,6 +184,21 @@ export async function deleteComment(commentId: string): Promise<void> {
   }
 }
 
+export function getNotifications(cursor: string | null, lang?: string): Promise<import('../types/api').NotificationsResponse> {
+  const params = new URLSearchParams();
+  if (cursor) params.set('cursor', cursor);
+  if (lang) params.set('lang', lang);
+  return apiFetch(`/api/notifications?${params}`);
+}
+
+export function markNotificationsSeen(shownAt: string): Promise<{ unseenNotifications: number }> {
+  return apiFetch('/api/notifications/seen', { method: 'POST', body: JSON.stringify({ shownAt }) });
+}
+
+export function clickNotification(id: string, shownAt: string): Promise<{ clearedIds: string[]; unseenNotifications: number }> {
+  return apiFetch(`/api/notifications/${id}/click`, { method: 'POST', body: JSON.stringify({ shownAt }) });
+}
+
 export function getUser(userId: string, lang?: string): Promise<UserDetailResponse> {
   const qs = lang ? `?lang=${lang}` : '';
   return apiFetch(`/api/users/${userId}${qs}`);

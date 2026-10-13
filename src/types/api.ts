@@ -56,6 +56,34 @@ export interface MeUser {
 export interface MeResponse {
   user: MeUser;
   voteAllowance: VoteAllowance;
+  /** Unseen lines in the bell, capped at 100 (shown as "99+"). 0 for anonymous. */
+  unseenNotifications?: number;
+}
+
+// One line in the notifications panel. Phase 1 writes only `milestone`; the
+// other kinds come with later phases and the FE skips any kind it does not know.
+export type NotificationKind = 'milestone' | 'vote' | 'comment' | 'mention';
+
+export interface NotificationItem {
+  id: string;
+  kind: NotificationKind;
+  /** Microsecond UTC ISO - compared as a string with shownAt, never parsed for that. */
+  updatedAt: string;
+  seen: boolean;
+  clicked: boolean;
+  actors: { id: string; handle: string; avatarUrl: string | null; countryCode: string | null }[];
+  moreCount: number;
+  milestone: number | null;
+  countries: number | null;
+  profile: { id: string; name: string; imageUrl: string | null; countryCode: string; isMine: boolean };
+  commentId: string | null;
+}
+
+export interface NotificationsResponse {
+  /** The server's time of the first page's query: the bound /seen and /click take. */
+  shownAt: string;
+  items: NotificationItem[];
+  nextCursor: string | null;
 }
 
 export interface VoteResponse {

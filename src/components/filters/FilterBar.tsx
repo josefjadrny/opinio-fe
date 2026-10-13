@@ -11,6 +11,7 @@ import { useMe } from '../../hooks/useMe';
 import { HeaderButton } from '../ui/HeaderButton';
 import { HoverTip } from '../common/HoverTip';
 import { LogoMark } from '../common/LogoMark';
+import { NotificationBell } from '../notifications/NotificationBell';
 
 interface FilterBarProps {
   onAddProfile: () => void;
@@ -105,6 +106,7 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
               </HeaderButton>
             </HoverTip>
           )}
+          <NotificationBell onOpen={() => setFilterSheetOpen(false)} />
           <ProfileMenu onOpen={() => setFilterSheetOpen(false)} />
         </div>
       </div>
