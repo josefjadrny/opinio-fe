@@ -14,6 +14,8 @@ import { HoverTip } from '../common/HoverTip';
 import { StatTip } from '../common/StatTip';
 import { VoteHeadline } from '../profile/VoteHeadline';
 import { ProfileList } from '../profile/ProfileList';
+import { useCountryFacts } from '../../hooks/useCountryFacts';
+import { CountryFacts } from './CountryFacts';
 
 interface CountryDetailModalProps {
   countryCode: string;
@@ -109,6 +111,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   // the API would just 404.
   const { data: countryData, isLoading: profilesLoading } = useCountryDiscussed(notFound ? '' : code);
   const profiles = countryData?.profiles ?? [];
+  const { facts } = useCountryFacts(notFound ? null : code);
 
   // Which country is on screen, for the mobile map panel above (the desktop map
   // reads the route directly - it is one component away from this modal). The
@@ -319,6 +322,10 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
               </div>
             </div>
           </div>
+          {/* Population, capital and who is in office, straight under the flag
+              and outside the fold - the country's basic facts stay readable
+              with the opinio list folded away. */}
+          {!notFound && facts && <div className="px-4 pt-3 shrink-0"><CountryFacts facts={facts} /></div>}
           {!notFound && <div className="px-4 pt-3 pb-1 shrink-0">{VoteBlock}</div>}
           {/* Collapsing to 0fr animates the SHEET's height, which a max-height
               cannot do without a magic number that is wrong for every other
@@ -379,6 +386,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
             {CloseButton}
           </div>
         </div>
+        {!notFound && facts && <div className="px-6 pt-4 shrink-0"><CountryFacts facts={facts} /></div>}
         {!notFound && <div className="px-6 pt-4 pb-3 border-b border-border shrink-0">{VoteBlock}</div>}
         {/* Same fold as the mobile sheet and as both profile modals. The card is
             anchored to the bottom of the screen (justify-end + mb-16), so folding

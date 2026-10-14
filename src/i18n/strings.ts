@@ -275,6 +275,12 @@ export interface Strings {
   // no language needs its name in a grammatical case.
   countryRingLive: string;
   countryRingNone: string;
+  // Country window facts block (population, capital, who is in office).
+  factsPopulation: string;
+  factsCapital: string;
+  factsPeople: string;
+  factsSince: string;
+  factsActing: string;
   avatarRingLiveYou: string;
   avatarRingNoneYou: string;
   // The like count inside the avatarRing* sentences, by plural category.
@@ -681,6 +687,11 @@ const en: Strings = {
   avatarRingNone: 'No votes on opinios by {handle} in the last 24h',
   countryRingLive: '{country}: opinios about this country got {likes} in the last 24h',
   countryRingNone: '{country}: no votes on opinios about this country in the last 24h',
+  factsPopulation: 'Population',
+  factsCapital: 'Capital',
+  factsPeople: '{n} people',
+  factsSince: 'since {date}',
+  factsActing: 'Acting',
   avatarRingLiveYou: 'Your opinios got {likes} in the last 24h',
   avatarRingNoneYou: 'No votes on your opinios in the last 24h',
   avatarRingLikesOne: '{n} like',
@@ -1112,6 +1123,11 @@ const cs: Strings = {
   avatarRingNone: 'Opinio od {handle} za posledních 24 h nikdo nehodnotil',
   countryRingLive: '{country}: opinio o této zemi dostala za posledních 24 h {likes}',
   countryRingNone: '{country}: opinio o této zemi za posledních 24 h nikdo nehodnotil',
+  factsPopulation: 'Obyvatel',
+  factsCapital: 'Hlavní město',
+  factsPeople: '{n} obyvatel',
+  factsSince: 'od {date}',
+  factsActing: 'Úřadující',
   avatarRingLiveYou: 'Za posledních 24 h dostala tvoje opinio {likes}',
   avatarRingNoneYou: 'Tvoje opinio za posledních 24 h nikdo nehodnotil',
   avatarRingLikesOne: '{n} lajk',
@@ -1545,6 +1561,11 @@ const es: Strings = {
   avatarRingNone: 'Nadie ha votado las opinio de {handle} en las últimas 24 h',
   countryRingLive: '{country}: las opinio sobre este país recibieron {likes} en las últimas 24 h',
   countryRingNone: '{country}: nadie ha votado las opinio sobre este país en las últimas 24 h',
+  factsPopulation: 'Población',
+  factsCapital: 'Capital',
+  factsPeople: '{n} habitantes',
+  factsSince: 'desde el {date}',
+  factsActing: 'Interino',
   avatarRingLiveYou: 'Tus opinio recibieron {likes} en las últimas 24 h',
   avatarRingNoneYou: 'Nadie ha votado tus opinio en las últimas 24 h',
   avatarRingLikesOne: '{n} me gusta',
@@ -1976,6 +1997,11 @@ const de: Strings = {
   avatarRingNone: 'In den letzten 24 h hat niemand über die opinio von {handle} abgestimmt',
   countryRingLive: '{country}: die opinio über dieses Land bekamen in den letzten 24 h {likes}',
   countryRingNone: '{country}: in den letzten 24 h hat niemand über die opinio zu diesem Land abgestimmt',
+  factsPopulation: 'Einwohner',
+  factsCapital: 'Hauptstadt',
+  factsPeople: '{n} Einwohner',
+  factsSince: 'seit {date}',
+  factsActing: 'Amtierend',
   avatarRingLiveYou: 'Deine opinio bekamen in den letzten 24 h {likes}',
   avatarRingNoneYou: 'In den letzten 24 h hat niemand über deine opinio abgestimmt',
   avatarRingLikesOne: '{n} Like',
@@ -2407,6 +2433,11 @@ const fr: Strings = {
   avatarRingNone: 'Aucun vote sur les opinios de {handle} sur les dernières 24 h',
   countryRingLive: '{country} : les opinios sur ce pays ont reçu {likes} sur les dernières 24 h',
   countryRingNone: '{country} : aucun vote sur les opinios concernant ce pays sur les dernières 24 h',
+  factsPopulation: 'Population',
+  factsCapital: 'Capitale',
+  factsPeople: '{n} habitants',
+  factsSince: 'depuis le {date}',
+  factsActing: 'Par intérim',
   avatarRingLiveYou: 'Vos opinios ont reçu {likes} sur les dernières 24 h',
   avatarRingNoneYou: 'Aucun vote sur vos opinios sur les dernières 24 h',
   avatarRingLikesOne: "{n} j'aime",
@@ -2838,6 +2869,11 @@ const it: Strings = {
   avatarRingNone: 'Nessun voto sugli opinios di {handle} nelle ultime 24 ore',
   countryRingLive: '{country}: gli opinios su questo paese hanno ricevuto {likes} nelle ultime 24 ore',
   countryRingNone: '{country}: nessun voto sugli opinios su questo paese nelle ultime 24 ore',
+  factsPopulation: 'Popolazione',
+  factsCapital: 'Capitale',
+  factsPeople: '{n} abitanti',
+  factsSince: 'dal {date}',
+  factsActing: 'Ad interim',
   avatarRingLiveYou: 'I tuoi opinios hanno ricevuto {likes} nelle ultime 24 ore',
   avatarRingNoneYou: 'Nessun voto sui tuoi opinios nelle ultime 24 ore',
   avatarRingLikesOne: '{n} mi piace',
@@ -3269,6 +3305,11 @@ const pl: Strings = {
   avatarRingNone: 'Nikt nie głosował na opinio od {handle} w ciągu ostatnich 24 h',
   countryRingLive: '{country}: opinio o tym kraju dostały {likes} w ciągu ostatnich 24 h',
   countryRingNone: '{country}: nikt nie głosował na opinio o tym kraju w ciągu ostatnich 24 h',
+  factsPopulation: 'Ludność',
+  factsCapital: 'Stolica',
+  factsPeople: '{n} mieszkańców',
+  factsSince: 'od {date}',
+  factsActing: 'P.o.',
   avatarRingLiveYou: 'Twoje opinio dostały {likes} w ciągu ostatnich 24 h',
   avatarRingNoneYou: 'Nikt nie głosował na twoje opinio w ciągu ostatnich 24 h',
   avatarRingLikesOne: '{n} polubienie',
