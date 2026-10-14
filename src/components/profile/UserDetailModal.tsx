@@ -284,13 +284,25 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
         </div>
         </StatTip>
       ) : (
-        <Avatar
-          name={user.displayName}
-          imageUrl={avatarSrc}
-          className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} shrink-0`}
-          isAnonymous={!hasAvatar}
-          onLoadError={() => setFailedAvatarUrl(avatarSrc)}
-        />
+        // The small size keeps the ring too, built like the country header's:
+        // a thinner ring, the same 2px gap, the 40 / 56px picture inside.
+        <StatTip label={ringTipLabel} panel={ringTipPanel} width={280} className="!rounded-full shrink-0">
+        <div
+          className={`sentiment-ring shrink-0 rounded-full ${isMobile ? 'p-[2px]' : 'p-[3px]'}`}
+          data-empty={likeShare === null}
+          style={ringStyle}
+        >
+          <div className={`rounded-full p-[2px] ${isMobile ? 'bg-surface' : 'bg-surface-light'}`}>
+            <Avatar
+              name={user.displayName}
+              imageUrl={avatarSrc}
+              className={isMobile ? 'w-10 h-10' : 'w-14 h-14'}
+              isAnonymous={!hasAvatar}
+              onLoadError={() => setFailedAvatarUrl(avatarSrc)}
+            />
+          </div>
+        </div>
+        </StatTip>
       )}
       <div className="flex-1 min-w-0 flex flex-col gap-2">
         <div className="flex items-start gap-2 min-w-0">
@@ -348,12 +360,12 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
         className="fixed inset-0 z-50 flex flex-col justify-end"
         onClick={(e) => { if (e.target === e.currentTarget) close(); }}
       >
-        <div className="absolute inset-0 bg-black/60" onClick={close} />
+        <div className="absolute inset-0 bg-black/60" onClick={close} style={{ animation: 'backdrop-in 0.2s ease-out' }} />
         {/* pb-11 reserves the votes bar's strip on the SHEET, not on the folded
             body, exactly as the country sheet does: the bar sits above every
             sheet (z-90) and the reservation has to survive the fold, or
             collapsing leaves the header itself underneath it. */}
-        <div ref={sheetRef} className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col pb-11">
+        <div ref={sheetRef} className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl shadow-black/50 max-h-[85vh] flex flex-col pb-11" style={{ animation: 'modal-enter 0.28s ease-out' }}>
           <div className="flex justify-center pt-3 pb-1 shrink-0" {...dragHandlers}>
             <div className="w-10 h-1 bg-white/20 rounded-full" />
           </div>
@@ -386,7 +398,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end items-center pointer-events-none">
       <div className="absolute bottom-0 left-0 right-0 h-[55vh] bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-      <div className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto">
+      <div className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto shadow-black/50" style={{ animation: 'modal-enter 0.25s ease-out' }}>
         <div className="px-6 py-4 border-b border-border shrink-0">
           {user ? Header : (
             <div className="flex items-center gap-3">

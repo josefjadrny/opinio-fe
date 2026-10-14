@@ -24,6 +24,7 @@ import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { useMapPanel } from '../../context/useMapPanel';
 import { CommentIcon, BumpNumber } from '../comments/CommentCount';
+import { WASH } from '../common/wash';
 import { CommentsSheet } from '../comments/CommentsSheet';
 
 interface ProfileDetailModalProps {
@@ -93,7 +94,9 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
       className="fixed left-0 right-0 bottom-0 z-50 flex flex-col justify-end pointer-events-none"
       style={{ top: 'var(--mobile-map-panel-bottom, 0px)' }}
     >
-      <div ref={sheetRef} className="pointer-events-auto relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto pb-11" style={{ animation: 'modal-enter 0.28s ease-out' }}>
+      <div ref={sheetRef} className="pointer-events-auto relative bg-surface border-t border-border rounded-t-2xl shadow-2xl shadow-black/50 max-h-[85vh] overflow-y-auto pb-11" style={{ animation: 'modal-enter 0.28s ease-out' }}>
+        {/* Handle and header share the panel wash (as ModalShell does). */}
+        <div className="user-header-wash rounded-t-2xl" style={WASH}>
         <div className="flex justify-center pt-3 pb-1" {...dragHandlers}>
           <div className="w-10 h-1 bg-white/20 rounded-full" />
         </div>
@@ -148,6 +151,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
               </div>
             </div>
           </div>
+        </div>
         </div>
 
         <div className="px-6 pt-2 pb-5 space-y-4">

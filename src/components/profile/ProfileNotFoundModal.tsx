@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useI18n } from '../../i18n/I18nContext';
+import { WASH } from '../common/wash';
 import { HoverTip } from '../common/HoverTip';
 
 interface ProfileNotFoundModalProps {
@@ -56,14 +57,17 @@ export function ProfileNotFoundModal({ onClose }: ProfileNotFoundModalProps) {
         className="fixed inset-0 z-50 flex flex-col justify-end"
         onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       >
-        <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-        <div ref={sheetRef} className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col">
-          <div className="flex justify-center pt-3 pb-1 shrink-0" {...dragHandlers}>
-            <div className="w-10 h-1 bg-white/20 rounded-full" />
-          </div>
-          <div className="flex items-center justify-between px-6 py-3 border-b border-border shrink-0" {...dragHandlers}>
-            <span className="text-sm font-semibold text-white/60">{t.profileNotFoundLabel}</span>
-            {CloseButton}
+        <div className="absolute inset-0 bg-black/60" onClick={onClose} style={{ animation: 'backdrop-in 0.2s ease-out' }} />
+        <div ref={sheetRef} className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl shadow-black/50 max-h-[85vh] flex flex-col" style={{ animation: 'modal-enter 0.28s ease-out' }}>
+          {/* Handle and header share the panel wash (as ModalShell does). */}
+          <div className="shrink-0 rounded-t-2xl user-header-wash" style={WASH}>
+            <div className="flex justify-center pt-3 pb-1" {...dragHandlers}>
+              <div className="w-10 h-1 bg-white/20 rounded-full" />
+            </div>
+            <div className="flex items-center justify-between px-6 py-3 border-b border-border" {...dragHandlers}>
+              <span className="text-sm font-semibold text-white/60">{t.profileNotFoundLabel}</span>
+              {CloseButton}
+            </div>
           </div>
           {Body}
         </div>
@@ -74,8 +78,8 @@ export function ProfileNotFoundModal({ onClose }: ProfileNotFoundModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end items-center pointer-events-none">
       <div className="absolute bottom-0 left-0 right-0 h-[55vh] bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-      <div className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl mx-4 flex flex-col mb-16 overflow-hidden pointer-events-auto">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
+      <div className="bg-surface-light border border-border rounded-2xl shadow-2xl shadow-black/50 w-full max-w-xl mx-4 flex flex-col mb-16 overflow-hidden pointer-events-auto" style={{ animation: 'modal-enter 0.25s ease-out' }}>
+        <div className="user-header-wash flex items-center justify-between px-6 py-4 border-b border-border shrink-0" style={WASH}>
           <span className="text-sm font-semibold text-white/60">{t.profileNotFoundLabel}</span>
           {CloseButton}
         </div>

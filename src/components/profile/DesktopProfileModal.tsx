@@ -26,6 +26,7 @@ import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { CommentIcon, BumpNumber } from '../comments/CommentCount';
 import { commentCountLabel } from '../comments/commentCountLabel';
+import { WASH } from '../common/wash';
 import { CommentList, CommentComposer, CommentThreadProvider } from '../comments/CommentThread';
 
 interface DesktopProfileModalProps {
@@ -97,15 +98,15 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
       className="fixed inset-0 z-50 flex flex-col justify-end items-center pointer-events-none"
     >
       <div className="absolute bottom-0 left-0 right-0 h-[55vh] bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-      <div className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto" style={{ animation: 'modal-enter 0.25s ease-out' }}>
+      <div className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto shadow-black/50" style={{ animation: 'modal-enter 0.25s ease-out' }}>
         {isLoading && (
           <div className="flex items-center justify-center py-12 text-sm text-white/50">Loading…</div>
         )}
 
         {profile && (
           <>
-            {/* Header */}
-            <div className="flex items-center gap-3 px-6 py-4 border-b border-border shrink-0">
+            {/* Header, on the panel wash */}
+            <div className="user-header-wash flex items-center gap-3 px-6 py-4 border-b border-border shrink-0" style={WASH}>
               {(() => {
                 const state = location.state as {
                   fromUserId?: string; fromUserName?: string;

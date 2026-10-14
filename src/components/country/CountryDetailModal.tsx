@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSheetDrag } from '../../hooks/useSheetDrag';
@@ -71,6 +71,22 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   // holding the card back on a fetch the header never needed.
   const counts = data?.countries.find((c) => c.code === code)
     ?? { likes: 0, dislikes: 0, totalLikes: 0, totalDislikes: 0 };
+  // The user page's sentiment ring and header wash, on the country's totals:
+  // like share of the live 24h votes, lifetime when the live window is empty,
+  // no split at all without votes.
+  const liveTotal = counts.likes + counts.dislikes;
+  const lifeTotal = (counts.totalLikes ?? 0) + (counts.totalDislikes ?? 0);
+  const likeShare = liveTotal > 0 ? counts.likes / liveTotal
+    : lifeTotal > 0 ? (counts.totalLikes ?? 0) / lifeTotal : null;
+  const leansLike = likeShare !== null && likeShare >= 0.5;
+  const ringStyle = {
+    '--ring-target': `${Math.round((likeShare ?? 0) * 100)}%`,
+    '--ring-glow': likeShare === null ? 'transparent' : leansLike ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
+  } as CSSProperties;
+  const washStyle = {
+    '--wash-a': likeShare === null ? 'rgba(255,255,255,0.04)' : leansLike ? 'rgba(34,197,94,0.13)' : 'rgba(239,68,68,0.13)',
+    '--wash-b': likeShare === null ? 'transparent' : leansLike ? 'rgba(239,68,68,0.06)' : 'rgba(34,197,94,0.06)',
+  } as CSSProperties;
   // Skip the discussed fetch for an unknown code - there's nothing to load and
   // the API would just 404.
   const { data: countryData, isLoading: profilesLoading } = useCountryDiscussed(notFound ? '' : code);
@@ -131,10 +147,20 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
           This is MapProfileTitle's country state, at the modal's avatar size:
           the tile is also what gives the emoji branch a consistent box, since
           flag emoji are wider than they are tall and vary by platform. */}
+      {/* Around it the user page's sentiment ring (a ring, a gap in the
+          card's colour, then the tile), so the two detail headers match. */}
       <span
-        className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} shrink-0 rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center overflow-hidden`}
+        className={`sentiment-ring shrink-0 rounded-full ${isMobile ? 'p-[2px]' : 'p-[3px]'}`}
+        data-empty={likeShare === null}
+        style={ringStyle}
       >
-        <FlagImg code={code} size={isMobile ? 26 : 36} />
+        <span className={`block rounded-full p-[2px] ${isMobile ? 'bg-surface' : 'bg-surface-light'}`}>
+          <span
+            className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} rounded-full bg-white/[0.06] flex items-center justify-center overflow-hidden`}
+          >
+            <FlagImg code={code} size={isMobile ? 26 : 36} />
+          </span>
+        </span>
       </span>
       <div className="flex-1 min-w-0">
         {/* The opinio modal's title type, per layout: its desktop card sets
@@ -240,7 +266,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
         style={{ top: 'var(--mobile-map-panel-bottom, 0px)' }}
         onClick={(e) => { if (e.target === e.currentTarget) close(); }}
       >
-        <div className="absolute inset-0 bg-black/60" onClick={close} />
+        <div className="absolute inset-0 bg-black/60" onClick={close} style={{ animation: 'backdrop-in 0.2s ease-out' }} />
         {/* max-h-full, not a vh figure - the same trap ModalShell documents. The
             wrapper now starts below the map panel, so an 85vh sheet is taller
             than the box holding it and `justify-end` lets it overflow UPWARD,
@@ -254,20 +280,23 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
         <div
           key={code}
           ref={sheetRef}
-          className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-full flex flex-col pb-11"
+          className="relative bg-surface border-t border-border rounded-t-2xl shadow-2xl shadow-black/50 max-h-full flex flex-col pb-11"
           style={{ animation: 'modal-enter 0.28s ease-out' }}
         >
-          <div className="flex justify-center pt-3 pb-1 shrink-0" {...dragHandlers}>
-            <div className="w-10 h-1 bg-white/20 rounded-full" />
-          </div>
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0" {...dragHandlers}>
-            <div className="flex items-center gap-2 min-w-0 flex-1">
-              {notFound ? NotFoundLabel : Header}
+          {/* Handle and header share the panel wash (as ModalShell does). */}
+          <div className="shrink-0 rounded-t-2xl user-header-wash" style={washStyle}>
+            <div className="flex justify-center pt-3 pb-1 shrink-0" {...dragHandlers}>
+              <div className="w-10 h-1 bg-white/20 rounded-full" />
             </div>
-            <div className="flex items-center gap-1 shrink-0 ml-2">
-              {!notFound && CollapseButton}
-              {!notFound && <ShareCountryButton code={code} name={name} />}
-              {CloseButton}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0" {...dragHandlers}>
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                {notFound ? NotFoundLabel : Header}
+              </div>
+              <div className="flex items-center gap-1 shrink-0 ml-2">
+                {!notFound && CollapseButton}
+                {!notFound && <ShareCountryButton code={code} name={name} />}
+                {CloseButton}
+              </div>
             </div>
           </div>
           {!notFound && <div className="px-4 pt-3 pb-1 shrink-0">{VoteBlock}</div>}
@@ -319,10 +348,10 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
           path, which is why the entrance looked missing. */}
       <div
         key={code}
-        className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto"
+        className="bg-surface-light border border-border rounded-2xl shadow-2xl w-full max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-4 flex flex-col max-h-[calc(100dvh-10rem)] mb-16 overflow-hidden pointer-events-auto shadow-black/50"
         style={{ animation: 'modal-enter 0.25s ease-out' }}
       >
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-border shrink-0">
+        <div className="user-header-wash flex items-center gap-3 px-6 py-4 border-b border-border shrink-0" style={washStyle}>
           {notFound ? NotFoundLabel : Header}
           <div className="flex items-center gap-1 shrink-0">
             {!notFound && CollapseButton}
