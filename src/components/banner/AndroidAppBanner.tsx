@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { isTwa } from '../../utils/twa';
 import { LogoMark } from '../common/LogoMark';
+import { useMe } from '../../hooks/useMe';
+import { useWelcomeSeen } from '../../utils/welcomeSeen';
 import { isPlayAppInstalled, PLAY_STORE_URL, rememberAppBannerDismissed, shouldOfferAndroidApp } from '../../utils/androidApp';
 
 // Held back from first paint on purpose: a promo that is already on screen when
@@ -51,6 +53,11 @@ export function AndroidAppBanner() {
   const innerRef = useRef<HTMLDivElement>(null);
 
   const firstRunOpen = FIRST_RUN_PATHS.includes(location.pathname);
+  // WelcomeBanner owns the same slot for a signed-out first-time visitor; this
+  // waits until that one is done (and until we know who the visitor is).
+  const { data: me } = useMe();
+  const welcomeSeen = useWelcomeSeen();
+  const welcomePending = !me || ((!me.user || me.user.tier === 'anonymous') && !welcomeSeen);
 
   useEffect(() => {
     if (!eligible) return;
@@ -62,10 +69,10 @@ export function AndroidAppBanner() {
   }, [eligible]);
 
   useEffect(() => {
-    if (!eligible || alreadyInstalled !== false || mounted || firstRunOpen) return;
+    if (!eligible || alreadyInstalled !== false || mounted || firstRunOpen || welcomePending) return;
     const id = window.setTimeout(() => setMounted(true), REVEAL_DELAY_MS);
     return () => clearTimeout(id);
-  }, [eligible, alreadyInstalled, mounted, firstRunOpen]);
+  }, [eligible, alreadyInstalled, mounted, firstRunOpen, welcomePending]);
 
   // Mount collapsed, then open on the next frame - flipping the attribute in
   // the same commit as the mount gives the transition nothing to animate from.

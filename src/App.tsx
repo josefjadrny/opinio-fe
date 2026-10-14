@@ -37,6 +37,8 @@ import { AddOpinioFab } from './components/ui/AddOpinioFab';
 import { VoteBanner } from './components/voting/VoteBanner';
 import { HotBanner } from './components/banner/HotBanner';
 import { AndroidAppBanner } from './components/banner/AndroidAppBanner';
+import { WelcomeBanner } from './components/banner/WelcomeBanner';
+import { markWelcomeSeen, useWelcomeSeen } from './utils/welcomeSeen';
 import { SettingsModal } from './components/filters/SettingsModal';
 import { AboutModal } from './components/filters/AboutModal';
 import { PrivacyModal } from './components/filters/PrivacyModal';
@@ -361,6 +363,9 @@ function AppLayout() {
       {/* First line on the page, above the header - see AndroidAppBanner.
           Android browsers only, so it is absent for everyone else. */}
       <AndroidAppBanner />
+      {/* Same slot: the welcome offer for a signed-out first-time visitor.
+          The Android promo waits until this one is done. */}
+      <WelcomeBanner />
       <FilterBar onAddProfile={() => navigate('/add' + location.search)} />
       <OfflineBanner />
 
@@ -447,7 +452,6 @@ function AppLayout() {
         </div>
       )}
 
-      <WelcomeAutoOpen />
       <ViewerModeAutoOpen />
 
       {/* Add-opinio FAB - mobile only, and only on the bare feed (no modal /
@@ -541,14 +545,9 @@ function SignInRoute() {
 }
 
 const VIEWER_MODE_DISMISSED_KEY = 'opinio_viewer_mode_dismissed_v1';
-const WELCOME_SEEN_KEY = 'opinio_welcome_seen_v1';
 
 function dismissedKeyFor(userId: string | null | undefined): string {
   return `${VIEWER_MODE_DISMISSED_KEY}:${userId ?? 'none'}`;
-}
-
-function welcomeSeen(): boolean {
-  try { return localStorage.getItem(WELCOME_SEEN_KEY) === '1'; } catch { return true; }
 }
 
 function ViewerModeRoute() {
@@ -564,6 +563,7 @@ function ViewerModeRoute() {
 
 function ViewerModeAutoOpen() {
   const { data: me } = useMe();
+  const seen = useWelcomeSeen();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -571,16 +571,16 @@ function ViewerModeAutoOpen() {
     if (!me) return;
     if (me.user?.countryCode) return;
     const isAnon = !me.user || me.user.tier === 'anonymous';
-    // Anonymous first-time visitors see the Welcome modal first; the country
-    // picker waits until they've dismissed it. Signed-in users with no country
-    // skip this gate (Welcome wouldn't fire for them anyway).
-    if (isAnon && !welcomeSeen()) return;
+    // Anonymous first-time visitors get the welcome strip first; the country
+    // picker waits until they are done with it. Signed-in users with no
+    // country skip this gate (the strip never shows for them).
+    if (isAnon && !seen) return;
     if (sessionStorage.getItem(dismissedKeyFor(me.user?.id)) === '1') return;
     if (location.pathname === '/viewer-mode') return;
     if (location.pathname === '/welcome') return;
     navigate('/viewer-mode' + location.search);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [me, location.pathname]);
+  }, [me, seen, location.pathname]);
 
   return null;
 }
@@ -589,31 +589,10 @@ function WelcomeRoute() {
   const navigate = useNavigate();
   const location = useLocation();
   const handleClose = () => {
-    try { localStorage.setItem(WELCOME_SEEN_KEY, '1'); } catch { /* private mode - degrade silently */ }
+    markWelcomeSeen();
     navigate('/' + location.search, { replace: true });
   };
   return <WelcomeModal onClose={handleClose} />;
-}
-
-function WelcomeAutoOpen() {
-  const { data: me, isLoading } = useMe();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    if (isLoading || !me) return;
-    const isAnon = !me.user || me.user.tier === 'anonymous';
-    if (!isAnon) return;
-    if (welcomeSeen()) return;
-    // v1 fires only on the landing page so deeplinks (/p/:id, /u/:id, /c/:code)
-    // keep their content; the flag is then never set for those visitors, so it
-    // will show on their next plain visit. Acceptable.
-    if (location.pathname !== '/') return;
-    navigate('/welcome' + location.search);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading, me, location.pathname]);
-
-  return null;
 }
 
 function ProfileDetailRoute() {

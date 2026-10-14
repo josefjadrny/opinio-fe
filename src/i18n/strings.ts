@@ -21,6 +21,9 @@ export interface Strings {
   appBannerTitle: string;
   appBannerCta: string;
   appBannerDismiss: string;
+  // The strip offering the welcome to a signed-out first-time visitor.
+  welcomeBannerText: string;
+  welcomeBannerCta: string;
   offlineBanner: string;
   offlineTitle: string;
   offlineBody: string;
@@ -410,6 +413,8 @@ const en: Strings = {
   appBannerTitle: 'Opinio for Android',
   appBannerCta: 'Install',
   appBannerDismiss: 'Dismiss',
+  welcomeBannerText: 'First time on Opinio? Vote on what the world thinks.',
+  welcomeBannerCta: 'How it works',
   offlineBanner: 'You are offline - showing the last data you loaded',
   offlineTitle: 'No connection',
   offlineBody: 'Opinio could not be reached. Anything loaded earlier is still here, and the feed refreshes as soon as the connection is back.',
@@ -839,6 +844,8 @@ const cs: Strings = {
   appBannerTitle: 'Opinio pro Android',
   appBannerCta: 'Instalovat',
   appBannerDismiss: 'Zavřít',
+  welcomeBannerText: 'Poprvé na Opinio? Hlasuj o tom, co si myslí svět.',
+  welcomeBannerCta: 'Jak to funguje',
   offlineBanner: 'Jsi offline - zobrazujeme naposledy načtená data',
   offlineTitle: 'Bez připojení',
   offlineBody: 'Opinio se nepodařilo načíst. Dříve načtený obsah tu zůstává a jakmile se připojení vrátí, seznam se obnoví.',
@@ -1270,6 +1277,8 @@ const es: Strings = {
   appBannerTitle: 'Opinio para Android',
   appBannerCta: 'Instalar',
   appBannerDismiss: 'Descartar',
+  welcomeBannerText: '¿Primera vez en Opinio? Vota sobre lo que piensa el mundo.',
+  welcomeBannerCta: 'Cómo funciona',
   offlineBanner: 'Estás sin conexión - mostrando los últimos datos cargados',
   offlineTitle: 'Sin conexión',
   offlineBody: 'No se pudo conectar con Opinio. Lo que ya se había cargado sigue aquí y la lista se actualizará en cuanto vuelva la conexión.',
@@ -1699,6 +1708,8 @@ const de: Strings = {
   appBannerTitle: 'Opinio für Android',
   appBannerCta: 'Installieren',
   appBannerDismiss: 'Schließen',
+  welcomeBannerText: 'Zum ersten Mal bei Opinio? Stimm ab, was die Welt denkt.',
+  welcomeBannerCta: 'So funktioniert es',
   offlineBanner: 'Du bist offline - es werden die zuletzt geladenen Daten angezeigt',
   offlineTitle: 'Keine Verbindung',
   offlineBody: 'Opinio konnte nicht erreicht werden. Bereits geladene Inhalte bleiben verfügbar und die Liste aktualisiert sich, sobald die Verbindung zurück ist.',
@@ -2128,6 +2139,8 @@ const fr: Strings = {
   appBannerTitle: 'Opinio pour Android',
   appBannerCta: 'Installer',
   appBannerDismiss: 'Fermer',
+  welcomeBannerText: 'Première visite sur Opinio ? Votez sur ce que pense le monde.',
+  welcomeBannerCta: 'Comment ça marche',
   offlineBanner: 'Vous êtes hors ligne - affichage des dernières données chargées',
   offlineTitle: 'Pas de connexion',
   offlineBody: 'Impossible de joindre Opinio. Ce qui a déjà été chargé reste disponible et la liste se rafraîchira dès le retour de la connexion.',
@@ -2557,6 +2570,8 @@ const it: Strings = {
   appBannerTitle: 'Opinio per Android',
   appBannerCta: 'Installa',
   appBannerDismiss: 'Chiudi',
+  welcomeBannerText: 'Prima volta su Opinio? Vota su ciò che pensa il mondo.',
+  welcomeBannerCta: 'Come funziona',
   offlineBanner: 'Sei offline - mostriamo gli ultimi dati caricati',
   offlineTitle: 'Nessuna connessione',
   offlineBody: 'Non è stato possibile raggiungere Opinio. Ciò che era già stato caricato resta disponibile e la lista si aggiornerà appena torna la connessione.',
@@ -2986,6 +3001,8 @@ const pl: Strings = {
   appBannerTitle: 'Opinio na Androida',
   appBannerCta: 'Zainstaluj',
   appBannerDismiss: 'Zamknij',
+  welcomeBannerText: 'Pierwszy raz na Opinio? Głosuj na to, co myśli świat.',
+  welcomeBannerCta: 'Jak to działa',
   offlineBanner: 'Jesteś offline - pokazujemy ostatnio wczytane dane',
   offlineTitle: 'Brak połączenia',
   offlineBody: 'Nie udało się połączyć z Opinio. To, co wczytano wcześniej, jest nadal dostępne, a lista odświeży się, gdy połączenie wróci.',
