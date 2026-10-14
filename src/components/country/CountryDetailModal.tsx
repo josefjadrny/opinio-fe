@@ -83,19 +83,20 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   } as CSSProperties;
   // What the ring means, on hover (tap on a phone) - the user page's tip, on
   // the country: the window it reads, then the like count in it.
-  const ringTipText = (liveTotal > 0 ? t.countryRingLive : t.countryRingNone)
-    .replace('{country}', name);
+  const ringTipTemplate = liveTotal > 0 ? t.countryRingLive : t.countryRingNone;
   const ringLikes = counts.likes;
   const likesCategory = new Intl.PluralRules(locale).select(ringLikes);
   const ringLikesText = (likesCategory === 'one' ? t.avatarRingLikesOne : likesCategory === 'few' ? t.avatarRingLikesFew : t.avatarRingLikesMany)
     .replace('{n}', new Intl.NumberFormat(locale).format(ringLikes));
-  const ringTipLabel = ringTipText.replace('{likes}', ringLikesText);
+  const ringTipLabel = ringTipTemplate.replace('{country}', name).replace('{likes}', ringLikesText);
+  // The country name in bold white, the like count in bold green.
   const ringTipPanel = (
     <p className="text-sm text-white/80 leading-snug">
-      {ringTipText.split('{likes}').map((part, i) => (
+      {ringTipTemplate.split(/(\{country\}|\{likes\})/).map((part, i) => (
         <Fragment key={i}>
-          {i > 0 && <strong className="font-semibold text-positive">{ringLikesText}</strong>}
-          {part}
+          {part === '{country}' ? <strong className="font-semibold text-white">{name}</strong>
+            : part === '{likes}' ? <strong className="font-semibold text-positive">{ringLikesText}</strong>
+            : part}
         </Fragment>
       ))}
     </p>
