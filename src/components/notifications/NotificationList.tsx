@@ -10,9 +10,9 @@ import { WASH } from './wash';
 // skipped rather than drawn as an empty row.
 const KNOWN_KINDS = new Set(['milestone']);
 
-// 🌱 1, 🔥 10, ⭐ 50, 💯 100, 🏆 250 and up.
+// 🌱 1, 🔥 10, ⭐ 50, 💯 100, 🚀 250, 🏆 500, 👑 1000 and up.
 function milestoneIcon(m: number): string {
-  return m >= 250 ? '🏆' : m >= 100 ? '💯' : m >= 50 ? '⭐' : m >= 10 ? '🔥' : '🌱';
+  return m >= 1000 ? '👑' : m >= 500 ? '🏆' : m >= 250 ? '🚀' : m >= 100 ? '💯' : m >= 50 ? '⭐' : m >= 10 ? '🔥' : '🌱';
 }
 
 // Splices the opinio name into a "{target} ..." template.
