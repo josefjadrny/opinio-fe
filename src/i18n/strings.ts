@@ -350,16 +350,13 @@ export interface Strings {
   reportedBy: string;
   justNow: string;
   // The bell (header) and its panel. {target} = the opinio name, {n} = the
-  // milestone reached; countries by plural category (one / few / many+other).
+  // milestone reached.
   notifications: string;
   notificationsSignIn: string;
   notificationsEmpty: string;
   notificationsFailed: string;
   notifMilestoneFirst: string;
   notifMilestone: string;
-  notifCountriesOne: string;
-  notifCountriesFew: string;
-  notifCountriesMany: string;
   justReported: string;
   delete: string;
   deleteProfile: string;
@@ -753,9 +750,6 @@ const en: Strings = {
   notificationsFailed: 'Could not load notifications',
   notifMilestoneFirst: 'First vote on {target}',
   notifMilestone: 'Your opinio {target} reached {n} votes',
-  notifCountriesOne: '{n} country',
-  notifCountriesFew: '{n} countries',
-  notifCountriesMany: '{n} countries',
   justReported: 'New opinio just dropped',
   delete: 'Delete',
   deleteProfile: 'Delete opinio',
@@ -1187,9 +1181,6 @@ const cs: Strings = {
   notificationsFailed: 'Oznámení se nepodařilo načíst',
   notifMilestoneFirst: 'První hlas pro {target}',
   notifMilestone: 'Vaše opinio {target} dosáhlo {n} hlasů',
-  notifCountriesOne: '{n} země',
-  notifCountriesFew: '{n} země',
-  notifCountriesMany: '{n} zemí',
   justReported: 'Padlo nové opinio',
   delete: 'Smazat',
   deleteProfile: 'Smazat opinio',
@@ -1619,9 +1610,6 @@ const es: Strings = {
   notificationsFailed: 'No se pudieron cargar las notificaciones',
   notifMilestoneFirst: 'Primer voto en {target}',
   notifMilestone: 'Tu opinio {target} alcanzó {n} votos',
-  notifCountriesOne: '{n} país',
-  notifCountriesFew: '{n} países',
-  notifCountriesMany: '{n} países',
   justReported: 'Acaba de caer un opinio',
   delete: 'Eliminar',
   deleteProfile: 'Eliminar opinio',
@@ -2051,9 +2039,6 @@ const de: Strings = {
   notificationsFailed: 'Benachrichtigungen konnten nicht geladen werden',
   notifMilestoneFirst: 'Erste Stimme für {target}',
   notifMilestone: 'Dein opinio {target} hat {n} Stimmen erreicht',
-  notifCountriesOne: '{n} Land',
-  notifCountriesFew: '{n} Länder',
-  notifCountriesMany: '{n} Länder',
   justReported: 'Frisches opinio reingeworfen',
   delete: 'Löschen',
   deleteProfile: 'opinio löschen',
@@ -2483,9 +2468,6 @@ const fr: Strings = {
   notificationsFailed: 'Impossible de charger les notifications',
   notifMilestoneFirst: 'Premier vote sur {target}',
   notifMilestone: 'Votre opinio {target} a atteint {n} votes',
-  notifCountriesOne: '{n} pays',
-  notifCountriesFew: '{n} pays',
-  notifCountriesMany: '{n} pays',
   justReported: 'Un opinio vient de tomber',
   delete: 'Supprimer',
   deleteProfile: "Supprimer l'opinio",
@@ -2915,9 +2897,6 @@ const it: Strings = {
   notificationsFailed: 'Impossibile caricare le notifiche',
   notifMilestoneFirst: 'Primo voto su {target}',
   notifMilestone: 'Il tuo opinio {target} ha raggiunto {n} voti',
-  notifCountriesOne: '{n} paese',
-  notifCountriesFew: '{n} paesi',
-  notifCountriesMany: '{n} paesi',
   justReported: 'È appena arrivato un opinio',
   delete: 'Elimina',
   deleteProfile: 'Elimina opinio',
@@ -3348,9 +3327,6 @@ const pl: Strings = {
   notificationsFailed: 'Nie udało się wczytać powiadomień',
   notifMilestoneFirst: 'Pierwszy głos na {target}',
   notifMilestone: 'Twoje opinio {target} osiągnęło {n} głosów',
-  notifCountriesOne: '{n} kraj',
-  notifCountriesFew: '{n} kraje',
-  notifCountriesMany: '{n} krajów',
   justReported: 'Pojawiło się nowe opinio',
   delete: 'Usuń',
   deleteProfile: 'Usuń opinio',

@@ -74,7 +74,6 @@ export interface NotificationItem {
   actors: { id: string; handle: string; avatarUrl: string | null; countryCode: string | null }[];
   moreCount: number;
   milestone: number | null;
-  countries: number | null;
   profile: { id: string; name: string; imageUrl: string | null; countryCode: string; isMine: boolean };
   commentId: string | null;
 }

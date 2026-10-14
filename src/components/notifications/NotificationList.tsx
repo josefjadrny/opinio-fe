@@ -4,7 +4,6 @@ import { Avatar } from '../profile/Avatar';
 import { formatNumber } from '../../utils/formatNumber';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useNotifications, useMarkNotificationsSeen, useClickNotification } from '../../hooks/useNotifications';
-import type { Strings } from '../../i18n/strings';
 import type { NotificationItem } from '../../types/api';
 import { WASH } from './wash';
 
@@ -15,12 +14,6 @@ const KNOWN_KINDS = new Set(['milestone']);
 // 🌱 1, 🔥 10, ⭐ 50, 💯 100, 🏆 250 and up.
 function milestoneIcon(m: number): string {
   return m >= 250 ? '🏆' : m >= 100 ? '💯' : m >= 50 ? '⭐' : m >= 10 ? '🔥' : '🌱';
-}
-
-function countriesLabel(t: Strings, locale: string, n: number): string {
-  const category = new Intl.PluralRules(locale).select(n);
-  const key = category === 'one' ? t.notifCountriesOne : category === 'few' ? t.notifCountriesFew : t.notifCountriesMany;
-  return key.replace('{n}', formatNumber(n));
 }
 
 // Splices the opinio name into a "{target} ..." template.
@@ -73,18 +66,7 @@ function NotificationRow({ item, index, onClick }: { item: NotificationItem; ind
         <span className={`block text-sm leading-relaxed break-words ${unread ? 'text-white/85' : 'text-white/60'}`}>
           {m === 1 ? fill(t.notifMilestoneFirst, target, '1') : fill(t.notifMilestone, target, number)}
         </span>
-        <span className="flex items-center gap-1.5 text-xs text-white/50 mt-1">
-          {item.countries ? (
-            <>
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0 0c2.2-2.4 3.4-5.4 3.4-9S14.2 5.4 12 3m0 18c-2.2-2.4-3.4-5.4-3.4-9S9.8 5.4 12 3M3.5 9h17M3.5 15h17" />
-              </svg>
-              <span>{countriesLabel(t, locale, item.countries)}</span>
-              <span aria-hidden>·</span>
-            </>
-          ) : null}
-          <span>{formatRelativeTime(toMs(item.updatedAt), locale, t.justNow)}</span>
-        </span>
+        <span className="block text-xs text-white/50 mt-1">{formatRelativeTime(toMs(item.updatedAt), locale, t.justNow)}</span>
       </span>
       {/* Unclicked = tinted ring + a breathing dot, until this line (or a
           sibling) is clicked. */}
