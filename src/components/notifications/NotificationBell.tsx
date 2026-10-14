@@ -109,7 +109,10 @@ export function NotificationBell({ onOpen }: NotificationBellProps) {
 
       {open && !isMobile && (
         // z-[85]: the ProfileMenu's level - above an open ModalShell (z-80).
-        <div className="absolute right-0 top-full mt-2 w-[400px] bg-surface border border-border rounded-2xl shadow-2xl shadow-black/50 z-[85] flex flex-col max-h-[min(600px,calc(100vh-6rem))]" style={{ animation: 'modal-enter 0.2s ease-out' }}>
+        // Grows with the screen: 400px wide up to ~1660px, a quarter of the
+        // width above it (640px cap), and up to 3/4 of the height (600px
+        // floor), never past the bottom edge.
+        <div className="absolute right-0 top-full mt-2 w-[clamp(400px,24vw,640px)] bg-surface border border-border rounded-2xl shadow-2xl shadow-black/50 z-[85] flex flex-col max-h-[min(max(600px,75vh),calc(100vh-6rem))]" style={{ animation: 'modal-enter 0.2s ease-out' }}>
           <div className="user-header-wash flex items-center gap-2.5 px-4 py-3 border-b border-border shrink-0 rounded-t-2xl" style={WASH}>
             <span className="w-8 h-8 rounded-full bg-white/[0.07] ring-1 ring-white/15 flex items-center justify-center shrink-0">
               <BellIcon className="w-[18px] h-[18px]" />
