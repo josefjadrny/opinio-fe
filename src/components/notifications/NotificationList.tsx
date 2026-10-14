@@ -53,16 +53,13 @@ function NotificationRow({ item, index, onClick }: { item: NotificationItem; ind
     >
       {/* Unclicked lines carry the brand's two sides as an edge bar. */}
       {unread && <span aria-hidden className="absolute left-0 top-3 bottom-3 w-[3px] rounded-r-full bg-gradient-to-b from-negative to-positive" />}
-      {/* The opinio's picture with the milestone glyph pinned to it, so the
-          row reads "this opinio, this milestone" before the sentence does. */}
-      <span className="relative shrink-0 transition-transform duration-200 group-hover:scale-105">
+      <span className="shrink-0 transition-transform duration-200 group-hover:scale-105">
         <Avatar name={item.profile.name} imageUrl={item.profile.imageUrl} className="w-11 h-11 ring-2 ring-white/10" />
-        <span aria-hidden className="absolute -bottom-1 -right-1.5 w-6 h-6 rounded-full bg-surface ring-1 ring-white/15 shadow-md flex items-center justify-center text-[13px] leading-none">
-          {milestoneIcon(m)}
-        </span>
       </span>
       <span className="flex-1 min-w-0 pr-3">
         <span className={`block text-sm leading-relaxed break-words ${unread ? 'text-white/85' : 'text-white/60'}`}>
+          {/* The milestone glyph opens the sentence, leaving the picture clear. */}
+          <span aria-hidden className="mr-1.5">{milestoneIcon(m)}</span>
           {m === 1 ? fill(t.notifMilestoneFirst, target, '1') : fill(t.notifMilestone, target, number)}
         </span>
         <span className="block text-xs text-white/50 mt-1">{formatRelativeTime(toMs(item.updatedAt), locale, t.justNow)}</span>
