@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { Fragment, useEffect, useState, type CSSProperties } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSheetDrag } from '../../hooks/useSheetDrag';
@@ -11,6 +11,7 @@ import { getCountryName, isKnownCountry } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { HoverTip } from '../common/HoverTip';
+import { StatTip } from '../common/StatTip';
 import { VoteHeadline } from '../profile/VoteHeadline';
 import { ProfileList } from '../profile/ProfileList';
 
@@ -83,6 +84,25 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
     '--ring-target': `${Math.round((likeShare ?? 0) * 100)}%`,
     '--ring-glow': likeShare === null ? 'transparent' : leansLike ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
   } as CSSProperties;
+  // What the ring means, on hover (tap on a phone) - the user page's tip, on
+  // the country: the window it reads, then the like count in it.
+  const ringTipText = (liveTotal > 0 ? t.countryRingLive : lifeTotal > 0 ? t.countryRingLifetime : t.countryRingNone)
+    .replace('{country}', name);
+  const ringLikes = liveTotal > 0 ? counts.likes : (counts.totalLikes ?? 0);
+  const likesCategory = new Intl.PluralRules(locale).select(ringLikes);
+  const ringLikesText = (likesCategory === 'one' ? t.avatarRingLikesOne : likesCategory === 'few' ? t.avatarRingLikesFew : t.avatarRingLikesMany)
+    .replace('{n}', new Intl.NumberFormat(locale).format(ringLikes));
+  const ringTipLabel = ringTipText.replace('{likes}', ringLikesText);
+  const ringTipPanel = (
+    <p className="text-sm text-white/80 leading-snug">
+      {ringTipText.split('{likes}').map((part, i) => (
+        <Fragment key={i}>
+          {i > 0 && <strong className="font-semibold text-positive">{ringLikesText}</strong>}
+          {part}
+        </Fragment>
+      ))}
+    </p>
+  );
   const washStyle = {
     '--wash-a': likeShare === null ? 'rgba(255,255,255,0.04)' : leansLike ? 'rgba(34,197,94,0.13)' : 'rgba(239,68,68,0.13)',
     '--wash-b': likeShare === null ? 'transparent' : leansLike ? 'rgba(239,68,68,0.06)' : 'rgba(34,197,94,0.06)',
@@ -149,8 +169,9 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
           flag emoji are wider than they are tall and vary by platform. */}
       {/* Around it the user page's sentiment ring (a ring, a gap in the
           card's colour, then the tile), so the two detail headers match. */}
+      <StatTip label={ringTipLabel} panel={ringTipPanel} width={280} className="!rounded-full shrink-0">
       <span
-        className={`sentiment-ring shrink-0 rounded-full ${isMobile ? 'p-[2px]' : 'p-[3px]'}`}
+        className={`sentiment-ring block shrink-0 rounded-full ${isMobile ? 'p-[2px]' : 'p-[3px]'}`}
         data-empty={likeShare === null}
         style={ringStyle}
       >
@@ -162,6 +183,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
           </span>
         </span>
       </span>
+      </StatTip>
       <div className="flex-1 min-w-0">
         {/* The opinio modal's title type, per layout: its desktop card sets
             text-[15px] lg:text-lg and its mobile sheet takes the inherited

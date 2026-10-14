@@ -272,6 +272,11 @@ export interface Strings {
   avatarRingLive: string;
   avatarRingLifetime: string;
   avatarRingNone: string;
+  // The country header's ring, on hover. {country} leads as a topic label so
+  // no language needs its name in a grammatical case.
+  countryRingLive: string;
+  countryRingLifetime: string;
+  countryRingNone: string;
   avatarRingLiveYou: string;
   avatarRingLifetimeYou: string;
   avatarRingNoneYou: string;
@@ -678,6 +683,9 @@ const en: Strings = {
   avatarRingLive: 'Opinios by {handle} got {likes} in the last 24h',
   avatarRingLifetime: 'No votes in the last 24h. Opinios by {handle} got {likes} in total',
   avatarRingNone: 'Nobody has voted on opinios by {handle} yet',
+  countryRingLive: '{country}: opinios about this country got {likes} in the last 24h',
+  countryRingLifetime: '{country}: no votes in the last 24h. Opinios about this country got {likes} in total',
+  countryRingNone: '{country}: nobody has voted on opinios about this country yet',
   avatarRingLiveYou: 'Your opinios got {likes} in the last 24h',
   avatarRingLifetimeYou: 'No votes in the last 24h. Your opinios got {likes} in total',
   avatarRingNoneYou: 'Nobody has voted on your opinios yet',
@@ -1109,6 +1117,9 @@ const cs: Strings = {
   avatarRingLive: 'Za posledních 24 h dostala opinio od {handle} {likes}',
   avatarRingLifetime: 'Za posledních 24 h nikdo nehlasoval. Celkem dostala opinio od {handle} {likes}',
   avatarRingNone: 'Opinio od {handle} zatím nikdo nehodnotil',
+  countryRingLive: '{country}: opinio o této zemi dostala za posledních 24 h {likes}',
+  countryRingLifetime: '{country}: za posledních 24 h nikdo nehlasoval. Celkem dostala opinio o této zemi {likes}',
+  countryRingNone: '{country}: opinio o této zemi zatím nikdo nehodnotil',
   avatarRingLiveYou: 'Za posledních 24 h dostala tvoje opinio {likes}',
   avatarRingLifetimeYou: 'Za posledních 24 h nikdo nehlasoval. Celkem dostala tvoje opinio {likes}',
   avatarRingNoneYou: 'Tvoje opinio zatím nikdo nehodnotil',
@@ -1542,6 +1553,9 @@ const es: Strings = {
   avatarRingLive: 'Las opinio de {handle} recibieron {likes} en las últimas 24 h',
   avatarRingLifetime: 'Sin votos en las últimas 24 h. En total, las opinio de {handle} recibieron {likes}',
   avatarRingNone: 'Nadie ha votado aún las opinio de {handle}',
+  countryRingLive: '{country}: las opinio sobre este país recibieron {likes} en las últimas 24 h',
+  countryRingLifetime: '{country}: sin votos en las últimas 24 h. En total, las opinio sobre este país recibieron {likes}',
+  countryRingNone: '{country}: nadie ha votado aún las opinio sobre este país',
   avatarRingLiveYou: 'Tus opinio recibieron {likes} en las últimas 24 h',
   avatarRingLifetimeYou: 'Sin votos en las últimas 24 h. En total, tus opinio recibieron {likes}',
   avatarRingNoneYou: 'Nadie ha votado aún tus opinio',
@@ -1973,6 +1987,9 @@ const de: Strings = {
   avatarRingLive: 'Die opinio von {handle} bekamen in den letzten 24 h {likes}',
   avatarRingLifetime: 'In den letzten 24 h keine Stimmen. Insgesamt bekamen die opinio von {handle} {likes}',
   avatarRingNone: 'Über die opinio von {handle} hat noch niemand abgestimmt',
+  countryRingLive: '{country}: die opinio über dieses Land bekamen in den letzten 24 h {likes}',
+  countryRingLifetime: '{country}: in den letzten 24 h keine Stimmen. Insgesamt bekamen die opinio über dieses Land {likes}',
+  countryRingNone: '{country}: über die opinio zu diesem Land hat noch niemand abgestimmt',
   avatarRingLiveYou: 'Deine opinio bekamen in den letzten 24 h {likes}',
   avatarRingLifetimeYou: 'In den letzten 24 h keine Stimmen. Insgesamt bekamen deine opinio {likes}',
   avatarRingNoneYou: 'Über deine opinio hat noch niemand abgestimmt',
@@ -2404,6 +2421,9 @@ const fr: Strings = {
   avatarRingLive: 'Les opinios de {handle} ont reçu {likes} sur les dernières 24 h',
   avatarRingLifetime: 'Aucun vote sur les dernières 24 h. Au total, les opinios de {handle} ont reçu {likes}',
   avatarRingNone: 'Personne n\'a encore voté sur les opinios de {handle}',
+  countryRingLive: '{country} : les opinios sur ce pays ont reçu {likes} sur les dernières 24 h',
+  countryRingLifetime: '{country} : aucun vote sur les dernières 24 h. Au total, les opinios sur ce pays ont reçu {likes}',
+  countryRingNone: '{country} : personne n\'a encore voté sur les opinios sur ce pays',
   avatarRingLiveYou: 'Vos opinios ont reçu {likes} sur les dernières 24 h',
   avatarRingLifetimeYou: 'Aucun vote sur les dernières 24 h. Au total, vos opinios ont reçu {likes}',
   avatarRingNoneYou: 'Personne n\'a encore voté sur vos opinios',
@@ -2835,6 +2855,9 @@ const it: Strings = {
   avatarRingLive: 'Gli opinios di {handle} hanno ricevuto {likes} nelle ultime 24 ore',
   avatarRingLifetime: 'Nessun voto nelle ultime 24 ore. In totale gli opinios di {handle} hanno ricevuto {likes}',
   avatarRingNone: 'Nessuno ha ancora votato gli opinios di {handle}',
+  countryRingLive: '{country}: gli opinios su questo paese hanno ricevuto {likes} nelle ultime 24 ore',
+  countryRingLifetime: '{country}: nessun voto nelle ultime 24 ore. In totale gli opinios su questo paese hanno ricevuto {likes}',
+  countryRingNone: '{country}: nessuno ha ancora votato gli opinios su questo paese',
   avatarRingLiveYou: 'I tuoi opinios hanno ricevuto {likes} nelle ultime 24 ore',
   avatarRingLifetimeYou: 'Nessun voto nelle ultime 24 ore. In totale i tuoi opinios hanno ricevuto {likes}',
   avatarRingNoneYou: 'Nessuno ha ancora votato i tuoi opinios',
@@ -3266,6 +3289,9 @@ const pl: Strings = {
   avatarRingLive: 'Opinio od {handle} dostały {likes} w ciągu ostatnich 24 h',
   avatarRingLifetime: 'Brak głosów z ostatnich 24 h. Łącznie opinio od {handle} dostały {likes}',
   avatarRingNone: 'Nikt jeszcze nie głosował na opinio od {handle}',
+  countryRingLive: '{country}: opinio o tym kraju dostały {likes} w ciągu ostatnich 24 h',
+  countryRingLifetime: '{country}: brak głosów z ostatnich 24 h. Łącznie opinio o tym kraju dostały {likes}',
+  countryRingNone: '{country}: nikt jeszcze nie głosował na opinio o tym kraju',
   avatarRingLiveYou: 'Twoje opinio dostały {likes} w ciągu ostatnich 24 h',
   avatarRingLifetimeYou: 'Brak głosów z ostatnich 24 h. Łącznie twoje opinio dostały {likes}',
   avatarRingNoneYou: 'Nikt jeszcze nie głosował na twoje opinio',
