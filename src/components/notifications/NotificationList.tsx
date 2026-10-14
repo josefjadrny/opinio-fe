@@ -4,7 +4,7 @@ import { Avatar } from '../profile/Avatar';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useNotifications, useMarkNotificationsSeen, useClickNotification } from '../../hooks/useNotifications';
 import type { NotificationItem } from '../../types/api';
-import { WASH } from './wash';
+import { WASH } from '../common/wash';
 
 // Kinds this build can draw. A later phase's kind reaching an older FE is
 // skipped rather than drawn as an empty row.

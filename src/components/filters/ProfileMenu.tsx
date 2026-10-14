@@ -11,6 +11,7 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 import { useQueryClient } from '@tanstack/react-query';
 import { HeaderButton } from '../ui/HeaderButton';
 import { useSignIn } from '../auth/SignInContext';
+import { WASH } from '../common/wash';
 import { SignInIcon } from '../auth/SignInIcon';
 
 interface ProfileMenuProps {
@@ -109,7 +110,12 @@ export function ProfileMenu({ onOpen }: ProfileMenuProps) {
           menu lost to the sheet purely on DOM order (FilterBar renders before
           the router Outlet), so it opened behind it. */}
       {open && (
-        <div className="absolute right-0 top-full mt-1.5 w-48 bg-surface border border-border rounded-xl shadow-xl z-[85] py-1 flex flex-col">
+        // The notifications panel's look: brand wash (the menu has no header
+        // bar, so it runs behind the whole menu), deep shadow, fade-and-rise.
+        // The wash is its own layer: .user-header-wash sets `background`, so on
+        // the menu itself it would replace bg-surface and leave it see-through.
+        <div className="absolute right-0 top-full mt-1.5 w-48 bg-surface border border-border rounded-2xl shadow-2xl shadow-black/50 z-[85] py-1 flex flex-col isolate" style={{ animation: 'modal-enter 0.2s ease-out' }}>
+          <span aria-hidden className="user-header-wash absolute inset-0 rounded-2xl pointer-events-none -z-10" style={WASH} />
           {!isAnonymous && (
             <>
               {/* The header button carries no name any more, so this row is

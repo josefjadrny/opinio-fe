@@ -57,7 +57,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
   const displayName = isAnonymous ? t.anonymousUser : (user?.displayName ?? t.anonymousUser);
 
   return (
-    <ModalShell onClose={onClose} title={t.settings} icon={<SettingsIcon />} maxWidth="max-w-sm" desktopScrollable>
+    <ModalShell onClose={onClose} title={t.settings} icon={<SettingsIcon />} maxWidth="max-w-sm" desktopScrollable panel>
       <SettingsContent
         displayName={displayName}
         user={user}

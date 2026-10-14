@@ -3,6 +3,7 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useI18n } from '../../i18n/I18nContext';
 import { HoverTip } from './HoverTip';
+import { WASH } from './wash';
 
 interface ModalShellProps {
   onClose: () => void;
@@ -17,6 +18,9 @@ interface ModalShellProps {
   maxWidth?: string;
   desktopScrollable?: boolean;
   centered?: boolean;
+  // The notifications panel's look: the brand wash behind the header, the
+  // icon in a disc, and a fade-and-rise entrance over a fading backdrop.
+  panel?: boolean;
 }
 
 export function ModalShell({
@@ -29,6 +33,7 @@ export function ModalShell({
   maxWidth = 'max-w-sm',
   desktopScrollable = false,
   centered = false,
+  panel = false,
 }: ModalShellProps) {
   const TitleTag = titleAs;
   const isMobile = useIsMobile();
@@ -42,6 +47,13 @@ export function ModalShell({
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
+
+  const headerWash = panel ? 'user-header-wash' : '';
+  const headerIcon = panel ? (
+    <span className="w-8 h-8 rounded-full bg-white/[0.07] ring-1 ring-white/15 flex items-center justify-center shrink-0 [&>svg]:w-[18px] [&>svg]:h-[18px]">
+      {icon}
+    </span>
+  ) : icon;
 
   const closeBtn = (
     <HoverTip label={t.close}>
@@ -69,17 +81,21 @@ export function ModalShell({
         className="safe-sheet-top fixed inset-x-0 bottom-0 z-[80] flex flex-col justify-end"
         onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       >
-        <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-        <div ref={sheetRef} className="safe-bottom-sheet relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-full flex flex-col">
-          <div className="flex justify-center pt-3 pb-1 shrink-0" {...dragHandlers}>
-            <div className="w-10 h-1 bg-white/20 rounded-full" />
-          </div>
-          <div className="flex items-center justify-between px-6 py-3 border-b border-border shrink-0" {...dragHandlers}>
-            <div className="flex items-center gap-2">
-              {icon}
-              <TitleTag className="text-base font-semibold text-white">{title}</TitleTag>
+        <div className="absolute inset-0 bg-black/60" onClick={onClose} style={panel ? { animation: 'backdrop-in 0.2s ease-out' } : undefined} />
+        <div ref={sheetRef} className={`safe-bottom-sheet relative bg-surface border-t border-border rounded-t-2xl shadow-2xl max-h-full flex flex-col ${panel ? 'shadow-black/50' : ''}`} style={panel ? { animation: 'modal-enter 0.2s ease-out' } : undefined}>
+          {/* Handle and header share one block so the panel wash runs
+              under both without a seam. */}
+          <div className={`shrink-0 rounded-t-2xl ${headerWash}`} style={panel ? WASH : undefined}>
+            <div className="flex justify-center pt-3 pb-1" {...dragHandlers}>
+              <div className="w-10 h-1 bg-white/20 rounded-full" />
             </div>
-            {closeBtn}
+            <div className="flex items-center justify-between px-6 py-3 border-b border-border" {...dragHandlers}>
+              <div className={`flex items-center ${panel ? 'gap-2.5' : 'gap-2'}`}>
+                {headerIcon}
+                <TitleTag className="text-base font-semibold text-white">{title}</TitleTag>
+              </div>
+              {closeBtn}
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto overscroll-y-contain">
             {children}
@@ -98,11 +114,18 @@ export function ModalShell({
     <div
       className={`fixed inset-0 z-[80] flex justify-center bg-black/50 ${centered ? 'items-center' : 'items-start pt-12'}`}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      style={panel ? { animation: 'backdrop-in 0.2s ease-out' } : undefined}
     >
-      <div className={`bg-surface border border-border rounded-2xl shadow-2xl w-full ${maxWidth} mx-4 ${desktopScrollable || footer ? 'max-h-[80vh] flex flex-col' : ''}`}>
-        <div className={`flex items-center justify-between px-6 py-4 border-b border-border ${desktopScrollable || footer ? 'shrink-0' : ''}`}>
-          <div className="flex items-center gap-2">
-            {icon}
+      <div
+        className={`bg-surface border border-border rounded-2xl shadow-2xl w-full ${maxWidth} mx-4 ${desktopScrollable || footer ? 'max-h-[80vh] flex flex-col' : ''} ${panel ? 'shadow-black/50' : ''}`}
+        style={panel ? { animation: 'modal-enter 0.2s ease-out' } : undefined}
+      >
+        <div
+          className={`flex items-center justify-between px-6 py-4 border-b border-border ${desktopScrollable || footer ? 'shrink-0' : ''} ${panel ? `${headerWash} rounded-t-2xl` : ''}`}
+          style={panel ? WASH : undefined}
+        >
+          <div className={`flex items-center ${panel ? 'gap-2.5' : 'gap-2'}`}>
+            {headerIcon}
             <TitleTag className="text-base font-semibold text-white">{title}</TitleTag>
           </div>
           {closeBtn}

@@ -8,7 +8,7 @@ import { HoverTip } from '../common/HoverTip';
 import { ModalShell } from '../common/ModalShell';
 import { useSignIn } from '../auth/SignInContext';
 import { NotificationList, BellIcon } from './NotificationList';
-import { WASH } from './wash';
+import { WASH } from '../common/wash';
 import type { NotificationItem } from '../../types/api';
 
 interface NotificationBellProps {
@@ -125,7 +125,7 @@ export function NotificationBell({ onOpen }: NotificationBellProps) {
         </div>
       )}
       {open && isMobile && (
-        <ModalShell onClose={() => setOpen(false)} title={t.notifications} icon={<BellIcon className="w-5 h-5" />}>
+        <ModalShell onClose={() => setOpen(false)} title={t.notifications} icon={<BellIcon className="w-5 h-5" />} panel>
           <div className="p-3">
             <NotificationList onOpenProfile={openProfile} />
           </div>
