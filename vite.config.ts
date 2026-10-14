@@ -133,4 +133,11 @@ export default defineConfig({
     }),
   ],
   envPrefix: ['VITE_', 'OPINIO_'],
+  // data/ is not part of the build (it is uploaded to the site buckets on its
+  // own schedule), so dev reads the live copy.
+  server: {
+    proxy: {
+      '/data': { target: 'https://opinio.live', changeOrigin: true },
+    },
+  },
 })

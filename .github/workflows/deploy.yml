@@ -35,6 +35,8 @@ jobs:
       # revalidated on every load, otherwise the edge serves a year-stale sw.js
       # and autoUpdate can never detect a new build. (workbox-<hash>.js IS
       # content-hashed, so it stays in the immutable sync.)
+      # data/ is not part of the build - it is uploaded to the buckets on its
+      # own schedule, and excluding it keeps --delete from wiping it.
       - run: |
           aws s3 sync dist/ s3://opinio.live \
             --delete \
@@ -48,6 +50,7 @@ jobs:
             --exclude "registerSW.js" \
             --exclude "manifest.webmanifest" \
             --exclude ".well-known/*" \
+            --exclude "data/*" \
             --cache-control "public, max-age=31536000, immutable"
           aws s3 sync dist/ s3://www.opinio.live \
             --delete \
@@ -61,6 +64,7 @@ jobs:
             --exclude "registerSW.js" \
             --exclude "manifest.webmanifest" \
             --exclude ".well-known/*" \
+            --exclude "data/*" \
             --cache-control "public, max-age=31536000, immutable"
 
       # Upload index.html, the PWA control files, and root SVG assets with no-cache
