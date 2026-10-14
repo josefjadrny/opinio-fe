@@ -522,7 +522,7 @@ export function StatsModal({ category, onClose }: StatsModalProps) {
   const { t } = useI18n();
 
   return (
-    <ModalShell onClose={onClose} title={t.statsTitle} titleAs="h1" icon={<StatsIcon />} maxWidth="max-w-lg" desktopScrollable panel>
+    <ModalShell onClose={onClose} title={t.statsTitle} titleAs="h1" icon={<StatsIcon />} maxWidth="max-w-lg" desktopScrollable>
       <StatsContent category={category} t={t} />
     </ModalShell>
   );

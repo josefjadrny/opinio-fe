@@ -20,6 +20,7 @@ interface ModalShellProps {
   centered?: boolean;
   // The notifications panel's look: the brand wash behind the header, the
   // icon in a disc, and a fade-and-rise entrance over a fading backdrop.
+  // Every window has it; false is the plain shell.
   panel?: boolean;
 }
 
@@ -33,7 +34,7 @@ export function ModalShell({
   maxWidth = 'max-w-sm',
   desktopScrollable = false,
   centered = false,
-  panel = false,
+  panel = true,
 }: ModalShellProps) {
   const TitleTag = titleAs;
   const isMobile = useIsMobile();
@@ -50,7 +51,7 @@ export function ModalShell({
 
   const headerWash = panel ? 'user-header-wash' : '';
   const headerIcon = panel ? (
-    <span className="w-8 h-8 rounded-full bg-white/[0.07] ring-1 ring-white/15 flex items-center justify-center shrink-0 [&>svg]:w-[18px] [&>svg]:h-[18px]">
+    <span className="w-9 h-9 rounded-full bg-white/[0.07] ring-1 ring-white/15 flex items-center justify-center shrink-0 [&>svg]:w-[22px] [&>svg]:h-[22px]">
       {icon}
     </span>
   ) : icon;

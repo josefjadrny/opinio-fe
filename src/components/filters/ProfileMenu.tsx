@@ -74,8 +74,8 @@ export function ProfileMenu({ onOpen }: ProfileMenuProps) {
   // you land on reads as the button you just clicked, not a second avatar.
   const discFace = isAnonymous
     ? hasCountry
-      ? <FlagImg code={user!.countryCode!} size={isMobile ? 22 : 26} />
-      : <Avatar name={displayName} imageUrl={null} className="w-7 h-7 md:w-8 md:h-8" isAnonymous />
+      ? <FlagImg code={user!.countryCode!} size={isMobile ? 26 : 30} />
+      : <Avatar name={displayName} imageUrl={null} className="w-8 h-8 md:w-9 md:h-9" isAnonymous />
     : <Avatar name={displayName} imageUrl={user?.avatarUrl ?? null} className="w-9 h-9 md:w-10 md:h-10" isAnonymous={false} />;
   const DISC = 'w-10 h-10 md:w-11 md:h-11 rounded-full border border-white/15 bg-white/[0.07] flex items-center justify-center shrink-0';
 

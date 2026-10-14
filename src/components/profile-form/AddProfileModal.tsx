@@ -537,7 +537,6 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
       icon={<NominateIcon />}
       maxWidth="max-w-4xl"
       desktopScrollable
-      panel
     >
       <div className="md:flex md:items-stretch">
       {isMobile && (

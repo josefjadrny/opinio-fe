@@ -549,7 +549,6 @@ export function SupportModal({ onClose }: SupportModalProps) {
       icon={<SupportIcon className="w-5 h-5 text-white/40" />}
       maxWidth="max-w-lg"
       desktopScrollable
-      panel
     >
       <SupportContent onClose={onClose} />
     </ModalShell>

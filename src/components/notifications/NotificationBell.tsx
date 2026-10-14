@@ -102,7 +102,7 @@ export function NotificationBell({ onOpen }: NotificationBellProps) {
           aria-expanded={isAnonymous ? undefined : open}
           className={`relative ${isAnonymous && isMobile ? 'opacity-30' : ''}`}
         >
-          <BellIcon className="w-5 h-5 md:w-6 md:h-6 shrink-0" />
+          <BellIcon className="w-6 h-6 md:w-7 md:h-7 shrink-0" />
           {badge}
         </HeaderButton>
       </HoverTip>
@@ -114,8 +114,8 @@ export function NotificationBell({ onOpen }: NotificationBellProps) {
         // floor), never past the bottom edge.
         <div className="absolute right-0 top-full mt-2 w-[clamp(400px,24vw,640px)] bg-surface border border-border rounded-2xl shadow-2xl shadow-black/50 z-[85] flex flex-col max-h-[min(max(600px,75vh),calc(100vh-6rem))]" style={{ animation: 'modal-enter 0.2s ease-out' }}>
           <div className="user-header-wash flex items-center gap-2.5 px-4 py-3 border-b border-border shrink-0 rounded-t-2xl" style={WASH}>
-            <span className="w-8 h-8 rounded-full bg-white/[0.07] ring-1 ring-white/15 flex items-center justify-center shrink-0">
-              <BellIcon className="w-[18px] h-[18px]" />
+            <span className="w-9 h-9 rounded-full bg-white/[0.07] ring-1 ring-white/15 flex items-center justify-center shrink-0">
+              <BellIcon className="w-[22px] h-[22px]" />
             </span>
             <h2 className="text-base font-semibold text-white">{t.notifications}</h2>
           </div>
@@ -125,7 +125,7 @@ export function NotificationBell({ onOpen }: NotificationBellProps) {
         </div>
       )}
       {open && isMobile && (
-        <ModalShell onClose={() => setOpen(false)} title={t.notifications} icon={<BellIcon className="w-5 h-5" />} panel>
+        <ModalShell onClose={() => setOpen(false)} title={t.notifications} icon={<BellIcon className="w-5 h-5" />}>
           <div className="p-3">
             <NotificationList onOpenProfile={openProfile} />
           </div>

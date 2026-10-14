@@ -13,7 +13,7 @@ export function SignInModal({ onClose }: SignInModalProps) {
   const { t } = useI18n();
 
   return (
-    <ModalShell onClose={onClose} title={t.login} icon={<SignInIcon className="w-5 h-5" />} panel>
+    <ModalShell onClose={onClose} title={t.login} icon={<SignInIcon className="w-5 h-5" />}>
       <div className="px-6 py-5 space-y-3">
         <p className="text-sm text-white/60 leading-relaxed">{t.signInPrompt}</p>
         <div className="flex flex-col gap-2 pt-1">
