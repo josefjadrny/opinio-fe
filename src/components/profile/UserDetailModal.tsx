@@ -9,7 +9,7 @@ import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from './Avatar';
 import { StatTip } from '../common/StatTip';
 import { googleAvatarAtSize } from '../../utils/avatarUrl';
-import { CountryFlag } from '../common/CountryFlag';
+import { CountryFlagLink } from '../common/CountryFlag';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { UserActivityList } from './UserActivityList';
 import { VoteHeadline } from './VoteHeadline';
@@ -108,12 +108,11 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   // empty column beside it keeps the opinio and country modals' size.
   const largeAvatar = showsPicture || !!user?.bio;
 
-  // The sentiment ring and header wash read the user's like share: the live
-  // 24h counts when there are any, else lifetime, else no split at all.
+  // The sentiment ring and header wash read the user's like share over the
+  // live 24h votes only - the site is about current sentiment - and show no
+  // split at all when the last 24h have none.
   const liveTotal = (user?.likesReceived ?? 0) + (user?.dislikesReceived ?? 0);
-  const lifeTotal = (user?.totalLikesReceived ?? 0) + (user?.totalDislikesReceived ?? 0);
-  const likeShare = liveTotal > 0 ? (user!.likesReceived / liveTotal)
-    : lifeTotal > 0 ? (user!.totalLikesReceived / lifeTotal) : null;
+  const likeShare = liveTotal > 0 ? (user!.likesReceived / liveTotal) : null;
   const leansLike = likeShare !== null && likeShare >= 0.5;
   const ringStyle = {
     '--ring-target': `${Math.round((likeShare ?? 0) * 100)}%`,
@@ -124,13 +123,13 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   // Names whose opinios the votes are on (the handle, or "your" on your own
   // page) - without it the line reads as votes this user cast.
   const ringTipText = (isMe
-    ? (liveTotal > 0 ? t.avatarRingLiveYou : lifeTotal > 0 ? t.avatarRingLifetimeYou : t.avatarRingNoneYou)
-    : (liveTotal > 0 ? t.avatarRingLive : lifeTotal > 0 ? t.avatarRingLifetime : t.avatarRingNone)
+    ? (liveTotal > 0 ? t.avatarRingLiveYou : t.avatarRingNoneYou)
+    : (liveTotal > 0 ? t.avatarRingLive : t.avatarRingNone)
   ).replace('{handle}', `@${user?.displayName ?? ''}`);
   // One plain sentence with the like count - no percentages, no sums to do.
   // The count is the like votes in the same window the ring reads, and the
   // noun after it follows the locale's plural rules (1 lajk, 2 lajky, 5 lajků).
-  const ringLikes = liveTotal > 0 ? (user?.likesReceived ?? 0) : (user?.totalLikesReceived ?? 0);
+  const ringLikes = user?.likesReceived ?? 0;
   const likesCategory = new Intl.PluralRules(locale).select(ringLikes);
   const ringLikesText = (likesCategory === 'one' ? t.avatarRingLikesOne : likesCategory === 'few' ? t.avatarRingLikesFew : t.avatarRingLikesMany)
     .replace('{n}', new Intl.NumberFormat(locale).format(ringLikes));
@@ -312,7 +311,7 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
                   context lives in <title> + description (the bio feeds the
                   latter when the user wrote one). */}
               <h1 className="font-semibold text-white truncate min-w-0">@{user.displayName}</h1>
-              {user.countryCode && <CountryFlag code={user.countryCode} />}
+              {user.countryCode && <CountryFlagLink code={user.countryCode} />}
             </div>
             <p className="text-[11px] text-white/60 truncate">{t.userJoined.replace('{date}', formatJoinDate(user.createdAt, locale))}</p>
           </div>

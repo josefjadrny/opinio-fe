@@ -1,5 +1,5 @@
 import { Avatar } from './Avatar';
-import { CountryFlag } from '../common/CountryFlag';
+import { CountryFlagLink } from '../common/CountryFlag';
 import { RoleBadge } from '../common/RoleBadge';
 import { VoteButtons } from '../voting/VoteButtons';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -42,7 +42,7 @@ export function ProfileListRow({ profile, onOpen, compact }: { profile: ProfileL
       <div className="relative z-10 flex-1 min-w-0">
         <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap">
           <span className="text-sm font-medium md:text-base md:font-semibold text-white truncate min-w-0 flex-shrink">{profile.name}</span>
-          <CountryFlag code={profile.countryCode} />
+          <CountryFlagLink code={profile.countryCode} />
           <RoleBadge role={profile.role} />
         </div>
         {/* Description hidden on mobile (title only), one line on desktop (>= md). */}

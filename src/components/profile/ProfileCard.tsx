@@ -41,7 +41,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
   const isOverTooltip = useRef(false);
   const isMobile = useIsMobile();
   const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(hoveredId);
-  const { setHoveredProfileCountry, setCountry, toggleRole } = useFilters();
+  const { setHoveredProfileCountry, toggleRole } = useFilters();
   const { locale, t } = useI18n();
   // Cards show the translated text but no "see original" toggle — that lives
   // only in the profile detail modal.
@@ -89,24 +89,24 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
     scheduleOpen();
   }, [scheduleOpen]);
 
-  // Desktop only: clicking the flag / role badge applies that filter instead
-  // of opening the detail modal.
+  // Desktop only: clicking the flag opens that country's detail, the role
+  // badge applies the category filter - either instead of opening the opinio.
   const handleCountryClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    setCountry(profile.countryCode);
-  }, [profile.countryCode, setCountry]);
+    navigate('/c/' + profile.countryCode + location.search);
+  }, [profile.countryCode, navigate, location.search]);
 
   const handleRoleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     toggleRole(profile.role);
   }, [profile.role, toggleRole]);
 
-  // On desktop the flag + role badge become filter shortcuts; on mobile they
-  // stay decorative (tap falls through to opening the detail modal).
+  // On desktop the flag opens the country and the role badge filters; on
+  // mobile both stay decorative (tap falls through to opening the opinio).
   const flagEl = isMobile ? (
     <CountryFlag code={profile.countryCode} />
   ) : (
-    <HoverTip label={`${t.filterBy}: ${getCountryName(profile.countryCode, locale)}`}>
+    <HoverTip label={getCountryName(profile.countryCode, locale)}>
       <span
         role="button"
         tabIndex={0}

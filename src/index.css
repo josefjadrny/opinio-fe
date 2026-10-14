@@ -515,12 +515,12 @@ body {
 }
 
 /* ── User page: sentiment ring, header wash, activity timeline ───────────────
-   The ring around a user's picture is their like share (live 24h, lifetime
-   when the live window is empty): green arc from 12 o'clock, red for the
-   rest, drawn in once on open. --ring-p is registered so the conic stop can
+   The ring around a user's picture (and a country's flag) is the like share
+   of the live 24h votes: green arc from 12 o'clock, red for the rest, drawn
+   in once on open. --ring-p is registered so the conic stop can
    animate; a browser without @property simply shows the final ring. With no
-   votes at all there is no split to draw, so the ring is a quiet neutral one
-   with a slow sheen instead. */
+   votes in the last 24h there is no split to draw, so the ring is a quiet
+   neutral one with a slow sheen instead. */
 @property --ring-p {
   syntax: '<percentage>';
   inherits: false;

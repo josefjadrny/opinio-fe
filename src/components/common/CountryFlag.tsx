@@ -1,3 +1,4 @@
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getCountryName, getCountryFlag } from '../../utils/countries';
 import { useI18n } from '../../i18n/I18nContext';
 import { HoverTip } from './HoverTip';
@@ -66,5 +67,30 @@ export function CountryFlag({ code, showName = false, tip = true }: { code: stri
         {showName && <span className="text-xs text-text-secondary">{name}</span>}
       </span>
     </HoverTip>
+  );
+}
+
+// The flag as a way into its country's detail. A span with link semantics
+// rather than an <a>, because it sits inside clickable rows and inside the
+// activity list's <Link> - a nested <a> is invalid and the row's own click
+// would win. stopPropagation keeps the row (or card) from opening as well.
+export function CountryFlagLink({ code }: { code: string }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const go = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate('/c/' + code + location.search);
+  };
+  return (
+    <span
+      role="link"
+      tabIndex={0}
+      onClick={go}
+      onKeyDown={(e) => { if (e.key === 'Enter') go(e); }}
+      className="inline-flex shrink-0 align-middle rounded cursor-pointer hover:opacity-70 transition-opacity"
+    >
+      <CountryFlag code={code} />
+    </span>
   );
 }

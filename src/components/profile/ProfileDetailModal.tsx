@@ -14,7 +14,7 @@ import { RoleBadge } from '../common/RoleBadge';
 import { HoverTip } from '../common/HoverTip';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { SourceLink } from './SourceLink';
-import { CountryFlag } from '../common/CountryFlag';
+import { CountryFlagLink } from '../common/CountryFlag';
 import { BreakdownRow } from './BreakdownRow';
 import { BreakdownHeader } from './BreakdownHeader';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
@@ -123,7 +123,7 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
             <div className="min-w-0 flex-1">
               <h1 className="block font-semibold text-white truncate mb-1">{name}</h1>
               <div className="flex items-center gap-1.5">
-                <CountryFlag code={profile.countryCode} />
+                <CountryFlagLink code={profile.countryCode} />
                 <RoleBadge role={profile.role} />
                 <div className="flex items-center gap-0.5 shrink-0 ml-auto -mr-1">
                   <CollapseDetailsButton collapsed={detailsCollapsed} onToggle={toggleDetails} />

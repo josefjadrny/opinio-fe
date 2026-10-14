@@ -73,12 +73,9 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const counts = data?.countries.find((c) => c.code === code)
     ?? { likes: 0, dislikes: 0, totalLikes: 0, totalDislikes: 0 };
   // The user page's sentiment ring and header wash, on the country's totals:
-  // like share of the live 24h votes, lifetime when the live window is empty,
-  // no split at all without votes.
+  // like share of the live 24h votes only, no split at all without them.
   const liveTotal = counts.likes + counts.dislikes;
-  const lifeTotal = (counts.totalLikes ?? 0) + (counts.totalDislikes ?? 0);
-  const likeShare = liveTotal > 0 ? counts.likes / liveTotal
-    : lifeTotal > 0 ? (counts.totalLikes ?? 0) / lifeTotal : null;
+  const likeShare = liveTotal > 0 ? counts.likes / liveTotal : null;
   const leansLike = likeShare !== null && likeShare >= 0.5;
   const ringStyle = {
     '--ring-target': `${Math.round((likeShare ?? 0) * 100)}%`,
@@ -86,9 +83,9 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   } as CSSProperties;
   // What the ring means, on hover (tap on a phone) - the user page's tip, on
   // the country: the window it reads, then the like count in it.
-  const ringTipText = (liveTotal > 0 ? t.countryRingLive : lifeTotal > 0 ? t.countryRingLifetime : t.countryRingNone)
+  const ringTipText = (liveTotal > 0 ? t.countryRingLive : t.countryRingNone)
     .replace('{country}', name);
-  const ringLikes = liveTotal > 0 ? counts.likes : (counts.totalLikes ?? 0);
+  const ringLikes = counts.likes;
   const likesCategory = new Intl.PluralRules(locale).select(ringLikes);
   const ringLikesText = (likesCategory === 'one' ? t.avatarRingLikesOne : likesCategory === 'few' ? t.avatarRingLikesFew : t.avatarRingLikesMany)
     .replace('{n}', new Intl.NumberFormat(locale).format(ringLikes));

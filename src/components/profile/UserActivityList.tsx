@@ -1,7 +1,7 @@
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
-import { CountryFlag } from '../common/CountryFlag';
+import { CountryFlagLink } from '../common/CountryFlag';
 import { CommentIcon } from '../comments/CommentCount';
 import { LogoMark } from '../common/LogoMark';
 import { VotePairIcon } from '../common/VotePairIcon';
@@ -58,7 +58,7 @@ function ActivityRow({ item, handle, isMe, index, onOpen, onOpenProfile }: {
       className="font-semibold text-white hover:underline underline-offset-2"
     >
       {/* The flag is glued to the last word so it never wraps alone. */}
-      {item.profile.name}<span className="whitespace-nowrap">&nbsp;<CountryFlag code={item.profile.countryCode} /></span>
+      {item.profile.name}<span className="whitespace-nowrap">&nbsp;<CountryFlagLink code={item.profile.countryCode} /></span>
     </Link>
   );
   return (

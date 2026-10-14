@@ -19,7 +19,7 @@ import { RoleBadge } from '../common/RoleBadge';
 import { HoverTip } from '../common/HoverTip';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { SourceLink } from './SourceLink';
-import { CountryFlag } from '../common/CountryFlag';
+import { CountryFlagLink } from '../common/CountryFlag';
 import { BreakdownRow } from './BreakdownRow';
 import { BreakdownHeader } from './BreakdownHeader';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
@@ -172,7 +172,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                       one case still over budget is the longest role label,
                       "Entertainment", on a title at the full 40 chars. */}
                   <h1 className="text-[15px] lg:text-lg font-semibold text-white truncate">{name}</h1>
-                  <CountryFlag code={profile.countryCode} />
+                  <CountryFlagLink code={profile.countryCode} />
                   <RoleBadge role={profile.role} />
                 </div>
                 <p className="text-[11px] text-white/50">
