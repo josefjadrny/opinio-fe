@@ -1,7 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, type CSSProperties, type ReactNode } from 'react';
 import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from '../profile/Avatar';
-import { formatNumber } from '../../utils/formatNumber';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useNotifications, useMarkNotificationsSeen, useClickNotification } from '../../hooks/useNotifications';
 import type { NotificationItem } from '../../types/api';
@@ -37,7 +36,7 @@ function NotificationRow({ item, index, onClick }: { item: NotificationItem; ind
   // The number is the news, so it gets a chip of its own inside the sentence.
   const number = (
     <span className={`inline-block px-1.5 rounded-md font-bold tabular-nums ${unread ? 'bg-white/[0.12] text-white' : 'bg-white/[0.06] text-white/75'}`}>
-      {formatNumber(m)}
+      {m}
     </span>
   );
   return (
