@@ -115,7 +115,7 @@ const COUNTRY_SEO = {
   },
   cs: {
     title: '{country}: co si myslí svět - Opinio',
-    description: 'Podívejte se, jak svět právě teď vnímá zemi {country} - živé hlasování, obnovováno každých 24 h. Opinio.',
+    description: 'Podívej se, jak svět právě teď vnímá zemi {country} - živé hlasování, obnovováno každých 24 h. Opinio.',
     descriptionCounts: '{country}: jak to právě teď vidí svět - {likes} líbí se, {dislikes} nelíbí se za posledních 24 h. Opinio.',
   },
   es: {
@@ -892,14 +892,14 @@ const STATIC_PAGES = {
 // block in opinio-fe/src/i18n/strings.ts (same strings, two render paths).
 const STATIC_I18N = {
   cs: {
-    '/': { title: 'Opinio - Hlasujte o názorech celého světa, podle států', description: 'Sociální hlasovací platforma z Evropy, bez reklam. Sdílejte a hlasujte o názorech na cokoli - od titulků až po běžný život - a sledujte, jak to vidí každá země, podle států, obnovováno každých 24 h.' },
-    '/about': { title: 'O Opinio - Jak funguje živé hlasování', description: 'Zjistěte, jak Opinio funguje: rychlé sociální hlasování, hlasy vyprší po 24 hodinách a živé světové trendy.' },
-    '/privacy': { title: 'Zásady ochrany soukromí - Opinio', description: 'Zásady ochrany soukromí Opinio: co shromažďujeme, proč, jak dlouho a jaká máte práva podle GDPR.' },
+    '/': { title: 'Opinio - Hlasuj o názorech celého světa, podle států', description: 'Sociální hlasovací platforma z Evropy, bez reklam. Sdílej a hlasuj o názorech na cokoli - od titulků až po běžný život - a sleduj, jak to vidí každá země, podle států, obnovováno každých 24 h.' },
+    '/about': { title: 'O Opinio - Jak funguje živé hlasování', description: 'Zjisti, jak Opinio funguje: rychlé sociální hlasování, hlasy vyprší po 24 hodinách a živé světové trendy.' },
+    '/privacy': { title: 'Zásady ochrany soukromí - Opinio', description: 'Zásady ochrany soukromí Opinio: co shromažďujeme, proč, jak dlouho a jaká máš práva podle GDPR.' },
     '/terms': { title: 'Podmínky použití - Opinio', description: 'Podmínky použití Opinio: pravidla pro přispívání, hlasování, předplatné a pozastavení účtů.' },
     '/stats': { title: 'Nejdiskutovanější názory právě teď - Opinio', description: 'Názory, postřehy a nápady, které právě teď získávají nejvíce hlasů na Opinio - řazeno živě a obnovováno každých 24 hodin.' },
     '/stats/trending-countries': { title: 'Trendující země podle hlasů - Opinio', description: 'Které země právě teď vzbuzují největší rozruch - řazeno podle hlasů na jejich aktivních příspěvcích, obnovováno každých 24 hodin na Opinio.' },
     '/stats/top-voters': { title: 'Žebříček za celou dobu - Opinio', description: 'Žebříček Opinio za celou dobu - nejlepší názory, země a členové podle celkového počtu získaných hlasů (lajky a dislajky dohromady).' },
-    '/support': { title: 'Podpora - Opinio', description: 'Kontaktujte podporu Opinio, spravujte své tikety a získejte pomoc s hlasováním, názory a nastavením účtu.' },
+    '/support': { title: 'Podpora - Opinio', description: 'Kontaktuj podporu Opinio, spravuj své tikety a získej pomoc s hlasováním, názory a nastavením účtu.' },
   },
   es: {
     '/': { title: 'Opinio - Vota las opiniones del mundo, país por país', description: 'Una plataforma de voto social desde Europa, sin anuncios. Comparte y vota opiniones sobre cualquier cosa - de los titulares a la vida cotidiana - y descubre cómo se siente cada país, país por país, actualizado cada 24 h.' },
