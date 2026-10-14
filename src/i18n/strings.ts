@@ -1180,7 +1180,7 @@ const cs: Strings = {
   notificationsEmpty: 'Zatím žádná oznámení',
   notificationsFailed: 'Oznámení se nepodařilo načíst',
   notifMilestoneFirst: 'První hlas pro {target}',
-  notifMilestone: 'Vaše opinio {target} dosáhlo {n} hlasů',
+  notifMilestone: 'Tvoje opinio {target} dosáhlo {n} hlasů',
   justReported: 'Padlo nové opinio',
   delete: 'Smazat',
   deleteProfile: 'Smazat opinio',
