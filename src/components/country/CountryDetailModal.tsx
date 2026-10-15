@@ -15,7 +15,7 @@ import { StatTip } from '../common/StatTip';
 import { VoteHeadline } from '../profile/VoteHeadline';
 import { ProfileList } from '../profile/ProfileList';
 import { useCountryFacts } from '../../hooks/useCountryFacts';
-import { CountryFacts } from './CountryFacts';
+import { CountryFacts, CountryLeaders } from './CountryFacts';
 
 interface CountryDetailModalProps {
   countryCode: string;
@@ -197,6 +197,11 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
         <h1 className={`font-semibold text-white leading-tight ${isMobile ? '' : 'text-[15px] lg:text-lg'}`}>
           {countryH1}
         </h1>
+        {/* Who is in office, under the title - the desktop card has the
+            width for it beside the flag. The phone header is too narrow with
+            three buttons on its right, so there the chips take their own row
+            under it (see the sheet). */}
+        {!isMobile && facts?.leaders?.length ? <div className="mt-2.5"><CountryLeaders facts={facts} /></div> : null}
       </div>
     </>
   );
@@ -273,6 +278,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   );
 
   if (isMobile) {
+    const hasMobileLeaders = !notFound && !!facts?.leaders?.length;
     return (
       // Starts BELOW the map panel (--mobile-map-panel-bottom, published by
       // MobileMapPanel), which is what the profile sheet does and what this one
@@ -311,7 +317,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
             <div className="flex justify-center pt-3 pb-1 shrink-0" {...dragHandlers}>
               <div className="w-10 h-1 bg-white/20 rounded-full" />
             </div>
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0" {...dragHandlers}>
+            <div className={`flex items-center justify-between px-4 py-3 shrink-0 ${hasMobileLeaders ? '' : 'border-b border-border'}`} {...dragHandlers}>
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 {notFound ? NotFoundLabel : Header}
               </div>
@@ -321,10 +327,11 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
                 {CloseButton}
               </div>
             </div>
+            {hasMobileLeaders && <div className="px-4 pb-3 -mt-1 border-b border-border"><CountryLeaders facts={facts} /></div>}
           </div>
-          {/* Population, capital and who is in office, straight under the flag
-              and outside the fold - the country's basic facts stay readable
-              with the opinio list folded away. */}
+          {/* Population and capital, straight under the header and outside
+              the fold - the country's basic facts stay readable with the
+              opinio list folded away. */}
           {!notFound && facts && <div className="px-4 pt-3 shrink-0"><CountryFacts facts={facts} /></div>}
           {!notFound && <div className="px-4 pt-3 pb-1 shrink-0">{VoteBlock}</div>}
           {/* Collapsing to 0fr animates the SHEET's height, which a max-height

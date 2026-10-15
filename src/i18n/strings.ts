@@ -281,6 +281,9 @@ export interface Strings {
   factsPeople: string;
   factsSince: string;
   factsActing: string;
+  // A leader's age, {age} being Intl's "79 years" in the locale's plural.
+  factsAge: string;
+  factsPhoto: string;
   avatarRingLiveYou: string;
   avatarRingNoneYou: string;
   // The like count inside the avatarRing* sentences, by plural category.
@@ -692,6 +695,8 @@ const en: Strings = {
   factsPeople: '{n} people',
   factsSince: 'since {date}',
   factsActing: 'Acting',
+  factsAge: '{age} old',
+  factsPhoto: 'Photo: {credit}, {license}',
   avatarRingLiveYou: 'Your opinios got {likes} in the last 24h',
   avatarRingNoneYou: 'No votes on your opinios in the last 24h',
   avatarRingLikesOne: '{n} like',
@@ -1128,6 +1133,8 @@ const cs: Strings = {
   factsPeople: '{n} obyvatel',
   factsSince: 'od {date}',
   factsActing: 'Úřadující',
+  factsAge: '{age}',
+  factsPhoto: 'Foto: {credit}, {license}',
   avatarRingLiveYou: 'Za posledních 24 h dostala tvoje opinio {likes}',
   avatarRingNoneYou: 'Tvoje opinio za posledních 24 h nikdo nehodnotil',
   avatarRingLikesOne: '{n} lajk',
@@ -1566,6 +1573,8 @@ const es: Strings = {
   factsPeople: '{n} habitantes',
   factsSince: 'desde el {date}',
   factsActing: 'Interino',
+  factsAge: '{age}',
+  factsPhoto: 'Foto: {credit}, {license}',
   avatarRingLiveYou: 'Tus opinio recibieron {likes} en las últimas 24 h',
   avatarRingNoneYou: 'Nadie ha votado tus opinio en las últimas 24 h',
   avatarRingLikesOne: '{n} me gusta',
@@ -2002,6 +2011,8 @@ const de: Strings = {
   factsPeople: '{n} Einwohner',
   factsSince: 'seit {date}',
   factsActing: 'Amtierend',
+  factsAge: '{age} alt',
+  factsPhoto: 'Foto: {credit}, {license}',
   avatarRingLiveYou: 'Deine opinio bekamen in den letzten 24 h {likes}',
   avatarRingNoneYou: 'In den letzten 24 h hat niemand über deine opinio abgestimmt',
   avatarRingLikesOne: '{n} Like',
@@ -2438,6 +2449,8 @@ const fr: Strings = {
   factsPeople: '{n} habitants',
   factsSince: 'depuis le {date}',
   factsActing: 'Par intérim',
+  factsAge: '{age}',
+  factsPhoto: 'Photo : {credit}, {license}',
   avatarRingLiveYou: 'Vos opinios ont reçu {likes} sur les dernières 24 h',
   avatarRingNoneYou: 'Aucun vote sur vos opinios sur les dernières 24 h',
   avatarRingLikesOne: "{n} j'aime",
@@ -2874,6 +2887,8 @@ const it: Strings = {
   factsPeople: '{n} abitanti',
   factsSince: 'dal {date}',
   factsActing: 'Ad interim',
+  factsAge: '{age}',
+  factsPhoto: 'Foto: {credit}, {license}',
   avatarRingLiveYou: 'I tuoi opinios hanno ricevuto {likes} nelle ultime 24 ore',
   avatarRingNoneYou: 'Nessun voto sui tuoi opinios nelle ultime 24 ore',
   avatarRingLikesOne: '{n} mi piace',
@@ -3310,6 +3325,8 @@ const pl: Strings = {
   factsPeople: '{n} mieszkańców',
   factsSince: 'od {date}',
   factsActing: 'P.o.',
+  factsAge: '{age}',
+  factsPhoto: 'Zdjęcie: {credit}, {license}',
   avatarRingLiveYou: 'Twoje opinio dostały {likes} w ciągu ostatnich 24 h',
   avatarRingNoneYou: 'Nikt nie głosował na twoje opinio w ciągu ostatnich 24 h',
   avatarRingLikesOne: '{n} polubienie',

@@ -4,6 +4,7 @@ export interface CountryFactsLeader {
   role: 'state' | 'government' | 'both' | 'vp';
   name: string;
   since?: string;
+  born?: string;
   title: Record<string, string>;
   acting?: boolean;
   inCharge?: boolean;
