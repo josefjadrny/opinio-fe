@@ -5,7 +5,6 @@ import type { CountryFacts as Facts, CountryFactsLeader } from '../../hooks/useC
 import { StatTip } from '../common/StatTip';
 
 const TILE = 'rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06]';
-const LABEL = 'text-[11px] font-semibold uppercase tracking-wider text-white/60';
 
 // Age in whole years on today's date, as Intl's "79 years" so each locale
 // gets its own plural ("79 let", "42 lata"). Null without a full birth date -
@@ -52,35 +51,35 @@ function LeaderPhoto({ leader, size }: { leader: CountryFactsLeader; size: strin
   );
 }
 
-// One person in office, sized for the window's header: photo, name, and the
-// title with the age under it. The date they took office and the photo's
-// credit (CC BY / BY-SA require showing it) sit in the tip rather than on the
-// header, which is what keeps the header one row taller instead of a grid.
-function LeaderChip({ leader }: { leader: CountryFactsLeader }) {
+// One person in office: photo, title, name, and the age under them. The
+// date they took office and the photo's credit (CC BY / BY-SA require showing
+// it) sit in the tile's tip, which keeps the tile to three short lines.
+function LeaderTile({ leader }: { leader: CountryFactsLeader }) {
   const { t, locale } = useI18n();
   const isMobile = useIsMobile();
   const title = leader.title[locale] ?? leader.title.en;
   const years = leader.born ? age(leader.born, locale) : null;
-  const meta = years ? `${title} · ${t.factsAge.replace('{age}', years)}` : title;
   const since = leader.since ? `${title} ${t.factsSince.replace('{date}', formatDate(leader.since, locale))}` : null;
   const credit = leader.photo ? t.factsPhoto.replace('{credit}', leader.photo.credit).replace('{license}', leader.photo.license) : null;
-  const chip = (
-    <span className="flex items-center gap-2 min-w-0 text-left">
-      <LeaderPhoto leader={leader} size={isMobile ? 'w-8 h-8' : 'w-9 h-9'} />
-      <span className="min-w-0">
-        <span className="block text-[13px] font-semibold text-white leading-tight truncate">{leader.name}</span>
-        <span className="flex items-center gap-1.5 text-[11px] text-white/50 leading-tight mt-0.5 whitespace-nowrap">
-          {meta}
+  const body = (
+    <span className="flex items-center gap-3 min-w-0 text-left">
+      <LeaderPhoto leader={leader} size={isMobile ? 'w-12 h-12' : 'w-14 h-14'} />
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-xs text-white/60 leading-tight">{title}</span>
           {leader.acting && (
-            <span className="text-[9px] font-semibold uppercase tracking-wide px-1 rounded bg-white/10 text-white/70">
+            <span className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-px rounded bg-white/10 text-white/70">
               {t.factsActing}
             </span>
           )}
         </span>
+        <span className="block text-sm md:text-[15px] font-semibold text-white leading-snug mt-0.5 truncate">{leader.name}</span>
+        {years && <span className="block text-xs text-white/50 leading-tight mt-0.5">{t.factsAge.replace('{age}', years)}</span>}
       </span>
     </span>
   );
-  if (!since && !credit) return chip;
+  const tile = `${TILE} block w-full px-3 py-2.5 min-w-0`;
+  if (!since && !credit) return <div className={tile}>{body}</div>;
   return (
     <StatTip
       label={[leader.name, since, credit].filter(Boolean).join('. ')}
@@ -90,27 +89,26 @@ function LeaderChip({ leader }: { leader: CountryFactsLeader }) {
           {credit && <p className="text-xs text-white/50">{credit}</p>}
         </div>
       }
-      className="-m-1 p-1 min-w-0 hover:bg-white/[0.06]"
+      className={`${tile} !rounded-xl hover:bg-white/[0.06]`}
     >
-      {chip}
+      {body}
     </StatTip>
   );
 }
 
-// Who is in office, in the window's header under the title. Wraps to a second
-// line rather than truncating a name when three people do not fit.
+// Who is in office, as tiles under the window's header.
 export function CountryLeaders({ facts }: { facts: Facts | undefined }) {
   const leaders = facts?.leaders ?? [];
   if (leaders.length === 0) return null;
   return (
-    <div className="flex flex-wrap gap-x-5 gap-y-2">
-      {leaders.map((l) => <LeaderChip key={l.role + l.name} leader={l} />)}
+    <div className={`grid gap-2 grid-cols-1 ${leaders.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
+      {leaders.map((l) => <LeaderTile key={l.role + l.name} leader={l} />)}
     </div>
   );
 }
 
 // The exact figure sits behind the compact one - only the figure itself is
-// the trigger, not the whole tile.
+// the trigger.
 function Figure({ text, tip, className }: { text: string; tip?: string | null; className: string }) {
   if (!tip) return <span className={className}>{text}</span>;
   return (
@@ -124,20 +122,18 @@ function Stat({ label, value, sub, valueTip, subTip }: {
   label: string; value: string; sub?: string | null; valueTip?: string | null; subTip?: string | null;
 }) {
   return (
-    <div className={`${TILE} px-3.5 py-3 min-w-0`}>
-      <span className={`block ${LABEL}`}>{label}</span>
-      <span className="flex items-baseline gap-2 mt-1 min-w-0">
-        <Figure text={value} tip={valueTip} className="block min-w-0 text-lg md:text-xl font-semibold text-white leading-tight truncate" />
-        {sub && <Figure text={sub} tip={subTip} className="block text-xs text-white/50 leading-tight shrink-0" />}
-      </span>
-    </div>
+    <span className="flex items-baseline gap-1.5 min-w-0">
+      <span className="text-white/50">{label}</span>
+      <Figure text={value} tip={valueTip} className="font-semibold text-white/90" />
+      {sub && <Figure text={sub} tip={subTip} className="text-xs text-white/50" />}
+    </span>
   );
 }
 
-// Population and capital, from the daily country-facts file (the people in
-// office are CountryLeaders, in the header). Every part is optional: a missing
-// figure drops its tile, and a country with neither renders nothing.
-export function CountryFacts({ facts }: { facts: Facts | undefined }) {
+// Population and capital as one line in the window's header, from the daily
+// country-facts file. Every part is optional: a missing figure drops out, and
+// a country with neither renders nothing.
+export function CountryStats({ facts }: { facts: Facts | undefined }) {
   const { t, locale } = useI18n();
   if (!facts) return null;
   const compact = new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 1 });
@@ -149,12 +145,11 @@ export function CountryFacts({ facts }: { facts: Facts | undefined }) {
   if (facts.population == null && !capitalName) return null;
 
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-[13px] leading-tight">
       {facts.population != null && (
         <Stat
           label={t.factsPopulation}
           value={compact.format(facts.population)}
-          sub={facts.populationYear ? String(facts.populationYear) : null}
           valueTip={people(facts.population)}
         />
       )}

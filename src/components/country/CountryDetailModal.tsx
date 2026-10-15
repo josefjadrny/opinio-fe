@@ -15,7 +15,7 @@ import { StatTip } from '../common/StatTip';
 import { VoteHeadline } from '../profile/VoteHeadline';
 import { ProfileList } from '../profile/ProfileList';
 import { useCountryFacts } from '../../hooks/useCountryFacts';
-import { CountryFacts, CountryLeaders } from './CountryFacts';
+import { CountryLeaders, CountryStats } from './CountryFacts';
 
 interface CountryDetailModalProps {
   countryCode: string;
@@ -112,6 +112,8 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const { data: countryData, isLoading: profilesLoading } = useCountryDiscussed(notFound ? '' : code);
   const profiles = countryData?.profiles ?? [];
   const { facts } = useCountryFacts(notFound ? null : code);
+  const hasStats = !notFound && (facts?.population != null || !!facts?.capital);
+  const hasLeaders = !notFound && !!facts?.leaders?.length;
 
   // Which country is on screen, for the mobile map panel above (the desktop map
   // reads the route directly - it is one component away from this modal). The
@@ -197,11 +199,12 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
         <h1 className={`font-semibold text-white leading-tight ${isMobile ? '' : 'text-[15px] lg:text-lg'}`}>
           {countryH1}
         </h1>
-        {/* Who is in office, under the title - the desktop card has the
-            width for it beside the flag. The phone header is too narrow with
-            three buttons on its right, so there the chips take their own row
-            under it (see the sheet). */}
-        {!isMobile && facts?.leaders?.length ? <div className="mt-2.5"><CountryLeaders facts={facts} /></div> : null}
+        {/* Population and capital, one line under the title - the desktop
+            card has the width for it beside the flag. The phone header is too
+            narrow with three buttons on its right, so there the line takes its
+            own row under it (see the sheet). The leaders go below the header,
+            where their photos have room. */}
+        {!isMobile && hasStats && <div className="mt-1.5"><CountryStats facts={facts} /></div>}
       </div>
     </>
   );
@@ -278,7 +281,6 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   );
 
   if (isMobile) {
-    const hasMobileLeaders = !notFound && !!facts?.leaders?.length;
     return (
       // Starts BELOW the map panel (--mobile-map-panel-bottom, published by
       // MobileMapPanel), which is what the profile sheet does and what this one
@@ -317,7 +319,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
             <div className="flex justify-center pt-3 pb-1 shrink-0" {...dragHandlers}>
               <div className="w-10 h-1 bg-white/20 rounded-full" />
             </div>
-            <div className={`flex items-center justify-between px-4 py-3 shrink-0 ${hasMobileLeaders ? '' : 'border-b border-border'}`} {...dragHandlers}>
+            <div className={`flex items-center justify-between px-4 py-3 shrink-0 ${hasStats ? '' : 'border-b border-border'}`} {...dragHandlers}>
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 {notFound ? NotFoundLabel : Header}
               </div>
@@ -327,12 +329,12 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
                 {CloseButton}
               </div>
             </div>
-            {hasMobileLeaders && <div className="px-4 pb-3 -mt-1 border-b border-border"><CountryLeaders facts={facts} /></div>}
+            {hasStats && <div className="px-4 pb-3 -mt-1 border-b border-border"><CountryStats facts={facts} /></div>}
           </div>
-          {/* Population and capital, straight under the header and outside
-              the fold - the country's basic facts stay readable with the
-              opinio list folded away. */}
-          {!notFound && facts && <div className="px-4 pt-3 shrink-0"><CountryFacts facts={facts} /></div>}
+          {/* Who is in office, straight under the header and outside the
+              fold - the country's basic facts stay readable with the opinio
+              list folded away. */}
+          {hasLeaders && <div className="px-4 pt-3 shrink-0"><CountryLeaders facts={facts} /></div>}
           {!notFound && <div className="px-4 pt-3 pb-1 shrink-0">{VoteBlock}</div>}
           {/* Collapsing to 0fr animates the SHEET's height, which a max-height
               cannot do without a magic number that is wrong for every other
@@ -393,7 +395,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
             {CloseButton}
           </div>
         </div>
-        {!notFound && facts && <div className="px-6 pt-4 shrink-0"><CountryFacts facts={facts} /></div>}
+        {hasLeaders && <div className="px-6 pt-4 shrink-0"><CountryLeaders facts={facts} /></div>}
         {!notFound && <div className="px-6 pt-4 pb-3 border-b border-border shrink-0">{VoteBlock}</div>}
         {/* Same fold as the mobile sheet and as both profile modals. The card is
             anchored to the bottom of the screen (justify-end + mb-16), so folding
