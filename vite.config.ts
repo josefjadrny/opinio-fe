@@ -94,7 +94,7 @@ export default defineConfig({
         // functions, so these are absolute-URL regexes against the prod hosts.
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/api\.opinio\.live\/api\/(profiles|countries)(\/|\?|$)/,
+            urlPattern: /^https:\/\/api\.opinio\.live\/api\/(profiles|countries|persons)(\/|\?|$)/,
             handler: 'NetworkFirst',
             method: 'GET',
             options: {

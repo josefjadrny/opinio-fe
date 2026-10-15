@@ -283,3 +283,13 @@ export interface RealtimeEvent {
   profileId: string;
   data: Partial<Profile>;
 }
+
+// A well-known person (GET /api/persons). `role` is the profile category.
+export interface Person {
+  id: number;
+  name: string;
+  role: string;
+  countryCode: string | null;
+  born?: string;
+  photo?: { url: string; credit: string; license: string; source: string };
+}

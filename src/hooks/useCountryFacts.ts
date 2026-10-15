@@ -1,14 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 
+// The office only - who holds it is a `personId` into /api/persons, where the
+// name, birth date and photo live.
 export interface CountryFactsLeader {
   role: 'state' | 'government' | 'both' | 'vp';
-  name: string;
+  personId: number;
   since?: string;
-  born?: string;
   title: Record<string, string>;
   acting?: boolean;
   inCharge?: boolean;
-  photo?: { url: string; credit: string; license: string; source: string };
 }
 
 export interface CountryFacts {
