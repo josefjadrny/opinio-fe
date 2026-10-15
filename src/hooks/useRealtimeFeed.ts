@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { Profile } from '../types/profile';
-import { getProfile, isNotFound } from '../api/client';
+import type { NewsItem } from '../types/api';
+import { getNews, getProfile, isNotFound } from '../api/client';
 import { useI18n } from '../i18n/I18nContext';
 
 const API_URL = import.meta.env.OPINIO_API_URL as string;
@@ -11,11 +12,21 @@ const RECONNECT_INITIAL_MS = 1_000;
 const RECONNECT_MAX_MS = 30_000;
 const VISIBILITY_GRACE_MS = 60_000;
 
-type Message = { type: 'hello' } | { type: 'profile_created'; profile: Profile };
+type Message =
+  | { type: 'hello' }
+  | { type: 'profile_created'; profile: Profile }
+  | { type: 'news_created'; newsId: string };
 
-export function useRealtimeProfiles(enabled: boolean) {
-  const [queue, setQueue] = useState<Profile[]>([]);
-  const queueRef = useRef<Profile[]>([]);
+// What the live banner shows, in arrival order. One queue for both kinds: they
+// share the banner's slot, so a news item waits its turn behind a new opinio
+// and the other way round.
+export type LiveItem =
+  | { kind: 'opinio'; profile: Profile }
+  | { kind: 'news'; news: NewsItem };
+
+export function useRealtimeFeed(enabled: boolean) {
+  const [queue, setQueue] = useState<LiveItem[]>([]);
+  const queueRef = useRef<LiveItem[]>([]);
   queueRef.current = queue;
 
   // Keep the active locale in a ref so the WS effect (keyed only on `enabled`)
@@ -39,6 +50,11 @@ export function useRealtimeProfiles(enabled: boolean) {
     if (!enabled) return;
     stoppedRef.current = false;
 
+    const push = (item: LiveItem) => {
+      if (stoppedRef.current) return;
+      setQueue((q) => (q.length >= QUEUE_CAP ? q : [...q, item]));
+    };
+
     const connect = () => {
       if (stoppedRef.current) return;
       let ws: WebSocket;
@@ -59,7 +75,7 @@ export function useRealtimeProfiles(enabled: boolean) {
         }
         if (msg.type === 'profile_created' && msg.profile?.id) {
           // Bail early when the queue is already full — anything older than
-          // 6 × 10s isn't really "new".
+          // 6 × 14s isn't really "new".
           if (queueRef.current.length >= QUEUE_CAP) return;
           const original = msg.profile;
           // Pull the profile in the viewer's own locale so the banner shows
@@ -68,14 +84,20 @@ export function useRealtimeProfiles(enabled: boolean) {
           // Fall back to the pushed original payload on any error except a 404
           // (the profile was deleted in the gap — drop it silently).
           getProfile(original.id, localeRef.current)
-            .then((fresh) => {
-              if (stoppedRef.current) return;
-              setQueue((q) => (q.length >= QUEUE_CAP ? q : [...q, fresh]));
-            })
+            .then((fresh) => push({ kind: 'opinio', profile: fresh }))
             .catch((err) => {
-              if (stoppedRef.current || isNotFound(err)) return;
-              setQueue((q) => (q.length >= QUEUE_CAP ? q : [...q, original]));
+              if (isNotFound(err)) return;
+              push({ kind: 'opinio', profile: original });
             });
+        }
+        if (msg.type === 'news_created' && msg.newsId) {
+          if (queueRef.current.length >= QUEUE_CAP) return;
+          // Only the id is pushed; the item is read in the viewer's locale
+          // (sent after its translation landed). Nothing to fall back to, so a
+          // failed read drops it.
+          getNews(msg.newsId, localeRef.current)
+            .then((news) => push({ kind: 'news', news }))
+            .catch(() => {});
         }
       };
 

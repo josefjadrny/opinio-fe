@@ -1,7 +1,7 @@
 import type {
   ProfilesResponse, CountryProfilesResponse, CountryDiscussedResponse, MeResponse,
   VoteResponse, ProfileFilters, VoteType, PersonBreakdownResponse,
-  SupportTicket, UserDetailResponse, ProfileReportGroup, Person,
+  SupportTicket, UserDetailResponse, ProfileReportGroup, Person, NewsItem,
 } from '../types/api';
 
 const API_URL = import.meta.env.OPINIO_API_URL as string;
@@ -237,6 +237,11 @@ export function getCountryVoters(code: string): Promise<{ countries: CountryCoun
 // One well-known person by id.
 export function getPerson(id: number): Promise<Person> {
   return apiFetch(`/api/persons/${id}`);
+}
+
+export function getNews(id: string, lang?: string): Promise<NewsItem> {
+  const qs = lang ? `?lang=${lang}` : '';
+  return apiFetch(`/api/news/${id}${qs}`);
 }
 
 export function getTopVoters(country?: string, metric: import('../types/api').VoterMetric = 'received'): Promise<import('../types/api').TopVotersResponse> {

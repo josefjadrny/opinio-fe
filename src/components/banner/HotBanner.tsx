@@ -2,16 +2,36 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Avatar } from '../profile/Avatar';
 import { RoleBadge } from '../common/RoleBadge';
-import { useRealtimeProfiles } from '../../hooks/useRealtimeProfiles';
+import { useRealtimeFeed } from '../../hooks/useRealtimeFeed';
 import { useI18n } from '../../i18n/I18nContext';
-import { FlagImg } from '../common/CountryFlag';
+import { CountryFlag } from '../common/CountryFlag';
 
 const FADE_IN_MS = 500;
-const HOLD_MS = 6_000;
+const HOLD_MS = 10_000;
 const FADE_OUT_MS = 500;
 const GAP_MS = 3_000;
 
 type Phase = 'in' | 'hold' | 'out' | 'gap';
+
+// The two things the live slot announces. Same card, timing and behaviour;
+// the accent and the label tell them apart at a glance - orange is the
+// app's "new" signal and stays with opinios. News takes the brand red as a
+// broadcast-style LIVE pill: the pill's text is the lifted red, since
+// --color-accent itself sits just under 4.5:1 on the navy.
+const VARIANTS = {
+  opinio: {
+    border: 'border-orange-500/70',
+    label: 'text-orange-400',
+    dot: 'bg-orange-400',
+    shadow: '0 0 0 1px rgba(249,115,22,0.35), 0 10px 30px -10px rgba(249,115,22,0.55), 0 18px 50px -20px rgba(0,0,0,0.6)',
+  },
+  news: {
+    border: 'border-accent/70',
+    label: 'text-negative-soft bg-accent/15 border border-accent/60 rounded-full px-2 py-0.5',
+    dot: 'bg-accent',
+    shadow: '0 0 0 1px rgba(233,69,96,0.35), 0 10px 30px -10px rgba(233,69,96,0.55), 0 18px 50px -20px rgba(0,0,0,0.6)',
+  },
+} as const;
 
 export function HotBanner({
   enabled,
@@ -25,7 +45,7 @@ export function HotBanner({
   // It yields instead - see MapProfileTitle's `suppressed`.
   onVisibilityChange?: (visible: boolean) => void;
 }) {
-  const { next, dequeue, queueLength } = useRealtimeProfiles(enabled);
+  const { next, dequeue, queueLength } = useRealtimeFeed(enabled);
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useI18n();
@@ -36,7 +56,7 @@ export function HotBanner({
   const [dismissed, setDismissed] = useState(false);
   const prevQueueLen = useRef(queueLength);
 
-  // Reset to fade-in whenever a new profile arrives.
+  // Reset to fade-in whenever a new item arrives.
   useEffect(() => {
     if (!next) return;
     setPhase('in');
@@ -109,7 +129,19 @@ export function HotBanner({
 
   if (!showBanner) return null;
 
-  const go = () => navigate('/p/' + next.id + location.search);
+  // An opinio opens its detail. A news item has no page of its own yet, so it
+  // opens the article it was written from.
+  const go = next.kind === 'opinio'
+    ? () => navigate('/p/' + next.profile.id + location.search)
+    : () => window.open(next.news.sourceUrl, '_blank', 'noopener,noreferrer');
+  const v = VARIANTS[next.kind];
+  const card = next.kind === 'opinio'
+    ? { name: next.profile.name, imageUrl: next.profile.imageUrl, title: next.profile.name,
+        text: next.profile.description, role: next.profile.role, countryCode: next.profile.countryCode,
+        label: t.justReported, source: null }
+    : { name: next.news.person.name, imageUrl: next.news.person.photoUrl, title: next.news.title,
+        text: next.news.body, role: next.news.role, countryCode: next.news.countryCode,
+        label: t.newsLabel, source: next.news.sourceName };
   const inAnim = mobile ? 'hot-banner-in-up' : 'hot-banner-in';
   const outAnim = mobile ? 'hot-banner-out-down' : 'hot-banner-out';
   // Held under the cursor: no animation and a pinned opacity, so a card whose
@@ -128,20 +160,20 @@ export function HotBanner({
       className={
         mobile
           ? 'px-2 pb-2 pointer-events-none'
-          : 'absolute left-1/2 -translate-x-1/2 top-2 z-20 w-[min(700px,90vw)] pointer-events-none'
+          : 'absolute left-1/2 -translate-x-1/2 top-2 z-20 w-[min(90vw,max(700px,60%))] pointer-events-none'
       }
       data-testid="hot-banner-wrapper"
     >
       <div
         role="link"
         tabIndex={0}
-        aria-label={`Open ${next.name}`}
+        aria-label={`Open ${card.title}`}
         onClick={go}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }}
         onMouseEnter={mobile ? undefined : onHoverStart}
         onMouseLeave={mobile ? undefined : onHoverEnd}
         data-testid="hot-banner"
-        className={`cursor-pointer border border-orange-500/70 rounded-2xl
+        className={`cursor-pointer border ${v.border} rounded-2xl
                    flex items-center select-none ${mobile ? 'gap-3 px-4 py-3' : 'gap-4 px-5 py-3.5'}
                    transition-colors pointer-events-auto ${
                      mobile
@@ -151,42 +183,40 @@ export function HotBanner({
         style={{
           animation,
           opacity: hovered || phase === 'hold' ? 1 : undefined,
-          boxShadow: '0 0 0 1px rgba(249,115,22,0.35), 0 10px 30px -10px rgba(249,115,22,0.55), 0 18px 50px -20px rgba(0,0,0,0.6)',
+          boxShadow: v.shadow,
         }}
       >
-        {/* Desktop sizes up: the banner is 700px wide over the map, and at
-            the mobile sizes its headline came out smaller than the sidebar
-            cards beneath it. */}
-        <Avatar name={next.name} imageUrl={next.imageUrl} className={mobile ? 'w-12 h-12' : 'w-14 h-14'} />
+        {/* Same anatomy as the sidebar card (ProfileCard): avatar, then the
+            title with its flag and category inline after it, then the text.
+            The banner sits a size up from the card, and another step up on
+            very wide screens, where it also widens with the map. */}
+        <Avatar
+          name={card.name}
+          imageUrl={card.imageUrl}
+          className={`shrink-0 ring-2 ring-white/5 ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
+        />
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <div className={`uppercase font-bold text-orange-400 ${mobile ? 'text-[11px] tracking-widest' : 'text-xs tracking-[0.16em]'}`}>
-              <span className={`inline-block rounded-full bg-orange-400 mr-1.5 align-middle animate-pulse ${mobile ? 'w-1.5 h-1.5' : 'w-2 h-2'}`} />
-              {t.justReported}
+          <div className="flex items-center gap-2 mb-1 min-w-0">
+            <div className={`shrink-0 uppercase font-bold ${v.label} ${mobile ? 'text-[11px] tracking-widest' : 'text-xs tracking-[0.16em] min-[2200px]:text-sm'}`}>
+              <span className={`inline-block rounded-full ${v.dot} mr-1.5 align-middle animate-pulse ${mobile ? 'w-1.5 h-1.5' : 'w-2 h-2'}`} />
+              {card.label}
             </div>
-            {/* On a phone the category rides the label row, which has room to
-                spare, so the title below gets the full width. */}
-            {mobile && <RoleBadge role={next.role} />}
+            {/* News credits the outlet its facts came from. */}
+            {card.source && <span className={`text-white/50 truncate ${mobile ? 'text-[11px]' : 'text-xs min-[2200px]:text-sm'}`}>{card.source}</span>}
           </div>
-          {mobile ? (
-            // On a phone the badge and a one-line title left the title cut
-            // short; the badge moved up to the label row, the title may take
-            // two lines, and the description drops to one.
-            <>
-              <div className="line-clamp-2 mb-0.5 text-white text-sm font-semibold leading-snug">{next.name}</div>
-              <div className="line-clamp-1 text-white/60 text-xs">{next.description}</div>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center gap-2 mb-0.5">
-                <RoleBadge role={next.role} />
-                <span className="text-white font-semibold truncate text-lg leading-snug">{next.name}</span>
-              </div>
-              <div className="line-clamp-2 text-white/70 text-sm leading-snug">{next.description}</div>
-            </>
-          )}
+          <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
+            <span className={`font-semibold text-white leading-snug break-words min-w-0 ${mobile ? 'text-sm' : 'text-lg min-[2200px]:text-xl'}`}>
+              {card.title}
+            </span>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <CountryFlag code={card.countryCode} tip={false} />
+              <RoleBadge role={card.role} />
+            </div>
+          </div>
+          <p className={`text-text-secondary leading-snug mt-0.5 ${mobile ? 'text-xs line-clamp-1' : 'text-sm line-clamp-2 min-[2200px]:text-base'}`}>
+            {card.text}
+          </p>
         </div>
-        <FlagImg code={next.countryCode} className="shrink-0 inline-block align-middle" size={mobile ? undefined : 24} />
       </div>
     </div>
   );

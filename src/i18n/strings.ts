@@ -372,6 +372,8 @@ export interface Strings {
   notifMilestoneFirst: string;
   notifMilestone: string;
   justReported: string;
+  // Label on the live banner's news variant.
+  newsLabel: string;
   delete: string;
   deleteProfile: string;
   deleteProfileConfirm: string;
@@ -774,6 +776,7 @@ const en: Strings = {
   notifMilestoneFirst: 'First vote on {target}',
   notifMilestone: 'Your opinio {target} reached {n} votes',
   justReported: 'New opinio just dropped',
+  newsLabel: 'LIVE',
   delete: 'Delete',
   deleteProfile: 'Delete opinio',
   deleteProfileConfirm: 'Delete this opinio permanently?',
@@ -1214,6 +1217,7 @@ const cs: Strings = {
   notifMilestoneFirst: 'První hlas pro {target}',
   notifMilestone: 'Tvoje opinio {target} dosáhlo {n} hlasů',
   justReported: 'Padlo nové opinio',
+  newsLabel: 'ŽIVĚ',
   delete: 'Smazat',
   deleteProfile: 'Smazat opinio',
   deleteProfileConfirm: 'Opravdu trvale smazat toto opinio?',
@@ -1652,6 +1656,7 @@ const es: Strings = {
   notifMilestoneFirst: 'Primer voto en {target}',
   notifMilestone: 'Tu opinio {target} alcanzó {n} votos',
   justReported: 'Acaba de caer un opinio',
+  newsLabel: 'EN DIRECTO',
   delete: 'Eliminar',
   deleteProfile: 'Eliminar opinio',
   deleteProfileConfirm: '¿Eliminar este opinio permanentemente?',
@@ -2090,6 +2095,7 @@ const de: Strings = {
   notifMilestoneFirst: 'Erste Stimme für {target}',
   notifMilestone: 'Dein opinio {target} hat {n} Stimmen erreicht',
   justReported: 'Frisches opinio reingeworfen',
+  newsLabel: 'LIVE',
   delete: 'Löschen',
   deleteProfile: 'opinio löschen',
   deleteProfileConfirm: 'Dieses opinio dauerhaft löschen?',
@@ -2528,6 +2534,7 @@ const fr: Strings = {
   notifMilestoneFirst: 'Premier vote sur {target}',
   notifMilestone: 'Votre opinio {target} a atteint {n} votes',
   justReported: 'Un opinio vient de tomber',
+  newsLabel: 'EN DIRECT',
   delete: 'Supprimer',
   deleteProfile: "Supprimer l'opinio",
   deleteProfileConfirm: 'Supprimer définitivement cet opinio ?',
@@ -2966,6 +2973,7 @@ const it: Strings = {
   notifMilestoneFirst: 'Primo voto su {target}',
   notifMilestone: 'Il tuo opinio {target} ha raggiunto {n} voti',
   justReported: 'È appena arrivato un opinio',
+  newsLabel: 'IN DIRETTA',
   delete: 'Elimina',
   deleteProfile: 'Elimina opinio',
   deleteProfileConfirm: 'Eliminare definitivamente questo opinio?',
@@ -3405,6 +3413,7 @@ const pl: Strings = {
   notifMilestoneFirst: 'Pierwszy głos na {target}',
   notifMilestone: 'Twoje opinio {target} osiągnęło {n} głosów',
   justReported: 'Pojawiło się nowe opinio',
+  newsLabel: 'NA ŻYWO',
   delete: 'Usuń',
   deleteProfile: 'Usuń opinio',
   deleteProfileConfirm: 'Trwale usunąć to opinio?',

@@ -293,3 +293,20 @@ export interface Person {
   born?: string;
   photo?: { url: string; credit: string; license: string; source: string };
 }
+
+// A news item as the live banner reads it (GET /api/news/:id?lang=): title and
+// body in the requested language, the person whose photo is its picture.
+export interface NewsItem {
+  id: string;
+  title: string;
+  body: string;
+  originalTitle: string;
+  originalBody: string;
+  sourceLang: string | null;
+  role: Role;
+  countryCode: string;
+  sourceName: string;
+  sourceUrl: string;
+  createdAt: string;
+  person: { id: number; name: string; photoUrl: string | null };
+}

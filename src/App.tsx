@@ -423,7 +423,7 @@ function AppLayout() {
           <ResizeHandle side="left" onDrag={handleLeftDrag} />
           <div className="flex-1 min-w-0 flex flex-col min-h-0 relative">
             {/* Suppressed on a profile route: the banner sits at top-2 centred
-                with w-[min(700px,90vw)], exactly where MapProfileTitle (the page
+                at least 700px wide, exactly where MapProfileTitle (the page
                 h1) renders, and it promotes a different opinio than the one the
                 map is currently tinted for. */}
             <HotBanner
