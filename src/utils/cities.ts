@@ -343,6 +343,7 @@ const EXONYMS: Record<string, Partial<Record<Locale, string>>> = {
   Seoul: { cs: 'Soul', es: 'Seúl', fr: 'Séoul', it: 'Seul', pl: 'Seul' },
   Pyongyang: { cs: 'Pchjongjang', es: 'Pionyang', de: 'Pjöngjang', pl: 'Pjongjang' },
   Hanoi: { cs: 'Hanoj', es: 'Hanói', fr: 'Hanoï' },
+  Valletta: { es: 'La Valeta', fr: 'La Valette', it: 'La Valletta' },
   Singapore: { cs: 'Singapur', es: 'Singapur', de: 'Singapur', fr: 'Singapour', pl: 'Singapur' },
   'New Delhi': { cs: 'Nové Dillí', es: 'Nueva Delhi', de: 'Neu-Delhi', it: 'Nuova Delhi', pl: 'Nowe Delhi' },
   Tehran: { cs: 'Teherán', es: 'Teherán', de: 'Teheran', fr: 'Téhéran', it: 'Teheran', pl: 'Teheran' },
