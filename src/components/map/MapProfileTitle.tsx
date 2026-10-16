@@ -469,10 +469,10 @@ function NewsRow({ news }: { news: NewsItem }) {
       className="flex w-full max-w-[960px] @[1100px]:max-w-[1120px] mx-auto items-center gap-4 @[1100px]:gap-5 cursor-pointer pb-2"
     >
       {news.person.photoUrl ? (
-        <Avatar name={news.person.name} imageUrl={news.person.photoUrl} className="caption-mark w-[52px] h-[52px] @[1100px]:w-[72px] @[1100px]:h-[72px] shrink-0 ring-2 ring-white/10" />
+        <Avatar name={news.person.name} imageUrl={news.person.photoUrl} className="caption-mark w-[64px] h-[64px] @[700px]:w-[80px] @[700px]:h-[80px] @[1100px]:w-[96px] @[1100px]:h-[96px] shrink-0 ring-2 ring-white/10" />
       ) : (
-        <span className="caption-mark w-[52px] h-[52px] @[1100px]:w-[72px] @[1100px]:h-[72px] shrink-0 rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center overflow-hidden">
-          <FlagImg code={news.countryCode} size={30} />
+        <span className="caption-mark w-[64px] h-[64px] @[700px]:w-[80px] @[700px]:h-[80px] @[1100px]:w-[96px] @[1100px]:h-[96px] shrink-0 rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center overflow-hidden">
+          <FlagImg code={news.countryCode} size={40} />
         </span>
       )}
       <div className="caption-text min-w-0 flex-1 text-left">

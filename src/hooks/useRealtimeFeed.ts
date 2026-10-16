@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import type { Profile } from '../types/profile';
 import type { NewsItem } from '../types/api';
 import { getNews, getProfile, isNotFound } from '../api/client';
@@ -33,6 +34,9 @@ export function useRealtimeFeed(enabled: boolean) {
   // reads the current value without reconnecting the socket on every language
   // switch.
   const { locale } = useI18n();
+  // Stable for the app's lifetime, so listing it in the socket effect's deps
+  // never reconnects.
+  const queryClient = useQueryClient();
   const localeRef = useRef(locale);
   localeRef.current = locale;
 
@@ -91,6 +95,10 @@ export function useRealtimeFeed(enabled: boolean) {
             });
         }
         if (msg.type === 'news_created' && msg.newsId) {
+          // The map caption's rotation reads the latest list; refresh it now
+          // rather than on its next minute's poll (the API dropped its cached
+          // copy on the same event), even if the banner queue is full.
+          queryClient.invalidateQueries({ queryKey: ['news', 'latest'] });
           if (queueRef.current.length >= QUEUE_CAP) return;
           // Only the id is pushed; the item is read in the viewer's locale
           // (sent after its translation landed). Nothing to fall back to, so a
@@ -167,7 +175,7 @@ export function useRealtimeFeed(enabled: boolean) {
         try { ws.close(); } catch { /* noop */ }
       }
     };
-  }, [enabled]);
+  }, [enabled, queryClient]);
 
   return { next: queue[0], dequeue, queueLength: queue.length };
 }
