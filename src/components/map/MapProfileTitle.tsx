@@ -1,4 +1,4 @@
-import { useEffect, useState, type AnimationEvent, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type AnimationEvent, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useFilters } from '../../context/useFilters';
 import { getCountryName } from '../../utils/countries';
@@ -241,8 +241,14 @@ export function MapProfileTitle({
   // news slides, since the map stays tinted for the subject all the while.
   const subjectKey = subject?.key ?? 'global';
   const { data: latest } = useLatestNews(true);
-  const news = latest?.items ?? [];
-  const slides: (Shown | null)[] = [subject, ...news.map((n) => ({ kind: 'news' as const, key: 'n:' + n.id, news: n }))];
+  // Memoized, not rebuilt per render: useSubjectSwap compares the shown value by
+  // identity, so a fresh news-slide object on every render made it set state on
+  // every commit - an endless re-render that starved the router's navigation
+  // transition (a map or flag click changed the URL and nothing opened).
+  const slides = useMemo<(Shown | null)[]>(
+    () => [subject, ...(latest?.items ?? []).map((n) => ({ kind: 'news' as const, key: 'n:' + n.id, news: n }))],
+    [subject, latest],
+  );
   // The slide is followed by its key, not its position: a new item enters the
   // list at the top and shifts every news slide down one, and a position would
   // swap the story on screen mid-turn (it then got a few seconds, and the next
