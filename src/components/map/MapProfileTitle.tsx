@@ -1,17 +1,32 @@
-import type { AnimationEvent } from 'react';
+import { useEffect, useState, type AnimationEvent } from 'react';
 import { Avatar } from '../profile/Avatar';
 import { FlagImg } from '../common/CountryFlag';
 import { HoverTip } from '../common/HoverTip';
+import { RoleBadge } from '../common/RoleBadge';
 import { useI18n } from '../../i18n/I18nContext';
 import { useSubjectSwap } from '../../hooks/useSubjectSwap';
+import { useLatestNews } from '../../hooks/useLatestNews';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 import type { Profile } from '../../types/profile';
+import type { NewsItem } from '../../types/api';
 import { LogoMark } from '../common/LogoMark';
+import { formatRelativeTime } from '../../utils/formatRelativeTime';
 
 // What the caption is currently about. The two subject kinds are the two
 // voter-side map tints (see WorldMap): one opinio, or one country's opinios.
 export type CaptionSubject =
   | { kind: 'profile'; key: string; profile: Profile }
   | { kind: 'country'; key: string; code: string; name: string };
+
+// A slide of the default state's rotation: the news kind exists only there.
+type Shown = CaptionSubject | { kind: 'news'; key: string; news: NewsItem };
+
+// The default state rotates: the Opinio mark first - it is what a new visitor
+// should read before anything else - then the four newest news items (the
+// last 12 hours), 10s each, then the mark again. No news, no rotation. It
+// holds while the pointer is on the card and while HotBanner has the slot, and
+// never advances by itself under reduced motion; the dots switch by hand.
+const SLIDE_MS = 10_000;
 
 // The caption above the map. Three states, same slot:
 //
@@ -125,8 +140,17 @@ export type CaptionSubject =
 // The shell: everything that stays put while the subject changes - the surface,
 // the ring, the blur, the padding, and the container query the type is sized
 // from. It holds no layout of its own beyond the stack; the row does that.
+//
+// One fixed height for every state (min-h on the stack), sized for the news
+// row - label, two-line title, a line of text - so the card never jumps as the
+// rotation or the subject changes. It grows with the card's width, since a wide
+// card has the room to say more: at 1366-1536 (460px card) the title takes two
+// lines and the text one; from 700px of card (Full HD) the title holds one line
+// and the text gets two; from 1100px (2560 and up) the picture and the type
+// step up as well.
 const CARD =
   '@container relative w-full rounded-xl bg-surface-light/60 backdrop-blur-md ring-1 ring-white/[0.08] shadow-xl shadow-black/20 px-5 py-[14px]';
+const STACK_HEIGHT = 'min-h-[102px] @[700px]:min-h-[112px] @[1100px]:min-h-[128px]';
 
 // One subject's row inside the shell.
 const ROW = 'flex w-full items-center justify-center gap-4';
@@ -181,6 +205,15 @@ const NAME_SIZE = 'clamp(18px, 4.4cqi, 30px)';
 const KICKER = 'font-semibold uppercase tracking-[0.16em] leading-5 text-white/50';
 const KICKER_SIZE = 'clamp(11px, 2.2cqi, 13px)';
 
+// The default (mark) state fills the taller card the news rotation needs: the
+// mark grows with it and the wordmark and line are set a step up, so the promo
+// does not sit as a small island in a large card. The spacer mirrors the mark
+// at each size to keep the text centred (see SPACER).
+const PROMO_MARK = 'w-[64px] h-[64px] @[700px]:w-[76px] @[700px]:h-[76px] @[1100px]:w-[88px] @[1100px]:h-[88px]';
+const PROMO_SPACER = 'w-[64px] @[700px]:w-[76px] @[1100px]:w-[88px]';
+const PROMO_NAME_SIZE = 'clamp(26px, 5.6cqi, 44px)';
+const PROMO_KICKER_SIZE = 'clamp(11px, 2.4cqi, 16px)';
+
 export function MapProfileTitle({
   subject,
   onDismiss,
@@ -194,15 +227,34 @@ export function MapProfileTitle({
   suppressed?: boolean;
 }) {
   const { t } = useI18n();
-  // Subject keys are namespaced by kind ('p:<id>' / 'c:<CODE>'), so an opinio and
-  // a country can never collide and moving between the two crossfades like any
-  // other subject change.
-  const { current, outgoing, endOutgoing } = useSubjectSwap(subject?.key ?? 'global', subject);
+  const reducedMotion = useReducedMotion();
+  const rotating = subject == null;
+  const { data: latest } = useLatestNews(rotating);
+  const news = rotating ? latest?.items ?? [] : [];
+  const slides: (Shown | null)[] = [null, ...news.map((n) => ({ kind: 'news' as const, key: 'n:' + n.id, news: n }))];
+  const [slide, setSlide] = useState(0);
+  const [hovered, setHovered] = useState(false);
+  const at = slide % slides.length;
+  const paused = hovered || suppressed || reducedMotion || slides.length < 2;
+  useEffect(() => {
+    if (!rotating || paused) return;
+    const timer = setTimeout(() => setSlide((i) => (i + 1) % slides.length), SLIDE_MS);
+    return () => clearTimeout(timer);
+  }, [rotating, paused, at, slides.length]);
+  const shown: Shown | null = subject ?? slides[at];
+  // Subject keys are namespaced by kind ('p:<id>' / 'c:<CODE>' / 'n:<id>'), so
+  // an opinio, a country and a news item can never collide and moving between
+  // them crossfades like any other subject change.
+  // The rotation's dissolve outlasts the swap's default 600ms failsafe.
+  const { current, outgoing, endOutgoing } = useSubjectSwap(shown?.key ?? 'global', shown, 1_000);
+  // A click-driven subject change keeps its snap; the rotation dissolves.
+  const enter = rotating ? 'caption-slide-enter' : 'caption-enter';
+  const leave = rotating ? 'caption-slide-leave' : 'caption-leave';
   // The outgoing row is dropped the moment its own animation reports finished.
   // caption-enter and the staggered mark/name animations bubble to this same
   // handler from the row beside it, so the name has to be checked.
   const onRowAnimationEnd = (e: AnimationEvent) => {
-    if (e.animationName === 'caption-leave') endOutgoing();
+    if (e.animationName === 'caption-leave' || e.animationName === 'caption-slide-out') endOutgoing();
   };
   return (
     <div
@@ -211,26 +263,69 @@ export function MapProfileTitle({
       }`}
       aria-hidden={suppressed}
     >
-      <div className={CARD}>
+      {/* The card takes the pointer only while it rotates news: hovering holds
+          the slide and a news row opens its article. Otherwise it stays
+          transparent to the map under it. */}
+      <div
+        className={`${CARD} ${rotating && slides.length > 1 ? 'pointer-events-auto' : ''}`}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
         {/* One grid cell holding both rows (see STACK), so the outgoing subject
             fades out over the incoming one instead of before it. Its height is
             the taller of the two, which for equal-height rows is simply the row
             height - the shell never jumps mid-swap. */}
-        <div className="grid w-full">
+        <div className={`grid w-full items-center ${STACK_HEIGHT}`}>
           {outgoing && (
             <CaptionRow
               key={outgoing.key}
               subject={outgoing.value}
-              motion="caption-leave"
+              motion={leave}
               onAnimationEnd={onRowAnimationEnd}
             />
           )}
-          <CaptionRow key={current.key} subject={current.value} motion="caption-enter" />
+          <CaptionRow key={current.key} subject={current.value} motion={enter} />
         </div>
         {/* Lives on the shell, not in a row: it belongs to whatever the caption
             is about NOW, and a copy riding the outgoing row would leave two Xs
             stacked for the length of the swap. */}
-        {current.value && (
+        {rotating && slides.length > 1 && (
+          <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-1">
+            {slides.map((s, i) => (
+              <button
+                key={s?.key ?? 'global'}
+                type="button"
+                onClick={() => setSlide(i)}
+                aria-label={s?.kind === 'news' ? s.news.title : t.appName}
+                aria-current={i === at || undefined}
+                className="p-1.5"
+              >
+                {/* The active dot stretches into a pill that fills over the
+                    slide's 10s. Held (hover, banner) it empties and starts
+                    over on release - the timer restarts the same way. Reduced
+                    motion has no timer, so the pill is simply full. */}
+                <span
+                  className={`relative block h-2 rounded-full overflow-hidden bg-white/25 transition-[width,background-color] duration-500 ease-out ${
+                    i === at ? 'w-7' : 'w-2 hover:bg-white/45'
+                  }`}
+                >
+                  {i === at && (
+                    reducedMotion ? (
+                      <span className="absolute inset-0 bg-white/70" />
+                    ) : !paused && (
+                      <span
+                        key={at}
+                        className="absolute inset-0 bg-white/70 caption-progress"
+                        style={{ animationDuration: `${SLIDE_MS}ms` }}
+                      />
+                    )
+                  )}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+        {current.value && current.value.kind !== 'news' && (
           <span className="pointer-events-auto absolute top-1.5 right-1.5">
             <HoverTip label={t.mapShowGlobal}>
               <button
@@ -261,12 +356,19 @@ function CaptionRow({
   motion,
   onAnimationEnd,
 }: {
-  subject: CaptionSubject | null;
+  subject: Shown | null;
   motion: string;
   onAnimationEnd?: (e: AnimationEvent) => void;
 }) {
   const { t } = useI18n();
-  const leaving = motion === 'caption-leave';
+  const leaving = motion === 'caption-leave' || motion === 'caption-slide-leave';
+  if (subject?.kind === 'news') {
+    return (
+      <div className={`${STACK} ${motion}`} onAnimationEnd={onAnimationEnd} aria-hidden={leaving || undefined}>
+        <NewsRow news={subject.news} />
+      </div>
+    );
+  }
   return (
     <div className={`${STACK} ${ROW} ${motion}`} onAnimationEnd={onAnimationEnd} aria-hidden={leaving || undefined}>
       {subject?.kind === 'profile' ? (
@@ -325,18 +427,77 @@ function CaptionRow({
            wordmark is a plain span, NOT a heading: on home the h1 is FilterBar's
            wordmark and a second one here would double it. */
         <>
-          <LogoMark className="caption-mark w-[52px] h-[52px] shrink-0" />
+          <LogoMark className={`caption-mark ${PROMO_MARK} shrink-0`} />
           <div className={`${COLUMN} caption-text`}>
-            <span style={{ fontSize: NAME_SIZE }} className={`${NAME} text-accent`}>
+            <span style={{ fontSize: PROMO_NAME_SIZE }} className={`${NAME} text-accent`}>
               {t.appName}
             </span>
-            <h2 style={{ fontSize: KICKER_SIZE }} className={KICKER}>
+            <h2 style={{ fontSize: PROMO_KICKER_SIZE }} className={`${KICKER} leading-normal`}>
               {t.mapGlobalTitle}
             </h2>
           </div>
         </>
       )}
-      <span aria-hidden="true" className={SPACER} />
+      <span aria-hidden="true" className={subject ? SPACER : PROMO_SPACER} />
+    </div>
+  );
+}
+
+// A news slide: the HotBanner card's anatomy at the caption's size - picture,
+// the LIVE pill with the source and age, the title with its flag and category,
+// a line or two of text. Left-aligned, unlike the centred subject rows: it is
+// something to read, not a name to frame. Plain spans, never headings - the
+// mark's h2 is home's only content heading. Opens the article, like the banner.
+function NewsRow({ news }: { news: NewsItem }) {
+  const { t, locale } = useI18n();
+  const open = () => window.open(news.sourceUrl, '_blank', 'noopener,noreferrer');
+  // The flag (only when the picture is a photo - a flag picture already says
+  // it) and the category. Both are sized for the sidebar cards by default and
+  // read as an afterthought beside this title, so they step up with it.
+  const tags = (flag: number) => (
+    <>
+      {news.person.photoUrl && <FlagImg code={news.countryCode} size={flag} />}
+      <RoleBadge role={news.role} className="text-xs! px-2! py-1! @[1100px]:text-sm!" />
+    </>
+  );
+  return (
+    <div
+      role="link"
+      tabIndex={0}
+      onClick={open}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } }}
+      className="flex w-full max-w-[960px] @[1100px]:max-w-[1120px] mx-auto items-center gap-4 @[1100px]:gap-5 cursor-pointer pb-2"
+    >
+      {news.person.photoUrl ? (
+        <Avatar name={news.person.name} imageUrl={news.person.photoUrl} className="caption-mark w-[52px] h-[52px] @[1100px]:w-[72px] @[1100px]:h-[72px] shrink-0 ring-2 ring-white/10" />
+      ) : (
+        <span className="caption-mark w-[52px] h-[52px] @[1100px]:w-[72px] @[1100px]:h-[72px] shrink-0 rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center overflow-hidden">
+          <FlagImg code={news.countryCode} size={30} />
+        </span>
+      )}
+      <div className="caption-text min-w-0 flex-1 text-left">
+        <div className="flex items-center gap-2 min-w-0 text-xs @[900px]:text-sm">
+          <span className="live-pill shrink-0 uppercase font-bold tracking-[0.16em] text-negative-soft bg-accent/15 border border-accent/60 rounded-full px-2 py-0.5">
+            <span className="relative inline-flex w-1.5 h-1.5 mr-1.5 align-middle">
+              <span className="absolute inset-0 rounded-full bg-accent animate-ping motion-reduce:hidden" />
+              <span className="relative w-1.5 h-1.5 rounded-full bg-accent" />
+            </span>
+            {t.newsLabel}
+          </span>
+          <span className="text-white/50 truncate">{news.sourceName} · {formatRelativeTime(news.createdAt, locale, t.justNow)}</span>
+          {/* On the narrow card (1366-1536) the title already takes two lines,
+              so the flag and the category ride up here instead of wrapping to
+              a third; from 700px they sit after the title, as on every card. */}
+          <span className="flex items-center gap-1.5 shrink-0 @[700px]:hidden">{tags(18)}</span>
+        </div>
+        <div className="mt-1 flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
+          <span className="font-semibold text-white leading-snug line-clamp-2 min-w-0" style={{ fontSize: 'clamp(15px, 2.6cqi, 26px)' }}>
+            {news.title}
+          </span>
+          <span className="hidden @[700px]:flex items-center gap-2 shrink-0">{tags(24)}</span>
+        </div>
+        <p className="text-text-secondary leading-snug mt-0.5 text-sm line-clamp-1 @[700px]:line-clamp-2 @[900px]:text-base">{news.body}</p>
+      </div>
     </div>
   );
 }

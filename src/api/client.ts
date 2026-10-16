@@ -244,6 +244,11 @@ export function getNews(id: string, lang?: string): Promise<NewsItem> {
   return apiFetch(`/api/news/${id}${qs}`);
 }
 
+// The newest news of the last 12 hours, newest first (the map caption's rotation).
+export function getLatestNews(lang: string, limit = 3): Promise<{ items: NewsItem[] }> {
+  return apiFetch(`/api/news?limit=${limit}&lang=${lang}`);
+}
+
 export function getTopVoters(country?: string, metric: import('../types/api').VoterMetric = 'received'): Promise<import('../types/api').TopVotersResponse> {
   const params = new URLSearchParams();
   if (country) params.set('country', country);

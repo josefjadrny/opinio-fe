@@ -27,7 +27,7 @@ const VARIANTS = {
   },
   news: {
     border: 'border-accent/70',
-    label: 'text-negative-soft bg-accent/15 border border-accent/60 rounded-full px-2 py-0.5',
+    label: 'live-pill text-negative-soft bg-accent/15 border border-accent/60 rounded-full px-2 py-0.5',
     dot: 'bg-accent',
     shadow: '0 0 0 1px rgba(233,69,96,0.35), 0 10px 30px -10px rgba(233,69,96,0.55), 0 18px 50px -20px rgba(0,0,0,0.6)',
   },
@@ -219,7 +219,11 @@ export function HotBanner({
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 min-w-0">
             <div className={`shrink-0 uppercase font-bold ${v.label} ${mobile ? 'text-[11px] tracking-widest' : 'text-xs tracking-[0.16em] min-[2200px]:text-sm'}`}>
-              <span className={`inline-block rounded-full ${v.dot} mr-1.5 align-middle animate-pulse ${mobile ? 'w-1.5 h-1.5' : 'w-2 h-2'}`} />
+              {/* The dot pings on the same 2s-ish beat as the LIVE pill's glow. */}
+              <span className={`relative inline-flex mr-1.5 align-middle ${mobile ? 'w-1.5 h-1.5' : 'w-2 h-2'}`}>
+                <span className={`absolute inset-0 rounded-full ${v.dot} animate-ping motion-reduce:hidden`} />
+                <span className={`relative w-full h-full rounded-full ${v.dot}`} />
+              </span>
               {card.label}
             </div>
             {/* News credits the outlet its facts came from. */}
@@ -244,7 +248,7 @@ export function HotBanner({
             </span>
             <div className="flex items-center gap-1.5 shrink-0">
               {!flagAsPicture && <CountryFlag code={card.countryCode} tip={false} />}
-              <RoleBadge role={card.role} />
+              <RoleBadge role={card.role} className={mobile ? undefined : 'text-xs! px-2! py-1! min-[2200px]:text-sm!'} />
             </div>
           </div>
           <p className={`text-text-secondary leading-snug mt-0.5 ${mobile ? 'text-xs line-clamp-1' : 'text-sm line-clamp-2 min-[2200px]:text-base'}`}>

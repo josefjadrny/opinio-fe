@@ -440,6 +440,50 @@ body {
 .caption-enter .caption-mark { animation: caption-pop 300ms cubic-bezier(0.34, 1.56, 0.64, 1) 40ms both; }
 .caption-enter .caption-text { animation: caption-rise 260ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both; }
 
+/* The default caption's rotation (mark -> news -> news ...) is not a reaction
+   to a click, so it does not need the subject swap's snap. It is a slow
+   dissolve instead: the outgoing slide blurs and lifts away, the incoming one
+   follows a beat later and settles out of a soft blur, the picture first and
+   the text after it. The leave still empties fast and ends slow (see above)
+   so the two never sit at full strength together. */
+@keyframes caption-slide-in {
+  from { opacity: 0; transform: translateY(8px); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes caption-slide-out {
+  from { opacity: 1; transform: translateY(0); filter: blur(0); }
+  to   { opacity: 0; transform: translateY(-8px); filter: blur(6px); }
+}
+
+@keyframes caption-slide-mark {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.caption-slide-enter { animation: caption-slide-in 750ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both; }
+.caption-slide-leave { animation: caption-slide-out 500ms cubic-bezier(0.2, 0, 0.4, 1) both; }
+.caption-slide-enter .caption-mark { animation: caption-slide-mark 800ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both; }
+.caption-slide-enter .caption-text { animation: caption-rise 750ms cubic-bezier(0.22, 1, 0.36, 1) 260ms both; }
+
+/* The active dot fills over the slide's lifetime, so the change is expected
+   rather than sudden. Its length is set inline from the same constant. */
+@keyframes caption-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.caption-progress { animation: caption-progress linear both; transform-origin: left; }
+
+/* The LIVE pill breathes: a soft brand-red glow swells out of its edge and
+   fades, every 2s, so the label reads as on-air rather than as a static tag.
+   Its dot carries a ping ring (Tailwind's animate-ping) on the same beat. */
+@keyframes live-glow {
+  0%   { box-shadow: 0 0 0 0 rgba(233, 69, 96, 0.45); }
+  70%  { box-shadow: 0 0 0 6px rgba(233, 69, 96, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(233, 69, 96, 0); }
+}
+.live-pill { animation: live-glow 2s ease-out infinite; }
+
 /* The mobile pill is a fifth of the size and sits 40px above the sheet that
    repeats the same name, so it gets the entrance only - no stagger, nothing to
    stagger. */
@@ -455,8 +499,13 @@ body {
     transition-duration: 1ms;
     transition-delay: 0ms;
   }
+  .live-pill,
   .caption-enter,
   .caption-leave,
+  .caption-slide-enter,
+  .caption-slide-leave,
+  .caption-slide-enter .caption-mark,
+  .caption-slide-enter .caption-text,
   .caption-pill-enter,
   .caption-enter .caption-mark,
   .caption-enter .caption-text {
