@@ -4,7 +4,7 @@ import { Avatar } from '../profile/Avatar';
 import { RoleBadge } from '../common/RoleBadge';
 import { useRealtimeFeed } from '../../hooks/useRealtimeFeed';
 import { useI18n } from '../../i18n/I18nContext';
-import { CountryFlag } from '../common/CountryFlag';
+import { CountryFlag, FlagImg } from '../common/CountryFlag';
 
 const FADE_IN_MS = 500;
 const HOLD_MS = 10_000;
@@ -48,8 +48,11 @@ export function HotBanner({
   const { next, dequeue, queueLength } = useRealtimeFeed(enabled);
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [phase, setPhase] = useState<Phase>('in');
+  // The news item (by id) the reader switched to its English original. Keyed
+  // by id, so the next item starts translated again without an effect.
+  const [originalFor, setOriginalFor] = useState<string | null>(null);
   const [hovered, setHovered] = useState(false);
   const hoveredRef = useRef(false);
   hoveredRef.current = hovered;
@@ -135,13 +138,22 @@ export function HotBanner({
     ? () => navigate('/p/' + next.profile.id + location.search)
     : () => window.open(next.news.sourceUrl, '_blank', 'noopener,noreferrer');
   const v = VARIANTS[next.kind];
+  // Same "See original" toggle as the opinio detail: news text is machine
+  // translated, and this is where a reader can check it.
+  const translated = next.kind === 'news' && locale !== 'en'
+    && (next.news.title !== next.news.originalTitle || next.news.body !== next.news.originalBody);
+  const showingOriginal = translated && next.kind === 'news' && originalFor === next.news.id;
   const card = next.kind === 'opinio'
     ? { name: next.profile.name, imageUrl: next.profile.imageUrl, title: next.profile.name,
         text: next.profile.description, role: next.profile.role, countryCode: next.profile.countryCode,
         label: t.justReported, source: null }
-    : { name: next.news.person.name, imageUrl: next.news.person.photoUrl, title: next.news.title,
-        text: next.news.body, role: next.news.role, countryCode: next.news.countryCode,
+    : { name: next.news.person.name, imageUrl: next.news.person.photoUrl,
+        title: showingOriginal ? next.news.originalTitle : next.news.title,
+        text: showingOriginal ? next.news.originalBody : next.news.body, role: next.news.role, countryCode: next.news.countryCode,
         label: t.newsLabel, source: next.news.sourceName };
+  // A news item whose person has no photo yet shows its country's flag as the
+  // picture; the inline flag after the title would then say it twice.
+  const flagAsPicture = next.kind === 'news' && !card.imageUrl;
   const inAnim = mobile ? 'hot-banner-in-up' : 'hot-banner-in';
   const outAnim = mobile ? 'hot-banner-out-down' : 'hot-banner-out';
   // Held under the cursor: no animation and a pinned opacity, so a card whose
@@ -190,11 +202,20 @@ export function HotBanner({
             title with its flag and category inline after it, then the text.
             The banner sits a size up from the card, and another step up on
             very wide screens, where it also widens with the map. */}
-        <Avatar
-          name={card.name}
-          imageUrl={card.imageUrl}
-          className={`shrink-0 ring-2 ring-white/5 ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
-        />
+        {flagAsPicture ? (
+          <div
+            aria-hidden
+            className={`shrink-0 rounded-full ring-2 ring-white/5 bg-white/[0.06] flex items-center justify-center ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
+          >
+            <FlagImg code={card.countryCode} size={mobile ? 26 : 30} />
+          </div>
+        ) : (
+          <Avatar
+            name={card.name}
+            imageUrl={card.imageUrl}
+            className={`shrink-0 ring-2 ring-white/5 ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
+          />
+        )}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 min-w-0">
             <div className={`shrink-0 uppercase font-bold ${v.label} ${mobile ? 'text-[11px] tracking-widest' : 'text-xs tracking-[0.16em] min-[2200px]:text-sm'}`}>
@@ -203,13 +224,26 @@ export function HotBanner({
             </div>
             {/* News credits the outlet its facts came from. */}
             {card.source && <span className={`text-white/50 truncate ${mobile ? 'text-[11px]' : 'text-xs min-[2200px]:text-sm'}`}>{card.source}</span>}
+            {/* Swaps the text in place; it must not open the article, nor
+                count as the mobile tap that dismisses the banner. */}
+            {translated && next.kind === 'news' && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setOriginalFor(showingOriginal ? null : next.news.id); }}
+                className={`shrink-0 text-white/50 hover:text-white underline-offset-2 hover:underline transition-colors ${mobile ? 'text-[11px]' : 'text-xs min-[2200px]:text-sm'}`}
+              >
+                {showingOriginal ? t.seeTranslation : t.seeOriginal}
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
-            <span className={`font-semibold text-white leading-snug break-words min-w-0 ${mobile ? 'text-sm' : 'text-lg min-[2200px]:text-xl'}`}>
+            {/* Two lines at most: a translated news title runs up to ~1.8x
+                the English one, which is capped to fit one desktop line. */}
+            <span className={`font-semibold text-white leading-snug break-words min-w-0 line-clamp-2 ${mobile ? 'text-sm' : 'text-lg min-[2200px]:text-xl'}`}>
               {card.title}
             </span>
             <div className="flex items-center gap-1.5 shrink-0">
-              <CountryFlag code={card.countryCode} tip={false} />
+              {!flagAsPicture && <CountryFlag code={card.countryCode} tip={false} />}
               <RoleBadge role={card.role} />
             </div>
           </div>
