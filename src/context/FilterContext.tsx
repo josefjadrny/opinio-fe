@@ -16,7 +16,6 @@ export interface FilterState {
   toggleFresh: () => void;
   clearCategories: () => void;
   setSearch: (q: string) => void;
-  selectCountry: (c: string) => void;
   clearFilters: () => void;
   setHoveredProfileCountry: (c: string | undefined) => void;
 }
@@ -71,7 +70,8 @@ export function FilterProvider({ children }: { children: ReactNode }) {
   }, [setSearchParams]);
 
   // Roles + fresh cleared in ONE mutation - two setSearchParams calls would
-  // clobber each other (see selectCountry below).
+  // clobber each other - React Router's functional updater reads the committed
+  // params each time, so the second call wins.
   const clearCategories = useCallback(() => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
@@ -93,19 +93,6 @@ export function FilterProvider({ children }: { children: ReactNode }) {
     }, { replace: true });
   }, [setSearchParams]);
 
-  // Whisperer country pick: set the country filter AND clear any active ?q= in a
-  // single URL mutation. Doing setCountry + setSearch as two separate
-  // setSearchParams calls would clobber each other — React Router's functional
-  // updater reads the committed params each time, so the second call wins.
-  const selectCountry = useCallback((c: string) => {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev);
-      next.set('country', c);
-      next.delete('q');
-      return next;
-    });
-  }, [setSearchParams]);
-
   const clearFilters = useCallback(() => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
@@ -118,7 +105,7 @@ export function FilterProvider({ children }: { children: ReactNode }) {
   }, [setSearchParams]);
 
   return (
-    <FilterContext.Provider value={{ country, roles, fresh, search, hoveredProfileCountry, setCountry, setRoles, toggleRole, toggleFresh, clearCategories, setSearch, selectCountry, clearFilters, setHoveredProfileCountry }}>
+    <FilterContext.Provider value={{ country, roles, fresh, search, hoveredProfileCountry, setCountry, setRoles, toggleRole, toggleFresh, clearCategories, setSearch, clearFilters, setHoveredProfileCountry }}>
       {children}
     </FilterContext.Provider>
   );

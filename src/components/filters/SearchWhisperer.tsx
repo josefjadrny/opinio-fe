@@ -55,7 +55,7 @@ interface Props {
 /**
  * Search box with a typeahead ("whisperer") dropdown. Suggestions are grouped
  * countries (max 3, by votes) -> users (max 3) -> opinios (max 10), then a
- * final "search all opinios" action. Picking a country sets the country filter;
+ * final "search all opinios" action. Picking a country opens /c/:code;
  * a user opens /u/:id; an opinio opens /p/:id; the action applies ?q= (the
  * classic full-text feed search). Typing no longer auto-runs the feed search -
  * it only feeds the whisperer until the user picks something or presses Enter.
@@ -64,7 +64,7 @@ export function SearchWhisperer({ variant, onSelect }: Props) {
   const { t, locale } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
-  const { search, setSearch, selectCountry } = useFilters();
+  const { search, setSearch } = useFilters();
 
   const [text, setText] = useState(search);
   const [debounced, setDebounced] = useState(search);
@@ -141,8 +141,7 @@ export function SearchWhisperer({ variant, onSelect }: Props) {
   const selectItem = useCallback((item: Item) => {
     switch (item.kind) {
       case 'country':
-        selectCountry(item.country.code);
-        setText('');
+        navigate(`/c/${item.country.code}${location.search}`);
         break;
       case 'user':
         navigate(`/u/${item.user.id}${location.search}`);
@@ -156,7 +155,7 @@ export function SearchWhisperer({ variant, onSelect }: Props) {
     }
     close();
     onSelect?.();
-  }, [selectCountry, navigate, location.search, runFullSearch, close, onSelect]);
+  }, [navigate, location.search, runFullSearch, close, onSelect]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') { close(); return; }
@@ -255,10 +254,6 @@ export function SearchWhisperer({ variant, onSelect }: Props) {
                   <div key={`c-${country.code}`} {...rowProps(i)}>
                     <span className="w-6 h-6 rounded shrink-0 flex items-center justify-center text-base leading-none bg-surface-light">{getCountryFlag(country.code)}</span>
                     <span className="text-sm text-text-primary truncate">{country.name}</span>
-                    {/* funnel — signals this row filters the feed rather than opening a page */}
-                    <svg className="ml-auto w-3.5 h-3.5 text-white/25 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
-                    </svg>
                   </div>
                 );
               })}
