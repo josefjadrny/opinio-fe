@@ -494,6 +494,18 @@ function NewsRow({ news }: { news: NewsItem }) {
   const { toggleRole } = useFilters();
   const country = getCountryName(news.countryCode, locale);
   const toCountry = () => navigate('/c/' + news.countryCode + location.search);
+  // On home the chip toggles the filter in place. On a detail (/p, /c, /u) it
+  // goes to the filtered home feed instead: toggling there pushed
+  // /p/<id>?roles=x as a new history entry, so the detail's close (one step
+  // back) landed on the same detail and seemed not to work.
+  const filterByRole = () => {
+    if (location.pathname === '/') return toggleRole(news.role);
+    const params = new URLSearchParams(location.search);
+    const roles = (params.get('roles') ?? '').split(',').filter(Boolean);
+    if (!roles.includes(news.role)) roles.push(news.role);
+    params.set('roles', roles.join(','));
+    navigate('/?' + params.toString());
+  };
   const onKey = (go: () => void) => (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
   };
@@ -514,7 +526,7 @@ function NewsRow({ news }: { news: NewsItem }) {
     <>
       {news.person.photoUrl && flagLink(<FlagImg code={news.countryCode} size={flag} />, 'inline-flex')}
       <HoverTip label={`${t.filterBy}: ${t.roles[news.role]}`}>
-        <span role="button" tabIndex={0} onClick={() => toggleRole(news.role)} onKeyDown={onKey(() => toggleRole(news.role))}
+        <span role="button" tabIndex={0} onClick={filterByRole} onKeyDown={onKey(filterByRole)}
           className="cursor-pointer hover:opacity-80 transition-opacity">
           <RoleBadge role={news.role} className="text-xs! px-2! py-1! @[1100px]:text-sm!" />
         </span>
