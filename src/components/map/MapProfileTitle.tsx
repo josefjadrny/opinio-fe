@@ -180,7 +180,7 @@ const STACK = '[grid-area:1/1]';
 // name that needed 543.x, so the last word dropped to a second line with the room
 // to fit it sitting right there, unused. The column is shrink-0 and bounded by a
 // max-width instead, which leaves this the only item that can yield.
-const SPACER = 'w-[52px]';
+const SPACER = 'w-[64px] @[700px]:w-[76px] @[1100px]:w-[88px]';
 
 // flex-col-REVERSE keeps the source order h1-then-h2 while the kicker still
 // renders above the name, so the heading outline never runs an h2 ahead of the
@@ -188,17 +188,22 @@ const SPACER = 'w-[52px]';
 // centred.
 //
 // shrink-0 with a max-width rather than a shrink factor - see SPACER for why. The
-// bound is the row's own arithmetic: 100% is the card's content box, less the 52px
-// avatar and the two 16px gaps, which is exactly what the column can occupy once
-// the spacer has collapsed. Keep it in step with the avatar size and the row gap.
+// bound is the row's own arithmetic: 100% is the card's content box, less the
+// picture (64/76/88px, see PROMO_MARK) and the two 16px gaps, which is exactly
+// what the column can occupy once the spacer has collapsed. Keep it in step with
+// the picture size and the row gap.
 const COLUMN =
-  'flex min-w-0 shrink-0 max-w-[calc(100%-84px)] flex-col-reverse items-center gap-0.5 text-center';
+  'flex min-w-0 shrink-0 max-w-[calc(100%-96px)] @[700px]:max-w-[calc(100%-108px)] @[1100px]:max-w-[calc(100%-120px)] flex-col-reverse items-center gap-0.5 text-center';
 
 const NAME = 'font-extrabold tracking-tight leading-[1.15]';
 
 // Clamped so the caption never outgrows the card on an ultrawide column nor
 // collapses on a narrow one; between those it tracks the column.
-const NAME_SIZE = 'clamp(18px, 4.4cqi, 30px)';
+// Set a step up from the original 18-30px with the taller card the rotation
+// brought, so an opinio or a country reads at the same scale as the promo and
+// the news beside it. Below the promo's own wordmark size: these are names of
+// up to 40 characters, not a five-letter word.
+const NAME_SIZE = 'clamp(22px, 4.8cqi, 40px)';
 
 // The kicker tracks the column too, and for the same reason: at a 1400px window
 // the longest of them ("live world opinion on every country") wrapped its last
@@ -206,16 +211,15 @@ const NAME_SIZE = 'clamp(18px, 4.4cqi, 30px)';
 // fixed on purpose - the row's height must not move with the font size, because
 // the close button's clearance is measured from it.
 const KICKER = 'font-semibold uppercase tracking-[0.16em] leading-5 text-white/50';
-const KICKER_SIZE = 'clamp(11px, 2.2cqi, 13px)';
+const KICKER_SIZE = 'clamp(11px, 2.4cqi, 16px)';
 
-// The default (mark) state fills the taller card the news rotation needs: the
-// mark grows with it and the wordmark and line are set a step up, so the promo
-// does not sit as a small island in a large card. The spacer mirrors the mark
-// at each size to keep the text centred (see SPACER).
+// Every state fills the taller card the news rotation needs: the picture (the
+// mark, an opinio's avatar, a country's flag) grows with it, so no state sits
+// as a small island in a large card. The spacer mirrors the picture at each
+// size to keep the text centred (see SPACER).
 const PROMO_MARK = 'w-[64px] h-[64px] @[700px]:w-[76px] @[700px]:h-[76px] @[1100px]:w-[88px] @[1100px]:h-[88px]';
-const PROMO_SPACER = 'w-[64px] @[700px]:w-[76px] @[1100px]:w-[88px]';
 const PROMO_NAME_SIZE = 'clamp(26px, 5.6cqi, 44px)';
-const PROMO_KICKER_SIZE = 'clamp(11px, 2.4cqi, 16px)';
+const PROMO_KICKER_SIZE = KICKER_SIZE;
 
 export function MapProfileTitle({
   subject,
@@ -231,34 +235,50 @@ export function MapProfileTitle({
 }) {
   const { t } = useI18n();
   const reducedMotion = useReducedMotion();
-  const rotating = subject == null;
-  const { data: latest } = useLatestNews(rotating);
-  const news = rotating ? latest?.items ?? [] : [];
-  const slides: (Shown | null)[] = [null, ...news.map((n) => ({ kind: 'news' as const, key: 'n:' + n.id, news: n }))];
+  // Every state rotates the same way: what the caption is about - the mark on
+  // the global map, the open opinio or country on a detail - is the first
+  // slide, then the news. The subject's dismiss X stays on the card through the
+  // news slides, since the map stays tinted for the subject all the while.
+  const subjectKey = subject?.key ?? 'global';
+  const { data: latest } = useLatestNews(true);
+  const news = latest?.items ?? [];
+  const slides: (Shown | null)[] = [subject, ...news.map((n) => ({ kind: 'news' as const, key: 'n:' + n.id, news: n }))];
   // The slide is followed by its key, not its position: a new item enters the
   // list at the top and shifts every news slide down one, and a position would
   // swap the story on screen mid-turn (it then got a few seconds, and the next
   // turn showed it again). A key that left the list (aged out) restarts at the mark.
-  const [slideKey, setSlideKey] = useState('global');
+  const [slideKey, setSlideKey] = useState(subjectKey);
   const [hovered, setHovered] = useState(false);
+  // A new subject (a click opening an opinio or a country, or closing one)
+  // returns the caption to its subject slide with the swap's snap; only the
+  // rotation's own steps dissolve. Adjusted during render rather than in an
+  // effect, which would paint one frame of the old slide first.
+  const [lastSubjectKey, setLastSubjectKey] = useState(subjectKey);
+  const [snap, setSnap] = useState(false);
+  if (lastSubjectKey !== subjectKey) {
+    setLastSubjectKey(subjectKey);
+    setSlideKey(subjectKey);
+    setSnap(true);
+  }
+  const goTo = (key: string) => { setSnap(false); setSlideKey(key); };
   const keyOf = (x: Shown | null) => x?.key ?? 'global';
   const at = Math.max(0, slides.findIndex((x) => keyOf(x) === slideKey));
   const nextKey = keyOf(slides[(at + 1) % slides.length]);
   const paused = hovered || suppressed || reducedMotion || slides.length < 2;
   useEffect(() => {
-    if (!rotating || paused) return;
-    const timer = setTimeout(() => setSlideKey(nextKey), SLIDE_MS);
+    if (paused) return;
+    const timer = setTimeout(() => { setSnap(false); setSlideKey(nextKey); }, SLIDE_MS);
     return () => clearTimeout(timer);
-  }, [rotating, paused, slideKey, nextKey]);
-  const shown: Shown | null = subject ?? slides[at];
+  }, [paused, slideKey, nextKey]);
+  const shown: Shown | null = slides[at];
   // Subject keys are namespaced by kind ('p:<id>' / 'c:<CODE>' / 'n:<id>'), so
   // an opinio, a country and a news item can never collide and moving between
   // them crossfades like any other subject change.
   // The rotation's dissolve outlasts the swap's default 600ms failsafe.
   const { current, outgoing, endOutgoing } = useSubjectSwap(shown?.key ?? 'global', shown, 1_000);
   // A click-driven subject change keeps its snap; the rotation dissolves.
-  const enter = rotating ? 'caption-slide-enter' : 'caption-enter';
-  const leave = rotating ? 'caption-slide-leave' : 'caption-leave';
+  const enter = snap ? 'caption-enter' : 'caption-slide-enter';
+  const leave = snap ? 'caption-leave' : 'caption-slide-leave';
   // The outgoing row is dropped the moment its own animation reports finished.
   // caption-enter and the staggered mark/name animations bubble to this same
   // handler from the row beside it, so the name has to be checked.
@@ -276,7 +296,7 @@ export function MapProfileTitle({
           the slide and a news row opens its article. Otherwise it stays
           transparent to the map under it. */}
       <div
-        className={`${CARD} ${rotating && slides.length > 1 ? 'pointer-events-auto' : ''}`}
+        className={`${CARD} ${slides.length > 1 ? 'pointer-events-auto' : ''}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -298,14 +318,14 @@ export function MapProfileTitle({
         {/* Lives on the shell, not in a row: it belongs to whatever the caption
             is about NOW, and a copy riding the outgoing row would leave two Xs
             stacked for the length of the swap. */}
-        {rotating && slides.length > 1 && (
+        {slides.length > 1 && (
           <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-1">
             {slides.map((s, i) => (
               <button
-                key={s?.key ?? 'global'}
+                key={keyOf(s)}
                 type="button"
-                onClick={() => setSlideKey(keyOf(s))}
-                aria-label={s?.kind === 'news' ? s.news.title : t.appName}
+                onClick={() => goTo(keyOf(s))}
+                aria-label={s?.kind === 'news' ? s.news.title : s?.kind === 'profile' ? s.profile.name : s?.kind === 'country' ? s.name : t.appName}
                 aria-current={i === at || undefined}
                 className="p-1.5"
               >
@@ -334,7 +354,7 @@ export function MapProfileTitle({
             ))}
           </div>
         )}
-        {current.value && current.value.kind !== 'news' && (
+        {subject && (
           <span className="pointer-events-auto absolute top-1.5 right-1.5">
             <HoverTip label={t.mapShowGlobal}>
               <button
@@ -389,7 +409,7 @@ function CaptionRow({
           <Avatar
             name={subject.profile.name}
             imageUrl={subject.profile.imageUrl}
-            className="caption-mark w-[52px] h-[52px] shrink-0 text-sm ring-2 ring-white/10"
+            className={`caption-mark ${PROMO_MARK} shrink-0 ring-2 ring-white/10 [&>span]:text-xl @[1100px]:[&>span]:text-2xl`}
           />
           <div className={`${COLUMN} caption-text`}>
             <h1 style={{ fontSize: NAME_SIZE }} className={`${NAME} text-white`}>
@@ -417,8 +437,8 @@ function CaptionRow({
            consistent box - flag emoji are wider than they are tall and vary by
            platform, so left bare they sat off-centre against an avatar. */
         <>
-          <span className="caption-mark w-[52px] h-[52px] shrink-0 rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center overflow-hidden">
-            <FlagImg code={subject.code} size={34} />
+          <span className={`caption-mark ${PROMO_MARK} shrink-0 rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center overflow-hidden`}>
+            <FlagImg code={subject.code} size={44} />
           </span>
           <div className={`${COLUMN} caption-text`}>
             <span style={{ fontSize: NAME_SIZE }} className={`${NAME} text-white`}>
@@ -447,7 +467,7 @@ function CaptionRow({
           </div>
         </>
       )}
-      <span aria-hidden="true" className={subject ? SPACER : PROMO_SPACER} />
+      <span aria-hidden="true" className={SPACER} />
     </div>
   );
 }
