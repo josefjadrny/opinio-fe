@@ -1,4 +1,7 @@
-import { useEffect, useState, type AnimationEvent } from 'react';
+import { useEffect, useState, type AnimationEvent, type ReactNode } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useFilters } from '../../context/useFilters';
+import { getCountryName } from '../../utils/countries';
 import { Avatar } from '../profile/Avatar';
 import { FlagImg } from '../common/CountryFlag';
 import { HoverTip } from '../common/HoverTip';
@@ -232,15 +235,21 @@ export function MapProfileTitle({
   const { data: latest } = useLatestNews(rotating);
   const news = rotating ? latest?.items ?? [] : [];
   const slides: (Shown | null)[] = [null, ...news.map((n) => ({ kind: 'news' as const, key: 'n:' + n.id, news: n }))];
-  const [slide, setSlide] = useState(0);
+  // The slide is followed by its key, not its position: a new item enters the
+  // list at the top and shifts every news slide down one, and a position would
+  // swap the story on screen mid-turn (it then got a few seconds, and the next
+  // turn showed it again). A key that left the list (aged out) restarts at the mark.
+  const [slideKey, setSlideKey] = useState('global');
   const [hovered, setHovered] = useState(false);
-  const at = slide % slides.length;
+  const keyOf = (x: Shown | null) => x?.key ?? 'global';
+  const at = Math.max(0, slides.findIndex((x) => keyOf(x) === slideKey));
+  const nextKey = keyOf(slides[(at + 1) % slides.length]);
   const paused = hovered || suppressed || reducedMotion || slides.length < 2;
   useEffect(() => {
     if (!rotating || paused) return;
-    const timer = setTimeout(() => setSlide((i) => (i + 1) % slides.length), SLIDE_MS);
+    const timer = setTimeout(() => setSlideKey(nextKey), SLIDE_MS);
     return () => clearTimeout(timer);
-  }, [rotating, paused, at, slides.length]);
+  }, [rotating, paused, slideKey, nextKey]);
   const shown: Shown | null = subject ?? slides[at];
   // Subject keys are namespaced by kind ('p:<id>' / 'c:<CODE>' / 'n:<id>'), so
   // an opinio, a country and a news item can never collide and moving between
@@ -295,7 +304,7 @@ export function MapProfileTitle({
               <button
                 key={s?.key ?? 'global'}
                 type="button"
-                onClick={() => setSlide(i)}
+                onClick={() => setSlideKey(keyOf(s))}
                 aria-label={s?.kind === 'news' ? s.news.title : t.appName}
                 aria-current={i === at || undefined}
                 className="p-1.5"
@@ -445,35 +454,65 @@ function CaptionRow({
 
 // A news slide: the HotBanner card's anatomy at the caption's size - picture,
 // the LIVE pill with the source and age, the title with its flag and category,
-// a line or two of text. Left-aligned, unlike the centred subject rows: it is
+// a line of text. Left-aligned, unlike the centred subject rows: it is
 // something to read, not a name to frame. Plain spans, never headings - the
-// mark's h2 is home's only content heading. Opens the article, like the banner.
+// mark's h2 is home's only content heading.
+//
+// Only three things act, the same as on an opinio card, and the rest is text
+// to read: a flag opens that country's detail, the category chip filters by it,
+// and the source name opens the article. The title and text are deliberately
+// not a link - the card sits over the map, and a slide that changes under the
+// pointer every 10s would turn a stray click into a trip off the site.
+function host(url: string): string {
+  try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; }
+}
+
 function NewsRow({ news }: { news: NewsItem }) {
   const { t, locale } = useI18n();
-  const open = () => window.open(news.sourceUrl, '_blank', 'noopener,noreferrer');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { toggleRole } = useFilters();
+  const country = getCountryName(news.countryCode, locale);
+  const toCountry = () => navigate('/c/' + news.countryCode + location.search);
+  const onKey = (go: () => void) => (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+  };
+  // A flag that opens its country, named on hover - most people cannot read
+  // every flag (same as the sidebar card's).
+  const flagLink = (flag: ReactNode, className = '') => (
+    <HoverTip label={country}>
+      <span role="link" tabIndex={0} aria-label={country} onClick={toCountry} onKeyDown={onKey(toCountry)}
+        className={`cursor-pointer hover:opacity-80 transition-opacity ${className}`}>
+        {flag}
+      </span>
+    </HoverTip>
+  );
   // The flag (only when the picture is a photo - a flag picture already says
   // it) and the category. Both are sized for the sidebar cards by default and
   // read as an afterthought beside this title, so they step up with it.
   const tags = (flag: number) => (
     <>
-      {news.person.photoUrl && <FlagImg code={news.countryCode} size={flag} />}
-      <RoleBadge role={news.role} className="text-xs! px-2! py-1! @[1100px]:text-sm!" />
+      {news.person.photoUrl && flagLink(<FlagImg code={news.countryCode} size={flag} />, 'inline-flex')}
+      <HoverTip label={`${t.filterBy}: ${t.roles[news.role]}`}>
+        <span role="button" tabIndex={0} onClick={() => toggleRole(news.role)} onKeyDown={onKey(() => toggleRole(news.role))}
+          className="cursor-pointer hover:opacity-80 transition-opacity">
+          <RoleBadge role={news.role} className="text-xs! px-2! py-1! @[1100px]:text-sm!" />
+        </span>
+      </HoverTip>
     </>
   );
+  const PICTURE = 'caption-mark w-[64px] h-[64px] @[700px]:w-[80px] @[700px]:h-[80px] @[1100px]:w-[96px] @[1100px]:h-[96px] shrink-0';
   return (
-    <div
-      role="link"
-      tabIndex={0}
-      onClick={open}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } }}
-      className="flex w-full max-w-[960px] @[1100px]:max-w-[1120px] mx-auto items-center gap-4 @[1100px]:gap-5 cursor-pointer pb-2"
-    >
+    <div className="flex w-full max-w-[960px] @[1100px]:max-w-[1120px] mx-auto items-center gap-4 @[1100px]:gap-5 pb-2">
       {news.person.photoUrl ? (
-        <Avatar name={news.person.name} imageUrl={news.person.photoUrl} className="caption-mark w-[64px] h-[64px] @[700px]:w-[80px] @[700px]:h-[80px] @[1100px]:w-[96px] @[1100px]:h-[96px] shrink-0 ring-2 ring-white/10" />
+        <Avatar name={news.person.name} imageUrl={news.person.photoUrl} className={`${PICTURE} ring-2 ring-white/10`} />
       ) : (
-        <span className="caption-mark w-[64px] h-[64px] @[700px]:w-[80px] @[700px]:h-[80px] @[1100px]:w-[96px] @[1100px]:h-[96px] shrink-0 rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center overflow-hidden">
-          <FlagImg code={news.countryCode} size={40} />
-        </span>
+        flagLink(
+          <span className={`${PICTURE} rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center overflow-hidden`}>
+            <FlagImg code={news.countryCode} size={40} />
+          </span>,
+          'block shrink-0',
+        )
       )}
       <div className="caption-text min-w-0 flex-1 text-left">
         <div className="flex items-center gap-2 min-w-0 text-xs @[900px]:text-sm">
@@ -484,7 +523,20 @@ function NewsRow({ news }: { news: NewsItem }) {
             </span>
             {t.newsLabel}
           </span>
-          <span className="text-white/50 truncate">{news.sourceName} · {formatRelativeTime(news.createdAt, locale, t.justNow)}</span>
+          <span className="text-white/50 truncate">
+            {/* Same tip as an opinio's SourceLink: "Source: theguardian.com". */}
+            <HoverTip label={`${t.sourceLink}: ${host(news.sourceUrl)}`} className="inline">
+              <a
+                href={news.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/70 hover:text-white underline decoration-white/30 underline-offset-2 hover:decoration-white transition-colors"
+              >
+                {news.sourceName}
+              </a>
+            </HoverTip>
+            {' · '}{formatRelativeTime(news.createdAt, locale, t.justNow)}
+          </span>
           {/* On the narrow card (1366-1536) the title already takes two lines,
               so the flag and the category ride up here instead of wrapping to
               a third; from 700px they sit after the title, as on every card. */}
