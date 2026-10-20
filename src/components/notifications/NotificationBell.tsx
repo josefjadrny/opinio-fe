@@ -77,10 +77,15 @@ export function NotificationBell({ onOpen }: NotificationBellProps) {
     if (next) onOpen?.();
   };
 
-  // Milestone lines open the opinio on its country view (the default).
+  // Milestone lines open the opinio on its country view (the default);
+  // support lines open the support window on their ticket.
   const openProfile = (item: NotificationItem) => {
     setOpen(false);
-    navigate('/p/' + item.profile.id + location.search);
+    if (item.ticket) {
+      navigate('/support' + location.search, { state: { ticketId: item.ticket.id } });
+      return;
+    }
+    if (item.profile) navigate('/p/' + item.profile.id + location.search);
   };
 
   const badge = unseen > 0 && (

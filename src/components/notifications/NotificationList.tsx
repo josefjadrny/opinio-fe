@@ -5,21 +5,24 @@ import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useNotifications, useMarkNotificationsSeen, useClickNotification } from '../../hooks/useNotifications';
 import type { NotificationItem } from '../../types/api';
 import { WASH } from '../common/wash';
+import { CategoryIcon, StatusPill } from '../support/supportIcons';
 
 // Kinds this build can draw. A later phase's kind reaching an older FE is
 // skipped rather than drawn as an empty row.
-const KNOWN_KINDS = new Set(['milestone']);
+const KNOWN_KINDS = new Set(['milestone', 'support']);
 
 // 🌱 1, 🔥 10, ⭐ 50, 💯 100, 🚀 250, 🏆 500, 👑 1000 and up.
 function milestoneIcon(m: number): string {
   return m >= 1000 ? '👑' : m >= 500 ? '🏆' : m >= 250 ? '🚀' : m >= 100 ? '💯' : m >= 50 ? '⭐' : m >= 10 ? '🔥' : '🌱';
 }
 
-// Splices the opinio name into a "{target} ..." template.
-function fill(template: string, target: ReactNode, n: ReactNode): ReactNode {
-  return template.split(/(\{target\}|\{n\})/).map((piece, i) =>
+// Splices the opinio name (or ticket title, the acting user, a status) into a
+// "{target} ..." template.
+function fill(template: string, target: ReactNode, n: ReactNode, extra: Record<string, ReactNode> = {}): ReactNode {
+  return template.split(/(\{target\}|\{n\}|\{actor\}|\{status\})/).map((piece, i) =>
     piece === '{target}' ? <Fragment key={i}>{target}</Fragment>
       : piece === '{n}' ? <Fragment key={i}>{n}</Fragment>
+      : piece in extra ? <Fragment key={i}>{extra[piece]}</Fragment>
       : <Fragment key={i}>{piece}</Fragment>,
   );
 }
@@ -28,11 +31,32 @@ function fill(template: string, target: ReactNode, n: ReactNode): ReactNode {
 // safe across engines.
 const toMs = (iso: string) => iso.replace(/(\.\d{3})\d+Z$/, '$1Z');
 
+// A ticket update. The ticket's author hears from "Opinio support" (never an
+// admin's handle); support's own lines name the user. The status pill is the
+// status as of the line's last update - the line stays static.
+function supportSentence(item: NotificationItem, t: ReturnType<typeof useI18n>['t'], target: ReactNode): ReactNode {
+  const ticket = item.ticket!;
+  const statusLabel = (ticket.isMine ? t.supportStatuses : t.supportStatusesStaff)[ticket.status] ?? ticket.status;
+  const status = <span className="font-semibold text-white/90">{statusLabel}</span>;
+  if (ticket.isMine) {
+    return ticket.event === 'status'
+      ? fill(t.notifSupportStatus, target, null, { '{status}': status })
+      : fill(t.notifSupportReplied, target, null);
+  }
+  const actor = <span className="font-semibold text-white/90">@{item.actors[0]?.handle ?? '?'}</span>;
+  if (ticket.event === 'created') return fill(t.notifSupportOpened, target, null, { '{actor}': actor });
+  if (ticket.event === 'message') return fill(t.notifSupportUserReplied, target, null, { '{actor}': actor });
+  return ticket.status === 'done'
+    ? fill(t.notifSupportUserClosed, target, null, { '{actor}': actor })
+    : fill(t.notifSupportStatus, target, null, { '{status}': status });
+}
+
 function NotificationRow({ item, index, onClick }: { item: NotificationItem; index: number; onClick: () => void }) {
   const { t, locale } = useI18n();
   const m = item.milestone ?? 0;
   const unread = !item.clicked;
-  const target = <span className={`font-semibold ${unread ? 'text-white' : 'text-white/80'}`}>{item.profile.name}</span>;
+  const ticket = item.ticket;
+  const target = <span className={`font-semibold ${unread ? 'text-white' : 'text-white/80'}`}>{ticket ? ticket.title : item.profile?.name}</span>;
   // The number is the news, so it gets a chip of its own inside the sentence.
   const number = (
     <span className={`inline-block px-1.5 rounded-md font-bold tabular-nums ${unread ? 'bg-white/[0.12] text-white' : 'bg-white/[0.06] text-white/75'}`}>
@@ -54,15 +78,44 @@ function NotificationRow({ item, index, onClick }: { item: NotificationItem; ind
       {/* Unclicked lines carry the brand's two sides as an edge bar. */}
       {unread && <span aria-hidden className="absolute left-0 top-3 bottom-3 w-[3px] rounded-r-full bg-gradient-to-b from-negative to-positive" />}
       <span className="shrink-0 transition-transform duration-200 group-hover:scale-105">
-        <Avatar name={item.profile.name} imageUrl={item.profile.imageUrl} className="w-11 h-11 ring-2 ring-white/10" />
+        {ticket ? (
+          // A ticket's picture is its category; support's lines carry the
+          // user's avatar with the category as a badge.
+          ticket.isMine || !item.actors[0] ? (
+            <span className="w-11 h-11 rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center">
+              <CategoryIcon category={ticket.category} className="w-8 h-8" />
+            </span>
+          ) : (
+            <span className="relative block">
+              <Avatar name={item.actors[0].handle} imageUrl={item.actors[0].avatarUrl} className="w-11 h-11 ring-2 ring-white/10" />
+              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-surface ring-1 ring-white/15 flex items-center justify-center">
+                <CategoryIcon category={ticket.category} className="w-4 h-4" />
+              </span>
+            </span>
+          )
+        ) : (
+          <Avatar name={item.profile?.name ?? '?'} imageUrl={item.profile?.imageUrl ?? null} className="w-11 h-11 ring-2 ring-white/10" />
+        )}
       </span>
       <span className="flex-1 min-w-0 pr-3">
         <span className={`block text-sm leading-relaxed break-words ${unread ? 'text-white/85' : 'text-white/60'}`}>
-          {/* The milestone glyph opens the sentence, leaving the picture clear. */}
-          <span aria-hidden className="mr-1.5">{milestoneIcon(m)}</span>
-          {m === 1 ? fill(t.notifMilestoneFirst, target, '1') : fill(t.notifMilestone, target, number)}
+          {ticket ? supportSentence(item, t, target) : (
+            <>
+              {/* The milestone glyph opens the sentence, leaving the picture clear. */}
+              <span aria-hidden className="mr-1.5">{milestoneIcon(m)}</span>
+              {m === 1 ? fill(t.notifMilestoneFirst, target, '1') : fill(t.notifMilestone, target, number)}
+            </>
+          )}
         </span>
-        <span className="block text-xs text-white/50 mt-1">{formatRelativeTime(toMs(item.updatedAt), locale, t.justNow)}</span>
+        <span className="flex items-center gap-2 text-xs text-white/50 mt-1">
+          {formatRelativeTime(toMs(item.updatedAt), locale, t.justNow)}
+          {ticket && (
+            <StatusPill
+              status={ticket.status}
+              label={(ticket.isMine ? t.supportStatuses : t.supportStatusesStaff)[ticket.status] ?? ticket.status}
+            />
+          )}
+        </span>
       </span>
       {/* Unclicked = tinted ring + a breathing dot, until this line (or a
           sibling) is clicked. */}

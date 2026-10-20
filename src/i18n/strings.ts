@@ -241,12 +241,29 @@ export interface Strings {
   supportSubmitting: string;
   supportBack: string;
   supportClose: string;
-  supportAdminReply: string;
   supportAdminNote: string;
   supportSave: string;
   supportStatusLabel: string;
   supportCategories: Record<string, string>;
   supportStatuses: Record<string, string>;
+  supportStatusesStaff: Record<string, string>;
+  supportStatusHints: Record<string, string>;
+  supportFromSupport: string;
+  supportYou: string;
+  supportReplyPlaceholder: string;
+  supportReopenPlaceholder: string;
+  supportSend: string;
+  supportSendHint: string;
+  supportSendFailed: string;
+  supportTooMany: string;
+  supportLoadFailed: string;
+  supportNewActivity: string;
+  supportStarted: string;
+  notifSupportReplied: string;
+  notifSupportStatus: string;
+  notifSupportOpened: string;
+  notifSupportUserReplied: string;
+  notifSupportUserClosed: string;
   roles: Record<string, string>;
   votesLeft: string;
   nextVote: string;
@@ -644,7 +661,6 @@ const en: Strings = {
   supportSubmitting: 'Submitting…',
   supportBack: 'Back',
   supportClose: 'Close ticket',
-  supportAdminReply: 'Reply to user',
   supportAdminNote: 'Internal note',
   supportSave: 'Save',
   supportStatusLabel: 'Status',
@@ -657,10 +673,38 @@ const en: Strings = {
   },
   supportStatuses: {
     new: 'New',
-    investigating: 'Investigating',
-    waiting: 'Waiting',
+    investigating: 'In progress',
+    waiting: 'Waiting for you',
     done: 'Done',
   },
+  supportStatusesStaff: {
+    new: 'New',
+    investigating: 'In progress',
+    waiting: 'Waiting for user',
+    done: 'Done',
+  },
+  supportStatusHints: {
+    new: 'We have your ticket and will look at it soon.',
+    investigating: "We're working on it.",
+    waiting: 'We answered - reply below to continue.',
+    done: 'Resolved. Write below if you need anything else.',
+  },
+  supportFromSupport: 'Opinio support',
+  supportYou: 'You',
+  supportReplyPlaceholder: 'Write a reply...',
+  supportReopenPlaceholder: 'Write to reopen the ticket...',
+  supportSend: 'Send',
+  supportSendHint: 'Ctrl+Enter to send',
+  supportSendFailed: 'Could not send - try again',
+  supportTooMany: 'Too many messages - wait a minute',
+  supportLoadFailed: 'Could not load the ticket',
+  supportNewActivity: 'New reply',
+  supportStarted: 'opened the ticket',
+  notifSupportReplied: 'Opinio support replied on {target}',
+  notifSupportStatus: '{target} is now {status}',
+  notifSupportOpened: '{actor} opened a ticket {target}',
+  notifSupportUserReplied: '{actor} replied on {target}',
+  notifSupportUserClosed: '{actor} closed {target}',
   roles: {
     politics: 'Politics',
     entertainment: 'Entertainment',
@@ -1083,7 +1127,6 @@ const cs: Strings = {
   supportSubmitting: 'Odesílání…',
   supportBack: 'Zpět',
   supportClose: 'Uzavřít požadavek',
-  supportAdminReply: 'Odpověď uživateli',
   supportAdminNote: 'Interní poznámka',
   supportSave: 'Uložit',
   supportStatusLabel: 'Stav',
@@ -1096,10 +1139,38 @@ const cs: Strings = {
   },
   supportStatuses: {
     new: 'Nový',
-    investigating: 'Prošetřujeme',
-    waiting: 'Čeká',
+    investigating: 'Řešíme',
+    waiting: 'Čeká na tebe',
     done: 'Vyřešeno',
   },
+  supportStatusesStaff: {
+    new: 'Nový',
+    investigating: 'Řešíme',
+    waiting: 'Čeká na uživatele',
+    done: 'Vyřešeno',
+  },
+  supportStatusHints: {
+    new: 'Požadavek máme a brzy se na něj podíváme.',
+    investigating: 'Pracujeme na tom.',
+    waiting: 'Odpověděli jsme - pokračuj odpovědí níže.',
+    done: 'Vyřešeno. Pokud potřebuješ ještě něco, napiš níže.',
+  },
+  supportFromSupport: 'Podpora Opinio',
+  supportYou: 'Ty',
+  supportReplyPlaceholder: 'Napiš odpověď...',
+  supportReopenPlaceholder: 'Napiš a požadavek se znovu otevře...',
+  supportSend: 'Odeslat',
+  supportSendHint: 'Ctrl+Enter odešle',
+  supportSendFailed: 'Nepodařilo se odeslat - zkus to znovu',
+  supportTooMany: 'Příliš mnoho zpráv - počkej minutu',
+  supportLoadFailed: 'Požadavek se nepodařilo načíst',
+  supportNewActivity: 'Nová odpověď',
+  supportStarted: 'otevřel(a) požadavek',
+  notifSupportReplied: 'Podpora Opinio odpověděla na {target}',
+  notifSupportStatus: '{target}: nyní {status}',
+  notifSupportOpened: '{actor} otevřel(a) požadavek {target}',
+  notifSupportUserReplied: '{actor} odpověděl(a) na {target}',
+  notifSupportUserClosed: '{actor} uzavřel(a) {target}',
   roles: {
     politics: 'Politika',
     entertainment: 'Zábava',
@@ -1524,7 +1595,6 @@ const es: Strings = {
   supportSubmitting: 'Enviando…',
   supportBack: 'Volver',
   supportClose: 'Cerrar ticket',
-  supportAdminReply: 'Respuesta al usuario',
   supportAdminNote: 'Nota interna',
   supportSave: 'Guardar',
   supportStatusLabel: 'Estado',
@@ -1537,10 +1607,38 @@ const es: Strings = {
   },
   supportStatuses: {
     new: 'Nuevo',
-    investigating: 'Investigando',
-    waiting: 'En espera',
+    investigating: 'En curso',
+    waiting: 'Esperando tu respuesta',
     done: 'Resuelto',
   },
+  supportStatusesStaff: {
+    new: 'Nuevo',
+    investigating: 'En curso',
+    waiting: 'Esperando al usuario',
+    done: 'Resuelto',
+  },
+  supportStatusHints: {
+    new: 'Tenemos tu ticket y lo revisaremos pronto.',
+    investigating: 'Estamos trabajando en ello.',
+    waiting: 'Te hemos respondido - contesta abajo para continuar.',
+    done: 'Resuelto. Escribe abajo si necesitas algo más.',
+  },
+  supportFromSupport: 'Soporte de Opinio',
+  supportYou: 'Tú',
+  supportReplyPlaceholder: 'Escribe una respuesta...',
+  supportReopenPlaceholder: 'Escribe para reabrir el ticket...',
+  supportSend: 'Enviar',
+  supportSendHint: 'Ctrl+Enter para enviar',
+  supportSendFailed: 'No se pudo enviar - inténtalo de nuevo',
+  supportTooMany: 'Demasiados mensajes - espera un minuto',
+  supportLoadFailed: 'No se pudo cargar el ticket',
+  supportNewActivity: 'Nueva respuesta',
+  supportStarted: 'abrió el ticket',
+  notifSupportReplied: 'El soporte de Opinio respondió en {target}',
+  notifSupportStatus: '{target} ahora: {status}',
+  notifSupportOpened: '{actor} abrió un ticket {target}',
+  notifSupportUserReplied: '{actor} respondió en {target}',
+  notifSupportUserClosed: '{actor} cerró {target}',
   roles: {
     politics: 'Política',
     entertainment: 'Entretenimiento',
@@ -1963,7 +2061,6 @@ const de: Strings = {
   supportSubmitting: 'Wird gesendet…',
   supportBack: 'Zurück',
   supportClose: 'Ticket schließen',
-  supportAdminReply: 'Antwort an Nutzer',
   supportAdminNote: 'Interne Notiz',
   supportSave: 'Speichern',
   supportStatusLabel: 'Status',
@@ -1976,10 +2073,38 @@ const de: Strings = {
   },
   supportStatuses: {
     new: 'Neu',
-    investigating: 'In Prüfung',
-    waiting: 'Wartet',
+    investigating: 'In Bearbeitung',
+    waiting: 'Wartet auf dich',
     done: 'Erledigt',
   },
+  supportStatusesStaff: {
+    new: 'Neu',
+    investigating: 'In Bearbeitung',
+    waiting: 'Wartet auf Nutzer',
+    done: 'Erledigt',
+  },
+  supportStatusHints: {
+    new: 'Wir haben dein Ticket und sehen es uns bald an.',
+    investigating: 'Wir arbeiten daran.',
+    waiting: 'Wir haben geantwortet - antworte unten, um fortzufahren.',
+    done: 'Erledigt. Schreib unten, wenn du noch etwas brauchst.',
+  },
+  supportFromSupport: 'Opinio-Support',
+  supportYou: 'Du',
+  supportReplyPlaceholder: 'Antwort schreiben...',
+  supportReopenPlaceholder: 'Schreib, um das Ticket wieder zu öffnen...',
+  supportSend: 'Senden',
+  supportSendHint: 'Strg+Enter zum Senden',
+  supportSendFailed: 'Senden fehlgeschlagen - versuch es erneut',
+  supportTooMany: 'Zu viele Nachrichten - warte eine Minute',
+  supportLoadFailed: 'Ticket konnte nicht geladen werden',
+  supportNewActivity: 'Neue Antwort',
+  supportStarted: 'hat das Ticket eröffnet',
+  notifSupportReplied: 'Der Opinio-Support hat auf {target} geantwortet',
+  notifSupportStatus: '{target} ist jetzt {status}',
+  notifSupportOpened: '{actor} hat ein Ticket eröffnet: {target}',
+  notifSupportUserReplied: '{actor} hat auf {target} geantwortet',
+  notifSupportUserClosed: '{actor} hat {target} geschlossen',
   roles: {
     politics: 'Politik',
     entertainment: 'Unterhaltung',
@@ -2402,7 +2527,6 @@ const fr: Strings = {
   supportSubmitting: 'Envoi…',
   supportBack: 'Retour',
   supportClose: 'Fermer le ticket',
-  supportAdminReply: "Réponse à l'utilisateur",
   supportAdminNote: 'Note interne',
   supportSave: 'Enregistrer',
   supportStatusLabel: 'Statut',
@@ -2416,9 +2540,37 @@ const fr: Strings = {
   supportStatuses: {
     new: 'Nouveau',
     investigating: 'En cours',
-    waiting: 'En attente',
+    waiting: 'En attente de votre réponse',
     done: 'Résolu',
   },
+  supportStatusesStaff: {
+    new: 'Nouveau',
+    investigating: 'En cours',
+    waiting: "En attente de l'utilisateur",
+    done: 'Résolu',
+  },
+  supportStatusHints: {
+    new: 'Nous avons reçu votre ticket et allons le traiter bientôt.',
+    investigating: 'Nous nous en occupons.',
+    waiting: 'Nous avons répondu - répondez ci-dessous pour continuer.',
+    done: "Résolu. Écrivez ci-dessous si vous avez besoin d'autre chose.",
+  },
+  supportFromSupport: 'Support Opinio',
+  supportYou: 'Vous',
+  supportReplyPlaceholder: 'Écrire une réponse...',
+  supportReopenPlaceholder: 'Écrivez pour rouvrir le ticket...',
+  supportSend: 'Envoyer',
+  supportSendHint: 'Ctrl+Entrée pour envoyer',
+  supportSendFailed: "Échec de l'envoi - réessayez",
+  supportTooMany: 'Trop de messages - attendez une minute',
+  supportLoadFailed: 'Impossible de charger le ticket',
+  supportNewActivity: 'Nouvelle réponse',
+  supportStarted: 'a ouvert le ticket',
+  notifSupportReplied: 'Le support Opinio a répondu sur {target}',
+  notifSupportStatus: '{target} est maintenant {status}',
+  notifSupportOpened: '{actor} a ouvert un ticket {target}',
+  notifSupportUserReplied: '{actor} a répondu sur {target}',
+  notifSupportUserClosed: '{actor} a fermé {target}',
   roles: {
     politics: 'Politique',
     entertainment: 'Divertissement',
@@ -2841,7 +2993,6 @@ const it: Strings = {
   supportSubmitting: 'Invio…',
   supportBack: 'Indietro',
   supportClose: 'Chiudi ticket',
-  supportAdminReply: 'Risposta all\'utente',
   supportAdminNote: 'Nota interna',
   supportSave: 'Salva',
   supportStatusLabel: 'Stato',
@@ -2855,9 +3006,37 @@ const it: Strings = {
   supportStatuses: {
     new: 'Nuovo',
     investigating: 'In corso',
-    waiting: 'In attesa',
+    waiting: 'In attesa della tua risposta',
     done: 'Risolto',
   },
+  supportStatusesStaff: {
+    new: 'Nuovo',
+    investigating: 'In corso',
+    waiting: "In attesa dell'utente",
+    done: 'Risolto',
+  },
+  supportStatusHints: {
+    new: 'Abbiamo ricevuto il tuo ticket e lo esamineremo presto.',
+    investigating: 'Ci stiamo lavorando.',
+    waiting: 'Abbiamo risposto - rispondi qui sotto per continuare.',
+    done: 'Risolto. Scrivi qui sotto se ti serve altro.',
+  },
+  supportFromSupport: 'Supporto Opinio',
+  supportYou: 'Tu',
+  supportReplyPlaceholder: 'Scrivi una risposta...',
+  supportReopenPlaceholder: 'Scrivi per riaprire il ticket...',
+  supportSend: 'Invia',
+  supportSendHint: 'Ctrl+Invio per inviare',
+  supportSendFailed: 'Invio non riuscito - riprova',
+  supportTooMany: 'Troppi messaggi - attendi un minuto',
+  supportLoadFailed: 'Impossibile caricare il ticket',
+  supportNewActivity: 'Nuova risposta',
+  supportStarted: 'ha aperto il ticket',
+  notifSupportReplied: 'Il supporto Opinio ha risposto su {target}',
+  notifSupportStatus: '{target} ora è {status}',
+  notifSupportOpened: '{actor} ha aperto un ticket {target}',
+  notifSupportUserReplied: '{actor} ha risposto su {target}',
+  notifSupportUserClosed: '{actor} ha chiuso {target}',
   roles: {
     politics: 'Politica',
     entertainment: 'Intrattenimento',
@@ -3280,7 +3459,6 @@ const pl: Strings = {
   supportSubmitting: 'Wysyłanie…',
   supportBack: 'Wstecz',
   supportClose: 'Zamknij zgłoszenie',
-  supportAdminReply: 'Odpowiedź dla użytkownika',
   supportAdminNote: 'Notatka wewnętrzna',
   supportSave: 'Zapisz',
   supportStatusLabel: 'Status',
@@ -3294,9 +3472,37 @@ const pl: Strings = {
   supportStatuses: {
     new: 'Nowe',
     investigating: 'W trakcie',
-    waiting: 'Oczekuje',
+    waiting: 'Czeka na Ciebie',
     done: 'Rozwiązane',
   },
+  supportStatusesStaff: {
+    new: 'Nowe',
+    investigating: 'W trakcie',
+    waiting: 'Czeka na użytkownika',
+    done: 'Rozwiązane',
+  },
+  supportStatusHints: {
+    new: 'Mamy Twoje zgłoszenie i wkrótce się nim zajmiemy.',
+    investigating: 'Pracujemy nad tym.',
+    waiting: 'Odpowiedzieliśmy - odpowiedz poniżej, aby kontynuować.',
+    done: 'Rozwiązane. Napisz poniżej, jeśli potrzebujesz czegoś jeszcze.',
+  },
+  supportFromSupport: 'Wsparcie Opinio',
+  supportYou: 'Ty',
+  supportReplyPlaceholder: 'Napisz odpowiedź...',
+  supportReopenPlaceholder: 'Napisz, aby ponownie otworzyć zgłoszenie...',
+  supportSend: 'Wyślij',
+  supportSendHint: 'Ctrl+Enter, aby wysłać',
+  supportSendFailed: 'Nie udało się wysłać - spróbuj ponownie',
+  supportTooMany: 'Za dużo wiadomości - poczekaj minutę',
+  supportLoadFailed: 'Nie udało się wczytać zgłoszenia',
+  supportNewActivity: 'Nowa odpowiedź',
+  supportStarted: 'otworzył(a) zgłoszenie',
+  notifSupportReplied: 'Wsparcie Opinio odpowiedziało w {target}',
+  notifSupportStatus: '{target}: teraz {status}',
+  notifSupportOpened: '{actor} otworzył(a) zgłoszenie {target}',
+  notifSupportUserReplied: '{actor} odpowiedział(a) w {target}',
+  notifSupportUserClosed: '{actor} zamknął/zamknęła {target}',
   roles: {
     politics: 'Polityka',
     entertainment: 'Rozrywka',

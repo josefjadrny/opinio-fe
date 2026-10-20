@@ -15,6 +15,7 @@ const VIEW_KINDS: Record<NotificationKind, NotificationKind[]> = {
   vote: ['milestone', 'vote'],
   comment: ['comment', 'mention'],
   mention: ['comment', 'mention'],
+  support: ['support'],
 };
 
 // The click POST still in flight when the panel closes. The next open waits
@@ -71,7 +72,8 @@ export function useClickNotification() {
         ...page,
         items: page.items.map((i) =>
           i.id === item.id
-          || (i.profile.id === item.profile.id && kinds.includes(i.kind) && !i.clicked && i.updatedAt <= shownAt)
+          // A support line has no opinio and no siblings: one open line per ticket.
+          || (!!item.profile && i.profile?.id === item.profile.id && kinds.includes(i.kind) && !i.clicked && i.updatedAt <= shownAt)
             ? { ...i, clicked: true, seen: true }
             : i),
       })),

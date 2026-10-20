@@ -1,7 +1,7 @@
 import type {
   ProfilesResponse, CountryProfilesResponse, CountryDiscussedResponse, MeResponse,
   VoteResponse, ProfileFilters, VoteType, PersonBreakdownResponse,
-  SupportTicket, UserDetailResponse, ProfileReportGroup, Person, NewsItem,
+  SupportTicket, SupportTicketDetail, SupportMessage, UserDetailResponse, ProfileReportGroup, Person, NewsItem,
 } from '../types/api';
 
 const API_URL = import.meta.env.OPINIO_API_URL as string;
@@ -305,8 +305,16 @@ export function updateSupportStatus(id: string, status: string): Promise<{ ok: b
   return apiFetch(`/api/support/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) });
 }
 
-export function updateSupportReply(id: string, adminReply: string): Promise<{ ok: boolean }> {
-  return apiFetch(`/api/support/${id}/reply`, { method: 'PATCH', body: JSON.stringify({ adminReply }) });
+export function getSupportTicket(id: string): Promise<SupportTicketDetail> {
+  return apiFetch(`/api/support/${id}`);
+}
+
+export function postSupportMessage(id: string, body: string): Promise<{ message: SupportMessage; status: SupportTicket['status'] }> {
+  return apiFetch(`/api/support/${id}/messages`, { method: 'POST', body: JSON.stringify({ body }) });
+}
+
+export function markSupportRead(id: string): Promise<{ status: SupportTicket['status']; unseenNotifications: number }> {
+  return apiFetch(`/api/support/${id}/read`, { method: 'POST' });
 }
 
 export function updateSupportNote(id: string, adminNote: string): Promise<{ ok: boolean }> {

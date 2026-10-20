@@ -45,7 +45,7 @@ import { PrivacyModal } from './components/filters/PrivacyModal';
 import { TermsModal } from './components/filters/TermsModal';
 import { StatsModal } from './components/filters/StatsModal';
 import { slugToCategory } from './components/filters/statsCategory';
-import { SupportModal } from './components/filters/SupportModal';
+import { SupportModal } from './components/support/SupportModal';
 import { ViewerModeModal } from './components/filters/ViewerModeModal';
 import { WelcomeModal } from './components/filters/WelcomeModal';
 import { useMe } from './hooks/useMe';
@@ -517,7 +517,10 @@ function StatsRoute() {
 
 function SupportRoute() {
   const close = useModalClose();
-  return <SupportModal onClose={close} />;
+  // Keyed by the history entry: a bell line clicked while the window is
+  // already open must open its ticket, not keep the view it had.
+  const location = useLocation();
+  return <SupportModal key={location.key} onClose={close} />;
 }
 
 // Static entry point for the signed-in user's own profile, which otherwise

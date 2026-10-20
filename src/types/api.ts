@@ -62,7 +62,7 @@ export interface MeResponse {
 
 // One line in the notifications panel. Phase 1 writes only `milestone`; the
 // other kinds come with later phases and the FE skips any kind it does not know.
-export type NotificationKind = 'milestone' | 'vote' | 'comment' | 'mention';
+export type NotificationKind = 'milestone' | 'vote' | 'comment' | 'mention' | 'support';
 
 export interface NotificationItem {
   id: string;
@@ -74,8 +74,19 @@ export interface NotificationItem {
   actors: { id: string; handle: string; avatarUrl: string | null; countryCode: string | null }[];
   moreCount: number;
   milestone: number | null;
-  profile: { id: string; name: string; imageUrl: string | null; countryCode: string; isMine: boolean };
+  /** Null on a `support` line - it belongs to a ticket, not an opinio. */
+  profile: { id: string; name: string; imageUrl: string | null; countryCode: string; isMine: boolean } | null;
   commentId: string | null;
+  /** `support` lines only. event/status are as of the line's last update. */
+  ticket?: {
+    id: string;
+    title: string;
+    category: SupportTicketCategory;
+    event: 'created' | 'message' | 'status';
+    status: SupportTicketStatus;
+    /** The recipient wrote the ticket (else they are support). */
+    isMine: boolean;
+  } | null;
 }
 
 export interface NotificationsResponse {
@@ -249,14 +260,38 @@ export interface SupportTicket {
   description: string;
   category: SupportTicketCategory;
   status: SupportTicketStatus;
+  /** The latest support message - kept for older clients; the thread is `messages`. */
   adminReply: string | null;
+  messageCount: number;
+  lastActivityAt: string;
+  /** Who wrote last: support (true) or the ticket's author. */
+  lastFromStaff: boolean;
+  /** The newest message of either side; null before the first answer. */
+  lastMessage: string | null;
+  /** The viewer has an unclicked bell line for this ticket. */
+  unread: boolean;
   adminNote?: string | null;
+  userId?: string;
   userDisplayName?: string;
   userCountryCode?: string | null;
   userTier?: string | null;
   userAvatarUrl?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SupportMessage {
+  id: string;
+  body: string;
+  /** Support's message - shown as "Opinio support", never an admin's handle. */
+  fromStaff: boolean;
+  createdAt: string;
+  /** Admin view only: which admin wrote it. */
+  staffHandle?: string | null;
+}
+
+export interface SupportTicketDetail extends SupportTicket {
+  messages: SupportMessage[];
 }
 
 export type ReporterTier = 'anonymous' | 'registered' | 'supporter' | 'admin';

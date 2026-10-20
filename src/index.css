@@ -563,6 +563,19 @@ body {
   .send-check path { animation: none; stroke-dashoffset: 0; }
 }
 
+/* Support window: each view (list, new ticket, a ticket) slides in from the
+   right as it opens. */
+@keyframes support-view-in {
+  from { opacity: 0; transform: translateX(14px); }
+  to   { opacity: 1; transform: none; }
+}
+.support-view-in {
+  animation: support-view-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .support-view-in { animation: none; }
+}
+
 /* ── User page: sentiment ring, header wash, activity timeline ───────────────
    The ring around a user's picture (and a country's flag) is the like share
    of the live 24h votes: green arc from 12 o'clock, red for the rest, drawn
