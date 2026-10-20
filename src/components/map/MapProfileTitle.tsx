@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type AnimationEvent, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type AnimationEvent, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useFilters } from '../../context/useFilters';
 import { getCountryName } from '../../utils/countries';
@@ -25,11 +25,27 @@ export type CaptionSubject =
 type Shown = CaptionSubject | { kind: 'news'; key: string; news: NewsItem };
 
 // The default state rotates: the Opinio mark first - it is what a new visitor
-// should read before anything else - then the four newest news items (the
+// should read before anything else - then the five newest news items (the
 // last 12 hours), 10s each, then the mark again. No news, no rotation. It
 // holds while the pointer is on the card and while HotBanner has the slot, and
 // never advances by itself under reduced motion; the dots switch by hand.
+//
+// Holding pauses the slide's clock, it does not restart it: moving the pointer
+// across the card on the way to the map used to hand the slide a fresh 10s
+// every time.
+//
+// One cycle for the whole visit, and opening or closing a detail never moves
+// it - like the sidebars behind a detail, which stay where they were. A detail
+// only changes what the FIRST slot holds (the mark, the opinio, the country):
+// if that slot is up, it crossfades to the new subject and gets a fresh 10s
+// (the change was asked for, so it is not the banner moving by itself); if a
+// news item is up, nothing on screen changes and the new subject waits for its
+// turn. So the caption can name something other than the tint for a while -
+// accepted: the modal and the sidebars name the opinio, and the X sits on the
+// card through the news. A fresh load always starts on the first slot, so a
+// first visit and a crawler still get the opinio's h1 / home's h2 there.
 const SLIDE_MS = 10_000;
+const SUBJECT_SLOT = 'subject';
 
 // The caption above the map. Three states, same slot:
 //
@@ -145,15 +161,17 @@ const SLIDE_MS = 10_000;
 // from. It holds no layout of its own beyond the stack; the row does that.
 //
 // One fixed height for every state (min-h on the stack), sized for the news
-// row - label, two-line title, a line of text - so the card never jumps as the
+// row - label, two-line title, two lines of text - so the card never jumps as the
 // rotation or the subject changes. It grows with the card's width, since a wide
 // card has the room to say more: at 1366-1536 (460px card) the title takes two
-// lines and the text one; from 700px of card (Full HD) the title holds one line
-// and the text gets two; from 1100px (2560 and up) the picture and the type
-// step up as well.
+// lines and so does the text - one line of text there was all a MacBook (1440,
+// 1512) ever showed of it; from 700px of card (Full HD) the title holds one
+// line; from 900px the text steps up a size, and from 1100px (2560 and up) the
+// picture and the type do as well. Each minimum is the tallest news row
+// measured at that size, so no slide makes the card grow.
 const CARD =
   '@container relative w-full rounded-xl bg-surface-light/60 backdrop-blur-md ring-1 ring-white/[0.08] shadow-xl shadow-black/20 px-5 py-[14px]';
-const STACK_HEIGHT = 'min-h-[102px] @[700px]:min-h-[112px] @[1100px]:min-h-[128px]';
+const STACK_HEIGHT = 'min-h-[116px] @[700px]:min-h-[112px] @[900px]:min-h-[120px] @[1100px]:min-h-[128px]';
 
 // One subject's row inside the shell.
 const ROW = 'flex w-full items-center justify-center gap-4';
@@ -252,30 +270,60 @@ export function MapProfileTitle({
   // The slide is followed by its key, not its position: a new item enters the
   // list at the top and shifts every news slide down one, and a position would
   // swap the story on screen mid-turn (it then got a few seconds, and the next
-  // turn showed it again). A key that left the list (aged out) restarts at the mark.
-  const [slideKey, setSlideKey] = useState(subjectKey);
+  // turn showed it again). A key that left the list (aged out) restarts at the
+  // first slot. The first slot's key is SUBJECT_SLOT whatever it holds, which is
+  // what keeps the cycle's place when the subject changes.
+  const [slideKey, setSlideKey] = useState(SUBJECT_SLOT);
   const [hovered, setHovered] = useState(false);
-  // A new subject (a click opening an opinio or a country, or closing one)
-  // returns the caption to its subject slide with the swap's snap; only the
-  // rotation's own steps dissolve. Adjusted during render rather than in an
-  // effect, which would paint one frame of the old slide first.
+  // Bumped to give the slide on screen a fresh clock without moving the cycle.
+  const [turn, setTurn] = useState(0);
+  // A new subject while the first slot is up: the swap's snap and a fresh 10s
+  // (see the note at SLIDE_MS); otherwise nothing. Adjusted during render
+  // rather than in an effect, which would paint one frame of the old slide.
   const [lastSubjectKey, setLastSubjectKey] = useState(subjectKey);
   const [snap, setSnap] = useState(false);
   if (lastSubjectKey !== subjectKey) {
     setLastSubjectKey(subjectKey);
-    setSlideKey(subjectKey);
-    setSnap(true);
+    if (slideKey === SUBJECT_SLOT) {
+      setSnap(true);
+      setTurn((n) => n + 1);
+    }
   }
-  const goTo = (key: string) => { setSnap(false); setSlideKey(key); };
-  const keyOf = (x: Shown | null) => x?.key ?? 'global';
-  const at = Math.max(0, slides.findIndex((x) => keyOf(x) === slideKey));
-  const nextKey = keyOf(slides[(at + 1) % slides.length]);
+  const goTo = (key: string) => { setSnap(false); setSlideKey(key); setTurn((n) => n + 1); };
+  const keyOf = (x: Shown | null, i: number) => (i === 0 ? SUBJECT_SLOT : x?.key ?? SUBJECT_SLOT);
+  const at = Math.max(0, slides.findIndex((x, i) => keyOf(x, i) === slideKey));
+  const nextKey = keyOf(slides[(at + 1) % slides.length], (at + 1) % slides.length);
   const paused = hovered || suppressed || reducedMotion || slides.length < 2;
+  // The time the slide on screen has already been up, so a hold resumes it
+  // rather than restarting it. One entry is enough: a slide that is left starts
+  // from zero the next time round.
+  const spentRef = useRef({ key: '', ms: 0 });
+  const progressRef = useRef<HTMLSpanElement>(null);
+  const clockKey = slideKey + '#' + turn;
+  // The timer and the progress pill run off the same clock: the pill's CSS
+  // animation is seeked to the time spent and paused with the timer, so it
+  // holds where it is instead of emptying.
   useEffect(() => {
+    const clock = spentRef.current;
+    const spent = clock.key === clockKey ? clock.ms : 0;
+    const anim = progressRef.current?.getAnimations()[0];
+    if (anim) { anim.currentTime = spent; anim.pause(); }
     if (paused) return;
-    const timer = setTimeout(() => { setSnap(false); setSlideKey(nextKey); }, SLIDE_MS);
-    return () => clearTimeout(timer);
-  }, [paused, slideKey, nextKey]);
+    anim?.play();
+    const since = performance.now();
+    let done = false;
+    const timer = setTimeout(() => {
+      done = true;
+      setSnap(false);
+      setSlideKey(nextKey);
+    }, Math.max(0, SLIDE_MS - spent));
+    return () => {
+      clearTimeout(timer);
+      anim?.pause();
+      clock.key = done ? '' : clockKey;
+      clock.ms = done ? 0 : spent + performance.now() - since;
+    };
+  }, [paused, clockKey, nextKey]);
   const shown: Shown | null = slides[at];
   // Subject keys are namespaced by kind ('p:<id>' / 'c:<CODE>' / 'n:<id>'), so
   // an opinio, a country and a news item can never collide and moving between
@@ -328,16 +376,16 @@ export function MapProfileTitle({
           <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-1">
             {slides.map((s, i) => (
               <button
-                key={keyOf(s)}
+                key={keyOf(s, i)}
                 type="button"
-                onClick={() => goTo(keyOf(s))}
+                onClick={() => goTo(keyOf(s, i))}
                 aria-label={s?.kind === 'news' ? s.news.title : s?.kind === 'profile' ? s.profile.name : s?.kind === 'country' ? s.name : t.appName}
                 aria-current={i === at || undefined}
                 className="p-1.5"
               >
                 {/* The active dot stretches into a pill that fills over the
-                    slide's 10s. Held (hover, banner) it empties and starts
-                    over on release - the timer restarts the same way. Reduced
+                    slide's 10s. Held (hover, banner) it stops where it is and
+                    goes on from there on release, with the timer. Reduced
                     motion has no timer, so the pill is simply full. */}
                 <span
                   className={`relative block h-2 rounded-full overflow-hidden bg-white/25 transition-[width,background-color] duration-500 ease-out ${
@@ -347,9 +395,10 @@ export function MapProfileTitle({
                   {i === at && (
                     reducedMotion ? (
                       <span className="absolute inset-0 bg-white/70" />
-                    ) : !paused && (
+                    ) : (
                       <span
-                        key={at}
+                        key={clockKey}
+                        ref={progressRef}
                         className="absolute inset-0 bg-white/70 caption-progress"
                         style={{ animationDuration: `${SLIDE_MS}ms` }}
                       />
@@ -586,7 +635,7 @@ function NewsRow({ news }: { news: NewsItem }) {
           </span>
           <span className="hidden @[700px]:flex items-center gap-2 shrink-0">{tags(24)}</span>
         </div>
-        <p className="text-text-secondary leading-snug mt-0.5 text-sm line-clamp-1 @[700px]:line-clamp-2 @[900px]:text-base">{news.body}</p>
+        <p className="text-text-secondary leading-snug mt-0.5 text-sm line-clamp-2 @[900px]:text-base">{news.body}</p>
       </div>
     </div>
   );
