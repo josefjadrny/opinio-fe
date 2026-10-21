@@ -260,6 +260,7 @@ export interface Strings {
   supportNewActivity: string;
   supportStarted: string;
   notifSupportReplied: string;
+  notifSupportClosed: string;
   notifSupportStatus: string;
   notifSupportOpened: string;
   notifSupportUserReplied: string;
@@ -701,6 +702,7 @@ const en: Strings = {
   supportNewActivity: 'New reply',
   supportStarted: 'opened the ticket',
   notifSupportReplied: 'Opinio support replied on {target}',
+  notifSupportClosed: 'Opinio support closed {target}',
   notifSupportStatus: '{target} is now {status}',
   notifSupportOpened: '{actor} opened a ticket {target}',
   notifSupportUserReplied: '{actor} replied on {target}',
@@ -1167,6 +1169,7 @@ const cs: Strings = {
   supportNewActivity: 'Nová odpověď',
   supportStarted: 'otevřel(a) požadavek',
   notifSupportReplied: 'Podpora Opinio odpověděla na {target}',
+  notifSupportClosed: 'Podpora Opinio uzavřela {target}',
   notifSupportStatus: '{target}: nyní {status}',
   notifSupportOpened: '{actor} otevřel(a) požadavek {target}',
   notifSupportUserReplied: '{actor} odpověděl(a) na {target}',
@@ -1635,6 +1638,7 @@ const es: Strings = {
   supportNewActivity: 'Nueva respuesta',
   supportStarted: 'abrió el ticket',
   notifSupportReplied: 'El soporte de Opinio respondió en {target}',
+  notifSupportClosed: 'El soporte de Opinio cerró {target}',
   notifSupportStatus: '{target} ahora: {status}',
   notifSupportOpened: '{actor} abrió un ticket {target}',
   notifSupportUserReplied: '{actor} respondió en {target}',
@@ -2101,6 +2105,7 @@ const de: Strings = {
   supportNewActivity: 'Neue Antwort',
   supportStarted: 'hat das Ticket eröffnet',
   notifSupportReplied: 'Der Opinio-Support hat auf {target} geantwortet',
+  notifSupportClosed: 'Der Opinio-Support hat {target} geschlossen',
   notifSupportStatus: '{target} ist jetzt {status}',
   notifSupportOpened: '{actor} hat ein Ticket eröffnet: {target}',
   notifSupportUserReplied: '{actor} hat auf {target} geantwortet',
@@ -2567,6 +2572,7 @@ const fr: Strings = {
   supportNewActivity: 'Nouvelle réponse',
   supportStarted: 'a ouvert le ticket',
   notifSupportReplied: 'Le support Opinio a répondu sur {target}',
+  notifSupportClosed: 'Le support Opinio a fermé {target}',
   notifSupportStatus: '{target} est maintenant {status}',
   notifSupportOpened: '{actor} a ouvert un ticket {target}',
   notifSupportUserReplied: '{actor} a répondu sur {target}',
@@ -3033,6 +3039,7 @@ const it: Strings = {
   supportNewActivity: 'Nuova risposta',
   supportStarted: 'ha aperto il ticket',
   notifSupportReplied: 'Il supporto Opinio ha risposto su {target}',
+  notifSupportClosed: 'Il supporto Opinio ha chiuso {target}',
   notifSupportStatus: '{target} ora è {status}',
   notifSupportOpened: '{actor} ha aperto un ticket {target}',
   notifSupportUserReplied: '{actor} ha risposto su {target}',
@@ -3499,6 +3506,7 @@ const pl: Strings = {
   supportNewActivity: 'Nowa odpowiedź',
   supportStarted: 'otworzył(a) zgłoszenie',
   notifSupportReplied: 'Wsparcie Opinio odpowiedziało w {target}',
+  notifSupportClosed: 'Wsparcie Opinio zamknęło {target}',
   notifSupportStatus: '{target}: teraz {status}',
   notifSupportOpened: '{actor} otworzył(a) zgłoszenie {target}',
   notifSupportUserReplied: '{actor} odpowiedział(a) w {target}',

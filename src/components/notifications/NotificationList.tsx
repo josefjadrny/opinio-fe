@@ -34,21 +34,25 @@ const toMs = (iso: string) => iso.replace(/(\.\d{3})\d+Z$/, '$1Z');
 // A ticket update. The ticket's author hears from "Opinio support" (never an
 // admin's handle); support's own lines name the user. The status pill is the
 // status as of the line's last update - the line stays static.
+//
+// A close outranks every other event on the line: only the other side's
+// actions reach a line, so `done` always means they closed it - even when a
+// reply merged into the same unclicked line first (the reply is on the ticket).
 function supportSentence(item: NotificationItem, t: ReturnType<typeof useI18n>['t'], target: ReactNode): ReactNode {
   const ticket = item.ticket!;
   const statusLabel = (ticket.isMine ? t.supportStatuses : t.supportStatusesStaff)[ticket.status] ?? ticket.status;
   const status = <span className="font-semibold text-white/90">{statusLabel}</span>;
   if (ticket.isMine) {
+    if (ticket.status === 'done') return fill(t.notifSupportClosed, target, null);
     return ticket.event === 'status'
       ? fill(t.notifSupportStatus, target, null, { '{status}': status })
       : fill(t.notifSupportReplied, target, null);
   }
   const actor = <span className="font-semibold text-white/90">@{item.actors[0]?.handle ?? '?'}</span>;
+  if (ticket.status === 'done') return fill(t.notifSupportUserClosed, target, null, { '{actor}': actor });
   if (ticket.event === 'created') return fill(t.notifSupportOpened, target, null, { '{actor}': actor });
   if (ticket.event === 'message') return fill(t.notifSupportUserReplied, target, null, { '{actor}': actor });
-  return ticket.status === 'done'
-    ? fill(t.notifSupportUserClosed, target, null, { '{actor}': actor })
-    : fill(t.notifSupportStatus, target, null, { '{status}': status });
+  return fill(t.notifSupportStatus, target, null, { '{status}': status });
 }
 
 function NotificationRow({ item, index, onClick }: { item: NotificationItem; index: number; onClick: () => void }) {
