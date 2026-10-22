@@ -16,7 +16,7 @@ type Phase = 'in' | 'hold' | 'out' | 'gap';
 // The two things the live slot announces. Same card, timing and behaviour;
 // the accent and the label tell them apart at a glance - orange is the
 // app's "new" signal and stays with opinios. News takes the brand red as a
-// broadcast-style LIVE pill: the pill's text is the lifted red, since
+// broadcast-style pulsing NEWS pill: the pill's text is the lifted red, since
 // --color-accent itself sits just under 4.5:1 on the navy.
 const VARIANTS = {
   opinio: {
@@ -219,7 +219,7 @@ export function HotBanner({
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 min-w-0">
             <div className={`shrink-0 uppercase font-bold ${v.label} ${mobile ? 'text-[11px] tracking-widest' : 'text-xs tracking-[0.16em] min-[2200px]:text-sm'}`}>
-              {/* The dot pings on the same 2s-ish beat as the LIVE pill's glow. */}
+              {/* The dot pings on the same 2s-ish beat as the news pill's glow. */}
               <span className={`relative inline-flex mr-1.5 align-middle ${mobile ? 'w-1.5 h-1.5' : 'w-2 h-2'}`}>
                 <span className={`absolute inset-0 rounded-full ${v.dot} animate-ping motion-reduce:hidden`} />
                 <span className={`relative w-full h-full rounded-full ${v.dot}`} />

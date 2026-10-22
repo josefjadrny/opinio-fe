@@ -474,7 +474,7 @@ body {
 }
 .caption-progress { animation: caption-progress linear both; transform-origin: left; }
 
-/* The LIVE pill breathes: a soft brand-red glow swells out of its edge and
+/* The news pill breathes: a soft brand-red glow swells out of its edge and
    fades, every 2s, so the label reads as on-air rather than as a static tag.
    Its dot carries a ping ring (Tailwind's animate-ping) on the same beat. */
 @keyframes live-glow {

@@ -359,7 +359,7 @@ export function MapProfileTitle({
         onMouseLeave={() => setHovered(false)}
       >
         {/* Hover holds the rotation, and the card says so: a firmer surface and
-            ring, plus the sidebar card's corner glow in the LIVE red while a
+            ring, plus the sidebar card's corner glow in the news pill's red while a
             news slide is up. No lift - the card itself opens nothing. */}
         <div
           aria-hidden
@@ -542,7 +542,7 @@ function CaptionRow({
 }
 
 // A news slide: the HotBanner card's anatomy at the caption's size - picture,
-// the LIVE pill with the source and age, the title with its flag and category,
+// the news pill with the source and age, the title with its flag and category,
 // a line of text. Left-aligned, unlike the centred subject rows: it is
 // something to read, not a name to frame. Plain spans, never headings - the
 // mark's h2 is home's only content heading.

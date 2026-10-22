@@ -390,7 +390,9 @@ export interface Strings {
   notifMilestoneFirst: string;
   notifMilestone: string;
   justReported: string;
-  // Label on the live banner's news variant.
+  // The red pill that marks a news item, on the live banner and the map caption.
+  // Says "news", not "live": the item is laid out like an opinio card, so the
+  // word is all that tells the two apart.
   newsLabel: string;
   delete: string;
   deleteProfile: string;
@@ -822,7 +824,7 @@ const en: Strings = {
   notifMilestoneFirst: 'First vote on {target}',
   notifMilestone: 'Your opinio {target} reached {n} votes',
   justReported: 'New opinio just dropped',
-  newsLabel: 'LIVE',
+  newsLabel: 'NEWS',
   delete: 'Delete',
   deleteProfile: 'Delete opinio',
   deleteProfileConfirm: 'Delete this opinio permanently?',
@@ -1291,7 +1293,7 @@ const cs: Strings = {
   notifMilestoneFirst: 'První hlas pro {target}',
   notifMilestone: 'Tvoje opinio {target} dosáhlo {n} hlasů',
   justReported: 'Padlo nové opinio',
-  newsLabel: 'ŽIVĚ',
+  newsLabel: 'ZPRÁVY',
   delete: 'Smazat',
   deleteProfile: 'Smazat opinio',
   deleteProfileConfirm: 'Opravdu trvale smazat toto opinio?',
@@ -1758,7 +1760,7 @@ const es: Strings = {
   notifMilestoneFirst: 'Primer voto en {target}',
   notifMilestone: 'Tu opinio {target} alcanzó {n} votos',
   justReported: 'Acaba de caer un opinio',
-  newsLabel: 'EN DIRECTO',
+  newsLabel: 'NOTICIAS',
   delete: 'Eliminar',
   deleteProfile: 'Eliminar opinio',
   deleteProfileConfirm: '¿Eliminar este opinio permanentemente?',
@@ -2225,7 +2227,7 @@ const de: Strings = {
   notifMilestoneFirst: 'Erste Stimme für {target}',
   notifMilestone: 'Dein opinio {target} hat {n} Stimmen erreicht',
   justReported: 'Frisches opinio reingeworfen',
-  newsLabel: 'LIVE',
+  newsLabel: 'NACHRICHTEN',
   delete: 'Löschen',
   deleteProfile: 'opinio löschen',
   deleteProfileConfirm: 'Dieses opinio dauerhaft löschen?',
@@ -2692,7 +2694,7 @@ const fr: Strings = {
   notifMilestoneFirst: 'Premier vote sur {target}',
   notifMilestone: 'Votre opinio {target} a atteint {n} votes',
   justReported: 'Un opinio vient de tomber',
-  newsLabel: 'EN DIRECT',
+  newsLabel: 'ACTU',
   delete: 'Supprimer',
   deleteProfile: "Supprimer l'opinio",
   deleteProfileConfirm: 'Supprimer définitivement cet opinio ?',
@@ -3159,7 +3161,7 @@ const it: Strings = {
   notifMilestoneFirst: 'Primo voto su {target}',
   notifMilestone: 'Il tuo opinio {target} ha raggiunto {n} voti',
   justReported: 'È appena arrivato un opinio',
-  newsLabel: 'IN DIRETTA',
+  newsLabel: 'NOTIZIE',
   delete: 'Elimina',
   deleteProfile: 'Elimina opinio',
   deleteProfileConfirm: 'Eliminare definitivamente questo opinio?',
@@ -3627,7 +3629,7 @@ const pl: Strings = {
   notifMilestoneFirst: 'Pierwszy głos na {target}',
   notifMilestone: 'Twoje opinio {target} osiągnęło {n} głosów',
   justReported: 'Pojawiło się nowe opinio',
-  newsLabel: 'NA ŻYWO',
+  newsLabel: 'WIADOMOŚCI',
   delete: 'Usuń',
   deleteProfile: 'Usuń opinio',
   deleteProfileConfirm: 'Trwale usunąć to opinio?',
