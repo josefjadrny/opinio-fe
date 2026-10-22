@@ -547,7 +547,7 @@ function CaptionRow({
 // something to read, not a name to frame. Plain spans, never headings - the
 // mark's h2 is home's only content heading.
 //
-// The picture and the title open the story's page on the news page; a flag
+// The picture, the title and the text open the story's page on the news page; a flag
 // opens that country's detail, the category chip filters by it, and the source
 // name opens the article. Safe to click: hovering the caption pauses its
 // rotation, so the slide cannot change between aiming and clicking.
@@ -651,7 +651,7 @@ function NewsRow({ news }: { news: NewsItem }) {
           </span>
           <span className="hidden @[700px]:flex items-center gap-2 shrink-0">{tags(24)}</span>
         </div>
-        <p className="text-text-secondary leading-snug mt-0.5 text-sm line-clamp-2 @[900px]:text-base">{news.body}</p>
+        <p onClick={toStory} className="text-text-secondary leading-snug mt-0.5 text-sm line-clamp-2 @[900px]:text-base cursor-pointer hover:text-white/80 transition-colors">{news.body}</p>
       </div>
     </div>
   );

@@ -46,6 +46,25 @@ function FilterChips() {
   );
 }
 
+// Back to the map, filters kept - the way out of the page, next to the
+// header's news button (which toggles the same way).
+function CloseNews() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { t } = useI18n();
+  return (
+    <HoverTip label={t.close}>
+      <button
+        onClick={() => navigate('/' + location.search)}
+        aria-label={t.close}
+        className="w-9 h-9 rounded-full bg-white/[0.06] ring-1 ring-white/10 hover:bg-white/[0.12] hover:ring-white/25 flex items-center justify-center text-white/70 hover:text-white transition-all"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.25}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </HoverTip>
+  );
+}
+
 function ShareLink() {
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
@@ -88,6 +107,17 @@ export function NewsPage({ newsId }: { newsId: string | null }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const listScroll = useRef(0);
 
+  // Escape steps out one level, like closing a window: a story back to the
+  // list, the list back to the map.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || e.defaultPrevented) return;
+      navigate((newsId ? '/news' : '/') + location.search);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [newsId, navigate, location.search]);
+
   useLayoutEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = newsId ? 0 : listScroll.current;
@@ -115,7 +145,10 @@ export function NewsPage({ newsId }: { newsId: string | null }) {
                 <svg className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.25}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
                 {NEWS_COPY.back}
               </button>
-              <ShareLink />
+              <div className="flex items-center gap-2">
+                <ShareLink />
+                <CloseNews />
+              </div>
             </div>
             {item.data ? <NewsArticle news={item.data} /> : (
               <div className="flex justify-center py-16">
@@ -125,7 +158,8 @@ export function NewsPage({ newsId }: { newsId: string | null }) {
           </div>
         ) : (
           <div key="list" className="news-view-back">
-            <header className="caption-enter mb-9">
+            <header className="caption-enter relative mb-9">
+              <div className="absolute right-0 top-0"><CloseNews /></div>
               <div className="flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/60">
                 <span className="relative inline-flex w-2 h-2">
                   <span className="absolute inset-0 rounded-full bg-accent animate-ping motion-reduce:hidden" />
