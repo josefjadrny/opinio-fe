@@ -547,11 +547,10 @@ function CaptionRow({
 // something to read, not a name to frame. Plain spans, never headings - the
 // mark's h2 is home's only content heading.
 //
-// Only three things act, the same as on an opinio card, and the rest is text
-// to read: a flag opens that country's detail, the category chip filters by it,
-// and the source name opens the article. The title and text are deliberately
-// not a link - the card sits over the map, and a slide that changes under the
-// pointer every 10s would turn a stray click into a trip off the site.
+// The picture and the title open the story's page on the news page; a flag
+// opens that country's detail, the category chip filters by it, and the source
+// name opens the article. Safe to click: hovering the caption pauses its
+// rotation, so the slide cannot change between aiming and clicking.
 function host(url: string): string {
   try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; }
 }
@@ -563,6 +562,7 @@ function NewsRow({ news }: { news: NewsItem }) {
   const { toggleRole } = useFilters();
   const country = getCountryName(news.countryCode, locale);
   const toCountry = () => navigate('/c/' + news.countryCode + location.search);
+  const toStory = () => navigate('/n/' + news.id + location.search);
   // On home the chip toggles the filter in place. On a detail (/p, /c, /u) it
   // goes to the filtered home feed instead: toggling there pushed
   // /p/<id>?roles=x as a new history entry, so the detail's close (one step
@@ -606,7 +606,9 @@ function NewsRow({ news }: { news: NewsItem }) {
   return (
     <div className="flex w-full max-w-[960px] @[1100px]:max-w-[1120px] mx-auto items-center gap-4 @[1100px]:gap-5 pb-2">
       {news.person.photoUrl ? (
-        <Avatar name={news.person.name} imageUrl={news.person.photoUrl} className={`${PICTURE} ring-2 ring-white/10`} />
+        <span role="link" tabIndex={0} aria-label={news.title} onClick={toStory} onKeyDown={onKey(toStory)} className="block shrink-0 cursor-pointer rounded-full transition-transform duration-300 hover:scale-[1.04]">
+          <Avatar name={news.person.name} imageUrl={news.person.photoUrl} className={`${PICTURE} ring-2 ring-white/10`} />
+        </span>
       ) : (
         flagLink(
           <span className={`${PICTURE} rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center overflow-hidden`}>
@@ -644,7 +646,7 @@ function NewsRow({ news }: { news: NewsItem }) {
           <span className="flex items-center gap-1.5 shrink-0 @[700px]:hidden">{tags(18)}</span>
         </div>
         <div className="mt-1 flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
-          <span className="font-semibold text-white leading-snug line-clamp-2 min-w-0" style={{ fontSize: 'clamp(15px, 2.6cqi, 26px)' }}>
+          <span role="link" tabIndex={0} onClick={toStory} onKeyDown={onKey(toStory)} className="font-semibold text-white leading-snug line-clamp-2 min-w-0 cursor-pointer hover:underline decoration-white/40 underline-offset-4" style={{ fontSize: 'clamp(15px, 2.6cqi, 26px)' }}>
             {news.title}
           </span>
           <span className="hidden @[700px]:flex items-center gap-2 shrink-0">{tags(24)}</span>

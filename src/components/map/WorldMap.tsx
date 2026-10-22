@@ -54,7 +54,10 @@ interface ZoomState {
   ty: number;
 }
 
-export function WorldMap({ bannerVisible = false }: { bannerVisible?: boolean } = {}) {
+// `backdrop`: the map behind the news page - drawn and tinted as usual, and
+// still ringing the hovered country, but with no caption, legend, zoom or
+// tooltip. The wrapper in App takes its pointer events and focus away.
+export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVisible?: boolean; backdrop?: boolean } = {}) {
   const navigate = useNavigate();
   const location = useLocation();
   const { locale } = useI18n();
@@ -515,15 +518,19 @@ export function WorldMap({ bannerVisible = false }: { bannerVisible?: boolean } 
         </g>
       </svg>
 
-      <MapProfileTitle
-        subject={captionSubject}
-        onDismiss={() => setDismissedSubject(routeSubject)}
-        suppressed={bannerVisible}
-      />
-      <MapLegend />
-      <MapZoomControl scale={zoom.scale} min={MIN_ZOOM} max={MAX_ZOOM} onZoom={zoomToScale} onStep={stepZoom} />
+      {!backdrop && (
+        <>
+          <MapProfileTitle
+            subject={captionSubject}
+            onDismiss={() => setDismissedSubject(routeSubject)}
+            suppressed={bannerVisible}
+          />
+          <MapLegend />
+          <MapZoomControl scale={zoom.scale} min={MIN_ZOOM} max={MAX_ZOOM} onZoom={zoomToScale} onStep={stepZoom} />
+        </>
+      )}
 
-      {hoveredCountry && (
+      {hoveredCountry && !backdrop && (
         // Keyed on the country so crossing a border remounts the card and
         // replays its entrance (and the bar fill) for the new one.
         <CountryTooltip

@@ -9,6 +9,7 @@ import { useFilters } from '../../context/useFilters';
 import { ProfileMenu } from './ProfileMenu';
 import { useMe } from '../../hooks/useMe';
 import { HeaderButton } from '../ui/HeaderButton';
+import { NewsIcon } from '../news/NewsBits';
 import { HoverTip } from '../common/HoverTip';
 import { LogoMark } from '../common/LogoMark';
 import { NotificationBell } from '../notifications/NotificationBell';
@@ -106,6 +107,17 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
               </HeaderButton>
             </HoverTip>
           )}
+          {/* News: a toggle - in the news page it leads back to the map. */}
+          <HoverTip label="News">
+            <HeaderButton
+              shape="circle"
+              active={/^\/(news|n\/)/.test(barePath)}
+              onClick={() => { setFilterSheetOpen(false); navigate((/^\/(news|n\/)/.test(barePath) ? '/' : '/news') + location.search); }}
+              aria-label="News"
+            >
+              <NewsIcon brand className="w-6 h-6 md:w-7 md:h-7 shrink-0" />
+            </HeaderButton>
+          </HoverTip>
           <NotificationBell onOpen={() => setFilterSheetOpen(false)} />
           <ProfileMenu onOpen={() => setFilterSheetOpen(false)} />
         </div>

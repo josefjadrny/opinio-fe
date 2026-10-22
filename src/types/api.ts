@@ -345,5 +345,8 @@ export interface NewsItem {
   createdAt: string;
   // id and photoUrl are null until the person is added; the banner shows
   // the country flag then.
-  person: { id: number | null; name: string; photoUrl: string | null };
+  person: {
+    id: number | null; name: string; photoUrl: string | null;
+    photoCredit?: string | null; photoLicense?: string | null; photoSource?: string | null;
+  };
 }

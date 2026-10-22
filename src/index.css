@@ -640,3 +640,83 @@ body {
     animation: none;
   }
 }
+
+/* ── News page ────────────────────────────────────────────────────────────────
+   Built from the moves the rest of the app already makes: the sidebar card's
+   hover glow and lift, the caption's pop-and-rise, the user page's staggered
+   rows and header wash, the comment thread's arrival flash. What is new here
+   is only what a page of stories needs: the list and a story slide sideways
+   into each other, the lead story's wash drifts slowly, the picture of a
+   story sits in a turning ring of the brand's two sides, and the locator map
+   breathes around the country. */
+@keyframes news-view-in {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes news-view-back {
+  from { opacity: 0; transform: translateX(-18px); }
+  to   { opacity: 1; transform: none; }
+}
+.news-view-in   { animation: news-view-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.news-view-back { animation: news-view-back 320ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* The brand red and green at the top of the page, under the heading - the
+   same pair the user page's header wash uses, at page scale. */
+.news-page-glow {
+  background:
+    radial-gradient(45% 70% at 18% 0%, rgba(233, 69, 96, 0.13), transparent 70%),
+    radial-gradient(40% 60% at 88% 10%, rgba(34, 197, 94, 0.07), transparent 70%);
+}
+
+/* Red into green and back, turning once every 8s. Reuses the user page's
+   registered --ring-spin angle and its ring-spin keyframes. */
+.news-ring {
+  background: conic-gradient(
+    from var(--ring-spin, 0deg),
+    var(--color-accent),
+    rgba(233, 69, 96, 0.12) 30%,
+    var(--color-positive) 55%,
+    rgba(34, 197, 94, 0.12) 80%,
+    var(--color-accent)
+  );
+  box-shadow: 0 0 26px -6px rgba(233, 69, 96, 0.55);
+  animation: ring-spin 8s linear infinite;
+}
+
+.news-aurora {
+  background:
+    radial-gradient(35% 60% at 20% 25%, rgba(233, 69, 96, 0.24), transparent 70%),
+    radial-gradient(40% 65% at 80% 80%, rgba(34, 197, 94, 0.14), transparent 70%);
+  background-size: 180% 180%;
+  animation: news-aurora 16s ease-in-out infinite alternate;
+}
+@keyframes news-aurora {
+  from { background-position: 0% 0%; }
+  to   { background-position: 100% 100%; }
+}
+
+.news-locator-glow {
+  filter: blur(4px);
+  animation: news-locator-pulse 2.6s ease-in-out infinite;
+}
+@keyframes news-locator-pulse {
+  0%, 100% { opacity: 0.15; }
+  50%      { opacity: 0.65; }
+}
+
+/* The world map under the news page: dimmed as the page arrives over it and
+   faded out toward the bottom, where the timeline runs long. */
+.news-map-backdrop {
+  opacity: 0.32;
+  mask-image: linear-gradient(to bottom, black 35%, transparent 95%);
+  animation: news-map-dim 450ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes news-map-dim {
+  from { opacity: 1; }
+  to   { opacity: 0.32; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .news-view-in, .news-view-back, .news-ring, .news-aurora, .news-map-backdrop { animation: none; }
+  .news-locator-glow { animation: none; opacity: 0.4; }
+}

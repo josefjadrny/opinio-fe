@@ -249,6 +249,19 @@ export function getLatestNews(lang: string, limit = 3): Promise<{ items: NewsIte
   return apiFetch(`/api/news?limit=${limit}&lang=${lang}`);
 }
 
+// The news list (last 7 days, newest first) with the feed's filters; `before`
+// is the last item's createdAt for the next page.
+export function getNewsList(
+  lang: string,
+  opts: { country?: string; roles?: string[]; before?: string; limit?: number } = {},
+): Promise<{ items: NewsItem[] }> {
+  const params = new URLSearchParams({ lang, limit: String(opts.limit ?? 20) });
+  if (opts.country) params.set('country', opts.country);
+  if (opts.roles?.length) params.set('roles', opts.roles.join(','));
+  if (opts.before) params.set('before', opts.before);
+  return apiFetch(`/api/news/list?${params}`);
+}
+
 export function getTopVoters(country?: string, metric: import('../types/api').VoterMetric = 'received'): Promise<import('../types/api').TopVotersResponse> {
   const params = new URLSearchParams();
   if (country) params.set('country', country);

@@ -142,7 +142,7 @@ export function HotBanner({
   // opens the article it was written from.
   const go = next.kind === 'opinio'
     ? () => navigate('/p/' + next.profile.id + location.search)
-    : () => window.open(next.news.sourceUrl, '_blank', 'noopener,noreferrer');
+    : () => navigate('/n/' + next.news.id + location.search);
   const v = VARIANTS[next.kind];
   // Same "See original" toggle as the opinio detail: news text is machine
   // translated, and this is where a reader can check it.
