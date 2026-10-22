@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { geoNaturalEarth1, geoPath, geoBounds } from 'd3-geo';
+import { geoNaturalEarth1, geoPath, geoBounds, geoArea } from 'd3-geo';
 import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import { numericToAlpha2 } from '../../utils/countries';
@@ -32,23 +32,33 @@ export function NewsLocator({ code }: { code: string }) {
   const view = useMemo(() => {
     const target = features.find((f) => numericToAlpha2(String(f.id)) === code);
     if (!target) return null;
-    // The country's box widened so its neighbours show; a small country gets
-    // at least ~40 degrees of context.
-    const [[x0, y0], [x1, y1]] = geoBounds(target);
-    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-    const span = Math.max(40, (x1 - x0) * 2.4, (y1 - y0) * 3.2);
+    // Framed on the country's main landmass, not the whole shape: the US
+    // with Alaska and the Aleutians, or France with French Guiana, spans half
+    // the globe and the country vanished into a world map. The map is turned
+    // to the country's longitude so one that crosses the 180th meridian
+    // (Russia, Fiji) stays in one piece, and the frame is widened so the
+    // neighbours show - at least ~30 degrees, and never the whole world.
+    const main = target.geometry.type === 'MultiPolygon'
+      ? target.geometry.coordinates
+        .map((c): GeoJSON.Feature => ({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: c } }))
+        .reduce((a, b) => (geoArea(b) > geoArea(a) ? b : a))
+      : target;
+    const [[x0, y0], [x1, y1]] = geoBounds(main);
+    const east = x1 < x0 ? x1 + 360 : x1;
+    const cx = (x0 + east) / 2, cy = (y0 + y1) / 2;
+    const span = Math.min(300, Math.max(30, (east - x0) * 1.6, (y1 - y0) * 2.6));
     const box: GeoJSON.Feature = {
       type: 'Feature', properties: {},
-      geometry: { type: 'MultiPoint', coordinates: [[cx - span / 2, Math.max(-85, cy - span / 3)], [cx + span / 2, Math.min(85, cy + span / 3)]] },
+      geometry: { type: 'MultiPoint', coordinates: [[cx - span / 2, Math.max(-85, cy - span / 3.2)], [cx + span / 2, Math.min(85, cy + span / 3.2)]] },
     };
-    const projection = geoNaturalEarth1().fitExtent([[8, 8], [W - 8, H - 8]], box);
+    const projection = geoNaturalEarth1().rotate([-cx, 0]).fitExtent([[8, 8], [W - 8, H - 8]], box);
     const path = geoPath(projection);
     return { target, path };
   }, [features, code]);
 
   if (!view) return null;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto bg-black/20" aria-hidden="true">
+    <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto bg-[#141429]" aria-hidden="true">
       {features.filter((f) => f !== view.target).map((f, i) => (
         <path key={i} d={view.path(f) ?? ''} fill={NO_DATA_FILL} stroke="#e2e8ff" strokeOpacity={0.25} strokeWidth={0.5} />
       ))}
