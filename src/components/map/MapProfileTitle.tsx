@@ -170,7 +170,7 @@ const SUBJECT_SLOT = 'subject';
 // picture and the type do as well. Each minimum is the tallest news row
 // measured at that size, so no slide makes the card grow.
 const CARD =
-  '@container relative w-full rounded-xl bg-surface-light/60 backdrop-blur-md ring-1 ring-white/[0.08] shadow-xl shadow-black/20 px-5 py-[14px]';
+  '@container relative isolate w-full rounded-xl backdrop-blur-md ring-1 shadow-xl shadow-black/20 px-5 py-[14px] transition-[background-color,box-shadow] duration-200';
 const STACK_HEIGHT = 'min-h-[116px] @[700px]:min-h-[112px] @[900px]:min-h-[120px] @[1100px]:min-h-[128px]';
 
 // One subject's row inside the shell.
@@ -289,7 +289,9 @@ export function MapProfileTitle({
       setTurn((n) => n + 1);
     }
   }
-  const goTo = (key: string) => { setSnap(false); setSlideKey(key); setTurn((n) => n + 1); };
+  // A dot is a click, so it gets the click's snap: the reader is waiting for
+  // the story they picked, not watching the rotation's slow dissolve.
+  const goTo = (key: string) => { setSnap(true); setSlideKey(key); setTurn((n) => n + 1); };
   const keyOf = (x: Shown | null, i: number) => (i === 0 ? SUBJECT_SLOT : x?.key ?? SUBJECT_SLOT);
   const at = Math.max(0, slides.findIndex((x, i) => keyOf(x, i) === slideKey));
   const nextKey = keyOf(slides[(at + 1) % slides.length], (at + 1) % slides.length);
@@ -330,7 +332,7 @@ export function MapProfileTitle({
   // them crossfades like any other subject change.
   // The rotation's dissolve outlasts the swap's default 600ms failsafe.
   const { current, outgoing, endOutgoing } = useSubjectSwap(shown?.key ?? 'global', shown, 1_000);
-  // A click-driven subject change keeps its snap; the rotation dissolves.
+  // A click (subject change or dot) snaps; the rotation dissolves.
   const enter = snap ? 'caption-enter' : 'caption-slide-enter';
   const leave = snap ? 'caption-leave' : 'caption-slide-leave';
   // The outgoing row is dropped the moment its own animation reports finished.
@@ -350,10 +352,22 @@ export function MapProfileTitle({
           the slide and a news row opens its article. Otherwise it stays
           transparent to the map under it. */}
       <div
-        className={`${CARD} ${slides.length > 1 ? 'pointer-events-auto' : ''}`}
+        className={`${CARD} ${slides.length > 1 ? 'pointer-events-auto' : ''} ${
+          hovered ? 'bg-surface-light/80 ring-white/25' : 'bg-surface-light/60 ring-white/[0.08]'
+        }`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
+        {/* Hover holds the rotation, and the card says so: a firmer surface and
+            ring, plus the sidebar card's corner glow in the LIVE red while a
+            news slide is up. No lift - the card itself opens nothing. */}
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute inset-0 -z-10 rounded-[inherit] transition-opacity duration-300 ${
+            hovered && current.value?.kind === 'news' ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ background: 'radial-gradient(120% 80% at 0% 0%, rgba(233,69,96,0.24), transparent 65%)' }}
+        />
         {/* One grid cell holding both rows (see STACK), so the outgoing subject
             fades out over the incoming one instead of before it. Its height is
             the taller of the two, which for equal-height rows is simply the row
