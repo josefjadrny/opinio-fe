@@ -138,8 +138,7 @@ export function HotBanner({
 
   if (!showBanner) return null;
 
-  // An opinio opens its detail. A news item has no page of its own yet, so it
-  // opens the article it was written from.
+  // An opinio opens its detail, a news item its story on the news page.
   const go = next.kind === 'opinio'
     ? () => navigate('/p/' + next.profile.id + location.search)
     : () => navigate('/n/' + next.news.id + location.search);
