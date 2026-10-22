@@ -21,15 +21,21 @@ type Phase = 'in' | 'hold' | 'out' | 'gap';
 const VARIANTS = {
   opinio: {
     border: 'border-orange-500/70',
+    borderHover: 'border-orange-400',
     label: 'text-orange-400',
     dot: 'bg-orange-400',
     shadow: '0 0 0 1px rgba(249,115,22,0.35), 0 10px 30px -10px rgba(249,115,22,0.55), 0 18px 50px -20px rgba(0,0,0,0.6)',
+    shadowHover: '0 0 0 1px rgba(249,115,22,0.55), 0 12px 36px -10px rgba(249,115,22,0.75), 0 18px 50px -20px rgba(0,0,0,0.6)',
+    glow: 'rgba(249,115,22,0.18)',
   },
   news: {
     border: 'border-accent/70',
+    borderHover: 'border-accent',
     label: 'live-pill text-negative-soft bg-accent/15 border border-accent/60 rounded-full px-2 py-0.5',
     dot: 'bg-accent',
     shadow: '0 0 0 1px rgba(233,69,96,0.35), 0 10px 30px -10px rgba(233,69,96,0.55), 0 18px 50px -20px rgba(0,0,0,0.6)',
+    shadowHover: '0 0 0 1px rgba(233,69,96,0.55), 0 12px 36px -10px rgba(233,69,96,0.75), 0 18px 50px -20px rgba(0,0,0,0.6)',
+    glow: 'rgba(233,69,96,0.2)',
   },
 } as const;
 
@@ -185,9 +191,9 @@ export function HotBanner({
         onMouseEnter={mobile ? undefined : onHoverStart}
         onMouseLeave={mobile ? undefined : onHoverEnd}
         data-testid="hot-banner"
-        className={`cursor-pointer border ${v.border} rounded-2xl
+        className={`relative isolate cursor-pointer border ${hovered ? v.borderHover : v.border} rounded-2xl
                    flex items-center select-none ${mobile ? 'gap-3 px-4 py-3' : 'gap-4 px-5 py-3.5'}
-                   transition-colors pointer-events-auto ${
+                   transition-[background-color,border-color,box-shadow] duration-300 pointer-events-auto ${
                      mobile
                        ? 'bg-surface/90 backdrop-blur-sm hover:bg-surface/95'
                        : 'bg-surface/85 backdrop-blur-md hover:bg-surface/95'
@@ -195,9 +201,18 @@ export function HotBanner({
         style={{
           animation,
           opacity: hovered || phase === 'hold' ? 1 : undefined,
-          boxShadow: v.shadow,
+          boxShadow: hovered ? v.shadowHover : v.shadow,
         }}
       >
+        {/* Desktop hover, same language as the sidebar card: the accent firms
+            up and a soft glow in it rises from the picture's corner, which
+            itself leans in a touch. Behind the content (isolate + -z-10), so
+            the glow tints the surface and never the text. */}
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute inset-0 -z-10 rounded-[inherit] transition-opacity duration-500 ${hovered ? 'opacity-100' : 'opacity-0'}`}
+          style={{ background: `radial-gradient(110% 90% at 0% 50%, ${v.glow}, transparent 60%)` }}
+        />
         {/* Same anatomy as the sidebar card (ProfileCard): avatar, then the
             title with its flag and category inline after it, then the text.
             The banner sits a size up from the card, and another step up on
@@ -205,7 +220,7 @@ export function HotBanner({
         {flagAsPicture ? (
           <div
             aria-hidden
-            className={`shrink-0 rounded-full ring-2 ring-white/5 bg-white/[0.06] flex items-center justify-center ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
+            className={`shrink-0 rounded-full ring-2 ring-white/5 bg-white/[0.06] flex items-center justify-center transition-transform duration-500 ease-out ${hovered ? 'scale-[1.04]' : ''} ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
           >
             <FlagImg code={card.countryCode} size={mobile ? 26 : 30} />
           </div>
@@ -213,7 +228,7 @@ export function HotBanner({
           <Avatar
             name={card.name}
             imageUrl={card.imageUrl}
-            className={`shrink-0 ring-2 ring-white/5 ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
+            className={`shrink-0 ring-2 ring-white/5 transition-transform duration-500 ease-out ${hovered ? 'scale-[1.04]' : ''} ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
           />
         )}
         <div className="min-w-0 flex-1">
