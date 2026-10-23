@@ -47,4 +47,7 @@ export interface Profile {
   // and the whole comment UI stays off; 0 means "none" and the UI is live. The
   // FE shipped ahead of the BE on purpose - this field is the switch.
   commentCount?: number;
+  // The news story the opinio is about: posted from the story, or linked by
+  // the API's news link job. Null/absent = none.
+  newsId?: string | null;
 }

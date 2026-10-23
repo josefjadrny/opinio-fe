@@ -17,6 +17,7 @@ import { useProfileText } from '../../hooks/useProfileText';
 import { useI18n } from '../../i18n/I18nContext';
 import { getCountryName } from '../../utils/countries';
 import { CommentCount } from '../comments/CommentCount';
+import { NewsLinkBadge } from '../news/NewsLinkBadge';
 
 // Hover dwell before the popup opens (ms). Short enough to feel responsive,
 // long enough not to flash while sweeping the pointer across the list.
@@ -199,6 +200,7 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
                 {flagEl}
                 {roleEl}
                 {profile.label && <LabelBadge label={profile.label} />}
+                <NewsLinkBadge newsId={profile.newsId} size="xs" />
                 <CommentCount count={profile.commentCount ?? 0} size="xs" onClick={openComments} />
               </div>
             </div>
@@ -285,8 +287,11 @@ export function ProfileCard({ profile, variant = 'default', rank, showOnly, reve
               reverseVotes={reverseVotes}
             />
           </div>
-          {/* Bottom-right was empty space; the count sits there, muted. */}
-          <CommentCount count={profile.commentCount ?? 0} onClick={openComments} />
+          {/* Bottom-right was empty space; the counts sit there, muted. */}
+          <div className="flex items-center">
+            <NewsLinkBadge newsId={profile.newsId} />
+            <CommentCount count={profile.commentCount ?? 0} onClick={openComments} />
+          </div>
         </div>
       </div>
       {tooltipEl}

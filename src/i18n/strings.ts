@@ -394,6 +394,11 @@ export interface Strings {
   // Says "news", not "live": the item is laid out like an opinio card, so the
   // word is all that tells the two apart.
   newsLabel: string;
+  newsOnTheNews: string;
+  newsLinkRemove: string;
+  newsLinkRemoveTitle: string;
+  newsLinkRemoveBody: string;
+  newsLinkRemoveConfirm: string;
   delete: string;
   deleteProfile: string;
   deleteProfileConfirm: string;
@@ -825,6 +830,11 @@ const en: Strings = {
   notifMilestone: 'Your opinio {target} reached {n} votes',
   justReported: 'New opinio just dropped',
   newsLabel: 'NEWS',
+  newsOnTheNews: 'On the news',
+  newsLinkRemove: 'Remove link',
+  newsLinkRemoveTitle: 'Remove the link to this story?',
+  newsLinkRemoveBody: 'This opinio will not be linked to any story again. This can\'t be undone.',
+  newsLinkRemoveConfirm: 'Remove',
   delete: 'Delete',
   deleteProfile: 'Delete opinio',
   deleteProfileConfirm: 'Delete this opinio permanently?',
@@ -1294,6 +1304,11 @@ const cs: Strings = {
   notifMilestone: 'Tvoje opinio {target} dosáhlo {n} hlasů',
   justReported: 'Padlo nové opinio',
   newsLabel: 'ZPRÁVY',
+  newsOnTheNews: 'Ve zprávách',
+  newsLinkRemove: 'Odebrat odkaz',
+  newsLinkRemoveTitle: 'Odebrat odkaz na tuto zprávu?',
+  newsLinkRemoveBody: 'Toto opinio už nebude propojeno s žádnou zprávou. Nelze vrátit zpět.',
+  newsLinkRemoveConfirm: 'Odebrat',
   delete: 'Smazat',
   deleteProfile: 'Smazat opinio',
   deleteProfileConfirm: 'Opravdu trvale smazat toto opinio?',
@@ -1761,6 +1776,11 @@ const es: Strings = {
   notifMilestone: 'Tu opinio {target} alcanzó {n} votos',
   justReported: 'Acaba de caer un opinio',
   newsLabel: 'NOTICIAS',
+  newsOnTheNews: 'En las noticias',
+  newsLinkRemove: 'Quitar enlace',
+  newsLinkRemoveTitle: '¿Quitar el enlace a esta noticia?',
+  newsLinkRemoveBody: 'Este opinio ya no se vinculará a ninguna noticia. No se puede deshacer.',
+  newsLinkRemoveConfirm: 'Quitar',
   delete: 'Eliminar',
   deleteProfile: 'Eliminar opinio',
   deleteProfileConfirm: '¿Eliminar este opinio permanentemente?',
@@ -2228,6 +2248,11 @@ const de: Strings = {
   notifMilestone: 'Dein opinio {target} hat {n} Stimmen erreicht',
   justReported: 'Frisches opinio reingeworfen',
   newsLabel: 'NACHRICHTEN',
+  newsOnTheNews: 'In den Nachrichten',
+  newsLinkRemove: 'Verknüpfung entfernen',
+  newsLinkRemoveTitle: 'Verknüpfung zu dieser Nachricht entfernen?',
+  newsLinkRemoveBody: 'Dieses opinio wird mit keiner Nachricht mehr verknüpft. Das lässt sich nicht rückgängig machen.',
+  newsLinkRemoveConfirm: 'Entfernen',
   delete: 'Löschen',
   deleteProfile: 'opinio löschen',
   deleteProfileConfirm: 'Dieses opinio dauerhaft löschen?',
@@ -2695,6 +2720,11 @@ const fr: Strings = {
   notifMilestone: 'Votre opinio {target} a atteint {n} votes',
   justReported: 'Un opinio vient de tomber',
   newsLabel: 'ACTU',
+  newsOnTheNews: 'Dans l\'actualité',
+  newsLinkRemove: 'Retirer le lien',
+  newsLinkRemoveTitle: 'Retirer le lien vers cette actualité ?',
+  newsLinkRemoveBody: 'Cet opinio ne sera plus lié à aucune actualité. Action irréversible.',
+  newsLinkRemoveConfirm: 'Retirer',
   delete: 'Supprimer',
   deleteProfile: "Supprimer l'opinio",
   deleteProfileConfirm: 'Supprimer définitivement cet opinio ?',
@@ -3162,6 +3192,11 @@ const it: Strings = {
   notifMilestone: 'Il tuo opinio {target} ha raggiunto {n} voti',
   justReported: 'È appena arrivato un opinio',
   newsLabel: 'NOTIZIE',
+  newsOnTheNews: 'Nelle notizie',
+  newsLinkRemove: 'Rimuovi collegamento',
+  newsLinkRemoveTitle: 'Rimuovere il collegamento a questa notizia?',
+  newsLinkRemoveBody: 'Questo opinio non verrà più collegato ad alcuna notizia. L\'azione non si può annullare.',
+  newsLinkRemoveConfirm: 'Rimuovi',
   delete: 'Elimina',
   deleteProfile: 'Elimina opinio',
   deleteProfileConfirm: 'Eliminare definitivamente questo opinio?',
@@ -3630,6 +3665,11 @@ const pl: Strings = {
   notifMilestone: 'Twoje opinio {target} osiągnęło {n} głosów',
   justReported: 'Pojawiło się nowe opinio',
   newsLabel: 'WIADOMOŚCI',
+  newsOnTheNews: 'W wiadomościach',
+  newsLinkRemove: 'Usuń powiązanie',
+  newsLinkRemoveTitle: 'Usunąć powiązanie z tą wiadomością?',
+  newsLinkRemoveBody: 'To opinio nie zostanie już powiązane z żadną wiadomością. Tej operacji nie można cofnąć.',
+  newsLinkRemoveConfirm: 'Usuń',
   delete: 'Usuń',
   deleteProfile: 'Usuń opinio',
   deleteProfileConfirm: 'Trwale usunąć to opinio?',

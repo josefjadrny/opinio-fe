@@ -3,13 +3,14 @@ import { useFilters } from '../../context/useFilters';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
-import { getNewsList } from '../../api/client';
+import { getNewsList, getNewsOpinios } from '../../api/client';
 import { getCountryName } from '../../utils/countries';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { FlagImg } from '../common/CountryFlag';
 import { HoverTip } from '../common/HoverTip';
 import { RoleBadge } from '../common/RoleBadge';
 import { LogoMark } from '../common/LogoMark';
+import { ProfileCard } from '../profile/ProfileCard';
 import { WASH } from '../common/wash';
 import type { NewsItem } from '../../types/api';
 import { NewsCard } from './NewsCard';
@@ -105,6 +106,11 @@ export function NewsArticle({ news, hero = true }: { news: NewsItem; hero?: bool
   const { t, locale } = useI18n();
   const country = getCountryName(news.countryCode, locale);
   const { toCountry } = useNewsLinks(news);
+  const opinios = useQuery({
+    queryKey: ['news', 'opinios', news.id, locale],
+    queryFn: () => getNewsOpinios(news.id, locale),
+    staleTime: 60_000,
+  }).data?.profiles ?? [];
 
   return (
     <article>
@@ -164,15 +170,22 @@ export function NewsArticle({ news, hero = true }: { news: NewsItem; hero?: bool
         </HoverTip>
       </div>
 
-      {/* The point of the page: from the story to an opinio about it. */}
+      {/* The point of the page: from the story to an opinio about it - the
+          opinios already linked to it (posted from here or linked by the
+          API's news link job), then the way to add one. */}
       <section className="mt-10 activity-row-in" style={{ '--i': 3 } as CSSProperties}>
         <SectionLabel>{NEWS_COPY.opiniosTitle}</SectionLabel>
+        {opinios.length > 0 && (
+          <div className="mb-3 grid gap-2 @[760px]:grid-cols-2">
+            {opinios.map((p) => <ProfileCard key={p.id} profile={p} />)}
+          </div>
+        )}
         <div className="relative isolate overflow-hidden rounded-2xl ring-1 ring-white/[0.08] bg-surface-light/60 backdrop-blur-md px-5 py-5 flex items-center gap-4">
           <div aria-hidden className="user-header-wash absolute inset-0 -z-10" style={WASH} />
           <span className="w-11 h-11 shrink-0 rounded-full bg-white/[0.07] ring-1 ring-white/15 flex items-center justify-center">
             <LogoMark className="w-6 h-6" />
           </span>
-          <p className="flex-1 min-w-0 text-sm text-white/70">{NEWS_COPY.opiniosEmpty}</p>
+          <p className="flex-1 min-w-0 text-sm text-white/70">{opinios.length ? NEWS_COPY.opiniosMore : NEWS_COPY.opiniosEmpty}</p>
           <button
             onClick={() => navigate('/add' + location.search)}
             className="shrink-0 flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-xl bg-accent text-white hover:bg-accent/90 shadow-lg shadow-accent/20 transition-all active:scale-95"

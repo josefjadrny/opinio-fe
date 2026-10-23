@@ -19,6 +19,7 @@ import { RoleBadge } from '../common/RoleBadge';
 import { HoverTip } from '../common/HoverTip';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { SourceLink } from './SourceLink';
+import { LinkedNews } from '../news/LinkedNews';
 import { CountryFlagLink } from '../common/CountryFlag';
 import { BreakdownRow } from './BreakdownRow';
 import { BreakdownHeader } from './BreakdownHeader';
@@ -267,6 +268,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                           />
                         </button>
                       )}
+                      <LinkedNews profile={profile} />
                       {profile.hasLink && (
                         <div>
                           <SourceLink profileId={profile.id} host={profile.linkHost} />

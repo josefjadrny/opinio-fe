@@ -3,6 +3,7 @@ import type {
   VoteResponse, ProfileFilters, VoteType, PersonBreakdownResponse,
   SupportTicket, SupportTicketDetail, SupportMessage, UserDetailResponse, ProfileReportGroup, Person, NewsItem,
 } from '../types/api';
+import type { Profile } from '../types/profile';
 
 const API_URL = import.meta.env.OPINIO_API_URL as string;
 
@@ -154,6 +155,19 @@ export async function deleteProfile(profileId: string): Promise<void> {
   }
 }
 
+// The author takes the news link off their opinio. Final on the API side:
+// the link job never sets one again.
+export async function removeProfileNews(profileId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/api/profiles/${profileId}/news`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok && res.status !== 204) {
+    const body = await res.json().catch(() => ({}));
+    throw Object.assign(new Error(body.error ?? res.statusText), { status: res.status });
+  }
+}
+
 export function getPersonBreakdown(profileId: string): Promise<PersonBreakdownResponse> {
   return apiFetch(`/api/profiles/${profileId}/breakdown`);
 }
@@ -242,6 +256,11 @@ export function getPerson(id: number): Promise<Person> {
 export function getNews(id: string, lang?: string): Promise<NewsItem> {
   const qs = lang ? `?lang=${lang}` : '';
   return apiFetch(`/api/news/${id}${qs}`);
+}
+
+// The opinios linked to one story, newest first (capped by the API).
+export function getNewsOpinios(id: string, lang: string): Promise<{ profiles: Profile[] }> {
+  return apiFetch(`/api/news/${id}/opinios?lang=${lang}`);
 }
 
 // The newest news of the last 12 hours, newest first (the map caption's rotation).

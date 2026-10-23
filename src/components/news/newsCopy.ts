@@ -8,6 +8,7 @@ export const NEWS_COPY = {
   photoCredit: 'Photo: {author}, {license}',
   opiniosTitle: 'Opinios on this story',
   opiniosEmpty: 'Nobody has weighed in yet.',
+  opiniosMore: 'What do you think?',
   opiniosCta: 'Post your opinio',
   moreFrom: 'More from {country}',
   end: 'That is everything from the last 7 days.',
