@@ -293,9 +293,9 @@ function AppLayout() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('registered') === '1') {
+    const registered = params.get('registered') === '1';
+    if (registered) {
       queryClient.invalidateQueries({ queryKey: ['me'] });
-      window.history.replaceState({}, '', window.location.pathname);
     }
     const billing = params.get('billing');
     if (billing) {
@@ -307,8 +307,20 @@ function AppLayout() {
         // Best-effort cleanup if the user navigates away
         window.addEventListener('beforeunload', () => { clearTimeout(t1); clearTimeout(t2); }, { once: true });
       }
-      window.history.replaceState({}, '', window.location.pathname);
     }
+    // Drop the one-shot params through the router, not history.replaceState:
+    // a raw replaceState wiped the router's history index (so useModalClose
+    // took every later window for the session's first entry and closed it to
+    // home) and left the param in the router's location, from where it rode
+    // along on every link built from location.search. Filters stay.
+    if (registered || billing) {
+      params.delete('registered');
+      params.delete('billing');
+      const rest = params.toString();
+      navigate({ pathname: window.location.pathname, search: rest ? '?' + rest : '' }, { replace: true });
+    }
+    // Once, on landing - navigate is stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryClient]);
 
   const SIDEBAR_INITIAL_LIMIT = 15;
