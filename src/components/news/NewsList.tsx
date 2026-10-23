@@ -54,7 +54,7 @@ function Timeline({ items, locale, arrived, startIndex }: {
       {items.map((n, i) => {
         const fresh = arrived(n.id);
         return (
-          <li key={n.id} className="group/row relative flex pb-2 last:pb-0">
+          <li key={n.id} className="group/row relative flex pb-1.5 @[520px]:pb-2 last:pb-0">
             <time dateTime={n.createdAt} className="hidden @[520px]:block w-[52px] shrink-0 pt-[13px] text-right text-xs font-medium tabular-nums text-white/50 group-hover/row:text-white/80 transition-colors">
               {clock(n.createdAt, locale)}
             </time>

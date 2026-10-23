@@ -4,6 +4,7 @@ import { useI18n } from '../../i18n/I18nContext';
 import { useFilters } from '../../context/useFilters';
 import { useNewsItem } from '../../hooks/useNewsList';
 import { useNoindex } from '../../hooks/useNoindex';
+import { useModalClose } from '../../hooks/useModalClose';
 import { getCountryName } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { HoverTip } from '../common/HoverTip';
@@ -53,15 +54,16 @@ function FilterChips() {
 // The quiet icon button every window header carries (ModalShell's close).
 const HEADER_BTN = 'text-white/40 hover:text-white/80 transition-colors p-1';
 
-// Back to the map, filters kept - the window's X, next to the header's news
-// button (which toggles the same way).
-function CloseNews() {
+// The window's X. On the list it goes back to the map, filters kept, like the
+// header's news button; a story passes `onClose` to step back to wherever it
+// was opened from.
+function CloseNews({ onClose }: { onClose?: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useI18n();
   return (
     <HoverTip label={t.close}>
-      <button onClick={() => navigate('/' + location.search)} aria-label={t.close} className={HEADER_BTN}>
+      <button onClick={onClose ?? (() => navigate('/' + location.search))} aria-label={t.close} className={HEADER_BTN}>
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
       </button>
     </HoverTip>
@@ -110,6 +112,7 @@ function NewsDisc() {
 // then source and time over the title over who/where/what, actions right.
 function StoryHeader({ news }: { news: NewsItem | undefined }) {
   const navigate = useNavigate();
+  const close = useModalClose();
   const location = useLocation();
   const { t, locale } = useI18n();
   const back = (
@@ -125,7 +128,7 @@ function StoryHeader({ news }: { news: NewsItem | undefined }) {
         {back}
         <NewsDisc />
         <h1 className="flex-1 text-base font-semibold text-white">{NEWS_COPY.title}</h1>
-        <CloseNews />
+        <CloseNews onClose={close} />
       </div>
     );
   }
@@ -134,7 +137,7 @@ function StoryHeader({ news }: { news: NewsItem | undefined }) {
       {back}
       <span className="caption-mark news-ring shrink-0 self-center rounded-full p-[2px]">
         <span className="block rounded-full p-[2px] bg-surface">
-          <NewsPicture news={news} className="w-14 h-14" flagSize={28} credit />
+          <NewsPicture news={news} className="w-14 h-14 2xl:w-[72px] 2xl:h-[72px]" flagSize={28} credit />
         </span>
       </span>
       <div className="caption-text min-w-0 flex-1">
@@ -147,7 +150,7 @@ function StoryHeader({ news }: { news: NewsItem | undefined }) {
       </div>
       <div className="shrink-0 flex items-center gap-1">
         <ShareLink />
-        <CloseNews />
+        <CloseNews onClose={close} />
       </div>
     </div>
   );
@@ -166,16 +169,18 @@ export function NewsPage({ newsId }: { newsId: string | null }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const listScroll = useRef(0);
 
-  // Escape steps out one level, like closing a window: a story back to the
-  // list, the list back to the map.
+  // Escape is the X: a story steps back to where it was opened from (the
+  // list, the map, an opinio, another story), the list back to the map.
+  const closeStory = useModalClose();
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape' || e.defaultPrevented) return;
-      navigate((newsId ? '/news' : '/') + location.search);
+      if (newsId) closeStory();
+      else navigate('/' + location.search);
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [newsId, navigate, location.search]);
+  }, [newsId, navigate, location.search, closeStory]);
 
   useLayoutEffect(() => {
     const el = scrollRef.current;

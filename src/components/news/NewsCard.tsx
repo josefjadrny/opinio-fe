@@ -123,6 +123,9 @@ export function NewsCard({ news, lead = false, index = 0, arrived = false, resto
   // A row of the timeline: full width, so a day with one story and a day with
   // nine read the same - no grid cell left empty by an odd count or a short
   // card. Source and tags share the top line; title and two lines of text.
+  // The picture spans the whole row from 520px; on a phone it spans only the
+  // source line and the title, and the text runs the card's full width under
+  // it - a column held empty below the picture cost a line of every card.
   return (
     <div
       role="link"
@@ -131,19 +134,17 @@ export function NewsCard({ news, lead = false, index = 0, arrived = false, resto
       onKeyDown={onKey}
       {...hover}
       style={style}
-      className={`${entrance} group relative isolate overflow-hidden flex gap-3.5 @[1000px]:gap-4 px-3.5 py-3 @[1000px]:px-4 @[1000px]:py-3.5 rounded-xl bg-surface-light/60 backdrop-blur-md ring-1 ring-white/[0.06] hover:ring-white/15 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer select-none`}
+      className={`${entrance} group relative isolate overflow-hidden grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 @[1000px]:gap-x-4 px-3 py-2.5 @[520px]:px-3.5 @[520px]:py-3 @[1000px]:px-4 @[1000px]:py-3.5 rounded-xl bg-surface-light/60 backdrop-blur-md ring-1 ring-white/[0.06] hover:ring-white/15 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer select-none`}
     >
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `radial-gradient(120% 90% at 0% 0%, ${GLOW}, transparent 60%)` }} />
       {arrived && <div aria-hidden className="comment-flash pointer-events-none absolute inset-0 rounded-[inherit] ring-2 ring-accent/80" />}
-      <NewsPicture news={news} className="w-12 h-12 @[1000px]:w-14 @[1000px]:h-14 shrink-0 ring-2 ring-white/5 transition-transform duration-500 ease-out group-hover:scale-[1.06]" flagSize={24} />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-3 min-w-0">
-          <span className="flex-1 min-w-0 text-xs text-white/50 truncate">{news.sourceName} · {time}</span>
-          {tags}
-        </div>
-        <div className="mt-1 text-[15px] @[1000px]:text-[17px] font-semibold text-white leading-snug">{news.title}</div>
-        <p className="mt-0.5 text-[13px] @[1000px]:text-sm text-text-secondary leading-snug line-clamp-2">{news.body}</p>
+      <NewsPicture news={news} className="row-span-2 @[520px]:row-span-3 self-center @[520px]:self-start w-11 h-11 @[520px]:w-12 @[520px]:h-12 @[760px]:w-14 @[760px]:h-14 @[1000px]:w-[72px] @[1000px]:h-[72px] shrink-0 ring-2 ring-white/5 transition-transform duration-500 ease-out group-hover:scale-[1.06]" flagSize={24} />
+      <div className="flex items-center gap-3 min-w-0">
+        <span className="flex-1 min-w-0 text-xs text-white/50 truncate">{news.sourceName} · {time}</span>
+        {tags}
       </div>
+      <div className="mt-0.5 @[520px]:mt-1 text-[15px] @[1000px]:text-[17px] font-semibold text-white leading-snug">{news.title}</div>
+      <p className="col-span-2 @[520px]:col-span-1 mt-1 @[520px]:mt-0.5 text-[13px] @[1000px]:text-sm text-text-secondary leading-snug line-clamp-2">{news.body}</p>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useNewsItem } from '../../hooks/useNewsList';
 import { useNoindex } from '../../hooks/useNoindex';
+import { useModalClose } from '../../hooks/useModalClose';
 import { ModalShell } from '../common/ModalShell';
 import { NewsList } from './NewsList';
 import { NewsArticle } from './NewsArticle';
@@ -14,6 +15,8 @@ export function NewsSheet({ newsId }: { newsId: string | null }) {
   const navigate = useNavigate();
   const location = useLocation();
   const item = useNewsItem(newsId);
+  // A story closes back to wherever it was opened from; the list to the feed.
+  const closeStory = useModalClose();
   useNoindex(!!newsId);
   useEffect(() => {
     document.title = item.data ? `${item.data.title} - Opinio` : `${NEWS_COPY.title} - Opinio`;
@@ -21,12 +24,12 @@ export function NewsSheet({ newsId }: { newsId: string | null }) {
 
   return (
     <ModalShell
-      onClose={() => navigate('/' + location.search)}
+      onClose={newsId ? closeStory : () => navigate('/' + location.search)}
       title={NEWS_COPY.title}
       titleAs={newsId ? 'h2' : 'h1'}
       icon={<NewsIcon brand />}
     >
-      <div className="@container overflow-x-hidden px-4 pt-4 pb-14">
+      <div className="@container overflow-x-hidden px-3 pt-3 pb-14">
         {newsId ? (
           <div key={newsId} className="news-view-in">
             <button onClick={() => navigate('/news' + location.search)} className="mb-5 inline-flex items-center gap-1 rounded-full bg-white/[0.06] ring-1 ring-white/10 pl-2 pr-3.5 py-1.5 text-sm text-white/75">
