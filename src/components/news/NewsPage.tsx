@@ -8,8 +8,12 @@ import { getCountryName } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { HoverTip } from '../common/HoverTip';
 import { RoleBadge } from '../common/RoleBadge';
+import { WASH } from '../common/wash';
+import { formatRelativeTime } from '../../utils/formatRelativeTime';
+import type { NewsItem } from '../../types/api';
 import { NewsList } from './NewsList';
-import { NewsArticle } from './NewsArticle';
+import { NewsArticle, NewsMeta } from './NewsArticle';
+import { NewsIcon, NewsPicture, NewsPill } from './NewsBits';
 import { NEWS_COPY } from './newsCopy';
 
 const BRAND = 'Opinio';
@@ -46,20 +50,19 @@ function FilterChips() {
   );
 }
 
-// Back to the map, filters kept - the way out of the page, next to the
-// header's news button (which toggles the same way).
+// The quiet icon button every window header carries (ModalShell's close).
+const HEADER_BTN = 'text-white/40 hover:text-white/80 transition-colors p-1';
+
+// Back to the map, filters kept - the window's X, next to the header's news
+// button (which toggles the same way).
 function CloseNews() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useI18n();
   return (
     <HoverTip label={t.close}>
-      <button
-        onClick={() => navigate('/' + location.search)}
-        aria-label={t.close}
-        className="w-9 h-9 rounded-full bg-white/[0.06] ring-1 ring-white/10 hover:bg-white/[0.12] hover:ring-white/25 flex items-center justify-center text-white/70 hover:text-white transition-all"
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.25}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+      <button onClick={() => navigate('/' + location.search)} aria-label={t.close} className={HEADER_BTN}>
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
       </button>
     </HoverTip>
   );
@@ -84,21 +87,77 @@ function ShareLink() {
   }
   return (
     <HoverTip label={copied ? t.linkCopied : t.share}>
-      <button onClick={share} aria-label={t.share} className="w-9 h-9 rounded-full bg-white/[0.06] ring-1 ring-white/10 hover:bg-white/[0.12] hover:ring-white/25 flex items-center justify-center text-white/70 hover:text-white transition-all">
+      <button onClick={share} aria-label={t.share} className={HEADER_BTN}>
         {copied ? (
-          <svg className="w-4 h-4 text-positive" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+          <svg className="w-5 h-5 text-positive" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
         ) : (
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
         )}
       </button>
     </HoverTip>
   );
 }
 
-// /news and /n/:id on desktop: the news takes the map's place in the centre
+function NewsDisc() {
+  return (
+    <span className="w-9 h-9 rounded-full bg-white/[0.07] ring-1 ring-white/15 flex items-center justify-center shrink-0">
+      <NewsIcon className="w-[22px] h-[22px]" brand />
+    </span>
+  );
+}
+
+// The story's header, laid out like the opinio detail's: back, picture,
+// then source and time over the title over who/where/what, actions right.
+function StoryHeader({ news }: { news: NewsItem | undefined }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { t, locale } = useI18n();
+  const back = (
+    <HoverTip label={NEWS_COPY.back}>
+      <button onClick={() => navigate('/news' + location.search)} aria-label={NEWS_COPY.back} className={`${HEADER_BTN} -ml-2 self-center`}>
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.25}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+      </button>
+    </HoverTip>
+  );
+  if (!news) {
+    return (
+      <div className="flex items-center gap-2.5">
+        {back}
+        <NewsDisc />
+        <h1 className="flex-1 text-base font-semibold text-white">{NEWS_COPY.title}</h1>
+        <CloseNews />
+      </div>
+    );
+  }
+  return (
+    <div key={news.id} className="caption-enter flex items-start gap-3">
+      {back}
+      <span className="caption-mark news-ring shrink-0 self-center rounded-full p-[2px]">
+        <span className="block rounded-full p-[2px] bg-surface">
+          <NewsPicture news={news} className="w-14 h-14" flagSize={28} credit />
+        </span>
+      </span>
+      <div className="caption-text min-w-0 flex-1">
+        <div className="flex items-center gap-2 flex-wrap text-xs text-white/60">
+          <NewsPill live />
+          <span>{news.sourceName} · {formatRelativeTime(news.createdAt, locale, t.justNow)}</span>
+        </div>
+        <h1 className="mt-1.5 text-lg font-semibold text-white leading-snug">{news.title}</h1>
+        <div className="mt-1.5"><NewsMeta news={news} /></div>
+      </div>
+      <div className="shrink-0 flex items-center gap-1">
+        <ShareLink />
+        <CloseNews />
+      </div>
+    </div>
+  );
+}
+
+// /news and /n/:id on desktop: a window in the map's place in the centre
 // column (or the feed columns' place below 1366px) while Rising and Falling
-// stay. The list and a story swap in one scroller; going back restores where
-// the list was.
+// stay - built like every other window (panel, washed header bar, X), with
+// the dimmed map showing round its edges. The list and a story swap in one
+// scroller; going back restores where the list was.
 export function NewsPage({ newsId }: { newsId: string | null }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -128,52 +187,40 @@ export function NewsPage({ newsId }: { newsId: string | null }) {
   }, [newsId, item.data]);
 
   return (
-    <div
-      ref={scrollRef}
-      onScroll={(e) => { if (!newsId) listScroll.current = e.currentTarget.scrollTop; }}
-      className="@container relative flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-y-contain subtle-scrollbar"
-    >
-      <div aria-hidden className="news-page-glow pointer-events-none absolute inset-x-0 top-0 h-[480px]" />
-      <div className="relative max-w-[1200px] mx-auto px-6 @[900px]:px-10 @[1200px]:px-14 pt-8 @[1000px]:pt-10 pb-16">
-        {newsId ? (
-          <div key={newsId} className="news-view-in">
-            <div className="flex items-center justify-between mb-8">
-              <button
-                onClick={() => navigate('/news' + location.search)}
-                className="group inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] ring-1 ring-white/10 hover:bg-white/[0.12] hover:ring-white/25 pl-2.5 pr-4 py-1.5 text-sm font-medium text-white/75 hover:text-white transition-all"
-              >
-                <svg className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.25}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-                {NEWS_COPY.back}
-              </button>
-              <div className="flex items-center gap-2">
-                <ShareLink />
-                <CloseNews />
-              </div>
+    <div className="relative flex-1 min-h-0 flex flex-col px-4 pt-4 pb-3">
+      <div
+        className="flex-1 min-h-0 flex flex-col bg-surface border border-border rounded-2xl shadow-2xl shadow-black/50 overflow-hidden"
+        style={{ animation: 'modal-enter 0.2s ease-out' }}
+      >
+        <div className="user-header-wash shrink-0 px-6 py-4 border-b border-border" style={WASH}>
+          {newsId ? <StoryHeader news={item.data} /> : (
+            <div className="flex items-center gap-2.5">
+              <NewsDisc />
+              <h1 className="text-base font-semibold text-white">{NEWS_COPY.title}</h1>
+              <div className="flex-1 min-w-0 ml-3"><FilterChips /></div>
+              <CloseNews />
             </div>
-            {item.data ? <NewsArticle news={item.data} /> : (
-              <div className="flex justify-center py-16">
-                <span className="block w-6 h-6 rounded-full border-2 border-white/15 border-t-white/70 animate-spin" />
+          )}
+        </div>
+        <div
+          ref={scrollRef}
+          onScroll={(e) => { if (!newsId) listScroll.current = e.currentTarget.scrollTop; }}
+          className="@container flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-y-contain subtle-scrollbar"
+        >
+          <div className="px-6 pt-6 pb-12">
+            {newsId ? (
+              <div key={newsId} className="news-view-in">
+                {item.data ? <NewsArticle news={item.data} hero={false} /> : (
+                  <div className="flex justify-center py-16">
+                    <span className="block w-6 h-6 rounded-full border-2 border-white/15 border-t-white/70 animate-spin" />
+                  </div>
+                )}
               </div>
+            ) : (
+              <div key="list" className="news-view-back"><NewsList /></div>
             )}
           </div>
-        ) : (
-          <div key="list" className="news-view-back">
-            <header className="caption-enter relative mb-9">
-              <div className="absolute right-0 top-0"><CloseNews /></div>
-              <div className="flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/60">
-                <span className="relative inline-flex w-2 h-2">
-                  <span className="absolute inset-0 rounded-full bg-accent animate-ping motion-reduce:hidden" />
-                  <span className="relative w-2 h-2 rounded-full bg-accent" />
-                </span>
-                {NEWS_COPY.kicker}
-              </div>
-              <h1 className="mt-3 text-4xl @[900px]:text-5xl @[1100px]:text-6xl font-bold tracking-tight text-white">{NEWS_COPY.title}</h1>
-              <p className="mt-2 text-[15px] @[1000px]:text-lg text-white/60">{NEWS_COPY.subtitle}</p>
-              <div className="mt-4"><FilterChips /></div>
-            </header>
-            <NewsList />
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

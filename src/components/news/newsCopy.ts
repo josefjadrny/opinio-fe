@@ -2,8 +2,6 @@
 // move into i18n/strings.ts (all 7 languages) before this ships.
 export const NEWS_COPY = {
   title: 'News',
-  kicker: 'Live from the world',
-  subtitle: 'The stories behind today\'s opinios, as they break.',
   allFilters: 'All countries · all categories',
   latest: 'Latest',
   back: 'All news',

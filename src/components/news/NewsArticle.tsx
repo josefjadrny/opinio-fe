@@ -46,10 +46,54 @@ function MoreFrom({ news }: { news: NewsItem }) {
   );
 }
 
+// Where a story's country and category lead: the country page, and the list
+// filtered by the category (the filters live in the query string, shared
+// with the feed).
+function useNewsLinks(news: NewsItem) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  return {
+    toCountry: () => navigate('/c/' + news.countryCode + location.search),
+    byRole: () => {
+      const params = new URLSearchParams(location.search);
+      const roles = (params.get('roles') ?? '').split(',').filter(Boolean);
+      if (!roles.includes(news.role)) roles.push(news.role);
+      params.set('roles', roles.join(','));
+      navigate('/news?' + params.toString());
+    },
+  };
+}
+
+// The person, the country and the category under a story's title - in the
+// hero and in the desktop window's header alike.
+export function NewsMeta({ news }: { news: NewsItem }) {
+  const { t, locale } = useI18n();
+  const { toCountry, byRole } = useNewsLinks(news);
+  const country = getCountryName(news.countryCode, locale);
+  return (
+    <div className="flex items-center gap-2 flex-wrap">
+      {news.person.name && <span className="text-sm font-medium text-white/80">{news.person.name}</span>}
+      {news.person.name && <span className="text-white/30">·</span>}
+      <HoverTip label={country}>
+        <button onClick={toCountry} className="flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors">
+          <FlagImg code={news.countryCode} size={16} />
+          {country}
+        </button>
+      </HoverTip>
+      <HoverTip label={`${t.filterBy}: ${t.roles[news.role]}`}>
+        <button onClick={byRole} className="hover:opacity-70 transition-opacity">
+          <RoleBadge role={news.role} />
+        </button>
+      </HoverTip>
+    </div>
+  );
+}
+
 // One story, full: the caption's anatomy at page size (picture, pill, title),
 // the text, the way out to the source, where it happened, and the way in to
-// an opinio about it.
-export function NewsArticle({ news }: { news: NewsItem }) {
+// an opinio about it. `hero: false` leaves the picture and title to the
+// window header that holds the story (desktop).
+export function NewsArticle({ news, hero = true }: { news: NewsItem; hero?: boolean }) {
   const navigate = useNavigate();
   const { setHoveredProfileCountry } = useFilters();
   // The story's country stays lit on the map behind the page while it is open.
@@ -60,21 +104,13 @@ export function NewsArticle({ news }: { news: NewsItem }) {
   const location = useLocation();
   const { t, locale } = useI18n();
   const country = getCountryName(news.countryCode, locale);
-  const toCountry = () => navigate('/c/' + news.countryCode + location.search);
-  // The category chip goes to the list filtered by it (the filters live in
-  // the query string, shared with the feed).
-  const byRole = () => {
-    const params = new URLSearchParams(location.search);
-    const roles = (params.get('roles') ?? '').split(',').filter(Boolean);
-    if (!roles.includes(news.role)) roles.push(news.role);
-    params.set('roles', roles.join(','));
-    navigate('/news?' + params.toString());
-  };
+  const { toCountry } = useNewsLinks(news);
 
   return (
     <article>
       {/* Hero. Same entrance beats as the map caption's subject swap: the
           picture pops with an overshoot, the text rises after it. */}
+      {hero && (
       <header className="caption-enter relative isolate">
         <div aria-hidden className="pointer-events-none absolute -inset-x-16 -inset-y-12 -z-10" style={{ background: 'radial-gradient(40% 65% at 14% 45%, rgba(233,69,96,0.16), transparent 70%)' }} />
         <div className="flex gap-5 @[640px]:gap-6 items-start">
@@ -89,28 +125,15 @@ export function NewsArticle({ news }: { news: NewsItem }) {
               <span>{formatRelativeTime(news.createdAt, locale, t.justNow)}</span>
             </div>
             <h1 className="mt-2.5 text-2xl @[640px]:text-[32px] @[1000px]:text-[42px] font-bold text-white leading-[1.15] tracking-tight">{news.title}</h1>
-            <div className="mt-3 flex items-center gap-2 flex-wrap">
-              {news.person.name && <span className="text-sm font-medium text-white/80">{news.person.name}</span>}
-              {news.person.name && <span className="text-white/30">·</span>}
-              <HoverTip label={country}>
-                <button onClick={toCountry} className="flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors">
-                  <FlagImg code={news.countryCode} size={16} />
-                  {country}
-                </button>
-              </HoverTip>
-              <HoverTip label={`${t.filterBy}: ${t.roles[news.role]}`}>
-                <button onClick={byRole} className="hover:opacity-70 transition-opacity">
-                  <RoleBadge role={news.role} />
-                </button>
-              </HoverTip>
-            </div>
+            <div className="mt-3"><NewsMeta news={news} /></div>
           </div>
         </div>
       </header>
+      )}
 
-      <div className="mt-9 @[1000px]:mt-12 grid gap-6 @[1000px]:gap-10 @[760px]:grid-cols-[1fr_260px] @[1000px]:grid-cols-[1fr_340px] items-start">
+      <div className={`${hero ? 'mt-9 @[1000px]:mt-12' : ''} grid gap-6 @[1000px]:gap-10 @[760px]:grid-cols-[1fr_260px] @[1000px]:grid-cols-[1fr_340px] items-start`}>
         <div className="activity-row-in" style={{ '--i': 1 } as CSSProperties}>
-          <p className="text-[17px] @[1000px]:text-[19px] text-white/85 leading-[1.7] max-w-[68ch]">{news.body}</p>
+          <p className="text-base @[1000px]:text-[17px] text-white/85 leading-[1.7] max-w-[68ch]">{news.body}</p>
           <a
             href={news.sourceUrl}
             target="_blank"
