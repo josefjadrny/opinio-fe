@@ -19,9 +19,9 @@ export function NewsLinkBadge({ newsId, size = 'sm' }: { newsId?: string | null;
         type="button"
         onClick={(e) => { e.stopPropagation(); navigate('/n/' + newsId + location.search); }}
         aria-label={t.newsOnTheNews}
-        className={`inline-flex items-center rounded-lg text-white/50 hover:text-white/80 transition-colors ${size === 'sm' ? 'px-1.5 py-0.5' : ''}`}
+        className={`inline-flex items-center rounded-lg text-white/50 hover:text-white/80 transition-colors ${size === 'sm' ? 'px-2 py-0.5' : ''}`}
       >
-        <NewsIcon className="w-5 h-5" />
+        <NewsIcon className="w-5 h-5" fill />
       </button>
     </HoverTip>
   );

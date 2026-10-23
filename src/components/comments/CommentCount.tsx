@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useI18n } from '../../i18n/I18nContext';
+import { HoverTip } from '../common/HoverTip';
 import { formatNumber } from '../../utils/formatNumber';
 import { commentCountLabel } from './commentCountLabel';
 
@@ -35,17 +36,19 @@ export function CommentCount({ count, size = 'sm', onClick }: CommentCountProps)
   // gap is already the row's own and any extra reads as dead space.
   const dims = size === 'sm' ? 'gap-1.5 px-2 py-0.5' : 'gap-1 px-0 py-0';
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={commentCountLabel(t, locale, count)}
-      className={`inline-flex items-center rounded-lg text-base font-medium tabular-nums leading-none transition-colors text-white/50 hover:text-white/80 ${dims}`}
-    >
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h8M8 14h5M21 12c0 4.418-4.03 8-9 8a9.9 9.9 0 0 1-4-.8L3 20l1.3-3.9A7.6 7.6 0 0 1 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-      </svg>
-      <span>{formatNumber(count)}</span>
-    </button>
+    <HoverTip label={t.comments}>
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={commentCountLabel(t, locale, count)}
+        className={`inline-flex items-center rounded-lg text-base font-medium tabular-nums leading-none transition-colors text-white/50 hover:text-white/80 ${dims}`}
+      >
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h8M8 14h5M21 12c0 4.418-4.03 8-9 8a9.9 9.9 0 0 1-4-.8L3 20l1.3-3.9A7.6 7.6 0 0 1 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+        <span>{formatNumber(count)}</span>
+      </button>
+    </HoverTip>
   );
 }
 

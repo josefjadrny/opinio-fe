@@ -53,9 +53,12 @@ export function NewsPill({ live = false, className = '' }: { live?: boolean; cla
 // reach the page. The dot is the NEWS pill's red. `brand` colours the waves
 // like the header's other discs (the like green); plain, they take the text
 // colour and the dot stays red.
-export function NewsIcon({ className = 'w-5 h-5', brand = false }: { className?: string; brand?: boolean }) {
+// `fill` crops the box to the glyph so it reads as big as the comment bubble
+// beside it (the waves span only ~13 of the 24 units); the stroke scales with
+// it to the bubble's 2.
+export function NewsIcon({ className = 'w-5 h-5', brand = false, fill = false }: { className?: string; brand?: boolean; fill?: boolean }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} fill="none" viewBox={fill ? '2.4 2.4 19.2 19.2' : '0 0 24 24'} stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="2.2" fill="var(--color-accent)" stroke="var(--color-accent)" />
       <path stroke={brand ? 'var(--color-positive)' : undefined} d="M8.6 8.6a4.8 4.8 0 000 6.8M15.4 8.6a4.8 4.8 0 010 6.8M5.6 5.6a9 9 0 000 12.8M18.4 5.6a9 9 0 010 12.8" />
     </svg>
