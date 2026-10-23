@@ -32,10 +32,6 @@ export function NewsSheet({ newsId }: { newsId: string | null }) {
       <div className="@container overflow-x-hidden px-3 pt-3 pb-14">
         {newsId ? (
           <div key={newsId} className="news-view-in">
-            <button onClick={() => navigate('/news' + location.search)} className="mb-5 inline-flex items-center gap-1 rounded-full bg-white/[0.06] ring-1 ring-white/10 pl-2 pr-3.5 py-1.5 text-sm text-white/75">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.25}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-              {NEWS_COPY.back}
-            </button>
             {item.data && <NewsArticle news={item.data} />}
           </div>
         ) : (

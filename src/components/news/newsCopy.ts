@@ -4,7 +4,6 @@ export const NEWS_COPY = {
   title: 'News',
   allFilters: 'All countries · all categories',
   latest: 'Latest',
-  back: 'All news',
   readSource: 'Read the full story at {source}',
   photoCredit: 'Photo: {author}, {license}',
   opiniosTitle: 'Opinios on this story',

@@ -108,24 +108,14 @@ function NewsDisc() {
   );
 }
 
-// The story's header, laid out like the opinio detail's: back, picture,
+// The story's header, laid out like the opinio detail's: picture,
 // then source and time over the title over who/where/what, actions right.
 function StoryHeader({ news }: { news: NewsItem | undefined }) {
-  const navigate = useNavigate();
   const close = useModalClose();
-  const location = useLocation();
   const { t, locale } = useI18n();
-  const back = (
-    <HoverTip label={NEWS_COPY.back}>
-      <button onClick={() => navigate('/news' + location.search)} aria-label={NEWS_COPY.back} className={`${HEADER_BTN} -ml-2 self-center`}>
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.25}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-      </button>
-    </HoverTip>
-  );
   if (!news) {
     return (
       <div className="flex items-center gap-2.5">
-        {back}
         <NewsDisc />
         <h1 className="flex-1 text-base font-semibold text-white">{NEWS_COPY.title}</h1>
         <CloseNews onClose={close} />
@@ -134,7 +124,6 @@ function StoryHeader({ news }: { news: NewsItem | undefined }) {
   }
   return (
     <div key={news.id} className="caption-enter flex items-start gap-3">
-      {back}
       <span className="caption-mark news-ring shrink-0 self-center rounded-full p-[2px]">
         <span className="block rounded-full p-[2px] bg-surface">
           <NewsPicture news={news} className="w-14 h-14 2xl:w-[72px] 2xl:h-[72px]" flagSize={28} credit />
