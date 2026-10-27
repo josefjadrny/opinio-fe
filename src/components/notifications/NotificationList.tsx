@@ -6,10 +6,12 @@ import { useNotifications, useMarkNotificationsSeen, useClickNotification } from
 import type { NotificationItem } from '../../types/api';
 import { WASH } from '../common/wash';
 import { CategoryIcon, StatusPill } from '../support/supportIcons';
+import { formatNumber } from '../../utils/formatNumber';
+import { CommentIcon } from '../comments/CommentCount';
 
 // Kinds this build can draw. A later phase's kind reaching an older FE is
 // skipped rather than drawn as an empty row.
-const KNOWN_KINDS = new Set(['milestone', 'support']);
+const KNOWN_KINDS = new Set(['milestone', 'comment', 'support']);
 
 // 🌱 1, 🔥 10, ⭐ 50, 💯 100, 🚀 250, 🏆 500, 👑 1000 and up.
 function milestoneIcon(m: number): string {
@@ -19,7 +21,7 @@ function milestoneIcon(m: number): string {
 // Splices the opinio name (or ticket title, the acting user, a status) into a
 // "{target} ..." template.
 function fill(template: string, target: ReactNode, n: ReactNode, extra: Record<string, ReactNode> = {}): ReactNode {
-  return template.split(/(\{target\}|\{n\}|\{actor\}|\{status\})/).map((piece, i) =>
+  return template.split(/(\{target\}|\{n\}|\{actors?\}|\{status\})/).map((piece, i) =>
     piece === '{target}' ? <Fragment key={i}>{target}</Fragment>
       : piece === '{n}' ? <Fragment key={i}>{n}</Fragment>
       : piece in extra ? <Fragment key={i}>{extra[piece]}</Fragment>
@@ -53,6 +55,28 @@ function supportSentence(item: NotificationItem, t: ReturnType<typeof useI18n>['
   if (ticket.event === 'created') return fill(t.notifSupportOpened, target, null, { '{actor}': actor });
   if (ticket.event === 'message') return fill(t.notifSupportUserReplied, target, null, { '{actor}': actor });
   return fill(t.notifSupportStatus, target, null, { '{status}': status });
+}
+
+// "@a, @b and 3 others commented on your opinio X": up to three names,
+// newest first, then the rest as a count. The list joins the language's own way (Intl.ListFormat;
+// en-GB for English, no comma before "and"). The verb agrees with one person
+// or several.
+function commentSentence(item: NotificationItem, t: ReturnType<typeof useI18n>['t'], locale: string, target: ReactNode): ReactNode {
+  const names = item.actors.map((a) => (
+    <span key={a.id} className="font-semibold text-white/90 whitespace-nowrap">
+      @{a.handle}
+    </span>
+  ));
+  if (item.moreCount > 0) {
+    const category = new Intl.PluralRules(locale).select(item.moreCount);
+    const others = category === 'one' ? t.notifOthersOne : category === 'few' ? t.notifOthersFew : t.notifOthersMany;
+    names.push(<Fragment key="more">{others.replace('{n}', formatNumber(item.moreCount))}</Fragment>);
+  }
+  const parts = new Intl.ListFormat(locale === 'en' ? 'en-GB' : locale, { type: 'conjunction' })
+    .formatToParts(names.map((_, i) => String(i)));
+  const actors = parts.map((p, i) => (p.type === 'element' ? <Fragment key={i}>{names[Number(p.value)]}</Fragment> : p.value));
+  const people = item.actors.length + item.moreCount;
+  return fill(people === 1 ? t.notifCommentOne : t.notifCommentMany, target, null, { '{actors}': actors });
 }
 
 function NotificationRow({ item, index, onClick }: { item: NotificationItem; index: number; onClick: () => void }) {
@@ -103,7 +127,14 @@ function NotificationRow({ item, index, onClick }: { item: NotificationItem; ind
       </span>
       <span className="flex-1 min-w-0 pr-3">
         <span className={`block text-sm leading-relaxed break-words ${unread ? 'text-white/85' : 'text-white/60'}`}>
-          {ticket ? supportSentence(item, t, target) : (
+          {ticket ? supportSentence(item, t, target) : item.kind === 'comment' ? (
+            <>
+              {/* The opinio bubble the comments tab wears, in the slot and at the
+                  size of a milestone glyph. */}
+              <CommentIcon className="inline-block w-[1.35em] h-[1.35em] -mt-1 mr-1 align-middle" />
+              {commentSentence(item, t, locale, target)}
+            </>
+          ) : (
             <>
               {/* The milestone glyph opens the sentence, leaving the picture clear. */}
               <span aria-hidden className="mr-1.5">{milestoneIcon(m)}</span>

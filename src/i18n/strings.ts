@@ -389,6 +389,11 @@ export interface Strings {
   notificationsFailed: string;
   notifMilestoneFirst: string;
   notifMilestone: string;
+  notifCommentOne: string;
+  notifCommentMany: string;
+  notifOthersOne: string;
+  notifOthersFew: string;
+  notifOthersMany: string;
   justReported: string;
   // The red pill that marks a news item, on the live banner and the map caption.
   // Says "news", not "live": the item is laid out like an opinio card, so the
@@ -828,6 +833,11 @@ const en: Strings = {
   notificationsFailed: 'Could not load notifications',
   notifMilestoneFirst: 'First vote on {target}',
   notifMilestone: 'Your opinio {target} reached {n} votes',
+  notifCommentOne: '{actors} commented on your opinio {target}',
+  notifCommentMany: '{actors} commented on your opinio {target}',
+  notifOthersOne: '{n} other',
+  notifOthersFew: '{n} others',
+  notifOthersMany: '{n} others',
   justReported: 'New opinio just dropped',
   newsLabel: 'NEWS',
   newsOnTheNews: 'On the news',
@@ -1302,6 +1312,11 @@ const cs: Strings = {
   notificationsFailed: 'Oznámení se nepodařilo načíst',
   notifMilestoneFirst: 'První hlas pro {target}',
   notifMilestone: 'Tvoje opinio {target} dosáhlo {n} hlasů',
+  notifCommentOne: '{actors} okomentoval(a) tvoje opinio {target}',
+  notifCommentMany: '{actors} okomentovali tvoje opinio {target}',
+  notifOthersOne: '{n} další',
+  notifOthersFew: '{n} další',
+  notifOthersMany: '{n} dalších',
   justReported: 'Padlo nové opinio',
   newsLabel: 'ZPRÁVY',
   newsOnTheNews: 'Ve zprávách',
@@ -1774,6 +1789,11 @@ const es: Strings = {
   notificationsFailed: 'No se pudieron cargar las notificaciones',
   notifMilestoneFirst: 'Primer voto en {target}',
   notifMilestone: 'Tu opinio {target} alcanzó {n} votos',
+  notifCommentOne: '{actors} comentó tu opinio {target}',
+  notifCommentMany: '{actors} comentaron tu opinio {target}',
+  notifOthersOne: '{n} más',
+  notifOthersFew: '{n} más',
+  notifOthersMany: '{n} más',
   justReported: 'Acaba de caer un opinio',
   newsLabel: 'NOTICIAS',
   newsOnTheNews: 'En las noticias',
@@ -2246,6 +2266,11 @@ const de: Strings = {
   notificationsFailed: 'Benachrichtigungen konnten nicht geladen werden',
   notifMilestoneFirst: 'Erste Stimme für {target}',
   notifMilestone: 'Dein opinio {target} hat {n} Stimmen erreicht',
+  notifCommentOne: '{actors} hat dein opinio {target} kommentiert',
+  notifCommentMany: '{actors} haben dein opinio {target} kommentiert',
+  notifOthersOne: '{n} weitere Person',
+  notifOthersFew: '{n} weitere',
+  notifOthersMany: '{n} weitere',
   justReported: 'Frisches opinio reingeworfen',
   newsLabel: 'NACHRICHTEN',
   newsOnTheNews: 'In den Nachrichten',
@@ -2718,6 +2743,11 @@ const fr: Strings = {
   notificationsFailed: 'Impossible de charger les notifications',
   notifMilestoneFirst: 'Premier vote sur {target}',
   notifMilestone: 'Votre opinio {target} a atteint {n} votes',
+  notifCommentOne: '{actors} a commenté votre opinio {target}',
+  notifCommentMany: '{actors} ont commenté votre opinio {target}',
+  notifOthersOne: '{n} autre',
+  notifOthersFew: '{n} autres',
+  notifOthersMany: '{n} autres',
   justReported: 'Un opinio vient de tomber',
   newsLabel: 'ACTU',
   newsOnTheNews: 'Dans l\'actualité',
@@ -3190,6 +3220,11 @@ const it: Strings = {
   notificationsFailed: 'Impossibile caricare le notifiche',
   notifMilestoneFirst: 'Primo voto su {target}',
   notifMilestone: 'Il tuo opinio {target} ha raggiunto {n} voti',
+  notifCommentOne: '{actors} ha commentato il tuo opinio {target}',
+  notifCommentMany: '{actors} hanno commentato il tuo opinio {target}',
+  notifOthersOne: '{n} altro',
+  notifOthersFew: '{n} altri',
+  notifOthersMany: '{n} altri',
   justReported: 'È appena arrivato un opinio',
   newsLabel: 'NOTIZIE',
   newsOnTheNews: 'Nelle notizie',
@@ -3663,6 +3698,11 @@ const pl: Strings = {
   notificationsFailed: 'Nie udało się wczytać powiadomień',
   notifMilestoneFirst: 'Pierwszy głos na {target}',
   notifMilestone: 'Twoje opinio {target} osiągnęło {n} głosów',
+  notifCommentOne: '{actors} skomentował(a) twoje opinio {target}',
+  notifCommentMany: '{actors} skomentowali twoje opinio {target}',
+  notifOthersOne: '{n} inna osoba',
+  notifOthersFew: '{n} inne osoby',
+  notifOthersMany: '{n} innych osób',
   justReported: 'Pojawiło się nowe opinio',
   newsLabel: 'WIADOMOŚCI',
   newsOnTheNews: 'W wiadomościach',
