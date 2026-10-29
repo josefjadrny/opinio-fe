@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { formatNumber } from '../../utils/formatNumber';
 import { useVote } from '../../hooks/useVote';
 import { useMe } from '../../hooks/useMe';
@@ -7,6 +9,25 @@ import { useVoteAnimation } from '../../hooks/useVoteAnimation';
 import { useI18n } from '../../i18n/I18nContext';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { HoverTip } from '../common/HoverTip';
+import { TIP_TEXT_CLASS } from '../common/AnchoredTip';
+
+// The "next vote in mm:ss" line, ticking only while its tip is open. The
+// countdown used to live in VoteButtons itself, which put a 1s interval and a
+// re-render per second on every card in the feed once a pool ran dry.
+//
+// At zero it refetches /api/me once: the fresh allowance clears nextAt, which
+// drops the tip's label and with it the tip - rather than leaving an empty
+// panel up until the next 10s poll. Only an open tip ever does this.
+function NextVoteLine({ nextAt }: { nextAt: string }) {
+  const { t } = useI18n();
+  const queryClient = useQueryClient();
+  const { text } = useCountdown(nextAt);
+  const expired = text === null;
+  useEffect(() => {
+    if (expired) queryClient.invalidateQueries({ queryKey: ['me'] });
+  }, [expired, queryClient]);
+  return <span className={`block whitespace-nowrap ${TIP_TEXT_CLASS}`}>{t.nextVote} {text ?? '00:00'}</span>;
+}
 
 interface VoteButtonsProps {
   profileId: string;
@@ -35,8 +56,14 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
   const noCountryMsg = isRegistered ? t.noCountryWarningRegistered : t.noCountryWarning;
   const canLike = online && hasCountry && (me?.voteAllowance.like.remaining ?? 0) > 0;
   const canDislike = online && hasCountry && (me?.voteAllowance.dislike.remaining ?? 0) > 0;
-  const likeCountdown = useCountdown(!canLike && hasCountry ? me?.voteAllowance.like.nextAt ?? null : null);
-  const dislikeCountdown = useCountdown(!canDislike && hasCountry ? me?.voteAllowance.dislike.nextAt ?? null : null);
+  const likeNextAt = !canLike && hasCountry ? me?.voteAllowance.like.nextAt ?? null : null;
+  const dislikeNextAt = !canDislike && hasCountry ? me?.voteAllowance.dislike.nextAt ?? null : null;
+  // Offline / no country take the plain one-line label; otherwise a dry pool
+  // gets the live countdown panel (the label then only keys re-measurement).
+  const tipFor = (nextAt: string | null) => ({
+    label: !online ? t.offlineVote : !hasCountry ? noCountryMsg : (nextAt ? t.nextVote : null),
+    panel: online && hasCountry && nextAt ? <NextVoteLine nextAt={nextAt} /> : undefined,
+  });
 
   const handleVote = (e: React.MouseEvent, type: 'like' | 'dislike') => {
     e.stopPropagation();
@@ -68,7 +95,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
           {p.streak >= 5 ? '🔥' : p.streak >= 3 ? `+${p.streak}` : '+1'}
         </span>
       ))}
-      <HoverTip label={!online ? t.offlineVote : !hasCountry ? noCountryMsg : (likeCountdown.text ? `${t.nextVote} ${likeCountdown.text}` : null)} className="contents">
+      <HoverTip {...tipFor(likeNextAt)} className="contents">
       <button
         key={likeAnim.bumpKey}
         onClick={(e) => handleVote(e, 'like')}
@@ -100,7 +127,7 @@ export function VoteButtons({ profileId, likes, dislikes, compact, showOnly, rev
           {p.streak >= 5 ? '💥' : p.streak >= 3 ? `+${p.streak}` : '+1'}
         </span>
       ))}
-      <HoverTip label={!online ? t.offlineVote : !hasCountry ? noCountryMsg : (dislikeCountdown.text ? `${t.nextVote} ${dislikeCountdown.text}` : null)} className="contents">
+      <HoverTip {...tipFor(dislikeNextAt)} className="contents">
       <button
         key={dislikeAnim.bumpKey}
         onClick={(e) => handleVote(e, 'dislike')}

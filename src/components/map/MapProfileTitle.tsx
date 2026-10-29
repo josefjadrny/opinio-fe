@@ -308,7 +308,8 @@ export function MapProfileTitle({
   useEffect(() => {
     const clock = spentRef.current;
     const spent = clock.key === clockKey ? clock.ms : 0;
-    const anim = progressRef.current?.getAnimations()[0];
+    const pill = progressRef.current;
+    const anim = pill?.getAnimations()[0];
     if (anim) { anim.currentTime = spent; anim.pause(); }
     if (paused) return;
     anim?.play();
@@ -321,7 +322,11 @@ export function MapProfileTitle({
     }, Math.max(0, SLIDE_MS - spent));
     return () => {
       clearTimeout(timer);
-      anim?.pause();
+      // Only while the pill is still on the page. This cleanup also runs after
+      // an unmount, and pausing an animation whose element is already removed
+      // revives it on the document timeline, which then keeps the whole
+      // detached caption alive - one copy leaked per map unmount or slide.
+      if (pill?.isConnected) anim?.pause();
       clock.key = done ? '' : clockKey;
       clock.ms = done ? 0 : spent + performance.now() - since;
     };

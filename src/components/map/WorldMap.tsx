@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo, useSyncExternalStore } from 'react';
+import type { ComponentProps } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
@@ -54,6 +55,29 @@ interface ZoomState {
   ty: number;
 }
 
+// The pointer position lives outside WorldMap's state: only the tooltip follows
+// it, and a setState per mousemove re-rendered every country path, label and
+// city marker on each move (~35ms a move on a desktop CPU).
+type Cursor = { x: number; y: number };
+function createCursorStore() {
+  let pos: Cursor = { x: 0, y: 0 };
+  const listeners = new Set<() => void>();
+  return {
+    get: () => pos,
+    set: (x: number, y: number) => { pos = { x, y }; listeners.forEach((l) => l()); },
+    subscribe: (l: () => void) => { listeners.add(l); return () => { listeners.delete(l); }; },
+  };
+}
+type CursorStore = ReturnType<typeof createCursorStore>;
+
+function CursorTooltip({ cursor, ...props }: { cursor: CursorStore } & Omit<ComponentProps<typeof CountryTooltip>, 'position'>) {
+  const position = useSyncExternalStore(cursor.subscribe, cursor.get);
+  return <CountryTooltip {...props} position={position} />;
+}
+
+// Projected once at module load - the projection is fixed.
+const CITY_POINTS = CITIES.map((city) => ({ city, p: projection(city.coords) }));
+
 // `backdrop`: the map behind the news page - drawn and tinted as usual, and
 // still ringing the hovered country, but with no caption, legend, zoom or
 // tooltip. The wrapper in App takes its pointer events and focus away.
@@ -63,7 +87,7 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
   const { locale } = useI18n();
   const { hoveredProfileCountry } = useFilters();
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [cursor] = useState(createCursorStore);
   const [countries, setCountries] = useState<GeoJSON.Feature[]>([]);
   const [borders, setBorders] = useState<BorderPaths>({ interior: '', coast: '' });
   const [zoom, setZoom] = useState<ZoomState>({ scale: 1, tx: 0, ty: 0 });
@@ -196,6 +220,17 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
     return map;
   }, [countries]);
 
+  // Path data per country, generated once per geometry load - the projection is
+  // fixed and zoom is a transform on the group, so `d` never changes after that.
+  const countryShapes = useMemo(
+    () => countries.flatMap((geo, i) => {
+      const id = String((geo as GeoJSON.Feature & { id?: string | number }).id ?? '');
+      const d = pathGenerator(geo);
+      return d ? [{ key: `${id}-${i}`, alpha2: numericToAlpha2(id), d }] : [];
+    }),
+    [countries],
+  );
+
   // Label placement + decluttering (see buildCityLabelLayout in mapShared).
   // Recomputed each zoom step / locale / labelScale change.
   const cityLabelLayout = useMemo(
@@ -277,7 +312,7 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
   }, [zoom.tx, zoom.ty]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    setMousePos({ x: e.clientX, y: e.clientY });
+    cursor.set(e.clientX, e.clientY);
 
     const drag = dragRef.current;
     if (drag) {
@@ -296,7 +331,7 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
         return { ...prev, tx, ty };
       });
     }
-  }, []);
+  }, [cursor]);
 
   const handleMouseUp = useCallback(() => {
     dragRef.current = null;
@@ -390,14 +425,8 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
         onMouseLeave={handleMouseUp}
       >
         <g transform={`translate(${zoom.tx},${zoom.ty}) scale(${zoom.scale})`}>
-          {countries.map((geo, i) => {
-            const id = String((geo as GeoJSON.Feature & { id?: string | number }).id ?? '');
-            const alpha2 = numericToAlpha2(id);
+          {countryShapes.map(({ key, alpha2, d }) => {
             const isHovered = !!alpha2 && (alpha2 === hoveredCountry || alpha2 === hoveredProfileCountry);
-            const d = pathGenerator(geo);
-            if (!d) return null;
-
-            const key = `${id}-${i}`;
             // Mid-fade every country is neutral; otherwise a country we have no
             // numbers for gets NO_DATA_FILL, distinct from the near-tie DEFAULT_FILL
             // that colorForCountry returns for a country that voted but didn't lean.
@@ -478,8 +507,7 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
             style={{ pointerEvents: 'none' }}
             fontFamily="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
           >
-            {CITIES.map((city) => {
-              const p = projection(city.coords);
+            {CITY_POINTS.map(({ city, p }) => {
               if (!p) return null;
               const [cx, cy] = p;
               const r = ((city.capital ? 0.95 : 0.65) / zoom.scale) * labelScale;
@@ -533,12 +561,12 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
       {hoveredCountry && !backdrop && (
         // Keyed on the country so crossing a border remounts the card and
         // replays its entrance (and the bar fill) for the new one.
-        <CountryTooltip
+        <CursorTooltip
           key={hoveredCountry}
+          cursor={cursor}
           countryCode={hoveredCountry}
           data={data}
           isLoading={isLoading}
-          position={mousePos}
           subjectCounts={
             openSubject
               ? subjectTally?.countries.find((c) => c.code === hoveredCountry) ?? { likes: 0, dislikes: 0 }
