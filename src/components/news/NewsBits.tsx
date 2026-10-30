@@ -62,9 +62,10 @@ export function AiIcon({ className = 'w-4 h-4' }: { className?: string }) {
 }
 
 export function AiMark({ className = 'w-3.5 h-3.5' }: { className?: string }) {
+  const { t } = useI18n();
   return (
-    <HoverTip label={NEWS_COPY.aiNote} className="inline-flex shrink-0">
-      <span role="img" aria-label={NEWS_COPY.aiNote} className="inline-flex text-white/50">
+    <HoverTip label={t.newsAiNote} className="inline-flex shrink-0">
+      <span role="img" aria-label={t.newsAiNote} className="inline-flex text-white/50">
         <AiIcon className={className} />
       </span>
     </HoverTip>

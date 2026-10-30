@@ -145,7 +145,7 @@ export function NewsArticle({ news, hero = true }: { news: NewsItem; hero?: bool
               on it read as a vote. Quiet metadata where the AI text ends. */}
           <p className="mt-4 flex items-center gap-1.5 text-[13px] text-white/50 leading-snug max-w-[68ch]">
             <AiIcon className="w-4 h-4 shrink-0" />
-            {NEWS_COPY.aiNote}
+            {t.newsAiNote}
           </p>
           <a
             href={news.sourceUrl}

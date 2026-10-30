@@ -399,6 +399,10 @@ export interface Strings {
   // Says "news", not "live": the item is laid out like an opinio card, so the
   // word is all that tells the two apart.
   newsLabel: string;
+  // The AI Act disclosure on news (Art. 50(4)): the title and body are written
+  // by a model with no human review. Tip and label of the sparkles mark beside
+  // the source, and the line under a story's body.
+  newsAiNote: string;
   newsOnTheNews: string;
   newsLinkRemove: string;
   newsLinkRemoveTitle: string;
@@ -840,6 +844,7 @@ const en: Strings = {
   notifOthersMany: '{n} others',
   justReported: 'New opinio just dropped',
   newsLabel: 'NEWS',
+  newsAiNote: 'AI summary - it may contain mistakes.',
   newsOnTheNews: 'On the news',
   newsLinkRemove: 'Remove link',
   newsLinkRemoveTitle: 'Remove the link to this story?',
@@ -1319,6 +1324,7 @@ const cs: Strings = {
   notifOthersMany: '{n} dalších',
   justReported: 'Padlo nové opinio',
   newsLabel: 'ZPRÁVY',
+  newsAiNote: 'Shrnuto AI - může obsahovat chyby.',
   newsOnTheNews: 'Ve zprávách',
   newsLinkRemove: 'Odebrat odkaz',
   newsLinkRemoveTitle: 'Odebrat odkaz na tuto zprávu?',
@@ -1796,6 +1802,7 @@ const es: Strings = {
   notifOthersMany: '{n} más',
   justReported: 'Acaba de caer un opinio',
   newsLabel: 'NOTICIAS',
+  newsAiNote: 'Resumen hecho por IA - puede contener errores.',
   newsOnTheNews: 'En las noticias',
   newsLinkRemove: 'Quitar enlace',
   newsLinkRemoveTitle: '¿Quitar el enlace a esta noticia?',
@@ -2273,6 +2280,7 @@ const de: Strings = {
   notifOthersMany: '{n} weitere',
   justReported: 'Frisches opinio reingeworfen',
   newsLabel: 'NACHRICHTEN',
+  newsAiNote: 'KI-Zusammenfassung - kann Fehler enthalten.',
   newsOnTheNews: 'In den Nachrichten',
   newsLinkRemove: 'Verknüpfung entfernen',
   newsLinkRemoveTitle: 'Verknüpfung zu dieser Nachricht entfernen?',
@@ -2750,6 +2758,7 @@ const fr: Strings = {
   notifOthersMany: '{n} autres',
   justReported: 'Un opinio vient de tomber',
   newsLabel: 'ACTU',
+  newsAiNote: 'Résumé généré par IA - il peut contenir des erreurs.',
   newsOnTheNews: 'Dans l\'actualité',
   newsLinkRemove: 'Retirer le lien',
   newsLinkRemoveTitle: 'Retirer le lien vers cette actualité ?',
@@ -3227,6 +3236,7 @@ const it: Strings = {
   notifOthersMany: '{n} altri',
   justReported: 'È appena arrivato un opinio',
   newsLabel: 'NOTIZIE',
+  newsAiNote: "Riassunto generato dall'IA - può contenere errori.",
   newsOnTheNews: 'Nelle notizie',
   newsLinkRemove: 'Rimuovi collegamento',
   newsLinkRemoveTitle: 'Rimuovere il collegamento a questa notizia?',
@@ -3705,6 +3715,7 @@ const pl: Strings = {
   notifOthersMany: '{n} innych osób',
   justReported: 'Pojawiło się nowe opinio',
   newsLabel: 'WIADOMOŚCI',
+  newsAiNote: 'Podsumowanie AI - może zawierać błędy.',
   newsOnTheNews: 'W wiadomościach',
   newsLinkRemove: 'Usuń powiązanie',
   newsLinkRemoveTitle: 'Usunąć powiązanie z tą wiadomością?',
