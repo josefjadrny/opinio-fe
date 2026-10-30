@@ -40,6 +40,25 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
   const { country, roles, fresh, search, clearFilters } = useFilters();
   const hasFilters = !!(country || roles.length || fresh || search);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  // The bell's panel lives here so the news button can see it: over an open
+  // story, notifications cover the news sheet, and a tap on news then means
+  // "back to the story", not the toggle's "leave news".
+  const [bellOpen, setBellOpen] = useState(false);
+  const onBellChange = (next: boolean) => {
+    setBellOpen(next);
+    if (next) setFilterSheetOpen(false);
+  };
+  // Any navigation closes the panel - a row click, the back button, or a
+  // ProfileMenu entry tapped while the mobile sheet is up. Adjusted during
+  // render (React's "state from a changing prop"), not in an effect.
+  const [routeKey, setRouteKey] = useState(location.key);
+  if (routeKey !== location.key) {
+    setRouteKey(location.key);
+    if (bellOpen) setBellOpen(false);
+  }
+  // Signing out with the panel open.
+  if (bellOpen && isAnonymous) setBellOpen(false);
+  const onNews = /^\/(news|n\/)/.test(barePath);
 
   return (
     <>
@@ -107,18 +126,23 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
               </HeaderButton>
             </HoverTip>
           )}
-          {/* News: a toggle - in the news page it leads back to the map. */}
+          {/* News: a toggle - in the news page it leads back to the map,
+              unless notifications cover it, when it only closes them. */}
           <HoverTip label="News">
             <HeaderButton
               shape="circle"
-              active={/^\/(news|n\/)/.test(barePath)}
-              onClick={() => { setFilterSheetOpen(false); navigate((/^\/(news|n\/)/.test(barePath) ? '/' : '/news') + location.search); }}
+              active={onNews}
+              onClick={() => {
+                setFilterSheetOpen(false);
+                if (onNews && bellOpen) setBellOpen(false);
+                else navigate((onNews ? '/' : '/news') + location.search);
+              }}
               aria-label="News"
             >
               <NewsIcon brand className="w-6 h-6 md:w-7 md:h-7 shrink-0" />
             </HeaderButton>
           </HoverTip>
-          <NotificationBell onOpen={() => setFilterSheetOpen(false)} />
+          <NotificationBell open={bellOpen} onOpenChange={onBellChange} />
           <ProfileMenu onOpen={() => setFilterSheetOpen(false)} />
         </div>
       </div>

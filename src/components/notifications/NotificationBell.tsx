@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useMe } from '../../hooks/useMe';
 import { useI18n } from '../../i18n/I18nContext';
@@ -11,22 +11,24 @@ import { NotificationList, BellIcon } from './NotificationList';
 import { WASH } from '../common/wash';
 import type { NotificationItem } from '../../types/api';
 
+// The panel's open state is FilterBar's, which also closes it on navigation
+// and sign-out (the news button needs to see it).
 interface NotificationBellProps {
-  onOpen?: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 // The header bell: the unseen count rides /api/me's 10s poll; the panel is a
 // dropdown on desktop and a sheet on mobile. Anonymous visitors get it
 // disabled with the sign-in line, like add-opinio: a hover tip on desktop,
 // and on mobile (no hover to explain a dead control) a tap opens sign-in.
-export function NotificationBell({ onOpen }: NotificationBellProps) {
+export function NotificationBell({ open, onOpenChange: setOpen }: NotificationBellProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useI18n();
   const isMobile = useIsMobile();
   const { promptSignIn } = useSignIn();
   const { data: me, isLoading } = useMe();
-  const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const isAnonymous = !me?.user || me.user.tier === 'anonymous';
   const unseen = isAnonymous ? 0 : (me?.unseenNotifications ?? 0);
@@ -52,18 +54,7 @@ export function NotificationBell({ onOpen }: NotificationBellProps) {
       document.removeEventListener('mousedown', onDown);
       window.removeEventListener('keydown', onKey, true);
     };
-  }, [open, isMobile]);
-
-  // Any navigation closes the panel - a row click, the back button, or a
-  // ProfileMenu entry tapped while the mobile sheet is up. Adjusted during
-  // render (React's "state from a changing prop"), not in an effect.
-  const [routeKey, setRouteKey] = useState(location.key);
-  if (routeKey !== location.key) {
-    setRouteKey(location.key);
-    if (open) setOpen(false);
-  }
-  // Signing out with the panel open.
-  if (open && isAnonymous) setOpen(false);
+  }, [open, isMobile, setOpen]);
 
   if (isLoading) return null;
 
@@ -72,9 +63,7 @@ export function NotificationBell({ onOpen }: NotificationBellProps) {
       if (isMobile) promptSignIn();
       return;
     }
-    const next = !open;
-    setOpen(next);
-    if (next) onOpen?.();
+    setOpen(!open);
   };
 
   // Milestone lines open the opinio on its country view (the default),
