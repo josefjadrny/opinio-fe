@@ -26,7 +26,7 @@ export function NewsPicture({ news, className, flagSize = 28, credit = false }: 
   const img = <Avatar name={p.name} imageUrl={p.photoUrl} className={className} />;
   if (!credit || !p.photoCredit || !p.photoSource) return img;
   return (
-    <HoverTip label={NEWS_COPY.photoCredit.replace('{author}', p.photoCredit).replace('{license}', p.photoLicense ?? '')} className="inline-flex shrink-0 rounded-full">
+    <HoverTip label={NEWS_COPY.photoCredit.replace('{author}', p.photoCredit).replace('{license}', p.photoLicense ?? '')} className="flex shrink-0 rounded-full">
       <a href={p.photoSource} target="_blank" rel="noopener noreferrer" className="block rounded-full" onClick={(e) => e.stopPropagation()}>
         {img}
       </a>
