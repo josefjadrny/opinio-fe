@@ -2,7 +2,6 @@
 // move into i18n/strings.ts (all 7 languages) before this ships.
 export const NEWS_COPY = {
   title: 'News',
-  allFilters: 'All countries · all categories',
   latest: 'Latest',
   readSource: 'Read the full story at {source}',
   photoCredit: 'Photo: {author}, {license}',

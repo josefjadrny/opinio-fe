@@ -21,10 +21,11 @@ const BRAND = 'Opinio';
 
 // The active filters as removable chips - the list follows the feed's
 // filters, so this says which ones and lets them go without the header.
+// Nothing when none is set: an unfiltered list needs no caption.
 function FilterChips() {
   const { t, locale } = useI18n();
   const { country, roles, setCountry, toggleRole } = useFilters();
-  if (!country && !roles.length) return <p className="text-sm text-white/50">{NEWS_COPY.allFilters}</p>;
+  if (!country && !roles.length) return null;
   const x = (
     <svg className="w-3 h-3 opacity-60 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
