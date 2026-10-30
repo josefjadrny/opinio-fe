@@ -137,9 +137,19 @@ export function NewsArticle({ news, hero = true }: { news: NewsItem; hero?: bool
       </header>
       )}
 
-      <div className={`${hero ? 'mt-9 @[1000px]:mt-12' : ''} grid gap-6 @[1000px]:gap-10 @[760px]:grid-cols-[1fr_260px] @[1000px]:grid-cols-[1fr_340px] items-start`}>
+      <div className={`${hero ? 'mt-5 @[640px]:mt-8 @[1000px]:mt-12' : ''} grid gap-6 @[1000px]:gap-10 @[760px]:grid-cols-[1fr_260px] @[1000px]:grid-cols-[1fr_340px] items-start`}>
         <div className="activity-row-in" style={{ '--i': 1 } as CSSProperties}>
           <p className="text-base @[1000px]:text-[17px] text-white/85 leading-[1.7] max-w-[68ch]">{news.body}</p>
+          {/* No badge in the header: a pill beside NEWS read as a second
+              label as loud as the first, and the picture ring's red-to-green
+              on it read as a vote. Quiet metadata where the AI text ends. */}
+          <p className="mt-4 flex items-center gap-1.5 text-[13px] text-white/50 leading-snug max-w-[68ch]">
+            {/* Sparkles: the mark readers know from other AI summaries. */}
+            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+            </svg>
+            {NEWS_COPY.aiNote}
+          </p>
           <a
             href={news.sourceUrl}
             target="_blank"
