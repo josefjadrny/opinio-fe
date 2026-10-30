@@ -5,6 +5,7 @@ import { getCountryName } from '../../utils/countries';
 import { Avatar } from '../profile/Avatar';
 import { FlagImg } from '../common/CountryFlag';
 import { HoverTip } from '../common/HoverTip';
+import { AiMark } from '../news/NewsBits';
 import { RoleBadge } from '../common/RoleBadge';
 import { useI18n } from '../../i18n/I18nContext';
 import { useSubjectSwap } from '../../hooks/useSubjectSwap';
@@ -631,19 +632,23 @@ function NewsRow({ news }: { news: NewsItem }) {
             </span>
             {t.newsLabel}
           </span>
-          <span className="text-white/50 truncate">
-            {/* Same tip as an opinio's SourceLink: "Source: theguardian.com". */}
-            <HoverTip label={`${t.sourceLink}: ${host(news.sourceUrl)}`} className="inline">
-              <a
-                href={news.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/70 hover:text-white underline decoration-white/30 underline-offset-2 hover:decoration-white transition-colors"
-              >
-                {news.sourceName}
-              </a>
-            </HoverTip>
-            {' · '}{formatRelativeTime(news.createdAt, locale, t.justNow)}
+          {/* "Source ✨ · time", as AiSource lays it out: only the name truncates. */}
+          <span className="min-w-0 flex items-center gap-1 text-white/50">
+            <span className="truncate">
+              {/* Same tip as an opinio's SourceLink: "Source: theguardian.com". */}
+              <HoverTip label={`${t.sourceLink}: ${host(news.sourceUrl)}`} className="inline">
+                <a
+                  href={news.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/70 hover:text-white underline decoration-white/30 underline-offset-2 hover:decoration-white transition-colors"
+                >
+                  {news.sourceName}
+                </a>
+              </HoverTip>
+            </span>
+            <AiMark className="w-3.5 h-3.5 @[900px]:w-4 @[900px]:h-4" />
+            <span className="shrink-0 whitespace-nowrap">· {formatRelativeTime(news.createdAt, locale, t.justNow)}</span>
           </span>
           {/* On the narrow card (1366-1536) the title already takes two lines,
               so the flag and the category ride up here instead of wrapping to

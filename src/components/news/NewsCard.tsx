@@ -8,7 +8,7 @@ import { FlagImg } from '../common/CountryFlag';
 import { HoverTip } from '../common/HoverTip';
 import { RoleBadge } from '../common/RoleBadge';
 import type { NewsItem } from '../../types/api';
-import { NewsPicture, NewsPill } from './NewsBits';
+import { AiSource, NewsPicture, NewsPill } from './NewsBits';
 
 // How long the pointer must rest on a card before its country lights on the
 // map behind. Scrolling slides cards under a still pointer and fires an enter
@@ -109,7 +109,7 @@ export function NewsCard({ news, lead = false, index = 0, arrived = false, resto
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 min-w-0 text-xs text-white/60">
               <NewsPill live />
-              <span className="truncate">{news.sourceName} · {time}</span>
+              <AiSource name={news.sourceName} time={time} />
             </div>
             <h3 className="mt-2 text-xl @[640px]:text-2xl @[1000px]:text-[30px] font-bold text-white leading-tight tracking-tight">{news.title}</h3>
             <p className="mt-1.5 @[1000px]:mt-2.5 text-[15px] @[1000px]:text-base text-text-secondary leading-relaxed line-clamp-3 max-w-[72ch]">{news.body}</p>
@@ -140,7 +140,7 @@ export function NewsCard({ news, lead = false, index = 0, arrived = false, resto
       {arrived && <div aria-hidden className="comment-flash pointer-events-none absolute inset-0 rounded-[inherit] ring-2 ring-accent/80" />}
       <NewsPicture news={news} className="row-span-2 @[520px]:row-span-3 self-center @[520px]:self-start w-11 h-11 @[520px]:w-12 @[520px]:h-12 @[760px]:w-14 @[760px]:h-14 @[1000px]:w-[72px] @[1000px]:h-[72px] shrink-0 ring-2 ring-white/5 transition-transform duration-500 ease-out group-hover:scale-[1.06]" flagSize={24} />
       <div className="flex items-center gap-3 min-w-0">
-        <span className="flex-1 min-w-0 text-xs text-white/50 truncate">{news.sourceName} · {time}</span>
+        <AiSource name={news.sourceName} time={time} className="flex-1 text-xs text-white/50" />
         {tags}
       </div>
       <div className="mt-0.5 @[520px]:mt-1 text-[15px] @[1000px]:text-[17px] font-semibold text-white leading-snug">{news.title}</div>

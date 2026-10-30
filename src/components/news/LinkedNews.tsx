@@ -8,7 +8,7 @@ import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { ConfirmModal } from '../common/ConfirmModal';
 import { HoverTip } from '../common/HoverTip';
 import type { Profile } from '../../types/profile';
-import { NewsIcon, NewsPicture, NewsPill } from './NewsBits';
+import { AiSource, NewsIcon, NewsPicture, NewsPill } from './NewsBits';
 
 // The story an opinio is about, in its detail (desktop window and mobile
 // sheet): the news card's anatomy at row size - picture, NEWS pill, source and
@@ -39,7 +39,7 @@ export function LinkedNews({ profile }: { profile: Profile }) {
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2 min-w-0 text-[11px] text-white/50">
             <NewsPill />
-            <span className="truncate">{news.sourceName} · {formatRelativeTime(news.createdAt, locale, t.justNow)}</span>
+            <AiSource name={news.sourceName} time={formatRelativeTime(news.createdAt, locale, t.justNow)} markClassName="w-3 h-3" />
           </span>
           <span className="mt-1 block text-sm font-medium text-white/90 group-hover:text-white leading-snug line-clamp-2">{news.title}</span>
         </span>

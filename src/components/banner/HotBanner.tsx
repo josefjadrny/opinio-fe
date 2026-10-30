@@ -5,6 +5,7 @@ import { RoleBadge } from '../common/RoleBadge';
 import { useRealtimeFeed } from '../../hooks/useRealtimeFeed';
 import { useI18n } from '../../i18n/I18nContext';
 import { CountryFlag, FlagImg } from '../common/CountryFlag';
+import { AiSource } from '../news/NewsBits';
 
 const FADE_IN_MS = 500;
 const HOLD_MS = 10_000;
@@ -240,8 +241,8 @@ export function HotBanner({
               </span>
               {card.label}
             </div>
-            {/* News credits the outlet its facts came from. */}
-            {card.source && <span className={`text-white/50 truncate ${mobile ? 'text-[11px]' : 'text-xs min-[2200px]:text-sm'}`}>{card.source}</span>}
+            {/* News credits the outlet its facts came from, with the AI mark. */}
+            {card.source && <AiSource name={card.source} className={`text-white/50 ${mobile ? 'text-[11px]' : 'text-xs min-[2200px]:text-sm'}`} markClassName={mobile ? 'w-3.5 h-3.5' : 'w-4 h-4 min-[2200px]:w-5 min-[2200px]:h-5'} />}
             {/* Swaps the text in place; it must not open the article, nor
                 count as the mobile tap that dismisses the banner. */}
             {translated && next.kind === 'news' && (
