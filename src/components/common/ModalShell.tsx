@@ -22,6 +22,11 @@ interface ModalShellProps {
   // icon in a disc, and a fade-and-rise entrance over a fading backdrop.
   // Every window has it; false is the plain shell.
   panel?: boolean;
+  // A window opened from the header (the bell) over whatever window the route
+  // has up: z-[85], the ProfileMenu's level. At the shared z-[80] it loses on
+  // DOM order alone - FilterBar renders before the router Outlet - and opens
+  // behind an open story or opinio, so a tap seems to do nothing.
+  above?: boolean;
 }
 
 export function ModalShell({
@@ -35,7 +40,9 @@ export function ModalShell({
   desktopScrollable = false,
   centered = false,
   panel = true,
+  above = false,
 }: ModalShellProps) {
+  const layer = above ? 'z-[85]' : 'z-[80]';
   const TitleTag = titleAs;
   const isMobile = useIsMobile();
   const { t } = useI18n();
@@ -79,7 +86,7 @@ export function ModalShell({
       // it is supposed to leave alone. Bounding it by the container instead
       // makes the offset above the only thing that decides where it starts.
       <div
-        className="safe-sheet-top fixed inset-x-0 bottom-0 z-[80] flex flex-col justify-end"
+        className={`safe-sheet-top fixed inset-x-0 bottom-0 ${layer} flex flex-col justify-end`}
         onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       >
         <div className="absolute inset-0 bg-black/60" onClick={onClose} style={panel ? { animation: 'backdrop-in 0.2s ease-out' } : undefined} />
@@ -113,7 +120,7 @@ export function ModalShell({
 
   return (
     <div
-      className={`fixed inset-0 z-[80] flex justify-center bg-black/50 ${centered ? 'items-center' : 'items-start pt-12'}`}
+      className={`fixed inset-0 ${layer} flex justify-center bg-black/50 ${centered ? 'items-center' : 'items-start pt-12'}`}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       style={panel ? { animation: 'backdrop-in 0.2s ease-out' } : undefined}
     >

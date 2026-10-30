@@ -133,7 +133,7 @@ export function NotificationBell({ onOpen }: NotificationBellProps) {
         </div>
       )}
       {open && isMobile && (
-        <ModalShell onClose={() => setOpen(false)} title={t.notifications} icon={<BellIcon className="w-5 h-5" />}>
+        <ModalShell above onClose={() => setOpen(false)} title={t.notifications} icon={<BellIcon className="w-5 h-5" />}>
           <div className="p-3">
             <NotificationList onOpenProfile={openProfile} />
           </div>
