@@ -61,5 +61,7 @@ Feature direction is set by the Opinio team. Before opening a PR for new functio
 Source-available, not open-source. Viewing and PRs welcome; copying, forking, or redistributing is not permitted.
 
 <p align="center">
-  🇨🇿 Made in Czechia · 🇩🇪 Hosted in Germany · 🇪🇺 EU origin · <a href="https://www.facebook.com/opinio.live"><img src="https://cdn.simpleicons.org/facebook/1877F2" alt="" width="14" height="14" /> Facebook</a>
+  🇨🇿 Made in Czechia · 🇩🇪 Hosted in Germany · 🇪🇺 EU origin
+  <br />
+  <a href="https://www.facebook.com/opinio.live"><img src="https://cdn.simpleicons.org/facebook/1877F2" alt="" width="14" height="14" /> Facebook</a>
 </p>
