@@ -15,6 +15,9 @@ const PROFILE_LANG_PATH_RE = /^\/(cs|es|de|fr|it|pl)\/p\/([^\/]+)\/?$/;
 const LANG_PREFIX_RE = /^\/(cs|es|de|fr|it|pl)(\/.*)?$/;
 const USER_PATH_RE = /^\/u\/([^\/]+)\/?$/;
 const COUNTRY_PATH_RE = /^\/c\/([^\/]+)\/?$/;
+// /news and /n/<id> (the news page and one story). Matched without the id
+// check: a bad id is the SPA's not-found, and the page is noindex either way.
+const NEWS_PATH_RE = /^\/(?:news|n\/[^\/]+)\/?$/;
 const COUNTRY_CODE_RE = /^[A-Z]{2}$/;
 
 // Locales that get their own prefixed URL. English is excluded — it stays on
@@ -489,6 +492,45 @@ async function handleSitemap() {
   }
 }
 
+// The index gate: a /p/, /c/ or /u/ page is indexable only while the sitemap
+// lists its bare path (and then so are its /<lang>/ versions). Google finds
+// every page through feed links and hreflang regardless of the sitemap, so
+// without this it indexed ~25x what we advertise - empty countries, users with
+// no opinios, months-old low-vote opinios. The sitemap's own rules decide.
+// Read once per isolate per 10 min (single-flight); null when the sitemap
+// cannot be read, which keeps pages indexable - an API blip must never
+// noindex the whole site.
+const ADVERTISED_TTL_MS = 10 * 60_000;
+let advertised = { at: 0, paths: null, pending: null };
+
+async function fetchAdvertisedPaths() {
+  if (advertised.paths && Date.now() - advertised.at < ADVERTISED_TTL_MS) return advertised.paths;
+  if (advertised.pending) return advertised.pending;
+  advertised.pending = (async () => {
+    try {
+      const res = await fetch(`${API_BASE}/sitemap.xml`, { cf: { cacheTtl: 600 } });
+      if (!res.ok) return advertised.paths;
+      const xml = await res.text();
+      const paths = new Set();
+      for (const m of xml.matchAll(/<loc>https:\/\/opinio\.live([^<]*)<\/loc>/g)) paths.add(m[1]);
+      advertised = { at: Date.now(), paths, pending: null };
+      return paths;
+    } catch {
+      return advertised.paths;
+    } finally {
+      advertised.pending = null;
+    }
+  })();
+  return advertised.pending;
+}
+
+// true = send noindex for this bare path.
+function isUnadvertised(paths, basePath) {
+  return !!paths && !paths.has(basePath);
+}
+
+const NOINDEX = 'noindex, follow';
+
 async function fetchShellHtml(request) {
   const url = new URL(request.url);
   url.pathname = '/index.html';
@@ -593,6 +635,12 @@ function injectProfileMeta(html, meta) {
     out = replaceMetaContent(out, 'property="og:locale"', meta.ogLocale);
   }
 
+  // A noindex page gets no alternates: every language version of it is
+  // noindex too, and hreflang between pages that are not indexed means nothing.
+  if (meta.noindex) {
+    return replaceMetaContent(out, 'name="robots"', NOINDEX);
+  }
+
   // When a base path is supplied, declare the language alternates right after
   // the canonical so crawlers can discover the translated URLs and tie them to
   // this page (reciprocal hreflang).
@@ -606,9 +654,10 @@ function injectProfileMeta(html, meta) {
 }
 
 async function handleProfile(request, id) {
-  const [result, shellRes] = await Promise.all([
+  const [result, shellRes, paths] = await Promise.all([
     fetchProfile(id),
     fetchShellHtml(request),
+    fetchAdvertisedPaths(),
   ]);
 
   const shellText = await shellRes.text();
@@ -635,6 +684,8 @@ async function handleProfile(request, id) {
   const image = hasAvatar ? upscaleAvatarUrl(profile.imageUrl) : DEFAULT_OG_IMAGE;
   const imageAlt = hasAvatar ? profile.name : 'Opinio live global social voting';
   const canonicalUrl = `${SITE_BASE}/p/${id}`;
+  const noindex = isUnadvertised(paths, `/p/${id}`);
+  if (noindex) headers.set('x-robots-tag', NOINDEX);
 
   const html = injectProfileMeta(shellText, {
     title,
@@ -644,6 +695,7 @@ async function handleProfile(request, id) {
     url: canonicalUrl,
     isAvatar: hasAvatar,
     alternatesBase: `/p/${id}`,
+    noindex,
   });
 
   return new Response(html, { status: 200, headers });
@@ -658,14 +710,15 @@ const FAVICON_LINKS =
 // Shared <head> for the standalone language pages: translated meta, a
 // self-referencing canonical (the suffixed URL — NEVER the bare one, or Google
 // would fold the page into English), and the reciprocal hreflang set.
-function langPageHead({ lang, title, description, image, canonical, basePath }) {
+function langPageHead({ lang, title, description, image, canonical, basePath, noindex }) {
   const ui = LANG_UI[lang];
   return [
     `<title>${escapeHtml(title)}</title>`,
     FAVICON_LINKS,
     `<meta name="description" content="${escapeHtml(description)}" />`,
+    noindex ? `<meta name="robots" content="${NOINDEX}" />` : null,
     `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
-    `    ${hreflangLinks(basePath)}`,
+    noindex ? null : `    ${hreflangLinks(basePath)}`,
     `<meta property="og:type" content="article" />`,
     `<meta property="og:site_name" content="Opinio" />`,
     `<meta property="og:locale" content="${ui.ogLocale}" />`,
@@ -677,7 +730,7 @@ function langPageHead({ lang, title, description, image, canonical, basePath }) 
     `<meta name="twitter:title" content="${escapeHtml(title)}" />`,
     `<meta name="twitter:description" content="${escapeHtml(description)}" />`,
     `<meta name="twitter:image" content="${escapeHtml(image)}" />`,
-  ].join('\n    ');
+  ].filter(Boolean).join('\n    ');
 }
 
 const LANG_PAGE_CSS =
@@ -701,7 +754,7 @@ const LANG_PAGE_CSS =
   'padding:12px 22px;border-radius:999px;font-size:15px}' +
   '.tag{margin-top:28px;color:rgba(255,255,255,.45);font-size:13px;text-align:center}';
 
-function renderLangPage({ id, lang, profile }) {
+function renderLangPage({ id, lang, profile, noindex }) {
   const ui = LANG_UI[lang];
   const appUrl = `${SITE_BASE}/p/${id}`;
   const canonical = `${SITE_BASE}/${lang}/p/${id}`;
@@ -728,7 +781,7 @@ function renderLangPage({ id, lang, profile }) {
   return '<!DOCTYPE html>\n' +
     `<html lang="${lang}">\n<head>\n    <meta charset="utf-8" />\n` +
     '    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    ' +
-    langPageHead({ lang, title, description: metaDesc, image, canonical, basePath: `/p/${id}` }) +
+    langPageHead({ lang, title, description: metaDesc, image, canonical, basePath: `/p/${id}`, noindex }) +
     `\n    <style>${LANG_PAGE_CSS}</style>\n</head>\n<body>\n` +
     `  <div class="wrap">\n` +
     `    <header><a href="${SITE_BASE}/">Opin<span>io</span></a></header>\n` +
@@ -763,7 +816,7 @@ function renderLangMiss(lang, id, notFound) {
 }
 
 async function handleProfileLang(request, id, lang) {
-  const result = await fetchProfile(id, lang);
+  const [result, paths] = await Promise.all([fetchProfile(id, lang), fetchAdvertisedPaths()]);
   const headers = new Headers();
   headers.set('content-type', 'text/html; charset=utf-8');
   headers.set('cache-control', 'public, max-age=300, s-maxage=300');
@@ -780,7 +833,9 @@ async function handleProfileLang(request, id, lang) {
   }
 
   headers.set('x-opinio-og', 'profile-lang');
-  return new Response(renderLangPage({ id, lang, profile: result.data }), { status: 200, headers });
+  const noindex = isUnadvertised(paths, `/p/${id}`);
+  if (noindex) headers.set('x-robots-tag', NOINDEX);
+  return new Response(renderLangPage({ id, lang, profile: result.data, noindex }), { status: 200, headers });
 }
 
 // lang = null → bare English page (/u/<id>); lang set → prefixed page
@@ -788,9 +843,10 @@ async function handleProfileLang(request, id, lang) {
 // URL and og:locale flips so crawlers tie it to the right language. The SPA
 // reads the locale from the URL prefix and renders the body translated.
 async function handleUser(request, id, lang = null) {
-  const [result, shellRes] = await Promise.all([
+  const [result, shellRes, paths] = await Promise.all([
     fetchUser(id),
     fetchShellHtml(request),
+    fetchAdvertisedPaths(),
   ]);
 
   const shellText = await shellRes.text();
@@ -827,6 +883,8 @@ async function handleUser(request, id, lang = null) {
   const imageAlt = hasAvatar ? user.displayName : 'Anonymous Opinio user';
   const basePath = `/u/${id}`;
   const canonicalUrl = lang ? `${SITE_BASE}/${lang}${basePath}` : `${SITE_BASE}${basePath}`;
+  const noindex = isUnadvertised(paths, basePath);
+  if (noindex) headers.set('x-robots-tag', NOINDEX);
 
   const html = injectProfileMeta(shellText, {
     title,
@@ -837,6 +895,7 @@ async function handleUser(request, id, lang = null) {
     isAvatar: true, // both avatar and anon mask are square — use small twitter card
     alternatesBase: basePath,
     ogLocale: lang ? LANG_UI[lang].ogLocale : null,
+    noindex,
   });
 
   return new Response(html, { status: 200, headers });
@@ -1013,6 +1072,32 @@ async function handleHome(request, lang = null) {
   return new Response(html, { status: 200, headers });
 }
 
+// /news and /n/<id>. S3 has no file for them, so without the worker they came
+// back 404 (with the home canonical) while the SPA rendered fine. Served 200
+// but noindex: the stories are AI summaries of other outlets' feeds, which is
+// not content to put in Google's index. "follow" keeps the links to opinios
+// crawlable.
+async function handleNews(request, path, lang = null) {
+  const shellRes = await fetchShellHtml(request);
+  const shellText = await shellRes.text();
+  const headers = new Headers();
+  headers.set('content-type', 'text/html; charset=utf-8');
+  headers.set('cache-control', 'public, max-age=300, s-maxage=300');
+  headers.set('x-opinio-og', lang ? 'news-lang' : 'news');
+  headers.set('x-robots-tag', NOINDEX);
+  const html = injectProfileMeta(shellText, {
+    title: 'News - Opinio',
+    description: 'The news stories people on Opinio are voting on right now.',
+    image: DEFAULT_OG_IMAGE,
+    imageAlt: 'Opinio',
+    url: lang ? `${SITE_BASE}/${lang}${path}` : `${SITE_BASE}${path}`,
+    isAvatar: false,
+    ogLocale: lang ? LANG_UI[lang].ogLocale : null,
+    noindex: true,
+  });
+  return new Response(html, { status: 200, headers });
+}
+
 function formatCountForOg(n) {
   if (n >= 1000) return `${(n / 1000).toFixed(n >= 10_000 ? 0 : 1).replace(/\.0$/, '')}k`;
   return String(n);
@@ -1024,9 +1109,10 @@ function formatCountForOg(n) {
 // and gets a translated body chrome + og:locale. Full country-name localization
 // is tracked as Open Work in CLAUDE.md.
 async function handleCountry(request, code, lang = null) {
-  const [counts, shellRes] = await Promise.all([
+  const [counts, shellRes, paths] = await Promise.all([
     fetchCountryCounts(code),
     fetchShellHtml(request),
+    fetchAdvertisedPaths(),
   ]);
   const shellText = await shellRes.text();
   const headers = new Headers();
@@ -1054,6 +1140,8 @@ async function handleCountry(request, code, lang = null) {
   const description = (likes || dislikes) ? fill(seo.descriptionCounts) : fill(seo.description);
   const basePath = `/c/${code}`;
   const canonicalUrl = lang ? `${SITE_BASE}/${lang}${basePath}` : `${SITE_BASE}${basePath}`;
+  const noindex = isUnadvertised(paths, basePath);
+  if (noindex) headers.set('x-robots-tag', NOINDEX);
 
   const html = injectProfileMeta(shellText, {
     title,
@@ -1064,6 +1152,7 @@ async function handleCountry(request, code, lang = null) {
     isAvatar: false,
     alternatesBase: basePath,
     ogLocale: lang ? LANG_UI[lang].ogLocale : null,
+    noindex,
   });
   return new Response(html, { status: 200, headers });
 }
@@ -1089,6 +1178,10 @@ function handleLangPrefixed(request, lang, inner) {
 
   if (inner === '/' || inner === '') {
     return handleHome(request, lang);
+  }
+
+  if (NEWS_PATH_RE.test(inner)) {
+    return handleNews(request, inner, lang);
   }
 
   const staticPage = STATIC_PAGES[inner];
@@ -1139,6 +1232,10 @@ export default {
     const staticPage = STATIC_PAGES[path];
     if (staticPage) {
       return handleStatic(request, staticPage, path);
+    }
+
+    if (NEWS_PATH_RE.test(path)) {
+      return handleNews(request, path);
     }
 
     const profileMatch = path.match(PROFILE_PATH_RE);

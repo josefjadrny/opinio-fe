@@ -26,5 +26,8 @@ routes = [
   { pattern = "opinio.live/stats/top-voters", zone_name = "opinio.live" },
   { pattern = "opinio.live/support", zone_name = "opinio.live" },
   { pattern = "opinio.live/add", zone_name = "opinio.live" },
-  { pattern = "opinio.live/sign-in", zone_name = "opinio.live" }
+  { pattern = "opinio.live/sign-in", zone_name = "opinio.live" },
+  # News page + stories: served 200 but noindex (AI summaries of other feeds).
+  { pattern = "opinio.live/news", zone_name = "opinio.live" },
+  { pattern = "opinio.live/n/*", zone_name = "opinio.live" }
 ]
