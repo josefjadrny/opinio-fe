@@ -666,12 +666,13 @@ async function handleProfile(request, id) {
   headers.set('cache-control', 'public, max-age=300, s-maxage=300');
 
   if (!result.ok) {
-    // Upstream 404 → genuine not-found → SEO 404 (still serve the friendly
-    // shell so the SPA renders its client-side not-found UI). Any other
-    // failure (5xx / network / timeout) is a transient API outage and must
-    // keep returning the 200 shell so crawlers don't drop live profiles.
+    // Upstream 404 → the opinio expired or was deleted, and never comes back →
+    // 410 Gone, which Google drops faster than a 404 and stops recrawling
+    // (still serve the friendly shell so the SPA renders its not-found UI).
+    // Any other failure (5xx / network / timeout) is a transient API outage
+    // and must keep returning the 200 shell so crawlers don't drop live profiles.
     headers.set('x-opinio-og', result.notFound ? 'notfound' : 'fallback');
-    return new Response(shellText, { status: result.notFound ? 404 : 200, headers });
+    return new Response(shellText, { status: result.notFound ? 410 : 200, headers });
   }
 
   const profile = result.data;
@@ -823,11 +824,12 @@ async function handleProfileLang(request, id, lang) {
 
   if (!result.ok) {
     // No SPA route backs these URLs, so we can't fall back to the shell — render
-    // a small standalone miss page instead. 404 when genuinely gone; 200 on a
-    // transient outage so crawlers don't drop a live translated URL.
+    // a small standalone miss page instead. 410 when genuinely gone (same as
+    // the bare /p/); 200 on a transient outage so crawlers don't drop a live
+    // translated URL.
     headers.set('x-opinio-og', result.notFound ? 'notfound' : 'fallback');
     return new Response(renderLangMiss(lang, id, result.notFound), {
-      status: result.notFound ? 404 : 200,
+      status: result.notFound ? 410 : 200,
       headers,
     });
   }
