@@ -12,8 +12,6 @@
 
 <p align="center">
   <a href="https://opinio.live"><strong>https://opinio.live →</strong></a>
-  <br />
-  <a href="https://www.facebook.com/opinio.live">Follow Opinio on Facebook</a>
 </p>
 
 ---
@@ -63,5 +61,5 @@ Feature direction is set by the Opinio team. Before opening a PR for new functio
 Source-available, not open-source. Viewing and PRs welcome; copying, forking, or redistributing is not permitted.
 
 <p align="center">
-  🇨🇿 Made in Czechia · 🇩🇪 Hosted in Germany · 🇪🇺 EU origin
+  🇨🇿 Made in Czechia · 🇩🇪 Hosted in Germany · 🇪🇺 EU origin · <a href="https://www.facebook.com/opinio.live"><img src="https://cdn.simpleicons.org/facebook/1877F2" alt="" width="14" height="14" /> Facebook</a>
 </p>
