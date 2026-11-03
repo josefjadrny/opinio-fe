@@ -12,6 +12,8 @@
 
 <p align="center">
   <a href="https://opinio.live"><strong>https://opinio.live →</strong></a>
+  <br />
+  <a href="https://www.facebook.com/opinio.live">Follow Opinio on Facebook</a>
 </p>
 
 ---
