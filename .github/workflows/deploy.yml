@@ -37,9 +37,11 @@ jobs:
       # content-hashed, so it stays in the immutable sync.)
       # data/ is not part of the build - it is uploaded to the buckets on its
       # own schedule, and excluding it keeps --delete from wiping it.
+      # assets/ is excluded too: it gets its own sync below, without --delete.
       - run: |
           aws s3 sync dist/ s3://opinio.live \
             --delete \
+            --exclude "assets/*" \
             --exclude "index.html" \
             --exclude "favicon.svg" \
             --exclude "icon.svg" \
@@ -55,6 +57,7 @@ jobs:
             --cache-control "public, max-age=31536000, immutable"
           aws s3 sync dist/ s3://www.opinio.live \
             --delete \
+            --exclude "assets/*" \
             --exclude "index.html" \
             --exclude "favicon.svg" \
             --exclude "icon.svg" \
@@ -68,6 +71,26 @@ jobs:
             --exclude "data/*" \
             --exclude "video/*" \
             --cache-control "public, max-age=31536000, immutable"
+
+      # Hashed JS/CSS: never deleted on deploy. Google renders a page minutes to
+      # days after fetching its HTML, and that HTML names the bundle of the build
+      # it was fetched from - deleting it on the next deploy leaves Google
+      # rendering an empty page (an installed service worker on an old build
+      # asks for them too). A file that no build has shipped for 30 days is
+      # removed; one still in dist/ never is, however long it has gone
+      # without a deploy.
+      - run: |
+          cutoff=$(date -u -d '30 days ago' +%Y-%m-%dT%H:%M:%S)
+          for bucket in opinio.live www.opinio.live; do
+            aws s3 sync dist/assets/ "s3://$bucket/assets/" \
+              --cache-control "public, max-age=31536000, immutable"
+            aws s3api list-objects-v2 --bucket "$bucket" --prefix assets/ \
+              --query "Contents[?LastModified<'$cutoff'].Key" --output text \
+              | tr '\t' '\n' | while read -r key; do
+                if [ -z "$key" ] || [ "$key" = None ] || [ -e "dist/$key" ]; then continue; fi
+                aws s3 rm "s3://$bucket/$key"
+              done
+          done
 
       # Upload index.html, the PWA control files, and root SVG assets with no-cache
       - run: |
