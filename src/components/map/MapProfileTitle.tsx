@@ -13,7 +13,7 @@ import { useLatestNews } from '../../hooks/useLatestNews';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import type { Profile } from '../../types/profile';
 import type { NewsItem } from '../../types/api';
-import { LogoMark } from '../common/LogoMark';
+import { LogoIntro } from '../common/LogoIntro';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 
 // What the caption is currently about. The two subject kinds are the two
@@ -531,7 +531,7 @@ function CaptionRow({
            wordmark is a plain span, NOT a heading: on home the h1 is FilterBar's
            wordmark and a second one here would double it. */
         <>
-          <LogoMark className={`caption-mark ${PROMO_MARK} shrink-0`} />
+          <LogoIntro className={`caption-mark ${PROMO_MARK} shrink-0`} />
           <div className={`${COLUMN} caption-text`}>
             <span style={{ fontSize: PROMO_NAME_SIZE }} className={`${NAME} text-accent`}>
               {t.appName}
