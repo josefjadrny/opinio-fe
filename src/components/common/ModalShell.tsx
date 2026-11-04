@@ -27,6 +27,8 @@ interface ModalShellProps {
   // DOM order alone - FilterBar renders before the router Outlet - and opens
   // behind an open story or opinio, so a tap seems to do nothing.
   above?: boolean;
+  // Icon buttons left of the close X (a story's share on mobile).
+  headerActions?: ReactNode;
 }
 
 export function ModalShell({
@@ -41,6 +43,7 @@ export function ModalShell({
   centered = false,
   panel = true,
   above = false,
+  headerActions,
 }: ModalShellProps) {
   const layer = above ? 'z-[85]' : 'z-[80]';
   const TitleTag = titleAs;
@@ -64,6 +67,8 @@ export function ModalShell({
   ) : icon;
 
   const closeBtn = (
+    <div className="shrink-0 flex items-center gap-1">
+    {headerActions}
     <HoverTip label={t.close}>
       <button
         onClick={onClose}
@@ -75,6 +80,7 @@ export function ModalShell({
         </svg>
       </button>
     </HoverTip>
+    </div>
   );
 
   if (isMobile) {

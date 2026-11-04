@@ -27,15 +27,15 @@ function SectionLabel({ children }: { children: string }) {
   );
 }
 
-// Up to three other stories from the same country, newest first.
+// Up to ten other stories from the same country, newest first.
 function MoreFrom({ news }: { news: NewsItem }) {
   const { locale } = useI18n();
   const q = useQuery({
     queryKey: ['news', 'list', locale, news.countryCode, '', 'more'],
-    queryFn: () => getNewsList(locale, { country: news.countryCode, limit: 4 }),
+    queryFn: () => getNewsList(locale, { country: news.countryCode, limit: 11 }),
     staleTime: 60_000,
   });
-  const more = (q.data?.items ?? []).filter((n) => n.id !== news.id).slice(0, 3);
+  const more = (q.data?.items ?? []).filter((n) => n.id !== news.id).slice(0, 10);
   if (!more.length) return null;
   return (
     <section className="mt-10">

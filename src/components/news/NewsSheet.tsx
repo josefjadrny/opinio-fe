@@ -8,6 +8,7 @@ import { NewsList } from './NewsList';
 import { NewsArticle } from './NewsArticle';
 import { NewsIcon } from './NewsBits';
 import { NEWS_COPY } from './newsCopy';
+import { ShareLink } from './ShareLink';
 
 // /news and /n/:id on mobile: the same list and story in a sheet over the
 // feed. The story carries its own h1, so the sheet title steps down to h2.
@@ -28,6 +29,7 @@ export function NewsSheet({ newsId }: { newsId: string | null }) {
       title={NEWS_COPY.title}
       titleAs={newsId ? 'h2' : 'h1'}
       icon={<NewsIcon brand />}
+      headerActions={newsId && item.data ? <ShareLink /> : undefined}
     >
       <div className="@container overflow-x-hidden px-3 pt-3 pb-14">
         {newsId ? (
