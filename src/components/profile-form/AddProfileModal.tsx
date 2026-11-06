@@ -396,12 +396,14 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
         newsId: newsId ?? undefined,
       });
     },
-    onSuccess: (created) => {
+    onSuccess: () => {
       try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
       void clearDraftImages();
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
-      // Straight to the new poll - the author is its first likely voter.
-      navigate('/p/' + created.id + location.search, { replace: true });
+      // Back to where the author was, not to the poll's page: the live banner
+      // ("New poll just asked") is off on /p/:id, and seeing their own poll
+      // arrive in it is the author's confirmation. The banner opens the poll.
+      onClose();
     },
     onError: (err) => {
       const msg = (err as Error).message;
