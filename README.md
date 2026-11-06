@@ -7,7 +7,7 @@
 <h1 align="center">Opinio</h1>
 
 <p align="center">
-  <strong>Vote on the stories shaping the world today.</strong>
+  <strong>Ask the world. See how every country answers.</strong>
 </p>
 
 <p align="center">
@@ -18,26 +18,29 @@
 
 ## What is Opinio?
 
-A global social voting platform. Browse and vote <span title="like">▲</span> or <span title="dislike">▼</span> on statements, events, and public figures from around the world, organized by country on an interactive map.
-
-You see **current sentiment, not history** — every vote expires after 24 hours, so rankings are a live snapshot of how people feel right now.
+A world poll. Anyone can ask a question, people everywhere vote in their own language and discuss it, and the map shows how each country voted.
 
 ## How it works
 
-- **Rising / Falling sidebars** — top 10 by 24-hour vote count, plus up to 5 freshness slots: `NEW` for just-added profiles, `RISING` / `FALLING` for ones gaining votes in the last 6 hours.
-- **World map** — hover any country to see its top 4 ▲ and top 4 ▼.
-- **24-hour vote expiry** — votes age out after a day, so rankings keep moving.
-- **Country breakdown** — see top fans and critics for any profile.
-- **Vote allowance per hour:**
-  - Anonymous — 1 vote / hr
-  - Registered — 3 votes / hr
-  - Supporter (€3.49 / month) — 5 votes / hr
+- **Polls** - a question with 2 to 5 answers, each with its own colour and an optional picture.
+- **One person, one vote** - results are visible to everyone, always. Votes stay; they never expire.
+- **The world map** - on a poll, every country takes the colour of its leading answer. On the home page, the map shows where people voted in the last 24 hours.
+- **Country pages** - what people in a country voted on, next to how the world voted.
+- **Trending, new and top** - trending ranks polls by the votes of the last 24 hours, top by all votes.
+- **Comments and notifications** - registered users discuss polls and hear when theirs reach new milestones.
+- **Seven languages** - English, Czech, Spanish, German, French, Italian and Polish. Questions and answers are translated automatically.
+
+## Plans
+
+- **Anonymous** - 1 vote a day, no account needed.
+- **Registered** - unlimited votes, create polls, comment, notifications.
+- **Supporter** (€3.49 / month) - everything above, and it keeps Opinio running.
 
 ## Our principles
 
-- **We respect your time.** No ads, no tracking.
-- **We respect your privacy.** We don't share your data with anyone. Inactive accounts are deleted after 6 months.
-- **We respect your voice.** Ranking algorithms are open and publicly accessible — this is the [frontend](https://github.com/josefjadrny/opinio-fe), and the [backend](https://github.com/josefjadrny/opinio-api) lives in its own repo.
+- **We respect your time.** No ads, no clutter, just questions and votes.
+- **We respect your privacy.** No tracking. Nobody sees what you voted.
+- **We respect your opinion.** Results are counted from votes. We never reorder them or favour an answer. This is the [frontend](https://github.com/josefjadrny/opinio-fe); the backend lives in its own repo.
 
 ## This repository
 

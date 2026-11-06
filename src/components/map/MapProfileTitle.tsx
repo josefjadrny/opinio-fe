@@ -4,6 +4,7 @@ import { useFilters } from '../../context/useFilters';
 import { getCountryName } from '../../utils/countries';
 import { Avatar } from '../profile/Avatar';
 import { PollThumb } from '../poll/PollThumb';
+import { NewPollIcon } from '../poll/PollIcons';
 import { FlagImg } from '../common/CountryFlag';
 import { HoverTip } from '../common/HoverTip';
 import { AiMark } from '../news/NewsBits';
@@ -24,11 +25,26 @@ export type CaptionSubject =
   | { kind: 'country'; key: string; code: string; name: string };
 
 // A slide of the default state's rotation: the news kind exists only there.
-type Shown = CaptionSubject | { kind: 'news'; key: string; news: NewsItem };
+type Shown = CaptionSubject | { kind: 'news'; key: string; news: NewsItem } | { kind: 'notice'; key: string };
+
+// The relaunch announcement, the second slide of every rotation. Hard-coded
+// here rather than in the i18n files on purpose: it is temporary - delete the
+// slide (and this table) once the change is old news.
+const NOTICE: Record<string, { label: string; title: string; text: string }> = {
+  en: { label: 'New', title: 'Opinio is changing', text: 'Likes and dislikes are gone: ask the world a question with up to five answers and see how every country votes. Votes no longer expire after 24 hours.' },
+  cs: { label: 'Novinka', title: 'Opinio se mění', text: 'Palce nahoru a dolů končí: zeptejte se světa s až pěti odpověďmi a uvidíte, jak hlasuje každá země. Hlasy už po 24 hodinách nemizí.' },
+  es: { label: 'Novedad', title: 'Opinio está cambiando', text: 'Se acabaron los me gusta y no me gusta: pregunta al mundo con hasta cinco respuestas y mira cómo vota cada país. Los votos ya no caducan a las 24 horas.' },
+  de: { label: 'Neu', title: 'Opinio verändert sich', text: 'Likes und Dislikes sind Geschichte: Stell der Welt eine Frage mit bis zu fünf Antworten und sieh, wie jedes Land abstimmt. Stimmen verfallen nicht mehr nach 24 Stunden.' },
+  fr: { label: 'Nouveau', title: 'Opinio change', text: "Fini les j'aime et je n'aime pas : posez une question au monde avec jusqu'à cinq réponses et voyez comment vote chaque pays. Les votes n'expirent plus après 24 heures." },
+  it: { label: 'Novità', title: 'Opinio sta cambiando', text: 'Addio a mi piace e non mi piace: fai una domanda al mondo con fino a cinque risposte e guarda come vota ogni paese. I voti non scadono più dopo 24 ore.' },
+  pl: { label: 'Nowość', title: 'Opinio się zmienia', text: 'Koniec z polubieniami i niepolubieniami: zadaj światu pytanie z maksymalnie pięcioma odpowiedziami i zobacz, jak głosuje każdy kraj. Głosy nie wygasają już po 24 godzinach.' },
+};
+const NOTICE_SLIDE = { kind: 'notice' as const, key: 'notice' };
 
 // The default state rotates: the Opinio mark first - it is what a new visitor
-// should read before anything else - then the five newest news items (the
-// last 12 hours), 10s each, then the mark again. No news, no rotation. It
+// should read before anything else - then the relaunch notice, then the five
+// newest news items (the
+// last 12 hours), 10s each, then the mark again. It
 // holds while the pointer is on the card and while HotBanner has the slot, and
 // never advances by itself under reduced motion; the dots switch by hand.
 //
@@ -253,7 +269,7 @@ export function MapProfileTitle({
   // the caption steps aside for it instead, and slides back when it leaves.
   suppressed?: boolean;
 }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const reducedMotion = useReducedMotion();
   // Every state rotates the same way: what the caption is about - the mark on
   // the global map, the open opinio or country on a detail - is the first
@@ -266,7 +282,7 @@ export function MapProfileTitle({
   // every commit - an endless re-render that starved the router's navigation
   // transition (a map or flag click changed the URL and nothing opened).
   const slides = useMemo<(Shown | null)[]>(
-    () => [subject, ...(latest?.items ?? []).map((n) => ({ kind: 'news' as const, key: 'n:' + n.id, news: n }))],
+    () => [subject, NOTICE_SLIDE, ...(latest?.items ?? []).map((n) => ({ kind: 'news' as const, key: 'n:' + n.id, news: n }))],
     [subject, latest],
   );
   // The slide is followed by its key, not its position: a new item enters the
@@ -400,7 +416,7 @@ export function MapProfileTitle({
                 key={keyOf(s, i)}
                 type="button"
                 onClick={() => goTo(keyOf(s, i))}
-                aria-label={s?.kind === 'news' ? s.news.title : s?.kind === 'profile' ? s.profile.name : s?.kind === 'country' ? s.name : t.appName}
+                aria-label={s?.kind === 'news' ? s.news.title : s?.kind === 'notice' ? (NOTICE[locale] ?? NOTICE.en).title : s?.kind === 'profile' ? s.profile.name : s?.kind === 'country' ? s.name : t.appName}
                 aria-current={i === at || undefined}
                 className="p-1.5"
               >
@@ -474,6 +490,13 @@ function CaptionRow({
       </div>
     );
   }
+  if (subject?.kind === 'notice') {
+    return (
+      <div className={`${STACK} ${motion}`} onAnimationEnd={onAnimationEnd} aria-hidden={leaving || undefined}>
+        <NoticeRow />
+      </div>
+    );
+  }
   return (
     <div className={`${STACK} ${ROW} ${motion}`} onAnimationEnd={onAnimationEnd} aria-hidden={leaving || undefined}>
       {subject?.kind === 'profile' ? (
@@ -544,6 +567,31 @@ function CaptionRow({
         </>
       )}
       <span aria-hidden="true" className={SPACER} />
+    </div>
+  );
+}
+
+// The announcement slide: a news row's anatomy - picture, label pill, title,
+// text - with the new-poll mark for the picture and the brand green for the
+// pill, so it reads as Opinio's own news rather than a story from the feed.
+function NoticeRow() {
+  const { locale } = useI18n();
+  const n = NOTICE[locale] ?? NOTICE.en;
+  return (
+    <div className="flex w-full max-w-[960px] @[1100px]:max-w-[1120px] mx-auto items-center gap-4 @[1100px]:gap-5 pb-2">
+      <span className="caption-mark w-[64px] h-[64px] @[700px]:w-[80px] @[700px]:h-[80px] @[1100px]:w-[96px] @[1100px]:h-[96px] shrink-0 rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center">
+        <NewPollIcon className="w-1/2 h-1/2" accentWidth={2.75} />
+      </span>
+      <div className="caption-text min-w-0 flex-1 text-left">
+        {/* Label and title share a line, so the slide stays the news rows' height. */}
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="shrink-0 uppercase font-bold tracking-[0.16em] text-xs @[900px]:text-sm text-positive bg-positive/15 border border-positive/50 rounded-full px-2 py-0.5">
+            {n.label}
+          </span>
+          <span className="min-w-0 truncate font-bold text-white leading-snug text-lg @[700px]:text-xl @[1100px]:text-2xl">{n.title}</span>
+        </div>
+        <span className="mt-1 block text-white/75 leading-snug text-[13px] @[700px]:text-sm @[900px]:text-[15px] @[1100px]:text-base">{n.text}</span>
+      </div>
     </div>
   );
 }
