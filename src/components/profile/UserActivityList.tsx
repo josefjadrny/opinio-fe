@@ -1,22 +1,20 @@
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
-import { CountryFlagLink } from '../common/CountryFlag';
 import { CommentIcon } from '../comments/CommentCount';
-import { LogoMark } from '../common/LogoMark';
-import { VotePairIcon } from '../common/VotePairIcon';
+import { NewPollIcon, VotedIcon } from '../poll/PollIcons';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import type { UserActivityItem } from '../../types/api';
 
 // The user's timeline, activity-log style: every row is a caption naming
-// who did what to which opinio ("@josef commented on Elon Musk"). Every row
+// who did what to which poll ("@josef commented on Coffee or tea?"). Every row
 // is the caption alone - the comment text is not quoted, the thread is a
 // click away. The caption is one
 // i18n string per kind with {actor}/{target} tokens, so each language
 // orders the sentence its own way; the *You variants carry no {actor} at
 // all, because "you" declines differently from a handle in half the
-// languages. A vote row never says like or dislike - the API does not send
-// it - so its glyph is the ▲/▼ pair (Stats' net score), not either side.
+// languages. A vote row says only that the user voted, never which answer -
+// the API does not send it.
 
 interface UserActivityListProps {
   items: UserActivityItem[];
@@ -58,7 +56,7 @@ function ActivityRow({ item, handle, isMe, index, onOpen, onOpenProfile }: {
       className="font-semibold text-white hover:underline underline-offset-2"
     >
       {/* The flag is glued to the last word so it never wraps alone. */}
-      {item.profile.name}<span className="whitespace-nowrap">&nbsp;<CountryFlagLink code={item.profile.countryCode} /></span>
+      {item.profile.name}
     </Link>
   );
   return (
@@ -72,16 +70,10 @@ function ActivityRow({ item, handle, isMe, index, onOpen, onOpenProfile }: {
       style={{ '--i': Math.min(index, 8) } as CSSProperties}
       className="activity-row-in group flex gap-2.5 md:gap-3 px-2 md:px-2.5 py-2 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 hover:bg-surface-light/70 hover:translate-x-0.5 transition-all duration-200 cursor-pointer select-none"
     >
-      {/* Kind glyph, bare: the comment bubble, the ▲/▼ pair for a vote (the stats
-          net-score glyph),
-          or the Opinio mark for a shared opinio (not the bubble-with-plus -
-          that one means "add"). */}
-      {/* One neutral chip for every kind - the glyphs carry their own colour,
-          and a tinted chip muddied them (the blue mark on a red disc). */}
+      {/* Kind glyph, two-tone like every app icon. A vote shows only that the
+          user voted (a ticked box), never which answer - the API does not send it. */}
       <span className="shrink-0 -my-0.5 w-7 h-7 rounded-full flex items-center justify-center bg-white/[0.06] ring-1 ring-white/10 transition-transform duration-200 group-hover:scale-110">
-        {isComment ? <CommentIcon className="w-4 h-4" />
-          : item.kind === 'vote' ? <VotePairIcon className="text-xs" />
-          : <LogoMark className="w-4 h-4" />}
+        {isComment ? <CommentIcon className="w-4 h-4" /> : item.kind === 'vote' ? <VotedIcon /> : <NewPollIcon />}
       </span>
       <div className="flex-1 min-w-0">
         {/* Time flows after the caption instead of sitting at the right edge:

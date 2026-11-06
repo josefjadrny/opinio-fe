@@ -4,13 +4,25 @@ export interface ProfilesResponse {
   profiles: Profile[];
 }
 
-export interface CountryProfilesResponse {
-  positive: Profile[];
-  negative: Profile[];
+/** A country's leading answer on one poll. Null when nobody there voted. */
+export type PollLeading = { optionId: string; text: string; n: number; pct: number; tie: boolean } | null;
+
+/** One poll voted on from a country, with that country's answer next to the world's. */
+export interface CountryPollItem {
+  poll: Profile;
+  country: { total: number; today: number; leading: PollLeading; options: { optionId: string; n: number }[] };
+  world: { total: number; leading: PollLeading };
 }
 
-export interface CountryDiscussedResponse {
-  profiles: Profile[];
+export interface CountryPollsResponse {
+  items: CountryPollItem[];
+}
+
+/** Votes cast FROM a country: last 24h and lifetime. */
+export interface CountryActivity {
+  code: string;
+  today: number;
+  total: number;
 }
 
 // Search typeahead ("whisperer"). Users + opinios come from the API; country
@@ -28,15 +40,11 @@ export interface SearchSuggestResponse {
   profiles: Profile[];
 }
 
+/** Registered: always canVote. Anonymous: 1 vote per rolling 24h (and a
+ *  per-IP cap); nextVoteAt says when the next one opens. */
 export interface VoteAllowance {
-  like: {
-    remaining: number;
-    nextAt: string | null;
-  };
-  dislike: {
-    remaining: number;
-    nextAt: string | null;
-  };
+  canVote: boolean;
+  nextVoteAt: string | null;
 }
 
 export interface MeUser {
@@ -75,7 +83,7 @@ export interface NotificationItem {
   moreCount: number;
   milestone: number | null;
   /** Null on a `support` line - it belongs to a ticket, not an opinio. */
-  profile: { id: string; name: string; imageUrl: string | null; countryCode: string; isMine: boolean } | null;
+  profile: { id: string; name: string; role: Role; imageUrl: string | null; isMine: boolean } | null;
   commentId: string | null;
   /** `support` lines only. event/status are as of the line's last update. */
   ticket?: {
@@ -97,28 +105,27 @@ export interface NotificationsResponse {
 }
 
 export interface VoteResponse {
-  profile: Profile;
+  results: import('./profile').PollResults;
+  myVote: string;
   voteAllowance: VoteAllowance;
 }
 
+export type PollSort = 'trending' | 'new' | 'top';
+
 export interface ProfileFilters {
-  type: 'positive' | 'negative';
+  sort: PollSort;
+  /** "Voted from": only polls with votes from this country. */
   country?: string;
   roles?: string[];
-  // Not a role — the `new` label (< 2h old) used as a filter. See ?fresh=1.
-  fresh?: boolean;
   search?: string;
   limit?: number;
 }
 
-export type VoteType = 'like' | 'dislike';
-
-export interface CountryBreakdown {
-  countryCode: string;
-  /** Votes on this side from this country (live, 24h). */
-  count: number;
-  /** Distinct voters behind those votes - one person can vote several times. */
-  voters: number;
+/** One voter country's answers on one poll. */
+export interface PollCountry {
+  code: string;
+  total: number;
+  options: { optionId: string; n: number }[];
 }
 
 // A comment on an opinio. `mentions` carries the handles referenced in the
@@ -152,76 +159,12 @@ export interface MentionUser {
   countryCode: string | null;
 }
 
-export interface PersonBreakdownResponse {
-  topLiking: CountryBreakdown[];
-  topDisliking: CountryBreakdown[];
-}
-
-export type VoterMetric = 'given' | 'received';
-
-export interface TopVoter {
-  id: string;
-  displayName: string;
-  avatarUrl: string | null;
-  countryCode: string | null;
-  activeProfiles: number;
-  totalLikesCast: number;
-  totalDislikesCast: number;
-  totalLikesReceived: number;
-  totalDislikesReceived: number;
-}
-
-export interface TopVotersResponse {
-  topVoters: TopVoter[];
-}
-
-export type CountryMetric = 'total' | 'likes' | 'dislikes' | 'net';
-
-// Trending opinios: top profiles ranked by the selected metric, same Profile
-// shape as the feed so the stats modal renders + links them identically.
-export interface TrendingProfilesResponse {
-  trendingProfiles: Profile[];
-}
-
-export interface TrendingCountry {
-  countryCode: string;
-  activeProfiles: number;
-  totalLikes: number;
-  totalDislikes: number;
-}
-
-export interface TrendingCountriesResponse {
-  trendingCountries: TrendingCountry[];
-}
-
-// All-time Leaderboard: entities ranked by lifetime votes received
-// (likes+dislikes combined), distinct from the 24h "trending" rankings above.
-export type LeaderboardBoard = 'opinios' | 'countries' | 'users';
-
-export interface LeaderboardProfilesResponse {
-  leaderboardProfiles: Profile[];
-}
-
-export interface LeaderboardCountry {
-  countryCode: string;
-  profileCount: number;
-  totalLikes: number;
-  totalDislikes: number;
-}
-
-export interface LeaderboardCountriesResponse {
-  leaderboardCountries: LeaderboardCountry[];
-}
-
 export interface UserProfileSummary {
   id: string;
   name: string;
   role: import('./profile').Role;
   imageUrl: string | null;
-  countryCode: string;
-  description: string;
-  likes: number;
-  dislikes: number;
+  voteCount: number;
   commentCount: number;
 }
 
@@ -240,13 +183,12 @@ export interface UserDetailResponse {
   countryCode: string | null;
   bio: string | null;
   createdAt: string;
-  /** Live 24h votes on every opinio this user reported (trigger-kept counts). */
-  likesReceived: number;
-  dislikesReceived: number;
-  /** Lifetime - never decremented as votes expire. */
-  totalLikesReceived: number;
-  totalDislikesReceived: number;
-  /** Total opinios posted; `activity` is capped. */
+  pollsAsked: number;
+  pollsAnswered: number;
+  /** Votes on all the polls this user asked. */
+  votesReceived: number;
+  /** Countries whose people answered this user's polls. */
+  countriesReached: number;
   profileCount: number;
   activity: UserActivityItem[];
 }
@@ -306,18 +248,12 @@ export interface ProfileReport {
 export interface ProfileReportGroup {
   profileId: string;
   profileName: string;
-  profileCountry: string | null;
   role: Role;
   reportCount: number;
   lastReportedAt: string;
   reports: ProfileReport[];
 }
 
-export interface RealtimeEvent {
-  kind: 'vote' | 'new_profile';
-  profileId: string;
-  data: Partial<Profile>;
-}
 
 // A well-known person (GET /api/persons). `role` is the profile category.
 export interface Person {

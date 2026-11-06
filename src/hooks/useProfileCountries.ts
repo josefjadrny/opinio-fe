@@ -1,25 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 import { getProfileCountries, isNotFound } from '../api/client';
 
-// Per-country vote tally for one profile — drives the map tint while a profile
-// detail is open (desktop only; the mobile map sits behind the detail sheet and
-// would never be seen, so nothing calls this there).
+// One poll's answers per voter country - the map tint and the Countries tab.
+// registered = signed-in voters only.
 //
-// Deliberately NO keepPreviousData: on an A -> B profile switch it would hand
-// back A's counts while B is in flight, and the map would fade in the wrong
-// country colours before correcting itself. WorldMap holds the neutral no-data
-// state for the duration instead, which is what the cross-fade is for.
-export function useProfileCountries(profileId: string | null) {
+// Deliberately NO keepPreviousData: on an A -> B poll switch it would hand
+// back A's countries while B is in flight, and the map would fade in the wrong
+// colours before correcting itself.
+export function useProfileCountries(profileId: string | null, registered = false) {
   return useQuery({
-    queryKey: ['profile-countries', profileId],
-    queryFn: () => getProfileCountries(profileId!),
+    queryKey: ['profile-countries', profileId, registered],
+    queryFn: () => getProfileCountries(profileId!, registered),
     enabled: profileId !== null,
-    staleTime: 30_000,
-    // Server caches this for 60s, so polling at 30s keeps the map moving without
-    // ever costing more than one aggregate per minute per profile.
+    staleTime: 15_000,
     refetchInterval: (query) => (isNotFound(query.state.error) ? false : 30_000),
     refetchIntervalInBackground: false,
-    // Mirror useProfile: a 404/400 is a dead id, so don't retry it.
     retry: (failureCount, error) => !isNotFound(error) && failureCount < 3,
   });
 }

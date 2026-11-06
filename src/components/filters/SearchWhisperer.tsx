@@ -6,6 +6,7 @@ import { useCountries } from '../../hooks/useCountries';
 import { useSearchSuggest, SUGGEST_MIN_CHARS } from '../../hooks/useSearchSuggest';
 import { getCountriesList, getCountryName, getCountryFlag } from '../../utils/countries';
 import { RoleBadge } from '../common/RoleBadge';
+import { PollThumb } from '../poll/PollThumb';
 import type { Profile } from '../../types/profile';
 import type { SuggestUser } from '../../types/api';
 
@@ -91,10 +92,10 @@ export function SearchWhisperer({ variant, onSelect }: Props) {
   const { data: suggest } = useSearchSuggest(debounced, locale);
   const { data: countriesData } = useCountries();
 
-  // Total (active 24h) votes per country, for ranking country matches.
+  // Votes cast from each country, for ranking country matches.
   const votesByCode = useMemo(() => {
     const m = new Map<string, number>();
-    countriesData?.countries.forEach((c) => m.set(c.code, c.likes + c.dislikes));
+    countriesData?.countries.forEach((c) => m.set(c.code, c.total));
     return m;
   }, [countriesData]);
 
@@ -297,9 +298,7 @@ export function SearchWhisperer({ variant, onSelect }: Props) {
                 const i = idx;
                 return (
                   <div key={`p-${profile.id}`} {...rowProps(i)}>
-                    {profile.imageUrl
-                      ? <img src={profile.imageUrl} alt="" className="w-6 h-6 rounded object-cover shrink-0" />
-                      : <span className="w-6 h-6 rounded bg-surface-light shrink-0 flex items-center justify-center text-xs">{getCountryFlag(profile.countryCode)}</span>}
+                    <PollThumb role={profile.role} imageUrl={profile.imageUrl} className="w-6 h-6" />
                     <span className="text-sm text-text-primary truncate">{profile.name}</span>
                     {/* colored category pill — a signal unique to opinios */}
                     <RoleBadge role={profile.role} className="ml-auto shrink-0" />

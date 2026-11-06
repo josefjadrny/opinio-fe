@@ -170,22 +170,51 @@ export const CITY_LABEL_ZOOM = 2.8;
 export const LABEL_REF_WIDTH = 1430;
 export const MAX_LABEL_SCALE = 2.5;
 
-// Tint a country by like/dislike skew. Pct = (max - min) / min — i.e. how much
-// the leading side outweighs the trailing side. Sub-25% stays neutral so noisy
-// near-ties don't flicker; tiers brighten with skew but stay dark on purpose.
-export function colorForCountry(likes: number, dislikes: number): string {
-  // Zero votes is "inactive", not "evenly split" - a country that hosts opinios
-  // nobody has voted on must read the same as one with no opinios at all.
-  if (likes + dislikes === 0) return NO_DATA_FILL;
-  if (likes === dislikes) return DEFAULT_FILL;
-  const hi = Math.max(likes, dislikes);
-  const lo = Math.min(likes, dislikes);
-  const pct = lo === 0 ? Infinity : (hi - lo) / lo;
-  if (pct <= 0.25) return DEFAULT_FILL;
-  const positive = likes > dislikes;
-  if (pct <= 0.5) return positive ? '#2c4a38' : '#4a2c38';
-  if (pct <= 1.0) return positive ? '#2e6042' : '#5e2e44';
-  return positive ? '#36784f' : '#763852';
+// --- Home map: where people are voting -------------------------------------
+// One neutral sequential hue, light = more (POLLS-DESIGN.md section 8): there
+// are no answers on home, so no answer colours. Muted dark green in four fixed
+// bands of votes cast from a country today (decided with the user): 1-5,
+// 6-20, 21-50, more than 50; no votes today = NO_DATA_FILL. Fixed counts
+// rather than a scale relative to the busiest country, so a colour means the
+// same number every day and the legend can print it. Dark, low-chroma steps
+// only - brighter greens glowed and were dropped (the user's call), and the
+// ramp starts one step darker than first tried, so 50+ is the brightest at
+// what was the 21-50 green. Red was
+// tried and rejected (too few readable steps, and it carried the old
+// "dislike" meaning); blue came before this.
+export const ACTIVITY_RAMP = ['#223a31', '#2a473b', '#325541', '#3b6247'];
+/** Lower bound of each band, in votes today. */
+export const ACTIVITY_BANDS = [1, 6, 21, 51];
+
+export function activityFill(today: number): string {
+  if (today <= 0) return NO_DATA_FILL;
+  let i = 0;
+  while (i + 1 < ACTIVITY_BANDS.length && today >= ACTIVITY_BANDS[i + 1]) i++;
+  return ACTIVITY_RAMP[i];
+}
+
+// --- Poll map: each country in its winning answer's colour -------------------
+// Intensity by the margin over the runner-up; a tie is DEFAULT_FILL, nobody
+// voted is NO_DATA_FILL. No sample floor (decided with the user): a country
+// takes its winner's colour from its first vote - "1:0 is a win" - and the
+// tooltip says how many votes that is.
+function mixHex(a: string, b: string, t: number): string {
+  const pa = [1, 3, 5].map((k) => parseInt(a.slice(k, k + 2), 16));
+  const pb = [1, 3, 5].map((k) => parseInt(b.slice(k, k + 2), 16));
+  return '#' + pa.map((v, k) => Math.round(v + (pb[k] - v) * t).toString(16).padStart(2, '0')).join('');
+}
+
+export function pollFill(options: { n: number; color: string }[]): string {
+  const total = options.reduce((s, o) => s + o.n, 0);
+  if (total <= 0) return NO_DATA_FILL;
+  const sorted = [...options].sort((a, b) => b.n - a.n);
+  const top = sorted[0];
+  const second = sorted[1]?.n ?? 0;
+  if (top.n === second) return DEFAULT_FILL;
+  // 0 margin -> 45% of the way from the neutral base to the colour, a margin
+  // of half the votes or more -> the full colour.
+  const margin = (top.n - second) / total;
+  return mixHex(DEFAULT_FILL, top.color, 0.45 + 0.55 * Math.min(1, margin / 0.5));
 }
 
 export function clampTranslate(tx: number, ty: number, scale: number) {

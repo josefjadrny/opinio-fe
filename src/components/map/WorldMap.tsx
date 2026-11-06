@@ -3,10 +3,8 @@ import type { ComponentProps } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
-import { useCountryProfiles } from '../../hooks/useCountryProfiles';
 import { useCountries } from '../../hooks/useCountries';
 import { useProfileCountries } from '../../hooks/useProfileCountries';
-import { useCountryVoters } from '../../hooks/useCountryVoters';
 import { useProfile } from '../../hooks/useProfile';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { numericToAlpha2, isKnownCountry, getCountryName } from '../../utils/countries';
@@ -28,7 +26,8 @@ import {
   tintDelayForX,
   LABEL_REF_WIDTH,
   MAX_LABEL_SCALE,
-  colorForCountry,
+  activityFill,
+  pollFill,
   clampTranslate,
   projection,
   pathGenerator,
@@ -36,6 +35,7 @@ import {
   buildBorderPaths,
   computeCountryAnchors,
   BORDER_COLOR,
+  DEFAULT_FILL,
   COAST_COLOR,
   COAST_OPACITY,
   COAST_WIDTH_PX,
@@ -46,6 +46,7 @@ import {
   type BorderPaths,
 } from './mapShared';
 import { CountryLabels } from './CountryLabels';
+import { colorById } from '../../utils/pollColors';
 
 const GEO_URL = '/topojson/world-110m.json';
 
@@ -160,30 +161,31 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
   const openProfileId = openSubject.startsWith('p:') ? routeProfileId : null;
   const openCountryCode = openSubject.startsWith('c:') ? routeCountryCode : null;
 
-  // In either subject mode the tooltip shows the subject's numbers instead of the
-  // hovered country's opinio list, so skip that fetch entirely while one is open.
-  const { data, isLoading } = useCountryProfiles(openSubject ? null : debouncedCountry);
   // The desktop map is only mounted when it's on screen, so poll while mounted.
+  // Home: each country by how much its people voted today.
   const { data: countriesData } = useCountries(true);
   const globalColors = useMemo(() => {
     const map = new Map<string, string>();
-    countriesData?.countries.forEach((c) => map.set(c.code, colorForCountry(c.likes, c.dislikes)));
+    countriesData?.countries.forEach((c) => map.set(c.code, activityFill(c.today)));
     return map;
   }, [countriesData]);
 
+  // A poll: each country in its winning answer's colour. A /c/:code page keeps
+  // the activity map and rings the country - a poll has no country, so there is
+  // no "votes on this country" to tint by any more.
   const { data: profileCountriesData } = useProfileCountries(openProfileId);
-  const { data: countryVotersData } = useCountryVoters(openCountryCode);
-  // Shares the ['profile', id, locale] key with the open modal, so this is a
-  // cache read, not a second request. Names the opinio the tooltip counts belong to.
+  // Shares the ['profile', id, locale] key with the open modal - a cache read.
   const { data: openProfile } = useProfile(openProfileId);
-  // Whichever voter-side tally is live. The two endpoints return the same shape
-  // on purpose, so one memo colours either of them.
-  const subjectTally = openCountryCode ? countryVotersData : profileCountriesData;
+  const subjectTally = openProfileId ? profileCountriesData : countriesData;
   const subjectColors = useMemo(() => {
+    if (!openProfileId) return globalColors;
     const map = new Map<string, string>();
-    subjectTally?.countries.forEach((c) => map.set(c.code, colorForCountry(c.likes, c.dislikes)));
+    const colors = colorById(openProfile?.options ?? []);
+    profileCountriesData?.countries.forEach((c) =>
+      map.set(c.code, pollFill(c.options.map((o) => ({ n: o.n, color: colors.get(o.optionId) ?? DEFAULT_FILL })))),
+    );
     return map;
-  }, [subjectTally]);
+  }, [openProfileId, openProfile, profileCountriesData, globalColors]);
 
   // Cross-fade. `targetKey` is the colouring we want ('' = global, else the open
   // subject). Two gates must both open before colours are painted: the outbound
@@ -204,7 +206,7 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
     return () => clearTimeout(t);
   }, [targetKey, sweptTo]);
 
-  const targetReady = targetKey === '' ? !!countriesData : !!subjectTally;
+  const targetReady = targetKey === '' ? !!countriesData : !!subjectTally && (!openProfileId || !!openProfile);
   const isFading = !((reducedMotion || sweptTo === targetKey) && targetReady);
   const countryColors = targetKey === '' ? globalColors : subjectColors;
 
@@ -355,7 +357,7 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       setDebouncedCountry(alpha2);
-    }, 300);
+    }, 250);
   }, []);
 
   const handleMouseLeave = useCallback(() => {
@@ -454,7 +456,7 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
                   // mean "unpopular/popular" in the legend, so don't repaint it);
                   // signal selection by brightening it, and by the white outline
                   // the border layer draws for the hovered country.
-                  filter: isHovered ? 'brightness(1.7)' : undefined,
+                  filter: isHovered ? 'brightness(1.3)' : undefined,
                 }}
                 onMouseEnter={() => alpha2 && handleMouseEnter(alpha2)}
                 onMouseLeave={handleMouseLeave}
@@ -553,7 +555,7 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
             onDismiss={() => setDismissedSubject(routeSubject)}
             suppressed={bannerVisible}
           />
-          <MapLegend />
+          <MapLegend poll={openProfileId ? openProfile ?? null : null} />
           <MapZoomControl scale={zoom.scale} min={MIN_ZOOM} max={MAX_ZOOM} onZoom={zoomToScale} onStep={stepZoom} />
         </>
       )}
@@ -565,18 +567,9 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
           key={hoveredCountry}
           cursor={cursor}
           countryCode={hoveredCountry}
-          data={data}
-          isLoading={isLoading}
-          subjectCounts={
-            openSubject
-              ? subjectTally?.countries.find((c) => c.code === hoveredCountry) ?? { likes: 0, dislikes: 0 }
-              : undefined
-          }
-          subject={
-            captionSubject?.kind === 'country' ? { name: captionSubject.name, code: captionSubject.code }
-              : captionSubject?.kind === 'profile' ? { name: captionSubject.profile.name }
-              : null
-          }
+          fetchPolls={debouncedCountry === hoveredCountry}
+          subjectPoll={openProfileId ? openProfile ?? null : undefined}
+          subjectCountry={openProfileId ? profileCountriesData?.countries.find((c) => c.code === hoveredCountry) ?? null : undefined}
         />
       )}
     </div>

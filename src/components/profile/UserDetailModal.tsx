@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useUser } from '../../hooks/useUser';
 import { useMe } from '../../hooks/useMe';
@@ -7,12 +7,10 @@ import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useUserDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { useI18n } from '../../i18n/I18nContext';
 import { Avatar } from './Avatar';
-import { StatTip } from '../common/StatTip';
 import { googleAvatarAtSize } from '../../utils/avatarUrl';
 import { CountryFlagLink } from '../common/CountryFlag';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { UserActivityList } from './UserActivityList';
-import { VoteHeadline } from './VoteHeadline';
 import { HoverTip } from '../common/HoverTip';
 
 interface UserDetailModalProps {
@@ -108,46 +106,6 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   // empty column beside it keeps the opinio and country modals' size.
   const largeAvatar = showsPicture || !!user?.bio;
 
-  // The sentiment ring and header wash read the user's like share over the
-  // live 24h votes only - the site is about current sentiment - and show no
-  // split at all when the last 24h have none.
-  const liveTotal = (user?.likesReceived ?? 0) + (user?.dislikesReceived ?? 0);
-  const likeShare = liveTotal > 0 ? (user!.likesReceived / liveTotal) : null;
-  const leansLike = likeShare !== null && likeShare >= 0.5;
-  const ringStyle = {
-    '--ring-target': `${Math.round((likeShare ?? 0) * 100)}%`,
-    '--ring-glow': likeShare === null ? 'transparent' : leansLike ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
-  } as CSSProperties;
-  // What the ring means, on hover (tap on a phone): the window it reads, then
-  // the split it draws. Percent via Intl so cs/de/fr/pl get their spacing.
-  // Names whose opinios the votes are on (the handle, or "your" on your own
-  // page) - without it the line reads as votes this user cast.
-  const ringTipText = (isMe
-    ? (liveTotal > 0 ? t.avatarRingLiveYou : t.avatarRingNoneYou)
-    : (liveTotal > 0 ? t.avatarRingLive : t.avatarRingNone)
-  ).replace('{handle}', `@${user?.displayName ?? ''}`);
-  // One plain sentence with the like count - no percentages, no sums to do.
-  // The count is the like votes in the same window the ring reads, and the
-  // noun after it follows the locale's plural rules (1 lajk, 2 lajky, 5 lajků).
-  const ringLikes = user?.likesReceived ?? 0;
-  const likesCategory = new Intl.PluralRules(locale).select(ringLikes);
-  const ringLikesText = (likesCategory === 'one' ? t.avatarRingLikesOne : likesCategory === 'few' ? t.avatarRingLikesFew : t.avatarRingLikesMany)
-    .replace('{n}', new Intl.NumberFormat(locale).format(ringLikes));
-  const ringTipLabel = ringTipText.replace('{likes}', ringLikesText);
-  const ringTipPanel = (
-    <p className="text-sm text-white/80 leading-snug">
-      {ringTipText.split('{likes}').map((part, i) => (
-        <Fragment key={i}>
-          {i > 0 && <strong className="font-semibold text-positive">{ringLikesText}</strong>}
-          {part}
-        </Fragment>
-      ))}
-    </p>
-  );
-  const washStyle = {
-    '--wash-a': likeShare === null ? 'rgba(255,255,255,0.04)' : leansLike ? 'rgba(34,197,94,0.13)' : 'rgba(239,68,68,0.13)',
-    '--wash-b': likeShare === null ? 'transparent' : leansLike ? 'rgba(239,68,68,0.06)' : 'rgba(34,197,94,0.06)',
-  } as CSSProperties;
 
   const fromProfileState = location.state as { fromProfileId?: string; fromProfileName?: string } | null;
   const BackToProfile = fromProfileState?.fromProfileId ? (
@@ -179,26 +137,6 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
     </HoverTip>
   ) : null;
 
-  // The opinio modal's vote strip, on the user's own numbers: agree-%, net
-  // badge and the live-vs-lifetime sentiment bar, one component so the three
-  // details cannot drift. The live counts are every opinio this user reported,
-  // summed (the API does the SUM, not the 15 rows below), and the brackets are
-  // the lifetime total_*_received the page always had - which used to be the
-  // ONLY figure here, shown as a stacked ▲/▼ stat beside the bio. That stat
-  // gave a lifetime number where the other two modals give a live one, so the
-  // same user read differently depending on which card you opened.
-  //
-  // subject="user" re-words the agree panel to name the user's opinios; the
-  // net panel is the country's (no "sorted by this" - nothing here is ranked).
-  const VoteBlock = user && (
-    <VoteHeadline
-      likes={user.likesReceived}
-      dislikes={user.dislikesReceived}
-      totalLikes={user.totalLikesReceived}
-      totalDislikes={user.totalDislikesReceived}
-      subject="user"
-    />
-  );
 
   // Folds the opinio list away, leaving the header and the vote strip - the
   // same chevron the opinio and country modals fold with, on its own key.
@@ -254,23 +192,11 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
   // on 2x screens.
   const Header = user && (
     <div className="relative isolate flex items-start gap-3 min-w-0">
-      {/* Colour wash, spilled out over the header's own padding; isolate +
-          -z-10 keep it under the content but above the card's background. */}
-      <div
-        aria-hidden
-        className={`user-header-wash absolute -z-10 pointer-events-none ${isMobile ? '-inset-x-4 -inset-y-3' : '-inset-x-6 -inset-y-4'}`}
-        style={washStyle}
-      />
       {BackToProfile}
       {largeAvatar ? (
-        // 96px in all: a 3px sentiment ring, a 2px gap in the card's colour,
+        // 96px in all: a thin neutral ring, a 2px gap in the card's colour,
         // and the picture inside.
-        <StatTip label={ringTipLabel} panel={ringTipPanel} width={280} className="!rounded-full shrink-0">
-        <div
-          className="sentiment-ring w-24 h-24 shrink-0 rounded-full p-[3px]"
-          data-empty={likeShare === null}
-          style={ringStyle}
-        >
+        <div className="w-24 h-24 shrink-0 rounded-full p-[3px] bg-white/10">
           <div className={`w-full h-full rounded-full p-[2px] ${isMobile ? 'bg-surface' : 'bg-surface-light'}`}>
             <Avatar
               name={user.displayName}
@@ -281,16 +207,9 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
             />
           </div>
         </div>
-        </StatTip>
       ) : (
-        // The small size keeps the ring too, built like the country header's:
-        // a thinner ring, the same 2px gap, the 40 / 56px picture inside.
-        <StatTip label={ringTipLabel} panel={ringTipPanel} width={280} className="!rounded-full shrink-0">
-        <div
-          className={`sentiment-ring shrink-0 rounded-full ${isMobile ? 'p-[2px]' : 'p-[3px]'}`}
-          data-empty={likeShare === null}
-          style={ringStyle}
-        >
+        // The small size: a thinner ring, the same 2px gap, the 40 / 56px picture inside.
+        <div className={`shrink-0 rounded-full bg-white/10 ${isMobile ? 'p-[2px]' : 'p-[3px]'}`}>
           <div className={`rounded-full p-[2px] ${isMobile ? 'bg-surface' : 'bg-surface-light'}`}>
             <Avatar
               name={user.displayName}
@@ -301,7 +220,6 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
             />
           </div>
         </div>
-        </StatTip>
       )}
       <div className="flex-1 min-w-0 flex flex-col gap-2">
         <div className="flex items-start gap-2 min-w-0">
@@ -376,7 +294,6 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
               </div>
             )}
           </div>
-          {user && <div className="px-4 pt-3 pb-1 shrink-0">{VoteBlock}</div>}
           {/* Same fold as the country sheet (.details-fold, index.css): grid
               rows animate the sheet's own height, and min-h-0 keeps it a
               well-behaved flex child inside the max-h sheet. */}
@@ -406,7 +323,6 @@ export function UserDetailModal({ userId }: UserDetailModalProps) {
             </div>
           )}
         </div>
-        {user && <div className="px-6 pt-4 pb-3 border-b border-border shrink-0">{VoteBlock}</div>}
         {isLoading && LoadingView}
         {notFound && NotFoundView}
         {user && (

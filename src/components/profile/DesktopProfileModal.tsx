@@ -2,27 +2,23 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useProfile } from '../../hooks/useProfile';
 import { ContentImageLightbox } from './ContentImageLightbox';
-import { usePersonBreakdown } from '../../hooks/usePersonBreakdown';
-import { useVote } from '../../hooks/useVote';
 import { useMe } from '../../hooks/useMe';
-import { useCountdown } from '../../hooks/useCountdown';
-import { useAnimatedValue } from '../../hooks/useAnimatedValue';
-import { useVoteAnimation } from '../../hooks/useVoteAnimation';
 import { useI18n } from '../../i18n/I18nContext';
 import { useProfileText } from '../../hooks/useProfileText';
-import { Avatar } from './Avatar';
+import { PollThumb } from '../poll/PollThumb';
+import { PollOptions } from '../poll/PollOptions';
+import { PollCountries } from '../poll/PollCountries';
+import { GlobeIcon } from '../poll/PollIcons';
+import { PollSummary } from '../poll/PollSummary';
+import { DELETE_MAX_VOTES } from '../../utils/polls';
 import { ShareButton } from './ShareButton';
 import { ReportProfileButton } from './ReportProfileButton';
 import { DeleteProfileButton } from './DeleteProfileButton';
-import { VoteHeadline } from './VoteHeadline';
 import { RoleBadge } from '../common/RoleBadge';
 import { HoverTip } from '../common/HoverTip';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { SourceLink } from './SourceLink';
 import { LinkedNews } from '../news/LinkedNews';
-import { CountryFlagLink } from '../common/CountryFlag';
-import { BreakdownRow } from './BreakdownRow';
-import { BreakdownHeader } from './BreakdownHeader';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { CommentIcon, BumpNumber } from '../comments/CommentCount';
@@ -39,13 +35,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
   const location = useLocation();
   const { t, locale } = useI18n();
   const { data: profile, isLoading } = useProfile(profileId);
-  const { data: breakdown } = usePersonBreakdown(profileId);
-  const voteMutation = useVote();
   const { data: me } = useMe();
-  const likeAnim = useVoteAnimation();
-  const dislikeAnim = useVoteAnimation();
-  const animatedLikes = useAnimatedValue(profile?.likes ?? 0);
-  const animatedDislikes = useAnimatedValue(profile?.dislikes ?? 0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   // Right column: country breakdown or the comment thread. Same box either
   // way - its height comes from the description column, so neither view can
@@ -67,21 +57,6 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
   // Shared with the mobile sheet's chevron - same choice, one key.
   const [detailsCollapsed, toggleDetails] = useDetailsCollapsed();
   const { name, description, hasTranslation, showingOriginal, toggle } = useProfileText(profile);
-
-  const hasCountry = me === undefined || !!me.user.countryCode;
-  const isRegistered = !!me?.user && me.user.tier !== 'anonymous';
-  const noCountryMsg = isRegistered ? t.noCountryWarningRegistered : t.noCountryWarning;
-  const canLike = hasCountry && (me?.voteAllowance.like.remaining ?? 0) > 0;
-  const canDislike = hasCountry && (me?.voteAllowance.dislike.remaining ?? 0) > 0;
-  const likeCountdown = useCountdown(!canLike && hasCountry ? me?.voteAllowance.like.nextAt ?? null : null);
-  const dislikeCountdown = useCountdown(!canDislike && hasCountry ? me?.voteAllowance.dislike.nextAt ?? null : null);
-
-  const handleVote = (type: 'like' | 'dislike') => {
-    if (!profile) return;
-    voteMutation.mutate({ profileId: profile.id, type });
-    if (type === 'like') likeAnim.trigger();
-    else dislikeAnim.trigger();
-  };
 
   const close = () => navigate('/' + location.search);
 
@@ -145,44 +120,28 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                 }
                 return null;
               })()}
-              <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-14 h-14 shrink-0" />
+              <PollThumb role={profile.role} imageUrl={profile.imageUrl} className="w-12 h-12" />
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                <div className="flex items-center gap-2 flex-wrap mb-1">
                   {/* Stays h1 at every width. Above 1366 MapProfileTitle adds a
                       second h1 over the map carrying the same opinio - deliberate:
                       multiple h1s are valid HTML5 and Google does not rank on their
                       count, and below 1366 there is no map, so keeping this one
                       unconditional is what guarantees the page always has an h1.
 
-                      18px from lg up, a step above the 16 the sidebar cards set
-                      their names at: this is the detail view of the same opinio,
-                      and at a shared size it read as the smaller of the two - the
-                      modal's own agree-% (20) and net badge (18) outranked its
-                      title, and the body copy sits at 14 here against 13 in a
-                      card, so the title had less room over its own text than a
-                      list row does.
-
-                      Below lg it steps down to 15, which is about the header row
-                      staying on ONE line rather than about type scale. The modal's
-                      max-width is capped at max-w-xl until lg, so that row is 418px
-                      at every width from 768 to 1023 - and the flag (20), the role
-                      badge (64 for "Politics") and two 6px gaps leave the name 322
-                      of it. A 40-char statement - the input cap - measures 324 at
-                      16px, so it was already wrapping the badges onto a second line
-                      before this size existed; at 15 it measures 304 and fits. The
-                      one case still over budget is the longest role label,
-                      "Entertainment", on a title at the full 40 chars. */}
-                  <h1 className="text-[15px] lg:text-lg font-semibold text-white truncate">{name}</h1>
-                  <CountryFlagLink code={profile.countryCode} />
+                      20px from lg up, 16 below: a question runs to 80
+                      characters, so it wraps either way and the role badge
+                      follows it on the line (flex-wrap). */}
+                  <h1 className="text-base lg:text-xl font-semibold text-white leading-snug break-words min-w-0">{name}</h1>
                   <RoleBadge role={profile.role} />
                 </div>
-                <p className="text-[11px] text-white/50">
+                <p className="text-[13px] text-white/60">
                   {t.reportedBy}{' '}
                   {profile.addedById ? (
                     <Link
                       to={`/u/${profile.addedById}${location.search}`}
                       state={{ fromProfileId: profile.id, fromProfileName: profile.name }}
-                      className="text-white/55 hover:text-white/85 hover:underline underline-offset-2 decoration-white/30 transition-colors"
+                      className="text-white/75 hover:text-white hover:underline underline-offset-2 decoration-white/30 transition-colors"
                     >
                       @{profile.addedBy}
                     </Link>
@@ -196,10 +155,10 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                 <CollapseDetailsButton collapsed={detailsCollapsed} onToggle={toggleDetails} />
                 <ShareButton profileId={profile.id} profileName={profile.name} />
                 <ReportProfileButton profileId={profile.id} />
-                {me?.user.id && profile.addedById === me.user.id && (
+                {me?.user.id && (me.user.tier === 'admin' || (profile.addedById === me.user.id && profile.voteCount <= DELETE_MAX_VOTES)) && (
                   <DeleteProfileButton
                     profileId={profile.id}
-                    voteCount={profile.likes + profile.dislikes}
+                    voteCount={profile.voteCount}
                     onDeleted={close}
                   />
                 )}
@@ -217,55 +176,58 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
               </div>
             </div>
 
-            {/* Body - two columns */}
-            <div className="flex-1 overflow-y-auto">
-              {/* Live votes as a sentiment bar: green segment = likes' share of
-                  the active (24h) votes, red = dislikes'. Replaces the old ▲/▼ counts. */}
-              <div className="px-6 pt-4 pb-3 border-b border-border">
-                <VoteHeadline
-                  likes={animatedLikes}
-                  dislikes={animatedDislikes}
-                  totalLikes={profile.totalLikes ?? 0}
-                  totalDislikes={profile.totalDislikes ?? 0}
-                />
-              </div>
-              {/* Folded away by the header chevron. The height animates on the
-                  grid row (see .details-fold in index.css) so it lands on the
-                  content's own height rather than a max-height guess, and the
-                  layer inside fades and lifts a beat ahead of the box, so the text
-                  is gone before the clip edge reaches it. The card is anchored to
-                  the bottom of the screen, so folding pulls the whole modal down
-                  toward the vote buttons and uncovers the map as it goes. */}
-              <div className="details-fold" data-collapsed={detailsCollapsed}>
-                <div>
-                  <div className="details-fold-inner grid grid-cols-2 gap-0 divide-x divide-border">
-                    {/* Left: description first, optional image second as supporting context */}
-                    <div className="px-6 py-4 space-y-3">
-                      <p className="text-sm text-white/80 leading-relaxed">{description}</p>
+            {/* Body - two columns, each its own scroller. The body itself never
+                scrolls: an outer scroller around an inner list put two scrollbars
+                side by side. Its height is the left column's content (the right
+                column is absolute, see below), capped by the card's max-height. */}
+            <div className="flex-1 min-h-0 flex divide-x divide-border">
+                    {/* Left: the context first (description, picture, news), as
+                        it can decide the vote; then the answers, which are the
+                        vote buttons and are never folded by the chevron. */}
+                    <div className="flex-1 basis-0 min-w-0 overflow-y-auto subtle-scrollbar px-6 py-5">
+                      {!detailsCollapsed && (description || profile.contentImageUrl || profile.hasLink || profile.newsId) && (
+                      <div className="mb-5 pb-5 border-b border-border space-y-3">
+                      {(description || profile.contentImageUrl) && (
+                        // flow-root contains the floated picture, so the next
+                        // block starts under it whatever the text length.
+                        <div className="flow-root">
+                          {profile.contentImageUrl && (
+                            // A thumbnail beside the text, not a 240px block under
+                            // it: the picture is context, and at full height it
+                            // pushed the window over the whole map. Click opens
+                            // the full 1280px in the lightbox.
+                            <button
+                              type="button"
+                              onClick={() => setLightboxOpen(true)}
+                              aria-label={profile.name}
+                              className={`group relative block overflow-hidden rounded-xl bg-black/30 ring-1 ring-white/10 focus:outline-none focus:ring-2 focus:ring-accent/60 ${
+                                description ? 'float-right ml-4 mb-1 w-36 h-28' : 'w-full h-48'
+                              }`}
+                            >
+                              <img
+                                src={profile.contentImageUrl}
+                                alt={profile.name}
+                                loading="lazy"
+                                decoding="async"
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                              <span aria-hidden className="absolute right-1.5 bottom-1.5 rounded-md bg-black/55 p-1 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+                                </svg>
+                              </span>
+                            </button>
+                          )}
+                          {description && <p className="text-[15px] text-white/80 leading-relaxed">{description}</p>}
+                        </div>
+                      )}
                       {hasTranslation && (
                         <button
                           type="button"
                           onClick={toggle}
-                          className="text-xs text-text-secondary/70 hover:text-accent transition-colors"
+                          className="text-[13px] text-text-secondary hover:text-accent transition-colors"
                         >
                           {showingOriginal ? t.seeTranslation : t.seeOriginal}
-                        </button>
-                      )}
-                      {profile.contentImageUrl && (
-                        // 240 px cap keeps the image as supporting context, not
-                        // the focus. Click opens the full 1280 px in the lightbox.
-                        <button
-                          type="button"
-                          onClick={() => setLightboxOpen(true)}
-                          className="block w-full rounded-lg overflow-hidden bg-black/30 border border-border focus:outline-none focus:ring-2 focus:ring-accent/60"
-                        >
-                          <img
-                            src={profile.contentImageUrl}
-                            alt={profile.name}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-auto max-h-[240px] object-contain"
-                          />
                         </button>
                       )}
                       <LinkedNews profile={profile} />
@@ -274,6 +236,14 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                           <SourceLink profileId={profile.id} host={profile.linkHost} />
                         </div>
                       )}
+                      </div>
+                      )}
+                      <PollOptions
+                        profile={profile}
+                        showingOriginal={showingOriginal}
+                        pictureClass="w-12 h-12"
+                        summary={detailsCollapsed}
+                      />
                     </div>
 
                     {/* Right: breakdown. The wrapper is `relative` with its content
@@ -290,8 +260,9 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                         The floor follows the feature, NOT the open tab: keyed
                         on the tab it made the whole modal jump on every
                         Countries <-> Comments switch when the text was short. */}
-                    <div className={`relative ${commentsEnabled ? 'min-h-[360px]' : 'min-h-[200px]'}`}>
-                      <div className="absolute inset-0 px-6 py-4 flex flex-col">
+                    {!detailsCollapsed && <div className={`relative flex-1 basis-0 min-w-0 ${commentsEnabled ? 'min-h-[360px]' : 'min-h-[200px]'}`}>
+                      <div className="absolute inset-0 px-6 py-5 flex flex-col">
+                        <div className="shrink-0 mb-4"><PollSummary profile={profile} /></div>
                         {/* Segmented switch over the column. Countries is the
                             default; the count on the other segment is the only
                             place the detail advertises comments. */}
@@ -310,12 +281,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                                 {tab === 'comments' ? (
                                   <CommentIcon className="w-3.5 h-3.5" />
                                 ) : (
-                                  // The app's stats glyph (StatsModal / ProfileMenu): the
-                                  // two-tone red/green bars already mean "vote breakdown".
-                                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} aria-hidden>
-                                    <path stroke="#ef4444" strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z" />
-                                    <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d="M9 19V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                  </svg>
+                                  <GlobeIcon className="w-3.5 h-3.5" />
                                 )}
                                 {tab === 'countries' ? t.commentsTabCountries : t.commentsTabComments}
                                 {tab === 'comments' && commentCount > 0 && (
@@ -336,110 +302,15 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                             </div>
                           </div>
                           </CommentThreadProvider>
-                        ) : breakdown && (breakdown.topLiking.length > 0 || breakdown.topDisliking.length > 0) ? (
-                          <div className="grid grid-cols-2 gap-6 flex-1 min-h-0">
-                            <div className="flex flex-col min-h-0">
-                              <BreakdownHeader side="like" />
-                              <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
-                                {(() => {
-                                  const max = Math.max(1, ...breakdown.topLiking.map(r => r.count));
-                                  return breakdown.topLiking.map(({ countryCode, count, voters }, i) => (
-                                    <BreakdownRow key={countryCode} countryCode={countryCode} count={count} voters={voters} max={max} index={i} side="like" />
-                                  ));
-                                })()}
-                              </div>
-                            </div>
-                            <div className="flex flex-col min-h-0">
-                              <BreakdownHeader side="dislike" />
-                              <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
-                                {(() => {
-                                  const max = Math.max(1, ...breakdown.topDisliking.map(r => r.count));
-                                  return breakdown.topDisliking.map(({ countryCode, count, voters }, i) => (
-                                    <BreakdownRow key={countryCode} countryCode={countryCode} count={count} voters={voters} max={max} index={i} side="dislike" />
-                                  ));
-                                })()}
-                              </div>
-                            </div>
-                          </div>
                         ) : (
-                          <p className="text-xs text-white/20">{t.noVotesYet}</p>
+                          <div className="flex-1 min-h-0 overflow-y-auto pr-1 subtle-scrollbar">
+                            <PollCountries profile={profile} />
+                          </div>
                         )}
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    </div>}
             </div>
 
-            {/* Footer - full-width vote buttons */}
-            <div className="flex shrink-0 border-t border-border rounded-none">
-              <div className="relative flex-1 border-r border-border">
-                {likeAnim.particles.map((p) => (
-                  <span
-                    key={p.id}
-                    className="vote-particle text-positive"
-                    style={{
-                      fontSize: Math.min(0.9 + p.streak * 0.14, 1.6) + 'rem',
-                      marginBottom: 8,
-                    }}
-                  >
-                    {p.streak >= 5 ? '🔥' : p.streak >= 3 ? `+${p.streak}` : '+1'}
-                  </span>
-                ))}
-                <HoverTip label={!hasCountry ? noCountryMsg : null} className="contents">
-                <button
-                  key={likeAnim.bumpKey}
-                  onClick={() => handleVote('like')}
-                  disabled={!canLike}
-                  className={`vote-bump w-full flex items-center justify-center gap-2.5 py-4 text-base font-semibold transition-colors rounded-none tabular-nums ${
-                    canLike
-                      ? 'cursor-pointer bg-positive/10 hover:bg-positive/20 text-positive'
-                      : 'cursor-not-allowed bg-white/[0.02] text-white/25'
-                  }`}
-                >
-                  <span>▲</span>
-                  {!canLike && likeCountdown.text ? (
-                    <span className="text-sm font-medium tabular-nums">{t.nextVote} {likeCountdown.text}</span>
-                  ) : (
-                    <span>{t.agree}</span>
-                  )}
-                </button>
-                </HoverTip>
-              </div>
-              <div className="relative flex-1">
-                {dislikeAnim.particles.map((p) => (
-                  <span
-                    key={p.id}
-                    className="vote-particle text-negative"
-                    style={{
-                      fontSize: Math.min(0.9 + p.streak * 0.14, 1.6) + 'rem',
-                      marginBottom: 8,
-                    }}
-                  >
-                    {p.streak >= 5 ? '💥' : p.streak >= 3 ? `+${p.streak}` : '+1'}
-                  </span>
-                ))}
-                <HoverTip label={!hasCountry ? noCountryMsg : null} className="contents">
-                <button
-                  key={dislikeAnim.bumpKey}
-                  onClick={() => handleVote('dislike')}
-                  disabled={!canDislike}
-                  className={`vote-bump w-full flex items-center justify-center gap-2.5 py-4 text-base font-semibold transition-colors rounded-none tabular-nums ${
-                    canDislike
-                      ? 'cursor-pointer bg-negative/10 hover:bg-negative/20 text-negative'
-                      : 'cursor-not-allowed bg-white/[0.02] text-white/25'
-                  }`}
-                >
-                  <span>▼</span>
-                  {!canDislike && dislikeCountdown.text ? (
-                    <span className="text-sm font-medium tabular-nums">{t.nextVote} {dislikeCountdown.text}</span>
-                  ) : (
-                    <span>{t.disagree}</span>
-                  )}
-                </button>
-                </HoverTip>
-              </div>
-            </div>
           </>
         )}
       </div>

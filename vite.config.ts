@@ -15,7 +15,7 @@ export default defineConfig({
         name: 'Opinio',
         short_name: 'Opinio',
         description:
-          'An ad-free social voting platform from Europe. Share and vote on opinions about anything - from the headlines to everyday life - and see how every country feels, country by country, refreshed every 24h.',
+          'Ask the world anything and vote on polls in your own language. See how people in every country answered, live on the world map. Ad-free, made in Europe.',
         id: '/',
         start_url: '/',
         scope: '/',

@@ -33,118 +33,91 @@ const LANG_UI = {
   cs: {
     ogLocale: 'cs_CZ',
     cta: 'Hlasovat na Opinio',
-    // Mirrors the country-page title pattern ({subject}: phrase) - subject
-    // first so no locale needs an article or a case ending on the name.
-    worldThinks: ': co si myslí svět',
-    tagline: 'Živé světové žebříčky názorů, lidí a myšlenek - hlasované po zemích.',
-    likes: 'líbí se', dislikes: 'nelíbí se',
+    tagline: 'Zeptej se světa. Uvidíš, jak odpoví každá země.',
+    votes: 'hlasů', countries: 'zemí',
     original: 'Originál:',
-    gone: 'Tento názor už není dostupný.',
+    gone: 'Tato anketa už není dostupná.',
     home: 'Zpět na Opinio',
   },
   es: {
     ogLocale: 'es_ES',
     cta: 'Vota en Opinio',
-    // Mirrors the country-page title pattern ({subject}: phrase) - subject
-    // first so no locale needs an article or a case ending on the name.
-    worldThinks: ': lo que piensa el mundo',
-    tagline: 'Rankings mundiales en vivo de opiniones, personas e ideas - votados por país.',
-    likes: 'me gusta', dislikes: 'no me gusta',
+    tagline: 'Pregunta al mundo. Mira cómo responde cada país.',
+    votes: 'votos', countries: 'países',
     original: 'Original:',
-    gone: 'Esta opinión ya no está disponible.',
+    gone: 'Esta encuesta ya no está disponible.',
     home: 'Volver a Opinio',
   },
   de: {
     ogLocale: 'de_DE',
     cta: 'Auf Opinio abstimmen',
-    // Mirrors the country-page title pattern ({subject}: phrase) - subject
-    // first so no locale needs an article or a case ending on the name.
-    worldThinks: ': was die Welt denkt',
-    tagline: 'Live-Weltranglisten von Meinungen, Menschen und Ideen - nach Ländern abgestimmt.',
-    likes: 'Likes', dislikes: 'Dislikes',
+    tagline: 'Frag die Welt. Sieh, wie jedes Land antwortet.',
+    votes: 'Stimmen', countries: 'Länder',
     original: 'Original:',
-    gone: 'Diese Meinung ist nicht mehr verfügbar.',
+    gone: 'Diese Umfrage ist nicht mehr verfügbar.',
     home: 'Zurück zu Opinio',
   },
   fr: {
     ogLocale: 'fr_FR',
     cta: 'Voter sur Opinio',
-    // Mirrors the country-page title pattern ({subject}: phrase) - subject
-    // first so no locale needs an article or a case ending on the name.
-    worldThinks: ' : ce que le monde en pense',
-    tagline: "Classements mondiaux en direct d'opinions, de personnes et d'idées - votés par pays.",
-    likes: "j'aime", dislikes: "je n'aime pas",
+    tagline: 'Interrogez le monde. Voyez comment chaque pays répond.',
+    votes: 'votes', countries: 'pays',
     original: 'Original:',
-    gone: "Cette opinion n'est plus disponible.",
+    gone: 'Ce sondage n\'est plus disponible.',
     home: 'Retour à Opinio',
   },
   it: {
     ogLocale: 'it_IT',
     cta: 'Vota su Opinio',
-    // Mirrors the country-page title pattern ({subject}: phrase) - subject
-    // first so no locale needs an article or a case ending on the name.
-    worldThinks: ': cosa ne pensa il mondo',
-    tagline: 'Classifiche mondiali in tempo reale di opinioni, persone e idee - votate per paese.',
-    likes: 'mi piace', dislikes: 'non mi piace',
+    tagline: 'Chiedi al mondo. Guarda come risponde ogni paese.',
+    votes: 'voti', countries: 'paesi',
     original: 'Originale:',
-    gone: 'Questa opinione non è più disponibile.',
+    gone: 'Questo sondaggio non è più disponibile.',
     home: 'Torna a Opinio',
   },
   pl: {
     ogLocale: 'pl_PL',
     cta: 'Głosuj na Opinio',
-    // Mirrors the country-page title pattern ({subject}: phrase) - subject
-    // first so no locale needs an article or a case ending on the name.
-    worldThinks: ': co o tym myśli świat',
-    tagline: 'Światowe rankingi opinii, ludzi i pomysłów na żywo - głosowane według krajów.',
-    likes: 'lubię', dislikes: 'nie lubię',
+    tagline: 'Zapytaj świat. Zobacz, jak odpowiada każdy kraj.',
+    votes: 'głosów', countries: 'krajów',
     original: 'Oryginał:',
-    gone: 'Ta opinia nie jest już dostępna.',
+    gone: 'Ta ankieta nie jest już dostępna.',
     home: 'Powrót do Opinio',
   },
 };
 
-// Localized country-page title/description templates. Tokens: {country} = the
-// English country name (no translated table yet — see CLAUDE.md Open Work),
-// {likes} / {dislikes} = formatted 24h counts. Mirror of the seo.country block in
-// opinio-fe/src/i18n/strings.ts — keep the two in sync. The SPA reuses the
-// no-counts `description` at runtime; the worker swaps in `descriptionCounts`
-// whenever the country has live votes (a warmer, number-backed snippet).
+// Localized country-page title/description templates. {country} = the country
+// name, put first as a topic label so no language needs a case ending on it.
+// The page is about votes FROM that country. Mirror of the seo.country block in
+// opinio-fe/src/i18n/strings.ts - keep the two in sync.
 const COUNTRY_SEO = {
   en: {
-    title: '{country}: what the world thinks - Opinio',
-    description: 'See how the world feels about {country} right now - live opinion votes, refreshed every 24h on Opinio.',
-    descriptionCounts: 'How the world feels about {country} right now - {likes} likes and {dislikes} dislikes in the last 24h on Opinio.',
+    title: '{country}: how people there vote - Opinio',
+    description: '{country}: the polls people there answered on Opinio, what they chose, and how the rest of the world voted.',
   },
   cs: {
-    title: '{country}: co si myslí svět - Opinio',
-    description: 'Podívej se, jak svět právě teď vnímá zemi {country} - živé hlasování, obnovováno každých 24 h. Opinio.',
-    descriptionCounts: '{country}: jak to právě teď vidí svět - {likes} líbí se, {dislikes} nelíbí se za posledních 24 h. Opinio.',
+    title: '{country}: jak tam lidé hlasují - Opinio',
+    description: '{country}: ankety, na které tam lidé odpověděli na Opinio, co zvolili a jak hlasoval zbytek světa.',
   },
   es: {
-    title: '{country}: lo que piensa el mundo - Opinio',
-    description: 'Descubre cómo ve el mundo a {country} ahora mismo - votos en vivo, actualizados cada 24 h. Opinio.',
-    descriptionCounts: '{country}: qué opina el mundo ahora mismo - {likes} me gusta y {dislikes} no me gusta en 24 h. Opinio.',
+    title: '{country}: cómo vota la gente allí - Opinio',
+    description: '{country}: las encuestas que la gente de allí respondió en Opinio, qué eligió y cómo votó el resto del mundo.',
   },
   de: {
-    title: '{country}: was die Welt denkt - Opinio',
-    description: 'Sieh, wie die Welt {country} gerade sieht - Live-Abstimmungen, alle 24 Std. aktualisiert. Opinio.',
-    descriptionCounts: '{country}: was die Welt gerade denkt - {likes} Likes, {dislikes} Dislikes in 24 Std. Opinio.',
+    title: '{country}: wie die Menschen dort abstimmen - Opinio',
+    description: '{country}: die Umfragen, die Menschen dort auf Opinio beantwortet haben, was sie gewählt haben und wie der Rest der Welt abgestimmt hat.',
   },
   fr: {
-    title: '{country} : ce que le monde en pense - Opinio',
-    description: '{country} : découvrez ce que le monde en pense en ce moment - votes en direct, actualisés toutes les 24 h. Opinio.',
-    descriptionCounts: "{country} : ce que le monde en pense - {likes} j'aime, {dislikes} je n'aime pas en 24 h. Opinio.",
+    title: '{country} : comment les gens y votent - Opinio',
+    description: '{country} : les sondages auxquels les gens y ont répondu sur Opinio, leurs choix et le vote du reste du monde.',
   },
   it: {
-    title: '{country}: cosa ne pensa il mondo - Opinio',
-    description: '{country}: scopri cosa ne pensa il mondo in questo momento - voti in tempo reale, aggiornati ogni 24 h. Opinio.',
-    descriptionCounts: '{country}: cosa ne pensa il mondo - {likes} mi piace, {dislikes} non mi piace nelle ultime 24 h. Opinio.',
+    title: '{country}: come vota la gente lì - Opinio',
+    description: '{country}: i sondaggi a cui la gente lì ha risposto su Opinio, cosa ha scelto e come ha votato il resto del mondo.',
   },
   pl: {
-    title: '{country}: co o tym myśli świat - Opinio',
-    description: '{country}: zobacz, co świat o tym sądzi w tej chwili - głosowanie na żywo, odświeżane co 24 h. Opinio.',
-    descriptionCounts: '{country}: co świat o tym sądzi - {likes} polubień, {dislikes} ocen negatywnych w 24 h. Opinio.',
+    title: '{country}: jak tam głosują ludzie - Opinio',
+    description: '{country}: ankiety, na które odpowiedzieli tam ludzie na Opinio, co wybrali i jak głosowała reszta świata.',
   },
 };
 
@@ -454,22 +427,6 @@ async function fetchUser(id) {
   }
 }
 
-async function fetchCountryCounts(code) {
-  try {
-    // 60s edge cache matches the BE in-process cache, so we don't fan out behind it.
-    const res = await fetch(`${API_BASE}/api/countries`, {
-      headers: { accept: 'application/json' },
-      cf: { cacheTtl: 60, cacheEverything: true },
-    });
-    if (!res.ok) return null;
-    const body = await res.json();
-    if (!body || !Array.isArray(body.countries)) return null;
-    return body.countries.find((c) => c.code === code) ?? { code, likes: 0, dislikes: 0 };
-  } catch {
-    return null;
-  }
-}
-
 async function handleSitemap() {
   // Proxy the API-built sitemap so opinio.live/sitemap.xml stays on the canonical
   // host (Google ignores cross-host sitemaps unless both hosts are verified).
@@ -653,6 +610,19 @@ function injectProfileMeta(html, meta) {
   return out;
 }
 
+// A poll's answers as one line for meta tags: "Gouda 18%, Brie 19%, ...".
+// Results come with GET /api/profiles/:id; a poll without votes lists its
+// answers alone.
+function pollAnswersLine(profile) {
+  const opts = Array.isArray(profile.options) ? profile.options : [];
+  const total = profile.results?.total ?? 0;
+  return opts.map((o) => {
+    if (!total) return o.text;
+    const n = profile.results.options.find((r) => r.optionId === o.id)?.n ?? 0;
+    return `${o.text} ${Math.round((n / total) * 100)}%`;
+  }).join(', ');
+}
+
 async function handleProfile(request, id) {
   const [result, shellRes, paths] = await Promise.all([
     fetchProfile(id),
@@ -679,7 +649,9 @@ async function handleProfile(request, id) {
   headers.set('x-opinio-og', 'profile');
 
   const title = `${profile.name} - Opinio`;
-  const descSource = profile.description || `${profile.name} on Opinio - vote like or dislike.`;
+  const total = profile.results?.total ?? 0;
+  const countries = profile.results?.countries ?? 0;
+  const descSource = `${pollAnswersLine(profile)}${total ? ` - ${total} vote${total === 1 ? '' : 's'} from ${countries} ${countries === 1 ? 'country' : 'countries'}` : ''}. ${profile.description || ''}`.trim();
   const description = truncate(descSource, 200);
   const hasAvatar = !!profile.imageUrl;
   const image = hasAvatar ? upscaleAvatarUrl(profile.imageUrl) : DEFAULT_OG_IMAGE;
@@ -750,7 +722,9 @@ const LANG_PAGE_CSS =
   '.desc{color:rgba(255,255,255,.82);font-size:16px;margin:0 0 16px;white-space:pre-wrap}' +
   '.orig{color:rgba(255,255,255,.4);font-size:13px;margin:0 0 16px}' +
   '.counts{display:flex;gap:18px;font-size:15px;margin:0 0 20px}' +
-  '.counts .up{color:#22c55e}.counts .down{color:#e94560}' +
+  '.answers{list-style:none;margin:0 0 14px;padding:0}' +
+  '.answers li{display:flex;justify-content:space-between;padding:9px 12px;margin:0 0 6px;border:1px solid rgba(255,255,255,.12);border-radius:12px}' +
+  '.counts{color:rgba(255,255,255,.6)}' +
   '.cta{display:inline-block;background:#e94560;color:#fff;text-decoration:none;font-weight:600;' +
   'padding:12px 22px;border-radius:999px;font-size:15px}' +
   '.tag{margin-top:28px;color:rgba(255,255,255,.45);font-size:13px;text-align:center}';
@@ -762,18 +736,17 @@ function renderLangPage({ id, lang, profile, noindex }) {
   const name = profile.name || '';
   const description = profile.description || '';
   const translated = profile.originalName && profile.originalName !== name;
-  const country = countryName(profile.countryCode, lang) || profile.countryCode || '';
   const image = profile.contentImageUrl
     || (profile.imageUrl ? upscaleAvatarUrl(profile.imageUrl) : DEFAULT_OG_IMAGE);
   const title = `${name} - Opinio`;
-  const metaDesc = truncate(description || name, 200);
+  const total = profile.results?.total ?? 0;
+  const metaDesc = truncate(`${pollAnswersLine(profile)}${total ? ` - ${total} ${ui.votes}` : ''}. ${description}`.trim(), 200);
 
   const hero = profile.contentImageUrl
     ? `<img class="hero" src="${escapeHtml(profile.contentImageUrl)}" alt="${escapeHtml(name)}" />`
     : '';
   const metaLine = [
     profile.role ? `<span class="pill">${escapeHtml(profile.role)}</span>` : '',
-    country ? `<span>${escapeHtml(country)}</span>` : '',
   ].filter(Boolean).join('');
   const origLine = translated
     ? `<p class="orig">${escapeHtml(ui.original)} ${escapeHtml(profile.originalName)}</p>`
@@ -788,11 +761,15 @@ function renderLangPage({ id, lang, profile, noindex }) {
     `    <header><a href="${SITE_BASE}/">Opin<span>io</span></a></header>\n` +
     `    <article class="card">\n      ${hero}\n      <div class="body">\n` +
     (metaLine ? `        <div class="meta">${metaLine}</div>\n` : '') +
-    `        <h1>${escapeHtml(name)}${escapeHtml(ui.worldThinks)}</h1>\n` +
+    `        <h1>${escapeHtml(name)}</h1>\n` +
     (description ? `        <p class="desc">${escapeHtml(description)}</p>\n` : '') +
     origLine + '\n' +
-    `        <div class="counts"><span class="up">▲ ${profile.likes || 0} ${escapeHtml(ui.likes)}</span>` +
-    `<span class="down">▼ ${profile.dislikes || 0} ${escapeHtml(ui.dislikes)}</span></div>\n` +
+    `        <ul class="answers">${(profile.options || []).map((o) => {
+      const n = profile.results?.options.find((r) => r.optionId === o.id)?.n ?? 0;
+      const pct = total ? Math.round((n / total) * 100) : 0;
+      return `<li><span>${escapeHtml(o.text)}</span><b>${pct}%</b></li>`;
+    }).join('')}</ul>\n` +
+    `        <div class="counts">${total} ${escapeHtml(ui.votes)} · ${profile.results?.countries ?? 0} ${escapeHtml(ui.countries)}</div>\n` +
     `        <a class="cta" href="${appUrl}">${escapeHtml(ui.cta)} &rarr;</a>\n` +
     `      </div>\n    </article>\n` +
     `    <p class="tag">${escapeHtml(ui.tagline)}</p>\n` +
@@ -876,8 +853,8 @@ async function handleUser(request, id, lang = null) {
   // totalLikesCast, so the old wording said "0 likes cast" for everyone.
   const description = truncate(
     user.bio?.trim() ||
-      `@${user.displayName} on Opinio - ${profileCount} reported profile${profileCount === 1 ? '' : 's'}, ` +
-      `${user.totalLikesReceived || 0} likes and ${user.totalDislikesReceived || 0} dislikes received.`,
+      `@${user.displayName} on Opinio - ${profileCount} poll${profileCount === 1 ? '' : 's'} asked, ` +
+      `${user.pollsAnswered || 0} answered.`,
     200,
   );
   const hasAvatar = !!user.avatarUrl;
@@ -910,40 +887,40 @@ async function handleUser(request, id, lang = null) {
 // gets a per-page title/description for SEO and social previews.
 const STATIC_PAGES = {
   '/about': {
-    title: 'About - Opinio',
-    description: 'About Opinio - live world rankings of people, statements, and ideas, voted on by country.',
+    title: 'About Opinio - the world poll',
+    description: 'What Opinio is: anyone can ask, people everywhere vote in their own language, and the map shows how each country answered. No ads, no tracking.',
   },
   '/privacy': {
     title: 'Privacy - Opinio',
-    description: 'Opinio privacy policy: what data we store, how it is used, and how to delete it.',
+    description: 'What Opinio collects, why, how long it is kept, and your rights under GDPR.',
   },
   '/terms': {
     title: 'Terms - Opinio',
-    description: 'Opinio terms of use: posting rules, voting rules, and account terms.',
+    description: 'Opinio terms: posting rules, voting, subscriptions and account blocks.',
   },
   '/stats': {
-    title: 'Trending opinions right now - Opinio',
-    description: 'The opinions, takes and ideas getting the most votes right now on Opinio - ranked live and refreshed every 24 hours.',
+    title: 'Most divided polls and top polls - Opinio',
+    description: 'The polls that split the world most evenly, and the ones with the most votes on Opinio.',
   },
   '/stats/trending-countries': {
-    title: 'Trending countries by votes - Opinio',
-    description: 'Which countries are generating the most buzz right now - ranked by votes on their active posts, refreshed every 24 hours on Opinio.',
+    title: 'Most active countries - Opinio',
+    description: 'Which countries vote the most on Opinio, today and overall.',
   },
   '/stats/top-voters': {
-    title: 'All-time leaderboard - Opinio',
-    description: 'The all-time Opinio leaderboard - top opinions, countries and members ranked by total votes received (likes and dislikes combined).',
+    title: 'Top askers and voters - Opinio',
+    description: 'The people whose polls get the most votes, and those who answer the most polls on Opinio.',
   },
   '/support': {
     title: 'Support - Opinio',
-    description: 'Get support and report issues on Opinio.',
+    description: 'Contact Opinio support, follow your tickets and get help with polls, voting and your account.',
   },
   '/add': {
-    title: 'Add an opinio - Opinio',
-    description: 'Submit a new statement, person, or idea to vote on.',
+    title: 'Ask the world - Opinio',
+    description: 'Create a poll with up to 5 answers and see how every country votes.',
   },
   '/sign-in': {
     title: 'Sign in - Opinio',
-    description: 'Sign in to Opinio with Google or Microsoft to vote, post opinions, and track your activity.',
+    description: 'Sign in with Google or Microsoft to vote on every poll, ask your own and join the discussion.',
   },
 };
 
@@ -955,64 +932,64 @@ const STATIC_PAGES = {
 // block in opinio-fe/src/i18n/strings.ts (same strings, two render paths).
 const STATIC_I18N = {
   cs: {
-    '/': { title: 'Opinio - Hlasuj o názorech celého světa, podle států', description: 'Sociální hlasovací platforma z Evropy, bez reklam. Sdílej a hlasuj o názorech na cokoli - od titulků až po běžný život - a sleduj, jak to vidí každá země, podle států, obnovováno každých 24 h.' },
-    '/about': { title: 'O Opinio - Jak funguje živé hlasování', description: 'Zjisti, jak Opinio funguje: rychlé sociální hlasování, hlasy vyprší po 24 hodinách a živé světové trendy.' },
-    '/privacy': { title: 'Zásady ochrany soukromí - Opinio', description: 'Zásady ochrany soukromí Opinio: co shromažďujeme, proč, jak dlouho a jaká máš práva podle GDPR.' },
-    '/terms': { title: 'Podmínky použití - Opinio', description: 'Podmínky použití Opinio: pravidla pro přispívání, hlasování, předplatné a pozastavení účtů.' },
-    '/stats': { title: 'Nejdiskutovanější názory právě teď - Opinio', description: 'Názory, postřehy a nápady, které právě teď získávají nejvíce hlasů na Opinio - řazeno živě a obnovováno každých 24 hodin.' },
-    '/stats/trending-countries': { title: 'Trendující země podle hlasů - Opinio', description: 'Které země právě teď vzbuzují největší rozruch - řazeno podle hlasů na jejich aktivních příspěvcích, obnovováno každých 24 hodin na Opinio.' },
-    '/stats/top-voters': { title: 'Žebříček za celou dobu - Opinio', description: 'Žebříček Opinio za celou dobu - nejlepší názory, země a členové podle celkového počtu získaných hlasů (lajky a dislajky dohromady).' },
-    '/support': { title: 'Podpora - Opinio', description: 'Kontaktuj podporu Opinio, spravuj své tikety a získej pomoc s hlasováním, názory a nastavením účtu.' },
+    '/': { title: 'Opinio - Zeptej se světa, uvidíš, jak hlasuje každá země', description: 'Zeptej se světa na cokoli a hlasuj v anketách ve svém jazyce. Na mapě světa uvidíš, jak odpověděli lidé v každé zemi. Bez reklam, z Evropy.' },
+    '/about': { title: 'O Opinio - světová anketa', description: 'Co je Opinio: kdokoli se může zeptat, lidé z celého světa hlasují ve svém jazyce a mapa ukáže, jak odpověděla každá země. Bez reklam, bez sledování.' },
+    '/privacy': { title: 'Zásady ochrany soukromí - Opinio', description: 'Co Opinio shromažďuje, proč, jak dlouho to uchovává a jaká máš práva podle GDPR.' },
+    '/terms': { title: 'Podmínky použití - Opinio', description: 'Podmínky Opinio: pravidla pro příspěvky, hlasování, předplatné a blokace účtu.' },
+    '/stats': { title: 'Nejrozdělenější a nejoblíbenější ankety - Opinio', description: 'Ankety, ve kterých je svět rozdělený nejtěsněji, a ty s nejvíce hlasy na Opinio.' },
+    '/stats/trending-countries': { title: 'Nejaktivnější země - Opinio', description: 'Které země na Opinio hlasují nejvíc, dnes i celkově.' },
+    '/stats/top-voters': { title: 'Nejlepší tazatelé a hlasující - Opinio', description: 'Lidé, jejichž ankety získávají nejvíc hlasů, a ti, kteří na Opinio odpovídají na nejvíc anket.' },
+    '/support': { title: 'Podpora - Opinio', description: 'Kontaktuj podporu Opinio, sleduj své tikety a získej pomoc s anketami, hlasováním a účtem.' },
   },
   es: {
-    '/': { title: 'Opinio - Vota las opiniones del mundo, país por país', description: 'Una plataforma de voto social desde Europa, sin anuncios. Comparte y vota opiniones sobre cualquier cosa - de los titulares a la vida cotidiana - y descubre cómo se siente cada país, país por país, actualizado cada 24 h.' },
-    '/about': { title: 'Acerca de Opinio - Cómo funciona el voto en vivo', description: 'Descubre cómo funciona Opinio: voto social rápido, votos que caducan a las 24 horas y tendencias mundiales en vivo.' },
-    '/privacy': { title: 'Aviso de privacidad - Opinio', description: 'Aviso de privacidad de Opinio: qué recopilamos, por qué, durante cuánto tiempo y tus derechos según el RGPD.' },
-    '/terms': { title: 'Términos de uso - Opinio', description: 'Términos de uso de Opinio: reglas de publicación, votación, suscripciones y suspensiones de cuenta.' },
-    '/stats': { title: 'Opiniones en tendencia ahora mismo - Opinio', description: 'Las opiniones, ideas y propuestas que más votos reciben ahora mismo en Opinio - clasificadas en vivo y actualizadas cada 24 horas.' },
-    '/stats/trending-countries': { title: 'Países en tendencia por votos - Opinio', description: 'Qué países generan más revuelo ahora mismo - clasificados por votos en sus publicaciones activas, actualizado cada 24 horas en Opinio.' },
-    '/stats/top-voters': { title: 'Clasificación histórica - Opinio', description: 'La clasificación histórica de Opinio - las mejores opiniones, países y miembros por el total de votos recibidos (positivos y negativos combinados).' },
-    '/support': { title: 'Soporte - Opinio', description: 'Contacta con el soporte de Opinio, gestiona tus tickets y obtén ayuda con la votación, las opiniones y la configuración de tu cuenta.' },
+    '/': { title: 'Opinio - Pregunta al mundo y mira cómo vota cada país', description: 'Pregunta al mundo lo que quieras y vota encuestas en tu idioma. Mira en el mapa cómo respondió la gente de cada país. Sin anuncios, hecho en Europa.' },
+    '/about': { title: 'Acerca de Opinio - la encuesta mundial', description: 'Qué es Opinio: cualquiera puede preguntar, gente de todo el mundo vota en su idioma y el mapa muestra cómo respondió cada país. Sin anuncios, sin rastreo.' },
+    '/privacy': { title: 'Aviso de privacidad - Opinio', description: 'Qué recopila Opinio, por qué, cuánto tiempo lo conserva y tus derechos según el RGPD.' },
+    '/terms': { title: 'Términos de uso - Opinio', description: 'Términos de Opinio: reglas de publicación, votación, suscripciones y bloqueos de cuenta.' },
+    '/stats': { title: 'Encuestas más divididas y más votadas - Opinio', description: 'Las encuestas que dividen al mundo de forma más pareja y las que tienen más votos en Opinio.' },
+    '/stats/trending-countries': { title: 'Países más activos - Opinio', description: 'Qué países votan más en Opinio, hoy y en total.' },
+    '/stats/top-voters': { title: 'Quienes más preguntan y votan - Opinio', description: 'Las personas cuyas encuestas reciben más votos y las que más encuestas responden en Opinio.' },
+    '/support': { title: 'Soporte - Opinio', description: 'Contacta con el soporte de Opinio, sigue tus tickets y obtén ayuda con encuestas, votación y tu cuenta.' },
   },
   de: {
-    '/': { title: 'Opinio - Über die Meinungen der Welt abstimmen, Land für Land', description: 'Eine werbefreie soziale Abstimmungsplattform aus Europa. Teile Meinungen und stimme über alles ab - von den Schlagzeilen bis zum Alltag - und sieh, wie jedes Land tickt, Land für Land, alle 24 Std. aktualisiert.' },
-    '/about': { title: 'Über Opinio - So funktioniert Live-Abstimmung', description: 'Erfahre, wie Opinio funktioniert: schnelles soziales Abstimmen, Stimmen verfallen nach 24 Stunden und weltweite Live-Trends.' },
-    '/privacy': { title: 'Datenschutzhinweis - Opinio', description: 'Datenschutzhinweis von Opinio: was wir erheben, warum, wie lange und welche Rechte du nach der DSGVO hast.' },
-    '/terms': { title: 'Nutzungsbedingungen - Opinio', description: 'Nutzungsbedingungen von Opinio: Regeln fürs Posten, Abstimmen, Abos und Kontosperren.' },
-    '/stats': { title: 'Angesagte Meinungen gerade jetzt - Opinio', description: 'Die Meinungen, Einschätzungen und Ideen mit den meisten Stimmen gerade jetzt auf Opinio - live gewertet und alle 24 Stunden aktualisiert.' },
-    '/stats/trending-countries': { title: 'Angesagte Länder nach Stimmen - Opinio', description: 'Welche Länder gerade für den meisten Wirbel sorgen - gewertet nach Stimmen auf ihren aktiven Beiträgen, alle 24 Stunden auf Opinio aktualisiert.' },
-    '/stats/top-voters': { title: 'Bestenliste aller Zeiten - Opinio', description: 'Die Opinio-Bestenliste aller Zeiten - Top-Meinungen, Länder und Mitglieder nach der Gesamtzahl erhaltener Stimmen (Likes und Dislikes zusammen).' },
-    '/support': { title: 'Support - Opinio', description: 'Kontaktiere den Opinio-Support, verwalte deine Tickets und erhalte Hilfe bei Abstimmungen, Meinungen und Kontoeinstellungen.' },
+    '/': { title: 'Opinio - Frag die Welt, sieh, wie jedes Land abstimmt', description: 'Frag die Welt, was du willst, und stimme in deiner Sprache ab. Auf der Weltkarte siehst du, wie die Menschen in jedem Land geantwortet haben. Werbefrei, aus Europa.' },
+    '/about': { title: 'Über Opinio - die Weltumfrage', description: 'Was Opinio ist: Jeder kann fragen, Menschen überall stimmen in ihrer Sprache ab, und die Karte zeigt, wie jedes Land geantwortet hat. Keine Werbung, kein Tracking.' },
+    '/privacy': { title: 'Datenschutzhinweis - Opinio', description: 'Was Opinio erfasst, warum, wie lange es gespeichert wird und welche Rechte du nach der DSGVO hast.' },
+    '/terms': { title: 'Nutzungsbedingungen - Opinio', description: 'Opinio-Bedingungen: Regeln für Beiträge, Abstimmung, Abos und Kontosperren.' },
+    '/stats': { title: 'Die umstrittensten und meistgewählten Umfragen - Opinio', description: 'Die Umfragen, die die Welt am gleichmäßigsten spalten, und die mit den meisten Stimmen auf Opinio.' },
+    '/stats/trending-countries': { title: 'Die aktivsten Länder - Opinio', description: 'Welche Länder auf Opinio am meisten abstimmen, heute und insgesamt.' },
+    '/stats/top-voters': { title: 'Top-Fragesteller und Abstimmende - Opinio', description: 'Die Menschen, deren Umfragen die meisten Stimmen bekommen, und die, die auf Opinio die meisten Umfragen beantworten.' },
+    '/support': { title: 'Support - Opinio', description: 'Kontaktiere den Opinio-Support, verfolge deine Tickets und erhalte Hilfe zu Umfragen, Abstimmung und deinem Konto.' },
   },
   fr: {
-    '/': { title: "Opinio - Votez sur les opinions du monde, pays par pays", description: "Une plateforme de vote social venue d'Europe, sans publicité. Partagez vos opinions et votez sur tout - de l'actualité à la vie quotidienne - et voyez ce que ressent chaque pays, pays par pays, actualisé toutes les 24 h." },
-    '/about': { title: "À propos d'Opinio - Le vote en direct expliqué", description: 'Découvrez comment fonctionne Opinio : vote social rapide, votes qui expirent au bout de 24 heures et tendances mondiales en direct.' },
-    '/privacy': { title: 'Avis de confidentialité - Opinio', description: "Avis de confidentialité d'Opinio : ce que nous collectons, pourquoi, pendant combien de temps et vos droits selon le RGPD." },
-    '/terms': { title: "Conditions d'utilisation - Opinio", description: "Conditions d'utilisation d'Opinio : règles de publication, vote, abonnements et suspensions de compte." },
-    '/stats': { title: 'Opinions tendance en ce moment - Opinio', description: 'Les opinions, analyses et idées qui reçoivent le plus de votes en ce moment sur Opinio - classées en direct et actualisées toutes les 24 heures.' },
-    '/stats/trending-countries': { title: 'Pays tendance par votes - Opinio', description: "Quels pays font le plus parler d'eux en ce moment - classés par votes sur leurs publications actives, actualisés toutes les 24 heures sur Opinio." },
-    '/stats/top-voters': { title: 'Classement de tous les temps - Opinio', description: "Le classement Opinio de tous les temps - meilleures opinions, pays et membres selon le total des votes reçus (votes positifs et négatifs confondus)." },
-    '/support': { title: 'Assistance - Opinio', description: "Contactez l'assistance Opinio, gérez vos tickets et obtenez de l'aide pour le vote, les opinions et les paramètres de compte." },
+    '/': { title: 'Opinio - Interrogez le monde, voyez comment vote chaque pays', description: 'Posez n\'importe quelle question au monde et votez dans votre langue. Voyez sur la carte comment les gens de chaque pays ont répondu. Sans publicité, fait en Europe.' },
+    '/about': { title: 'À propos d\'Opinio - le sondage mondial', description: 'Ce qu\'est Opinio : chacun peut poser une question, les gens du monde entier votent dans leur langue et la carte montre comment chaque pays a répondu. Sans pub, sans pistage.' },
+    '/privacy': { title: 'Avis de confidentialité - Opinio', description: 'Ce qu\'Opinio collecte, pourquoi, combien de temps et vos droits au titre du RGPD.' },
+    '/terms': { title: "Conditions d'utilisation - Opinio", description: 'Conditions d\'Opinio : règles de publication, vote, abonnements et blocages de compte.' },
+    '/stats': { title: 'Sondages les plus partagés et les plus votés - Opinio', description: 'Les sondages qui divisent le plus le monde, et ceux qui comptent le plus de votes sur Opinio.' },
+    '/stats/trending-countries': { title: 'Pays les plus actifs - Opinio', description: 'Les pays qui votent le plus sur Opinio, aujourd\'hui et au total.' },
+    '/stats/top-voters': { title: 'Meilleurs auteurs et votants - Opinio', description: 'Les personnes dont les sondages recueillent le plus de votes, et celles qui répondent au plus de sondages sur Opinio.' },
+    '/support': { title: 'Assistance - Opinio', description: 'Contactez l\'assistance Opinio, suivez vos demandes et obtenez de l\'aide sur les sondages, le vote et votre compte.' },
   },
   it: {
-    '/': { title: 'Opinio - Vota le opinioni del mondo, paese per paese', description: "Una piattaforma di voto sociale dall'Europa, senza pubblicità. Condividi e vota opinioni su qualsiasi cosa - dai titoli alla vita di tutti i giorni - e scopri come la pensa ogni paese, paese per paese, aggiornato ogni 24 h." },
-    '/about': { title: 'Informazioni su Opinio - Come funziona il voto in diretta', description: 'Scopri come funziona Opinio: voto sociale veloce, voti che scadono dopo 24 ore e tendenze mondiali in diretta.' },
-    '/privacy': { title: 'Informativa sulla privacy - Opinio', description: 'Informativa sulla privacy di Opinio: cosa raccogliamo, perché, per quanto tempo e i tuoi diritti secondo il GDPR.' },
-    '/terms': { title: "Termini di utilizzo - Opinio", description: 'Termini di utilizzo di Opinio: regole per la pubblicazione, voto, abbonamenti e sospensioni degli account.' },
-    '/stats': { title: 'Opinioni di tendenza in questo momento - Opinio', description: 'Le opinioni, le analisi e le idee che ricevono più voti in questo momento su Opinio - in classifica in diretta e aggiornate ogni 24 ore.' },
-    '/stats/trending-countries': { title: 'Paesi di tendenza per voti - Opinio', description: 'Quali paesi fanno più scalpore in questo momento - in classifica per voti sui loro contenuti attivi, aggiornata ogni 24 ore su Opinio.' },
-    '/stats/top-voters': { title: 'Classifica di sempre - Opinio', description: 'La classifica di sempre di Opinio - migliori opinioni, paesi e membri per il totale dei voti ricevuti (mi piace e non mi piace insieme).' },
-    '/support': { title: 'Assistenza - Opinio', description: "Contatta l'assistenza Opinio, gestisci i tuoi ticket e ottieni aiuto per il voto, le opinioni e le impostazioni dell'account." },
+    '/': { title: 'Opinio - Chiedi al mondo, guarda come vota ogni paese', description: 'Chiedi al mondo qualsiasi cosa e vota i sondaggi nella tua lingua. Guarda sulla mappa come ha risposto la gente di ogni paese. Senza pubblicità, fatto in Europa.' },
+    '/about': { title: 'Informazioni su Opinio - il sondaggio mondiale', description: 'Cos\'è Opinio: chiunque può chiedere, persone di tutto il mondo votano nella propria lingua e la mappa mostra come ha risposto ogni paese. Niente pubblicità, nessun tracciamento.' },
+    '/privacy': { title: 'Informativa sulla privacy - Opinio', description: 'Cosa raccoglie Opinio, perché, per quanto tempo e i tuoi diritti ai sensi del GDPR.' },
+    '/terms': { title: "Termini di utilizzo - Opinio", description: 'Termini di Opinio: regole di pubblicazione, voto, abbonamenti e blocchi dell\'account.' },
+    '/stats': { title: 'Sondaggi più divisivi e più votati - Opinio', description: 'I sondaggi che dividono il mondo in modo più equilibrato e quelli con più voti su Opinio.' },
+    '/stats/trending-countries': { title: 'Paesi più attivi - Opinio', description: 'Quali paesi votano di più su Opinio, oggi e in totale.' },
+    '/stats/top-voters': { title: 'Chi chiede e vota di più - Opinio', description: 'Le persone i cui sondaggi ricevono più voti e quelle che rispondono a più sondaggi su Opinio.' },
+    '/support': { title: 'Assistenza - Opinio', description: 'Contatta l\'assistenza di Opinio, segui i tuoi ticket e ricevi aiuto su sondaggi, voto e account.' },
   },
   pl: {
-    '/': { title: 'Opinio - Głosuj na opinie z całego świata, według krajów', description: 'Społecznościowa platforma głosowania z Europy, bez reklam. Dziel się opiniami i głosuj na wszystko - od nagłówków po codzienne życie - i zobacz, co czuje każdy kraj, według krajów, odświeżane co 24 h.' },
-    '/about': { title: 'O Opinio - Jak działa głosowanie na żywo', description: 'Dowiedz się, jak działa Opinio: szybkie głosowanie społecznościowe, głosy wygasające po 24 godzinach i światowe trendy na żywo.' },
-    '/privacy': { title: 'Polityka prywatności - Opinio', description: 'Polityka prywatności Opinio: co zbieramy, dlaczego, jak długo i jakie masz prawa zgodnie z RODO.' },
-    '/terms': { title: 'Regulamin - Opinio', description: 'Regulamin Opinio: zasady publikowania, głosowanie, subskrypcje i zawieszenia kont.' },
-    '/stats': { title: 'Popularne opinie w tej chwili - Opinio', description: 'Opinie, komentarze i pomysły, które właśnie teraz zbierają najwięcej głosów na Opinio - w rankingu na żywo i odświeżane co 24 godziny.' },
-    '/stats/trending-countries': { title: 'Popularne kraje według głosów - Opinio', description: 'Które kraje budzą teraz największe poruszenie - w rankingu według głosów na ich aktywnych wpisach, odświeżane co 24 godziny na Opinio.' },
-    '/stats/top-voters': { title: 'Ranking wszech czasów - Opinio', description: 'Ranking Opinio wszech czasów - najlepsze opinie, kraje i członkowie według łącznej liczby otrzymanych głosów (polubienia i niepolubienia razem).' },
-    '/support': { title: 'Pomoc - Opinio', description: 'Skontaktuj się z pomocą Opinio, zarządzaj zgłoszeniami i uzyskaj pomoc w głosowaniu, opiniach i ustawieniach konta.' },
+    '/': { title: 'Opinio - Zapytaj świat, zobacz, jak głosuje każdy kraj', description: 'Zapytaj świat o cokolwiek i głosuj w ankietach w swoim języku. Na mapie świata zobaczysz, jak odpowiedzieli ludzie w każdym kraju. Bez reklam, z Europy.' },
+    '/about': { title: 'O Opinio - światowa ankieta', description: 'Czym jest Opinio: każdy może zapytać, ludzie z całego świata głosują w swoim języku, a mapa pokazuje, jak odpowiedział każdy kraj. Bez reklam, bez śledzenia.' },
+    '/privacy': { title: 'Polityka prywatności - Opinio', description: 'Co zbiera Opinio, dlaczego, jak długo to przechowuje i jakie masz prawa według RODO.' },
+    '/terms': { title: 'Regulamin - Opinio', description: 'Regulamin Opinio: zasady publikowania, głosowanie, subskrypcje i blokady kont.' },
+    '/stats': { title: 'Najbardziej podzielone i najpopularniejsze ankiety - Opinio', description: 'Ankiety, które najrówniej dzielą świat, i te z największą liczbą głosów na Opinio.' },
+    '/stats/trending-countries': { title: 'Najaktywniejsze kraje - Opinio', description: 'Które kraje głosują najwięcej na Opinio, dziś i łącznie.' },
+    '/stats/top-voters': { title: 'Najlepsi pytający i głosujący - Opinio', description: 'Osoby, których ankiety zbierają najwięcej głosów, i te, które odpowiadają na najwięcej ankiet na Opinio.' },
+    '/support': { title: 'Pomoc - Opinio', description: 'Skontaktuj się z pomocą Opinio, śledź swoje zgłoszenia i uzyskaj pomoc z ankietami, głosowaniem i kontem.' },
   },
 };
 
@@ -1062,8 +1039,8 @@ async function handleHome(request, lang = null) {
   headers.set('x-opinio-og', lang ? 'home-lang' : 'home');
   const loc = lang ? STATIC_I18N[lang]?.['/'] : null;
   const html = injectProfileMeta(shellText, {
-    title: loc?.title ?? "Opinio - Vote on the world's opinions, country by country",
-    description: loc?.description ?? 'An ad-free social voting platform from Europe. Share and vote on opinions about anything - from the headlines to everyday life - and see how every country feels, country by country, refreshed every 24h.',
+    title: loc?.title ?? 'Opinio - Ask the world, see how every country votes',
+    description: loc?.description ?? 'Ask the world anything and vote on polls in your own language. See how people in every country answered, live on the world map. Ad-free, made in Europe.',
     image: DEFAULT_OG_IMAGE,
     imageAlt: 'Opinio',
     url: lang ? `${SITE_BASE}/${lang}/` : `${SITE_BASE}/`,
@@ -1100,19 +1077,10 @@ async function handleNews(request, path, lang = null) {
   return new Response(html, { status: 200, headers });
 }
 
-function formatCountForOg(n) {
-  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10_000 ? 0 : 1).replace(/\.0$/, '')}k`;
-  return String(n);
-}
-
-// lang = null → bare English (/c/<code>); lang set → prefixed (/<lang>/c/<code>).
-// NOTE: country *names* are English-only (no translated table exists yet in the
-// worker or the SPA), so the prefixed page keeps the English name in its title
-// and gets a translated body chrome + og:locale. Full country-name localization
-// is tracked as Open Work in CLAUDE.md.
+// lang = null → bare English (/c/<code>); lang set → prefixed (/<lang>/c/<code>),
+// with the country name from COUNTRY_NAMES_I18N.
 async function handleCountry(request, code, lang = null) {
-  const [counts, shellRes, paths] = await Promise.all([
-    fetchCountryCounts(code),
+  const [shellRes, paths] = await Promise.all([
     fetchShellHtml(request),
     fetchAdvertisedPaths(),
   ]);
@@ -1131,15 +1099,10 @@ async function handleCountry(request, code, lang = null) {
   }
 
   headers.set('x-opinio-og', lang ? 'country-lang' : 'country');
-  const likes = counts?.likes ?? 0;
-  const dislikes = counts?.dislikes ?? 0;
   const seo = COUNTRY_SEO[lang] || COUNTRY_SEO.en;
-  const fill = (tpl) => tpl
-    .replace(/\{country\}/g, name)
-    .replace(/\{likes\}/g, formatCountForOg(likes))
-    .replace(/\{dislikes\}/g, formatCountForOg(dislikes));
+  const fill = (tpl) => tpl.replace(/\{country\}/g, name);
   const title = fill(seo.title);
-  const description = (likes || dislikes) ? fill(seo.descriptionCounts) : fill(seo.description);
+  const description = fill(seo.description);
   const basePath = `/c/${code}`;
   const canonicalUrl = lang ? `${SITE_BASE}/${lang}${basePath}` : `${SITE_BASE}${basePath}`;
   const noindex = isUnadvertised(paths, basePath);

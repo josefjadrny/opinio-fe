@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
-import { isOrderLocked } from './utils/voteLock';
 import { Routes, Route, Outlet, Navigate, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { FilterProvider } from './context/FilterContext';
@@ -7,12 +6,11 @@ import { MapPanelProvider } from './context/MapPanelContext';
 import { useFilters } from './context/useFilters';
 import { I18nProvider, useI18n } from './i18n/I18nContext';
 import type { Locale, Strings } from './i18n/strings';
+import type { PollSort } from './types/api';
 import { SignInProvider } from './components/auth/SignInContext';
 import { SignInModal } from './components/auth/SignInModal';
 import { useProfiles } from './hooks/useProfiles';
 import { useProfile } from './hooks/useProfile';
-import { usePersonBreakdown } from './hooks/usePersonBreakdown';
-import { useRealtimeUpdates } from './hooks/useRealtimeUpdates';
 import { useIsMobile } from './hooks/useIsMobile';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { useModalClose } from './hooks/useModalClose';
@@ -36,7 +34,6 @@ import { CountryDetailModal } from './components/country/CountryDetailModal';
 import { getCountryName, isKnownCountry } from './utils/countries';
 import { AddProfileModal } from './components/profile-form/AddProfileModal';
 import { AddOpinioFab } from './components/ui/AddOpinioFab';
-import { VoteBanner } from './components/voting/VoteBanner';
 import { HotBanner } from './components/banner/HotBanner';
 import { AndroidAppBanner } from './components/banner/AndroidAppBanner';
 import { WelcomeBanner } from './components/banner/WelcomeBanner';
@@ -61,8 +58,8 @@ const MAX_WIDTH = 700;
 
 const BASE_URL = 'https://opinio.live';
 const BRAND = 'Opinio';
-const DEFAULT_TITLE = "Opinio - Vote on the world's opinions, country by country";
-const DEFAULT_DESCRIPTION = 'An ad-free social voting platform from Europe. Share and vote on opinions about anything - from the headlines to everyday life - and see how every country feels, country by country, refreshed every 24h.';
+const DEFAULT_TITLE = 'Opinio - Ask the world, see how every country votes';
+const DEFAULT_DESCRIPTION = 'Ask the world anything and vote on polls in your own language. See how people in every country answered, live on the world map. Ad-free, made in Europe.';
 
 // Non-English locales that get a URL prefix (/fr/about, /de/c/CZ, ...). English
 // stays on the bare path. Mirrors the Cloudflare worker's PREFIX_LANGS and the
@@ -160,7 +157,7 @@ function applyCountrySeo(code: string, seo: Strings['seo'], locale: Locale) {
   // Localized "how the world feels about <country>" template (mirrors the worker's
   // no-counts COUNTRY_SEO; the runtime SPA has no 24h counts handy). {country} is
   // the only token. Falls back to a plain title if a locale lacks the entry.
-  const tpl = seo.country ?? { title: '{country} - Opinio', description: `Live rankings and votes from {country} on Opinio.` };
+  const tpl = seo.country ?? { title: '{country} - Opinio', description: '{country} on Opinio.' };
   const title = tpl.title.replace(/\{country\}/g, name);
   const description = tpl.description.replace(/\{country\}/g, name);
   const canonicalUrl = `${BASE_URL}${currentLocalePrefix()}/c/${code}`;
@@ -264,7 +261,9 @@ function AppLayout() {
   const isMobile = useIsMobile();
   const isCompact = useIsMobile(1366);
   const { isLoading: meLoading } = useMe();
-  const { country, roles, fresh, search } = useFilters();
+  // No country filter on the feed: countries are reached through the map and
+  // /c/:code (a poll has no country; "voted from" lives on the country page).
+  const { roles, search } = useFilters();
   const [sidebarWidths, setSidebarWidths] = useState(loadSidebarWidths);
   // HotBanner and MapProfileTitle both live at the top centre of the map column.
   // The banner wins, but by the caption stepping aside rather than being covered:
@@ -272,7 +271,6 @@ function AppLayout() {
   // under the banner. Only the wide branch wires this up - the compact and mobile
   // banners have no map caption to displace.
   const [bannerVisible, setBannerVisible] = useState(false);
-  const { t } = useI18n();
   const queryClient = useQueryClient();
 
   // The FAB shows only on the bare feed. Strip any locale prefix (/fr, /de, ...)
@@ -325,45 +323,43 @@ function AppLayout() {
 
   const SIDEBAR_INITIAL_LIMIT = 15;
   const SIDEBAR_MAX_LIMIT = 30;
-  const [positiveLimit, setPositiveLimit] = useState(SIDEBAR_INITIAL_LIMIT);
-  const [negativeLimit, setNegativeLimit] = useState(SIDEBAR_INITIAL_LIMIT);
+  // Desktop: left column Trending or Top (tabs), right column New. Mobile: one
+  // list with all three as tabs.
+  const [leftSort, setLeftSort] = useState<PollSort>('trending');
+  const [mobileSort, setMobileSort] = useState<PollSort>('trending');
+  const [leftLimit, setLeftLimit] = useState(SIDEBAR_INITIAL_LIMIT);
+  const [rightLimit, setRightLimit] = useState(SIDEBAR_INITIAL_LIMIT);
   const rolesKey = roles.join(',');
   useEffect(() => {
-    setPositiveLimit(SIDEBAR_INITIAL_LIMIT);
-    setNegativeLimit(SIDEBAR_INITIAL_LIMIT);
-  }, [country, rolesKey, fresh, search]);
+    setLeftLimit(SIDEBAR_INITIAL_LIMIT);
+    setRightLimit(SIDEBAR_INITIAL_LIMIT);
+  }, [rolesKey, search, leftSort]);
 
-  const positiveQuery = useProfiles({ type: 'positive', country, roles, fresh, search, limit: positiveLimit });
-  const negativeQuery = useProfiles({ type: 'negative', country, roles, fresh, search, limit: negativeLimit });
+  const leftQuery = useProfiles({ sort: isMobile ? mobileSort : leftSort, roles, search, limit: isMobile ? SIDEBAR_MAX_LIMIT : leftLimit });
+  const rightQuery = useProfiles({ sort: 'new', roles, search, limit: rightLimit }, !isMobile);
 
   // Offline / API-down handling. The service worker replays the last cached
   // feed, so most of the time there is still something to render and only the
   // strip under the header appears. `unreachable` is the harder case - nothing
-  // cached - where a spinner would otherwise spin forever (a failed query never
-  // produces data) and the feed would claim there are no profiles.
+  // cached - where a spinner would otherwise spin forever.
   const online = useOnlineStatus();
-  const positiveUnreachable = !positiveQuery.data && (positiveQuery.isError || !online);
-  const negativeUnreachable = !negativeQuery.data && (negativeQuery.isError || !online);
-  const positiveLoading = !positiveUnreachable && (positiveQuery.isPlaceholderData || !positiveQuery.data);
-  const negativeLoading = !negativeUnreachable && (negativeQuery.isPlaceholderData || !negativeQuery.data);
+  const leftUnreachable = !leftQuery.data && (leftQuery.isError || !online);
+  const rightUnreachable = !rightQuery.data && (rightQuery.isError || !online);
+  const leftLoading = !leftUnreachable && (leftQuery.isPlaceholderData || !leftQuery.data);
+  const rightLoading = !rightUnreachable && (rightQuery.isPlaceholderData || !rightQuery.data);
 
-  const expandPositive = useCallback(() => {
-    setPositiveLimit((prev) => (prev < SIDEBAR_MAX_LIMIT ? SIDEBAR_MAX_LIMIT : prev));
+  const expandLeft = useCallback(() => {
+    setLeftLimit((prev) => (prev < SIDEBAR_MAX_LIMIT ? SIDEBAR_MAX_LIMIT : prev));
   }, []);
-  const expandNegative = useCallback(() => {
-    setNegativeLimit((prev) => (prev < SIDEBAR_MAX_LIMIT ? SIDEBAR_MAX_LIMIT : prev));
+  const expandRight = useCallback(() => {
+    setRightLimit((prev) => (prev < SIDEBAR_MAX_LIMIT ? SIDEBAR_MAX_LIMIT : prev));
   }, []);
-  const onLoadMorePositive = isMobile ? undefined : expandPositive;
-  const onLoadMoreNegative = isMobile ? undefined : expandNegative;
 
-  useRealtimeUpdates();
 
   useEffect(() => {
     const id = setInterval(() => {
-      if (!isOrderLocked()) {
-        queryClient.invalidateQueries({ queryKey: ['profiles'] });
-      }
-    }, 10_000);
+      queryClient.invalidateQueries({ queryKey: ['profiles'] });
+    }, 20_000);
     return () => clearInterval(id);
   }, [queryClient]);
 
@@ -394,9 +390,11 @@ function AppLayout() {
         <div className="flex-1 flex flex-col min-h-0">
           <MobileMapPanel />
           <MobileFeed
-            positiveProfiles={positiveQuery.data?.profiles ?? []}
-            negativeProfiles={negativeQuery.data?.profiles ?? []}
-            unreachable={positiveUnreachable && negativeUnreachable}
+            sort={mobileSort}
+            onSortChange={setMobileSort}
+            profiles={leftQuery.data?.profiles ?? []}
+            loading={leftLoading}
+            unreachable={leftUnreachable}
           />
         </div>
       ) : isCompact ? (
@@ -405,28 +403,28 @@ function AppLayout() {
           <div className="flex-1 flex min-h-0">
             <div className="flex-1 min-w-0">
               <Sidebar
-                title={t.trending}
-                profiles={positiveQuery.data?.profiles ?? []}
-                accentColor="positive"
-                onLoadMore={onLoadMorePositive}
-                isLoadingMore={positiveLoading}
-                unreachable={positiveUnreachable}
+                sorts={['trending', 'top']}
+                sort={leftSort}
+                onSortChange={setLeftSort}
+                profiles={leftQuery.data?.profiles ?? []}
+                onLoadMore={expandLeft}
+                isLoadingMore={leftLoading}
+                unreachable={leftUnreachable}
               />
             </div>
             <div className="w-px bg-border shrink-0" />
             <div className="flex-1 min-w-0">
               <Sidebar
-                title={t.falling}
-                profiles={negativeQuery.data?.profiles ?? []}
-                accentColor="negative"
-                onLoadMore={onLoadMoreNegative}
-                isLoadingMore={negativeLoading}
-                unreachable={negativeUnreachable}
+                sorts={['new']}
+                sort="new"
+                profiles={rightQuery.data?.profiles ?? []}
+                onLoadMore={expandRight}
+                isLoadingMore={rightLoading}
+                unreachable={rightUnreachable}
               />
             </div>
           </div>
           )}
-          <VoteBanner />
         </div>
       ) : (
         <div className="flex-1 flex min-h-0 overflow-hidden">
@@ -435,13 +433,14 @@ function AppLayout() {
             className="shrink-0 relative z-10 bg-surface/80 backdrop-blur-md"
           >
             <Sidebar
-              title={t.trending}
-              profiles={positiveQuery.data?.profiles ?? []}
-              accentColor="positive"
-              onLoadMore={onLoadMorePositive}
-              isLoadingMore={positiveLoading}
-              unreachable={positiveUnreachable}
-            />
+                sorts={['trending', 'top']}
+                sort={leftSort}
+                onSortChange={setLeftSort}
+                profiles={leftQuery.data?.profiles ?? []}
+                onLoadMore={expandLeft}
+                isLoadingMore={leftLoading}
+                unreachable={leftUnreachable}
+              />
           </div>
           <ResizeHandle side="left" onDrag={handleLeftDrag} />
           <div className="flex-1 min-w-0 flex flex-col min-h-0 relative">
@@ -466,7 +465,6 @@ function AppLayout() {
               </div>
             </Suspense>
             {newsPage && <NewsPage newsId={newsId} />}
-            <VoteBanner />
           </div>
           <ResizeHandle side="right" onDrag={handleRightDrag} />
           <div
@@ -474,13 +472,13 @@ function AppLayout() {
             className="shrink-0 relative z-10 bg-surface/80 backdrop-blur-md"
           >
             <Sidebar
-              title={t.falling}
-              profiles={negativeQuery.data?.profiles ?? []}
-              accentColor="negative"
-              onLoadMore={onLoadMoreNegative}
-              isLoadingMore={negativeLoading}
-              unreachable={negativeUnreachable}
-            />
+                sorts={['new']}
+                sort="new"
+                profiles={rightQuery.data?.profiles ?? []}
+                onLoadMore={expandRight}
+                isLoadingMore={rightLoading}
+                unreachable={rightUnreachable}
+              />
           </div>
         </div>
       )}
@@ -500,17 +498,11 @@ function AppLayout() {
       {/* Modal routes render here */}
       <Outlet />
 
-      {/* Vote allowance bar - mobile only (desktop renders inside map column).
-          HotBanner sits just above it; the container is click-through so taps
-          on the feed behind the banner's padding still register. */}
+      {/* HotBanner, mobile: pinned to the bottom edge. The container is
+          click-through so taps on the feed behind its padding still register. */}
       {isMobile && (
-        // z-[90]: votes bar above all modals (ModalShell z-80, detail z-50),
-        // which reserve pb-11 so content clears it. Lightbox (z-95) stays on top.
         <div className="fixed bottom-0 left-0 right-0 z-[90] pointer-events-none">
           <HotBanner enabled={isMobile} mobile />
-          <div className="pointer-events-auto">
-            <VoteBanner />
-          </div>
         </div>
       )}
     </div>
@@ -637,11 +629,10 @@ function ProfileDetailRoute() {
   const location = useLocation();
   const isMobile = useIsMobile();
   const { data: profile, isLoading, error } = useProfile(id ?? null);
-  const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(id ?? null);
   const notFound = isNotFound(error);
 
   useEffect(() => {
-    if (profile) applyProfileSeo(profile.name, profile.description, profile.id);
+    if (profile) applyProfileSeo(profile.name, profile.description || profile.options.map((o) => o.text).join(' / '), profile.id);
     // Unknown id: the worker already serves a 404; don't leave the tab on the
     // last profile's title - mark it as not found.
     else if (notFound) document.title = `Page not found - ${BRAND}`;
@@ -657,8 +648,6 @@ function ProfileDetailRoute() {
     return (
       <ProfileDetailModal
         profile={profile}
-        breakdown={breakdown}
-        isLoading={breakdownLoading}
         onClose={() => navigate('/' + location.search)}
       />
     );

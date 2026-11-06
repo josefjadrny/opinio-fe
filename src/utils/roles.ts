@@ -10,6 +10,7 @@ export const ROLE_LABELS: Record<Role, string> = {
   science: 'Science',
   environment: 'Environment',
   tech: 'Tech',
+  lifestyle: 'Lifestyle',
 };
 
 export const ROLE_COLORS: Record<Role, string> = {
@@ -22,6 +23,9 @@ export const ROLE_COLORS: Record<Role, string> = {
   science: 'bg-indigo-600',
   environment: 'bg-emerald-600',
   tech: 'bg-slate-500',
+  // Teal: the last hue near-free of the reserved bands (it sits beside media's
+  // cyan; the chip always carries its name and its own glyph).
+  lifestyle: 'bg-teal-600',
 };
 
 export const ALL_ROLES: Role[] = Object.keys(ROLE_LABELS) as Role[];

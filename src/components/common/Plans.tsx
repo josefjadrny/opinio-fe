@@ -1,15 +1,5 @@
 import { TierCard, type TierTone } from './TierCard';
 import { useI18n } from '../../i18n/I18nContext';
-import type { Strings } from '../../i18n/strings';
-
-// Pick the votes-per-hour unit matching the count's plural category. Tier counts
-// are 1/3/5, which map to one/few(2-4)/many(5+) — English & Spanish collapse
-// few==many, Czech keeps all three (hlas / hlasy / hlasů).
-function votesUnit(t: Strings, count: number): string {
-  if (count === 1) return t.aboutVotesPerHourOne;
-  if (count <= 4) return t.aboutVotesPerHourFew;
-  return t.aboutVotesPerHourMany;
-}
 
 // The three-tier "Plans" grid — shared by WelcomeModal (display-only) and
 // AboutModal (interactive: click to sign in / open Stripe Checkout). Behaviour
@@ -31,27 +21,30 @@ export function Plans({
   supporterDisabled?: boolean;
   showSupporterPrice?: boolean;
 }) {
-  const { t } = useI18n();
+  const { t, p } = useI18n();
+  // Poll rules: anonymous 1 vote a day; signed in, unlimited and can create
+  // polls. Supporter gets no poll benefit for now (decided) - it keeps the
+  // site running.
   return (
     <div>
       <p className="text-sm font-semibold text-white mb-3">{t.aboutTiersTitle}</p>
       <div className="grid grid-cols-3 gap-2">
-        <TierCard label={t.aboutTierAnonymous} count={1} unit={votesUnit(t, 1)} tone="muted" active={activeTier === 'muted'} />
+        <TierCard label={t.aboutTierAnonymous} count={1} unit={p.planPerDay} tone="muted" active={activeTier === 'muted'} />
         <TierCard
           label={t.aboutTierRegistered}
-          count={3}
-          unit={votesUnit(t, 3)}
-          promo={t.aboutTierRegisteredPromo}
+          count="∞"
+          unit={p.planUnlimited}
+          promo={[p.planRegisteredPromo, p.planRegisteredComments, p.planRegisteredNotifications]}
           tone="accent"
           active={activeTier === 'accent'}
           onClick={onRegisteredClick}
         />
-        <div className="relative">
+        <div className="relative h-full">
           <TierCard
             label={t.aboutTierSupporter}
-            count={5}
-            unit={votesUnit(t, 5)}
-            promo={t.aboutTierSupporterPromo}
+            count="∞"
+            unit={p.planUnlimited}
+            promo={p.planSupporterPromo}
             trailingIcon={<span aria-hidden className="text-[11px] leading-none">❤️</span>}
             tone="positive"
             active={activeTier === 'positive'}

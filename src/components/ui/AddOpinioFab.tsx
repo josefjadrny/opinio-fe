@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { useI18n } from '../../i18n/I18nContext';
+import { NewPollIcon } from '../poll/PollIcons';
 
 // Floating action button for creating an opinio on mobile. Replaces the header
 // add button below md. Rendered as a top-level sibling (not inside the scrolling
@@ -7,9 +8,8 @@ import { useI18n } from '../../i18n/I18nContext';
 //
 // Draggable: press and drag to reposition anywhere on screen for the current
 // session; the position is not persisted, so a refresh resets it to the default
-// bottom-right spot. A tap (no drag) opens the add-opinio form. The signature
-// two-tone mark (red speech bubble + green plus, same colours as the vote
-// buttons) sits on a frosted-glass disc matching the vote bar.
+// bottom-right spot. A tap (no drag) opens the new-poll form. The two-tone
+// new-poll mark (components/poll/PollIcons.tsx) sits on a frosted-glass disc.
 
 const SIZE = 64; // w-16 / h-16
 const MARGIN = 8; // keep this far from the viewport edges
@@ -122,21 +122,7 @@ export function AddOpinioFab({ onClick, visible }: AddOpinioFabProps) {
       }}
       className={`fixed ${pos ? '' : 'safe-fab right-4'} z-[70] flex items-center justify-center rounded-full w-16 h-16 bg-surface/50 backdrop-blur-md border border-white/25 shadow-lg shadow-black/50 transition-[transform,opacity,filter] active:brightness-125 focus:outline-none touch-none cursor-grab active:cursor-grabbing ${shown ? '' : 'pointer-events-none'}`}
     >
-      <svg className="w-9 h-9" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
-        <path
-          stroke="var(--color-negative)"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"
-        />
-        <path
-          stroke="var(--color-positive)"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2.75}
-          d="M12 9v6M9 12h6"
-        />
-      </svg>
+      <NewPollIcon className="w-9 h-9" accentWidth={2.75} />
     </button>
   );
 }

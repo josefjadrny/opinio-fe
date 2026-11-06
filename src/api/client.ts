@@ -1,6 +1,6 @@
 import type {
-  ProfilesResponse, CountryProfilesResponse, CountryDiscussedResponse, MeResponse,
-  VoteResponse, ProfileFilters, VoteType, PersonBreakdownResponse,
+  ProfilesResponse, MeResponse, VoteResponse, ProfileFilters, PollCountry,
+  CountryActivity, CountryPollsResponse,
   SupportTicket, SupportTicketDetail, SupportMessage, UserDetailResponse, ProfileReportGroup, Person, NewsItem,
 } from '../types/api';
 import type { Profile } from '../types/profile';
@@ -34,10 +34,9 @@ export function isNotFound(error: unknown): boolean {
 }
 
 export function getProfiles(filters: ProfileFilters, lang?: string): Promise<ProfilesResponse> {
-  const params = new URLSearchParams({ type: filters.type });
+  const params = new URLSearchParams({ sort: filters.sort });
   if (filters.country) params.set('country', filters.country);
   if (filters.roles?.length) params.set('roles', filters.roles.join(','));
-  if (filters.fresh) params.set('fresh', '1');
   if (filters.search) params.set('q', filters.search);
   if (filters.limit != null) params.set('limit', String(filters.limit));
   if (lang) params.set('lang', lang);
@@ -50,20 +49,11 @@ export function getSearchSuggest(q: string, lang?: string): Promise<import('../t
   return apiFetch(`/api/search/suggest?${params}`);
 }
 
-export function getCountryProfiles(countryCode: string, lang?: string): Promise<CountryProfilesResponse> {
-  const qs = lang ? `?lang=${lang}` : '';
-  return apiFetch(`/api/profiles/country/${countryCode}${qs}`);
-}
-
-export function getCountryDiscussed(countryCode: string, lang?: string): Promise<CountryDiscussedResponse> {
-  const qs = lang ? `?lang=${lang}` : '';
-  return apiFetch(`/api/profiles/country/${countryCode}/discussed${qs}`);
-}
-
-export function vote(profileId: string, type: VoteType): Promise<VoteResponse> {
+// Anonymous votes carry a Turnstile token; registered votes need none.
+export function vote(profileId: string, optionId: string, turnstileToken?: string): Promise<VoteResponse> {
   return apiFetch(`/api/profiles/${profileId}/vote`, {
     method: 'POST',
-    body: JSON.stringify({ type }),
+    body: JSON.stringify({ optionId, turnstileToken }),
   });
 }
 
@@ -98,10 +88,18 @@ export function uploadImage(blob: Blob): Promise<{ url: string; key: string }> {
 
 // Per-opinio content image: raw upload (any of JPEG / PNG / WebP up to 10 MB).
 // The server resizes to 720p JPEG and moderates with Rekognition in prod.
-export function uploadContentImage(file: File): Promise<{ url: string; key: string }> {
+export function uploadContentImage(file: File): Promise<{ url: string; key: string; thumbUrl: string; thumbKey: string }> {
   const form = new FormData();
   form.append('file', file, file.name || 'image');
   return apiFetch('/api/images/content', { method: 'POST', body: form });
+}
+
+// An answer's picture: same checks as the content image, only the 128px
+// square is kept.
+export function uploadOptionImage(file: File): Promise<{ thumbUrl: string; thumbKey: string }> {
+  const form = new FormData();
+  form.append('file', file, file.name || 'image');
+  return apiFetch('/api/images/content?thumb=only', { method: 'POST', body: form });
 }
 
 export function uploadAvatar(blob: Blob): Promise<{ url: string }> {
@@ -117,14 +115,14 @@ export function resetAvatar(): Promise<{ ok: boolean }> {
 export function addNewProfile(data: {
   name: string;
   role: string;
-  countryCode: string;
   description: string;
-  imageUrl: string;
+  options: { text: string; color: string; imageUrl?: string; imageKey?: string }[];
+  imageUrl?: string;
   imageKey?: string;
   contentImageUrl?: string;
   contentImageKey?: string;
   link?: string;
-  addedBy: string;
+  newsId?: string;
 }): Promise<import('../types/profile').Profile> {
   return apiFetch('/api/profiles', {
     method: 'POST',
@@ -166,10 +164,6 @@ export async function removeProfileNews(profileId: string): Promise<void> {
     const body = await res.json().catch(() => ({}));
     throw Object.assign(new Error(body.error ?? res.statusText), { status: res.status });
   }
-}
-
-export function getPersonBreakdown(profileId: string): Promise<PersonBreakdownResponse> {
-  return apiFetch(`/api/profiles/${profileId}/breakdown`);
 }
 
 export function getComments(profileId: string): Promise<import('../types/api').CommentsResponse> {
@@ -218,34 +212,22 @@ export function getUser(userId: string, lang?: string): Promise<UserDetailRespon
   return apiFetch(`/api/users/${userId}${qs}`);
 }
 
-export interface CountryCounts {
-  code: string;
-  likes: number;
-  dislikes: number;
-  // Lifetime totals - only getCountries carries them. The two voter-side
-  // tallies below count live vote rows, which are all that survive expiry, so
-  // they have no lifetime figure to report.
-  totalLikes?: number;
-  totalDislikes?: number;
-}
-
-export function getCountries(): Promise<{ countries: CountryCounts[] }> {
+// Votes cast FROM each country (last 24h + lifetime): the home map.
+export function getCountries(): Promise<{ countries: CountryActivity[] }> {
   return apiFetch('/api/countries');
 }
 
-// Per-country vote tally for ONE profile, used to tint the map while a profile
-// detail is open. Same shape as getCountries so both feed the same colour memo,
-// but the numbers mean something different: getCountries groups opinios by the
-// country they are ABOUT, this groups votes by where the VOTER is.
-export function getProfileCountries(profileId: string): Promise<{ countries: CountryCounts[] }> {
-  return apiFetch(`/api/profiles/${profileId}/countries`);
+// One poll's answers per voter country (uncapped): the poll map and its
+// Countries tab. registered = signed-in voters only.
+export function getProfileCountries(profileId: string, registered = false): Promise<{ countries: PollCountry[] }> {
+  return apiFetch(`/api/profiles/${profileId}/countries${registered ? '?registered=1' : ''}`);
 }
 
-// The same voter-side tally, for every opinio ABOUT one country - the tint while
-// a /c/:code detail is open. Third source for the one colour memo, and the
-// subject country appears in its own list (its people are voters too).
-export function getCountryVoters(code: string): Promise<{ countries: CountryCounts[] }> {
-  return apiFetch(`/api/countries/${code}`);
+// Polls people from one country voted on, with that country's answer next to
+// the world's. top = most votes from there today (then lifetime), recent =
+// latest vote first.
+export function getCountryPolls(code: string, sort: 'top' | 'recent', limit: number, lang: string): Promise<CountryPollsResponse> {
+  return apiFetch(`/api/countries/${code}/polls?sort=${sort}&limit=${limit}&lang=${lang}`);
 }
 
 // One well-known person by id.
@@ -258,9 +240,9 @@ export function getNews(id: string, lang?: string): Promise<NewsItem> {
   return apiFetch(`/api/news/${id}${qs}`);
 }
 
-// The opinios linked to one story, newest first (capped by the API).
-export function getNewsOpinios(id: string, lang: string): Promise<{ profiles: Profile[] }> {
-  return apiFetch(`/api/news/${id}/opinios?lang=${lang}`);
+// The polls asked about one story, newest first (capped by the API).
+export function getNewsPolls(id: string, lang: string): Promise<{ profiles: Profile[] }> {
+  return apiFetch(`/api/news/${id}/polls?lang=${lang}`);
 }
 
 // The newest news of the last 12 hours, newest first (the map caption's rotation).
@@ -281,48 +263,19 @@ export function getNewsList(
   return apiFetch(`/api/news/list?${params}`);
 }
 
-export function getTopVoters(country?: string, metric: import('../types/api').VoterMetric = 'received'): Promise<import('../types/api').TopVotersResponse> {
-  const params = new URLSearchParams();
-  if (country) params.set('country', country);
-  if (metric !== 'received') params.set('metric', metric);
-  const qs = params.toString();
-  return apiFetch(`/api/stats/top-voters${qs ? `?${qs}` : ''}`);
+export interface StatsSummary { votes: number; polls: number; countries: number; voters: number }
+export function getStatsSummary(): Promise<StatsSummary> {
+  return apiFetch('/api/stats/summary');
 }
 
-export function getTrendingProfiles(
-  country?: string,
-  metric: import('../types/api').CountryMetric = 'total',
-  lang?: string,
-): Promise<import('../types/api').TrendingProfilesResponse> {
-  const params = new URLSearchParams();
-  if (country) params.set('country', country);
-  if (metric !== 'total') params.set('metric', metric);
-  if (lang) params.set('lang', lang);
-  const qs = params.toString();
-  return apiFetch(`/api/stats/trending-profiles${qs ? `?${qs}` : ''}`);
+export interface DividedItem { poll: Profile; first: { optionId: string; pct: number }; second: { optionId: string; pct: number } }
+export function getStatsDivided(lang: string): Promise<{ items: DividedItem[] }> {
+  return apiFetch(`/api/stats/divided?lang=${lang}`);
 }
 
-export function getTrendingCountries(
-  metric: import('../types/api').CountryMetric = 'total',
-): Promise<import('../types/api').TrendingCountriesResponse> {
-  return apiFetch(`/api/stats/trending-countries?metric=${metric}`);
-}
-
-// All-time Leaderboard: opinios ranked by lifetime votes received (combined).
-export function getLeaderboardProfiles(
-  country?: string,
-  lang?: string,
-): Promise<import('../types/api').LeaderboardProfilesResponse> {
-  const params = new URLSearchParams();
-  if (country) params.set('country', country);
-  if (lang) params.set('lang', lang);
-  const qs = params.toString();
-  return apiFetch(`/api/stats/leaderboard-profiles${qs ? `?${qs}` : ''}`);
-}
-
-// All-time Leaderboard: countries ranked by lifetime votes received (combined).
-export function getLeaderboardCountries(): Promise<import('../types/api').LeaderboardCountriesResponse> {
-  return apiFetch('/api/stats/leaderboard-countries');
+export interface StatsPerson { id: string; displayName: string; avatarUrl: string | null; countryCode: string | null; value: number; polls: number }
+export function getStatsPeople(board: 'askers' | 'answerers'): Promise<{ people: StatsPerson[] }> {
+  return apiFetch(`/api/stats/people?board=${board}`);
 }
 
 export function getSupportTickets(): Promise<SupportTicket[]> {
@@ -373,5 +326,3 @@ export function createPortalSession(): Promise<{ url: string }> {
   return apiFetch('/api/billing/portal', { method: 'POST', body: JSON.stringify({}) });
 }
 
-// TODO: wire to wss://${API_URL}/ws once BE WebSocket is implemented
-export { subscribe as subscribeRealtime } from '../mock/realtime';

@@ -5,15 +5,11 @@ import type { Role } from '../types/profile';
 export interface FilterState {
   country: string | undefined;
   roles: Role[];
-  // Not a category — the `new` label (< 2h old) as a filter. Kept beside
-  // roles rather than inside them so Role stays the DB's role union.
-  fresh: boolean;
   search: string;
   hoveredProfileCountry: string | undefined;
   setCountry: (c: string | undefined) => void;
   setRoles: (r: Role[]) => void;
   toggleRole: (r: Role) => void;
-  toggleFresh: () => void;
   clearCategories: () => void;
   setSearch: (q: string) => void;
   clearFilters: () => void;
@@ -30,7 +26,6 @@ export function FilterProvider({ children }: { children: ReactNode }) {
   const country = searchParams.get('country') ?? undefined;
   const rolesParam = searchParams.get('roles');
   const roles = rolesParam ? (rolesParam.split(',').filter(Boolean) as Role[]) : [];
-  const fresh = searchParams.get('fresh') === '1';
   const search = searchParams.get('q') ?? '';
 
   const setCountry = useCallback((c: string | undefined) => {
@@ -61,17 +56,7 @@ export function FilterProvider({ children }: { children: ReactNode }) {
     });
   }, [setSearchParams]);
 
-  const toggleFresh = useCallback(() => {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev);
-      if (next.get('fresh') === '1') next.delete('fresh'); else next.set('fresh', '1');
-      return next;
-    });
-  }, [setSearchParams]);
-
-  // Roles + fresh cleared in ONE mutation - two setSearchParams calls would
-  // clobber each other - React Router's functional updater reads the committed
-  // params each time, so the second call wins.
+  // Clears the category chips (and the retired ?fresh param of old links).
   const clearCategories = useCallback(() => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
@@ -105,7 +90,7 @@ export function FilterProvider({ children }: { children: ReactNode }) {
   }, [setSearchParams]);
 
   return (
-    <FilterContext.Provider value={{ country, roles, fresh, search, hoveredProfileCountry, setCountry, setRoles, toggleRole, toggleFresh, clearCategories, setSearch, clearFilters, setHoveredProfileCountry }}>
+    <FilterContext.Provider value={{ country, roles, search, hoveredProfileCountry, setCountry, setRoles, toggleRole, clearCategories, setSearch, clearFilters, setHoveredProfileCountry }}>
       {children}
     </FilterContext.Provider>
   );

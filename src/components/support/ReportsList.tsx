@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { RoleBadge } from '../common/RoleBadge';
-import { FlagImg } from '../common/CountryFlag';
 import { useReports, useValidateReport } from '../../hooks/useReports';
 
 function formatDateTime(iso: string) {
@@ -53,7 +52,6 @@ export function ReportsList({
                 onClick={() => openProfile(g.profileId)}
                 className="flex items-center gap-2 min-w-0 text-left group"
               >
-                {g.profileCountry && <FlagImg code={g.profileCountry} className="inline-block align-middle shrink-0" />}
                 <span className="text-sm text-white font-medium truncate group-hover:underline">{g.profileName}</span>
                 <RoleBadge role={g.role} />
               </button>

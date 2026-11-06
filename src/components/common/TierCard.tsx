@@ -2,6 +2,8 @@
 // tone, optional CTA, and a check badge when it's the user's current tier.
 // Used by AboutModal (interactive) and WelcomeModal (display-only).
 
+import { useI18n } from '../../i18n/I18nContext';
+
 export type TierTone = 'muted' | 'accent' | 'positive';
 
 const TIER_TONES: Record<TierTone, { border: string; bg: string; hoverBg: string; label: string; count: string; activeRing: string; activeBg: string; activeBadge: string; promoBg: string; promoText: string }> = {
@@ -12,10 +14,10 @@ const TIER_TONES: Record<TierTone, { border: string; bg: string; hoverBg: string
 
 export function TierCard({ label, count, unit, promo, subline, trailingIcon, tone, active, onClick, disabled }: {
   label: string;
-  count: number;
+  count: number | string;
   unit: string;
-  /** Tone-tinted pill highlighting the tier's tagline benefit (e.g. "Posting unlocked", "Extra votes"). */
-  promo?: string;
+  /** Tone-tinted pill(s) naming what the tier unlocks, one per line. */
+  promo?: string | string[];
   subline?: string;
   trailingIcon?: React.ReactNode;
   tone: TierTone;
@@ -24,11 +26,13 @@ export function TierCard({ label, count, unit, promo, subline, trailingIcon, ton
   disabled?: boolean;
 }) {
   const c = TIER_TONES[tone];
+  // hyphens-auto needs the text's language to pick hyphenation rules.
+  const { locale } = useI18n();
   const clickable = !!onClick && !active;
   // ring-inset so the active highlight lives inside the card border instead of
   // bleeding ~2px outside it, which would visually shrink the gap on whichever
   // side the active card sits.
-  const baseCls = `relative rounded-lg border ${c.border} ${active ? `${c.activeBg} ring-2 ring-inset ${c.activeRing}` : c.bg} p-2.5 text-center transition-colors`;
+  const baseCls = `relative h-full rounded-lg border ${c.border} ${active ? `${c.activeBg} ring-2 ring-inset ${c.activeRing}` : c.bg} p-2.5 text-center transition-colors`;
   const body = (
     <>
       {active && (
@@ -44,11 +48,17 @@ export function TierCard({ label, count, unit, promo, subline, trailingIcon, ton
       </p>
       <p className={`text-2xl font-bold leading-none mt-1.5 ${c.count}`}>{count}</p>
       <p className="text-[10px] text-white/50 mt-1">{unit}</p>
-      {promo && (
+      {promo && (Array.isArray(promo) ? (
+        // Several unlocks: short lines, not pills - three pills overflow a
+        // phone-width card and push the tick onto its own line.
+        <span lang={locale} className={`flex flex-col gap-0.5 mt-2 text-[10px] font-semibold leading-tight break-words hyphens-auto ${c.promoText}`}>
+          {promo.map((line) => <span key={line}>{line}</span>)}
+        </span>
+      ) : (
         <span className={`inline-block rounded-full px-2 py-0.5 mt-1.5 text-[10px] font-semibold tracking-wide ${c.promoBg} ${c.promoText}`}>
           {promo}
         </span>
-      )}
+      ))}
       {subline && <p className="text-[10px] text-white/55 mt-1 font-medium">{subline}</p>}
     </>
   );

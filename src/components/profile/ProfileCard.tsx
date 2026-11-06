@@ -1,300 +1,147 @@
-import { useState, useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Profile } from '../../types/profile';
 import { RoleBadge } from '../common/RoleBadge';
-import { CountryFlag } from '../common/CountryFlag';
 import { HoverTip } from '../common/HoverTip';
-import { VoteButtons } from '../voting/VoteButtons';
-import { LabelBadge } from './LabelBadge';
-import { PersonTooltip } from './PersonTooltip';
-import { usePersonBreakdown } from '../../hooks/usePersonBreakdown';
 import { useFilters } from '../../context/useFilters';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import { Avatar } from './Avatar';
 import { formatNumber } from '../../utils/formatNumber';
 import { useProfileText } from '../../hooks/useProfileText';
 import { useI18n } from '../../i18n/I18nContext';
-import { getCountryName } from '../../utils/countries';
+import { plural } from '../../i18n/pollStrings';
 import { CommentCount } from '../comments/CommentCount';
 import { NewsLinkBadge } from '../news/NewsLinkBadge';
+import { PollThumb } from '../poll/PollThumb';
+import { PollPreview } from '../poll/PollPreview';
 
-// Hover dwell before the popup opens (ms). Short enough to feel responsive,
-// long enough not to flash while sweeping the pointer across the list.
+// Hover dwell before the preview opens (ms): responsive, but no flashing while
+// the pointer sweeps down a list.
 const OPEN_DELAY = 150;
 
 interface ProfileCardProps {
   profile: Profile;
-  variant?: 'default' | 'compact' | 'tooltip';
+  /** Mobile feed: smaller picture and type. */
+  dense?: boolean;
   rank?: number;
-  showOnly?: 'like' | 'dislike';
-  reverseVotes?: boolean;
 }
 
-export function ProfileCard({ profile, variant = 'default', rank, showOnly, reverseVotes }: ProfileCardProps) {
+// A poll in a list: the question only, clamped at 3 lines, plus one meta line
+// (category, votes, comments). No description, no answers, no voting here -
+// the card's job is to get the poll opened (POLLS-DESIGN.md section 8). Three
+// lines, not two: a 50-char English question takes up to two phone lines and its
+// German or Czech translation (up to ~1.8x longer) needs the third. On
+// desktop a hover opens PollPreview beside the card.
+export function ProfileCard({ profile, dense = false, rank }: ProfileCardProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const hoverTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const isOverTooltip = useRef(false);
   const isMobile = useIsMobile();
-  const { data: breakdown, isLoading: breakdownLoading } = usePersonBreakdown(hoveredId);
-  const { setHoveredProfileCountry, toggleRole } = useFilters();
-  const { locale, t } = useI18n();
-  // Cards show the translated text but no "see original" toggle — that lives
-  // only in the profile detail modal.
-  const { name, description } = useProfileText(profile);
+  const { toggleRole } = useFilters();
+  const { locale, t, p } = useI18n();
+  const { name } = useProfileText(profile);
 
-  // `comments` lands the detail on its thread (desktop tab / mobile sheet)
-  // instead of the country breakdown - the count is a link to the comments,
-  // not a second way to open the card.
+  // Desktop hover preview (PollPreview). The open timer is armed once, not
+  // restarted on every move, so a moving pointer still opens it; leaving the
+  // card waits a beat so the pointer can cross into the panel.
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [previewAnchor, setPreviewAnchor] = useState<HTMLElement | null>(null);
+  const openTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const overPreview = useRef(false);
+  const closePreview = useCallback(() => {
+    clearTimeout(openTimer.current);
+    clearTimeout(leaveTimer.current);
+    openTimer.current = undefined;
+    overPreview.current = false;
+    setPreviewAnchor(null);
+  }, []);
+  const armPreview = useCallback(() => {
+    if (isMobile || dense) return;
+    clearTimeout(leaveTimer.current);
+    if (previewAnchor || openTimer.current) return;
+    openTimer.current = setTimeout(() => { openTimer.current = undefined; setPreviewAnchor(cardRef.current); }, OPEN_DELAY);
+  }, [isMobile, dense, previewAnchor]);
+  const leaveCard = useCallback(() => {
+    clearTimeout(openTimer.current);
+    openTimer.current = undefined;
+    leaveTimer.current = setTimeout(() => { if (!overPreview.current) setPreviewAnchor(null); }, 150);
+  }, []);
+
+  // `comments` lands the poll on its thread (desktop tab / mobile sheet).
   const openDetail = useCallback((comments = false) => {
-    // Dismiss the hover popup so it doesn't sit on top of the detail modal
-    // (the tooltip portal is z-[9999], above the modal).
-    clearTimeout(hoverTimer.current);
-    clearTimeout(leaveTimer.current);
-    hoverTimer.current = undefined;
-    isOverTooltip.current = false;
-    setHoveredId(null);
-    setHoveredProfileCountry(undefined);
-    queryClient.setQueryData(['profile', profile.id, locale], profile);
+    // The preview portal sits above the detail window; drop it first.
+    closePreview();
+    // Seed the detail cache with what the card has, so the page paints at once;
+    // the detail query fills in results and the caller's vote.
+    // Marked stale (updatedAt 0) so the detail still fetches at once.
+    if (!queryClient.getQueryData(['profile', profile.id, locale])) {
+      queryClient.setQueryData(['profile', profile.id, locale], profile, { updatedAt: 0 });
+    }
     navigate('/p/' + profile.id + location.search, comments ? { state: { comments: true } } : undefined);
-  }, [navigate, profile, location.search, queryClient, locale, setHoveredProfileCountry]);
+  }, [navigate, profile, location.search, queryClient, locale, closePreview]);
 
-  // The card's own onClick also opens the detail; stop the bubble so the
-  // count's navigation (with state) is the one that sticks.
   const openComments = useCallback((e: React.MouseEvent) => { e.stopPropagation(); openDetail(true); }, [openDetail]);
-
-  // Arm the open timer once. Crucially we do NOT reset it on every mouse move —
-  // continuous movement used to perpetually restart the timer so the popup only
-  // appeared if the pointer held still for the full delay.
-  const scheduleOpen = useCallback(() => {
-    if (hoveredId != null) return; // already open
-    if (hoverTimer.current) return; // already armed
-    hoverTimer.current = setTimeout(() => {
-      hoverTimer.current = undefined;
-      setHoveredId(profile.id);
-    }, OPEN_DELAY);
-  }, [hoveredId, profile.id]);
-
-  const handleMouseEnter = useCallback(() => {
-    clearTimeout(leaveTimer.current);
-    setHoveredProfileCountry(profile.countryCode);
-    scheduleOpen();
-  }, [scheduleOpen, profile.countryCode, setHoveredProfileCountry]);
-
-  const handleMouseMove = useCallback(() => {
-    scheduleOpen();
-  }, [scheduleOpen]);
-
-  // Desktop only: clicking the flag opens that country's detail, the role
-  // badge applies the category filter - either instead of opening the opinio.
-  const handleCountryClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigate('/c/' + profile.countryCode + location.search);
-  }, [profile.countryCode, navigate, location.search]);
 
   const handleRoleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     toggleRole(profile.role);
   }, [profile.role, toggleRole]);
 
-  // On desktop the flag opens the country and the role badge filters; on
-  // mobile both stay decorative (tap falls through to opening the opinio).
-  const flagEl = isMobile ? (
-    <CountryFlag code={profile.countryCode} />
-  ) : (
-    <HoverTip label={getCountryName(profile.countryCode, locale)}>
-      <span
-        role="button"
-        tabIndex={0}
-        onClick={handleCountryClick}
-        className="cursor-pointer rounded hover:opacity-70 transition-opacity"
-      >
-        <CountryFlag code={profile.countryCode} tip={false} />
-      </span>
-    </HoverTip>
-  );
-
+  // Desktop: the category chip filters. Mobile: decorative, the tap opens the poll.
   const roleEl = isMobile ? (
     <RoleBadge role={profile.role} />
   ) : (
     <HoverTip label={`${t.filterBy}: ${t.roles[profile.role]}`}>
-      <span
-        role="button"
-        tabIndex={0}
-        onClick={handleRoleClick}
-        className="cursor-pointer hover:opacity-70 transition-opacity"
-      >
+      <span role="button" tabIndex={0} onClick={handleRoleClick} className="cursor-pointer hover:opacity-70 transition-opacity">
         <RoleBadge role={profile.role} />
       </span>
     </HoverTip>
   );
 
-  const handleMouseLeave = useCallback(() => {
-    clearTimeout(hoverTimer.current);
-    hoverTimer.current = undefined;
-    setHoveredProfileCountry(undefined);
-    leaveTimer.current = setTimeout(() => {
-      if (!isOverTooltip.current) setHoveredId(null);
-    }, 150);
-  }, [setHoveredProfileCountry]);
-
-  const handleTooltipEnter = useCallback(() => {
-    isOverTooltip.current = true;
-    clearTimeout(leaveTimer.current);
-  }, []);
-
-  const handleTooltipLeave = useCallback(() => {
-    isOverTooltip.current = false;
-    setHoveredId(null);
-  }, []);
-
-  if (variant === 'tooltip') {
-    // Tooltip wrapper has pointer-events-none, so vote buttons here would be
-    // misleading. Render read-only arrow + count instead.
-    return (
-      <div className="flex items-center gap-2 py-1">
-        <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-6 h-6" />
-        <span className="text-xs font-medium text-white truncate flex-1 min-w-0">
-          {name}
-        </span>
-        <div className="flex items-center gap-2 text-xs font-semibold tabular-nums shrink-0">
-          <span className="inline-flex items-baseline gap-1 text-positive">
-            <span className="text-[10px]">▲</span>
-            {formatNumber(profile.likes)}
-          </span>
-          <span className="inline-flex items-baseline gap-1 text-negative">
-            <span className="text-[10px]">▼</span>
-            {formatNumber(profile.dislikes)}
-          </span>
-        </div>
-      </div>
-    );
-  }
-
-  if (variant === 'compact') {
-    return (
-      <div
-        ref={cardRef}
-        className="flex items-center gap-3 px-2 py-2 bg-surface-light/50 rounded-lg ring-1 ring-white/10 hover:bg-surface-light hover:ring-white/20 transition-all duration-150 cursor-pointer select-none"
-        onMouseEnter={handleMouseEnter}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        onClick={() => openDetail()}
-      >
-        {rank != null && (
-          <span className="text-xs font-bold text-text-secondary w-5 text-right shrink-0">
-            {rank}
-          </span>
-        )}
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-8 h-8 shrink-0 ring-2 ring-white/5" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
-              <span className="text-sm font-medium text-white truncate min-w-0 flex-shrink">{name}</span>
-              <div className="flex items-center gap-1.5 shrink-0">
-                {flagEl}
-                {roleEl}
-                {profile.label && <LabelBadge label={profile.label} />}
-                <NewsLinkBadge newsId={profile.newsId} size="xs" />
-                <CommentCount count={profile.commentCount ?? 0} size="xs" onClick={openComments} />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div onClick={(e) => e.stopPropagation()}>
-          <VoteButtons
-            profileId={profile.id}
-            likes={profile.likes}
-            dislikes={profile.dislikes}
-            compact
-            showOnly={showOnly}
-            reverseVotes={reverseVotes}
-          />
-        </div>
-        {hoveredId && !isMobile && (
-          <PersonTooltip
-            profile={profile}
-            breakdown={breakdown}
-            isLoading={breakdownLoading}
-            anchorEl={cardRef.current}
-            onMouseEnter={handleTooltipEnter}
-            onMouseLeave={handleTooltipLeave}
-          />
-        )}
-      </div>
-    );
-  }
-
-  // default variant — modern card: flat surface, a soft side-coloured glow that
-  // fades in on hover, a status dot on the avatar (green on rising / red on
-  // falling), and a two-line description.
-  const tooltipEl = hoveredId ? (
-    <PersonTooltip
-      profile={profile}
-      breakdown={breakdown}
-      isLoading={breakdownLoading}
-      anchorEl={cardRef.current}
-      onMouseEnter={handleTooltipEnter}
-      onMouseLeave={handleTooltipLeave}
-    />
-  ) : null;
-
-  const side = reverseVotes ? 'negative' : 'positive';
-  const glow = side === 'positive' ? 'rgba(34,197,94,0.16)' : 'rgba(239,68,68,0.16)';
-
   return (
     <div
       ref={cardRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      role="link"
+      tabIndex={0}
+      onMouseEnter={armPreview}
+      onMouseMove={armPreview}
+      onMouseLeave={leaveCard}
       onClick={() => openDetail()}
-      className="group relative flex items-start gap-2.5 px-2.5 py-2.5 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 hover:-translate-y-0.5 transition-all duration-200 overflow-hidden cursor-pointer select-none"
+      onKeyDown={(e) => { if (e.key === 'Enter') openDetail(); }}
+      className={`group relative flex items-start rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 hover:bg-surface-light/70 transition-all duration-200 cursor-pointer select-none ${
+        dense ? 'gap-2.5 px-2.5 py-2' : 'gap-3 px-3 py-2.5'
+      }`}
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        style={{ background: `radial-gradient(120% 80% at 0% 0%, ${glow}, transparent 60%)` }}
-      />
       {rank != null && (
-        <span className="relative z-10 shrink-0 mt-0.5 text-[11px] font-semibold tabular-nums text-text-secondary bg-white/[0.06] rounded-md px-1.5 py-0.5 leading-none">
+        <span className="shrink-0 mt-0.5 text-[11px] font-semibold tabular-nums text-text-secondary bg-white/[0.06] rounded-md px-1.5 py-0.5 leading-none">
           {rank}
         </span>
       )}
-      <Avatar name={profile.name} imageUrl={profile.imageUrl} className="relative z-10 shrink-0 w-10 h-10 ring-2 ring-white/5" />
-      <div className="relative z-10 flex-1 min-w-0">
-        <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
-          <span className="font-semibold text-white leading-tight break-words min-w-0">{name}</span>
-          <div className="flex items-center gap-1.5 shrink-0">
-            {flagEl}
-            {roleEl}
-            {profile.label && <LabelBadge label={profile.label} />}
-          </div>
-        </div>
-        <p className="text-[13px] text-text-secondary leading-snug line-clamp-2 mt-0.5 mb-1.5">{description}</p>
-        <div className="flex items-center justify-between gap-2">
-          <div className="w-fit" onClick={(e) => e.stopPropagation()}>
-            <VoteButtons
-              profileId={profile.id}
-              likes={profile.likes}
-              dislikes={profile.dislikes}
-              showOnly={showOnly}
-              reverseVotes={reverseVotes}
-            />
-          </div>
-          {/* Bottom-right was empty space; the counts sit there, muted. */}
-          <div className="flex items-center">
-            <NewsLinkBadge newsId={profile.newsId} />
-            <CommentCount count={profile.commentCount ?? 0} onClick={openComments} />
-          </div>
+      <PollThumb role={profile.role} imageUrl={profile.imageUrl} className={dense ? 'w-11 h-11' : 'w-14 h-14'} />
+      <div className="flex-1 min-w-0">
+        <p className={`font-semibold text-white leading-snug line-clamp-3 break-words ${dense ? 'text-[15px]' : 'text-[15px] lg:text-base'}`}>
+          {name}
+        </p>
+        <div className="flex items-center gap-2 mt-1 min-w-0">
+          {roleEl}
+          <span className="text-[13px] text-text-secondary tabular-nums whitespace-nowrap">
+            {plural(p.votes, locale, profile.voteCount, formatNumber)}
+          </span>
+          <span className="ml-auto flex items-center">
+            <NewsLinkBadge newsId={profile.newsId} size={dense ? 'xs' : undefined} />
+            <CommentCount count={profile.commentCount ?? 0} size={dense ? 'xs' : 'sm'} onClick={openComments} />
+          </span>
         </div>
       </div>
-      {tooltipEl}
+      {previewAnchor && (
+        <PollPreview
+          profile={profile}
+          anchorEl={previewAnchor}
+          onMouseEnter={() => { overPreview.current = true; clearTimeout(leaveTimer.current); }}
+          onMouseLeave={closePreview}
+        />
+      )}
     </div>
   );
 }

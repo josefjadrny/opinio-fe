@@ -1,79 +1,69 @@
 import type { Profile } from '../../types/profile';
+import type { PollSort } from '../../types/api';
 import { useI18n } from '../../i18n/I18nContext';
 import { ProfileCard } from '../profile/ProfileCard';
 import { OfflineEmptyState } from '../common/Offline';
 import { useFlipReorder } from '../../hooks/useFlipReorder';
+import { SortIcon } from './Sidebar';
 
 interface MobileFeedProps {
-  positiveProfiles: Profile[];
-  negativeProfiles: Profile[];
+  sort: PollSort;
+  onSortChange: (sort: PollSort) => void;
+  profiles: Profile[];
+  loading?: boolean;
   /** No data and no way to fetch it - offline, or the API is unreachable. */
   unreachable?: boolean;
 }
 
-export function MobileFeed({
-  positiveProfiles,
-  negativeProfiles,
-  unreachable,
-}: MobileFeedProps) {
-  const { t } = useI18n();
-  const positiveFlipRef = useFlipReorder();
-  const negativeFlipRef = useFlipReorder();
+const SORTS: PollSort[] = ['trending', 'new', 'top'];
 
-  // With nothing cached to show, the two empty sections read as a broken app -
-  // replace the whole feed with the reason it is empty.
-  if (unreachable && positiveProfiles.length === 0 && negativeProfiles.length === 0) {
-    return (
-      <div className="safe-feed-pad flex-1 flex flex-col min-h-0 overflow-y-auto overscroll-y-contain">
-        <OfflineEmptyState />
-      </div>
-    );
-  }
+// One list with the three orders as tabs: title-only cards keep many polls on
+// a phone screen, and one list scrolls further than two stacked sections.
+export function MobileFeed({ sort, onSortChange, profiles, loading, unreachable }: MobileFeedProps) {
+  const { t, p } = useI18n();
+  const flipRef = useFlipReorder();
+  const label = (s: PollSort) => (s === 'trending' ? p.sortTrending : s === 'new' ? p.sortNew : p.sortTop);
 
   return (
     <div className="flex-1 flex flex-col min-h-0">
-    <div className="safe-feed-pad flex-1 overflow-y-auto overscroll-y-contain">
-      <section className="px-1.5 py-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-positive mb-2 ml-2 flex items-center gap-1.5">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-          </svg>
-          {t.trending}
-        </h2>
-        <div ref={positiveFlipRef} className="flip-compact space-y-1.5">
-          {positiveProfiles.map((profile) => (
-            <div key={profile.id} data-flip-key={profile.id}>
-              <ProfileCard
-                profile={profile}
-                variant="compact"
-              />
+      <div className="flex items-center gap-1 px-2 pt-2 pb-1.5 border-b border-border" role="tablist">
+        {SORTS.map((s) => {
+          const active = s === sort;
+          return (
+            <button
+              key={s}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onSortChange(s)}
+              className={`flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg py-2 text-[13px] font-bold uppercase tracking-wider transition-colors ${
+                active ? 'bg-white/10 text-white' : 'text-white/50'
+              }`}
+            >
+              <SortIcon sort={s} className={`w-4 h-4 ${active ? '' : 'opacity-60'}`} />
+              {label(s)}
+            </button>
+          );
+        })}
+      </div>
+      <div className="safe-feed-pad flex-1 overflow-y-auto overscroll-y-contain">
+        {unreachable && profiles.length === 0 ? (
+          <OfflineEmptyState />
+        ) : (
+          <section className="px-1.5 py-2">
+            <div key={sort} ref={flipRef} className="flip-compact space-y-1.5">
+              {profiles.map((profile) => (
+                <div key={profile.id} data-flip-key={profile.id}>
+                  <ProfileCard profile={profile} dense />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
-
-      <div className="border-t border-border mx-1.5" />
-
-      <section className="px-1.5 py-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-negative mb-2 ml-2 flex items-center gap-1.5">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.306-4.307a11.95 11.95 0 015.814 5.519l2.74 1.22m0 0l-5.94 2.28m5.94-2.28l-2.28-5.941" />
-          </svg>
-          {t.falling}
-        </h2>
-        <div ref={negativeFlipRef} className="flip-compact space-y-1.5">
-          {negativeProfiles.map((profile) => (
-            <div key={profile.id} data-flip-key={profile.id}>
-              <ProfileCard
-                profile={profile}
-                variant="compact"
-                reverseVotes
-              />
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
+            {profiles.length === 0 && !loading && (
+              <p className="text-center text-text-secondary text-sm py-8">{t.noProfiles}</p>
+            )}
+          </section>
+        )}
+      </div>
     </div>
   );
 }

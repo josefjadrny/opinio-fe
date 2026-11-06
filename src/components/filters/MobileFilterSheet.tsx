@@ -1,5 +1,4 @@
 import { ModalShell } from '../common/ModalShell';
-import { CountrySearchList } from '../common/CountryPicker';
 import { ALL_ROLES, ROLE_COLORS } from '../../utils/roles';
 import { useFilters } from '../../context/useFilters';
 import { SearchWhisperer } from './SearchWhisperer';
@@ -18,10 +17,10 @@ const FilterIcon = () => (
 
 export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
   const { t } = useI18n();
-  const { country, roles, fresh, search, setCountry, toggleRole, toggleFresh, clearFilters } = useFilters();
+  const { roles, search, toggleRole, clearFilters } = useFilters();
 
-  const hasFilters = !!(country || roles.length || fresh || search);
-  const nothingSelected = roles.length === 0 && !fresh;
+  const hasFilters = !!(roles.length || search);
+  const nothingSelected = roles.length === 0;
 
   const footer = (
     <div className="flex gap-3">
@@ -45,17 +44,6 @@ export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
   return (
     <ModalShell onClose={onClose} title="Filters" icon={<FilterIcon />} footer={footer}>
       <div className="px-6 py-4 space-y-5">
-        {/* Country */}
-        <div>
-          <p className="text-xs font-medium text-white/80 mb-2">{t.country}</p>
-          <CountrySearchList
-            value={country ?? null}
-            onPick={(code) => setCountry(code)}
-            allowClear
-            listClassName="max-h-40 rounded-lg border border-border"
-          />
-        </div>
-
         {/* Roles */}
         <div>
           <p className="text-xs font-medium text-white/80 mb-2">{t.allCategories}</p>
@@ -74,17 +62,6 @@ export function MobileFilterSheet({ onClose }: MobileFilterSheetProps) {
                 </button>
               );
             })}
-            {/* NEW is not a category - it filters by age (< 2h), the same
-                condition that earns the NEW badge. Kept last so it reads as
-                the badge it already is, not as a 9th category. */}
-            <button
-              onClick={toggleFresh}
-              className={`bg-orange-500 text-white text-[12px] leading-none font-semibold px-2.5 py-1.5 rounded-full uppercase tracking-wide transition-opacity ${
-                fresh || nothingSelected ? 'opacity-100' : 'opacity-35'
-              }`}
-            >
-              {t.newBadge}
-            </button>
           </div>
         </div>
 

@@ -4,7 +4,8 @@ import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import { useCountries } from '../../hooks/useCountries';
 import { useProfileCountries } from '../../hooks/useProfileCountries';
-import { useCountryVoters } from '../../hooks/useCountryVoters';
+import { useProfile } from '../../hooks/useProfile';
+import { colorById } from '../../utils/pollColors';
 import { numericToAlpha2 } from '../../utils/countries';
 import { CITIES, cityLabel } from '../../utils/cities';
 import { useI18n } from '../../i18n/I18nContext';
@@ -16,7 +17,8 @@ import {
   NO_DATA_FILL,
   LABEL_REF_WIDTH,
   MAX_LABEL_SCALE,
-  colorForCountry,
+  activityFill,
+  pollFill,
   clampTranslate,
   projection,
   pathGenerator,
@@ -24,6 +26,7 @@ import {
   buildBorderPaths,
   computeCountryAnchors,
   BORDER_COLOR,
+  DEFAULT_FILL,
   COAST_COLOR,
   COAST_OPACITY,
   COAST_WIDTH_PX,
@@ -110,17 +113,23 @@ export function MobileMap({
   // second finger. Null between gestures.
   const tapRef = useRef<{ x: number; y: number; moved: boolean; multi: boolean } | null>(null);
 
-  const { data: countriesData } = useCountries(open && !profileId && !countryCode);
-  // Same query key the profile sheet reads for its empty-map check, so the two
-  // are one request.
+  // Home and country pages: where people are voting today. A poll: each
+  // country in its winning answer's colour (see mapShared).
+  const { data: countriesData } = useCountries(open && !profileId);
   const { data: profileCountriesData } = useProfileCountries(profileId);
-  const { data: countryVotersData } = useCountryVoters(profileId ? null : countryCode);
-  const tally = profileId ? profileCountriesData : countryCode ? countryVotersData : countriesData;
+  const { data: poll } = useProfile(profileId);
   const countryColors = useMemo(() => {
     const map = new Map<string, string>();
-    tally?.countries.forEach((c) => map.set(c.code, colorForCountry(c.likes, c.dislikes)));
+    if (profileId) {
+      const colors = colorById(poll?.options ?? []);
+      profileCountriesData?.countries.forEach((c) =>
+        map.set(c.code, pollFill(c.options.map((o) => ({ n: o.n, color: colors.get(o.optionId) ?? DEFAULT_FILL })))),
+      );
+    } else {
+      countriesData?.countries.forEach((c) => map.set(c.code, activityFill(c.today)));
+    }
     return map;
-  }, [tally]);
+  }, [profileId, poll, profileCountriesData, countriesData]);
 
   // The subject country's outline, drawn over the border layer. Same builder as
   // the desktop map, and the zoom dependency matters more here: this map opens at
@@ -392,7 +401,7 @@ export function MobileMap({
         </g>
       </svg>
 
-      <MapLegend />
+      <MapLegend poll={profileId ? poll ?? null : null} />
 
       {/* Compact +/- control. Pinch is the primary zoom on mobile; these are a
           fallback. A tall slider (desktop) doesn't fit the short panel. */}

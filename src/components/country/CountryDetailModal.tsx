@@ -1,19 +1,18 @@
-import { Fragment, useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useI18n } from '../../i18n/I18nContext';
 import { useCountries } from '../../hooks/useCountries';
-import { useCountryDiscussed } from '../../hooks/useCountryDiscussed';
 import { useMapPanel } from '../../context/useMapPanel';
 import { useCountryDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { getCountryName, isKnownCountry } from '../../utils/countries';
 import { FlagImg } from '../common/CountryFlag';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { HoverTip } from '../common/HoverTip';
-import { StatTip } from '../common/StatTip';
-import { VoteHeadline } from '../profile/VoteHeadline';
-import { ProfileList } from '../profile/ProfileList';
+import { CountryPollList } from './CountryPollList';
+import { plural } from '../../i18n/pollStrings';
+import { formatNumber } from '../../utils/formatNumber';
 import { useCountryFacts } from '../../hooks/useCountryFacts';
 import { CountryLeaders, CountryStats } from './CountryFacts';
 
@@ -63,54 +62,19 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
-  const { t, locale } = useI18n();
+  const { t, p, locale } = useI18n();
 
   const code = countryCode.toUpperCase();
   const notFound = !isKnownCountry(code);
   const name = getCountryName(code, locale);
   const { data } = useCountries();
-  // Zeros while the shared countries query is still in flight, and for a country
-  // no opinio is about yet - the vote strip renders an empty bar rather than
-  // holding the card back on a fetch the header never needed.
-  const counts = data?.countries.find((c) => c.code === code)
-    ?? { likes: 0, dislikes: 0, totalLikes: 0, totalDislikes: 0 };
-  // The user page's sentiment ring and header wash, on the country's totals:
-  // like share of the live 24h votes only, no split at all without them.
-  const liveTotal = counts.likes + counts.dislikes;
-  const likeShare = liveTotal > 0 ? counts.likes / liveTotal : null;
-  const leansLike = likeShare !== null && likeShare >= 0.5;
-  const ringStyle = {
-    '--ring-target': `${Math.round((likeShare ?? 0) * 100)}%`,
-    '--ring-glow': likeShare === null ? 'transparent' : leansLike ? 'rgba(34,197,94,0.45)' : 'rgba(239,68,68,0.45)',
-  } as CSSProperties;
-  // What the ring means, on hover (tap on a phone) - the user page's tip, on
-  // the country: the window it reads, then the like count in it.
-  const ringTipTemplate = liveTotal > 0 ? t.countryRingLive : t.countryRingNone;
-  const ringLikes = counts.likes;
-  const likesCategory = new Intl.PluralRules(locale).select(ringLikes);
-  const ringLikesText = (likesCategory === 'one' ? t.avatarRingLikesOne : likesCategory === 'few' ? t.avatarRingLikesFew : t.avatarRingLikesMany)
-    .replace('{n}', new Intl.NumberFormat(locale).format(ringLikes));
-  const ringTipLabel = ringTipTemplate.replace('{country}', name).replace('{likes}', ringLikesText);
-  // The country name in bold white, the like count in bold green.
-  const ringTipPanel = (
-    <p className="text-sm text-white/80 leading-snug">
-      {ringTipTemplate.split(/(\{country\}|\{likes\})/).map((part, i) => (
-        <Fragment key={i}>
-          {part === '{country}' ? <strong className="font-semibold text-white">{name}</strong>
-            : part === '{likes}' ? <strong className="font-semibold text-positive">{ringLikesText}</strong>
-            : part}
-        </Fragment>
-      ))}
-    </p>
-  );
+  // Votes cast FROM this country, today and ever. Zeros while the shared
+  // countries query is in flight and for a country nobody has voted from.
+  const counts = data?.countries.find((c) => c.code === code) ?? { today: 0, total: 0 };
   const washStyle = {
-    '--wash-a': likeShare === null ? 'rgba(255,255,255,0.04)' : leansLike ? 'rgba(34,197,94,0.13)' : 'rgba(239,68,68,0.13)',
-    '--wash-b': likeShare === null ? 'transparent' : leansLike ? 'rgba(239,68,68,0.06)' : 'rgba(34,197,94,0.06)',
+    '--wash-a': 'rgba(255,255,255,0.05)',
+    '--wash-b': 'transparent',
   } as CSSProperties;
-  // Skip the discussed fetch for an unknown code - there's nothing to load and
-  // the API would just 404.
-  const { data: countryData, isLoading: profilesLoading } = useCountryDiscussed(notFound ? '' : code);
-  const profiles = countryData?.profiles ?? [];
   const { facts } = useCountryFacts(notFound ? null : code);
   const hasStats = !notFound && (facts?.population != null || !!facts?.capital);
   const hasLeaders = !notFound && !!facts?.leaders?.length;
@@ -157,10 +121,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   // One regex covers all 7 locales - every template is "{country}<colon> lower
   // case clause", including French, whose typography puts a space before the
   // colon (the \s* is what absorbs it).
-  const countryH1 = t.seo.country.title
-    .replace(/\{country\}/g, name)
-    .replace(/\s*-\s*Opinio\s*$/, '')
-    .replace(/:(\s*)(\p{Ll})/u, (_m, gap: string, first: string) => `:${gap}${first.toUpperCase()}`);
+  const countryH1 = p.countryAnswers.replace('{country}', name);
 
   const Header = (
     <>
@@ -172,21 +133,11 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
           flag emoji are wider than they are tall and vary by platform. */}
       {/* Around it the user page's sentiment ring (a ring, a gap in the
           card's colour, then the tile), so the two detail headers match. */}
-      <StatTip label={ringTipLabel} panel={ringTipPanel} width={280} className="!rounded-full shrink-0">
       <span
-        className={`sentiment-ring block shrink-0 rounded-full ${isMobile ? 'p-[2px]' : 'p-[3px]'}`}
-        data-empty={likeShare === null}
-        style={ringStyle}
+        className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} shrink-0 rounded-full bg-white/[0.06] flex items-center justify-center overflow-hidden`}
       >
-        <span className={`block rounded-full p-[2px] ${isMobile ? 'bg-surface' : 'bg-surface-light'}`}>
-          <span
-            className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} rounded-full bg-white/[0.06] flex items-center justify-center overflow-hidden`}
-          >
-            <FlagImg code={code} size={isMobile ? 26 : 36} />
-          </span>
-        </span>
+        <FlagImg code={code} size={isMobile ? 26 : 36} />
       </span>
-      </StatTip>
       <div className="flex-1 min-w-0">
         {/* The opinio modal's title type, per layout: its desktop card sets
             text-[15px] lg:text-lg and its mobile sheet takes the inherited
@@ -209,30 +160,14 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
     </>
   );
 
-  // The opinio modal's vote strip, on the country's own totals: agree-%, net
-  // badge and the live-vs-lifetime sentiment bar, one component so the two
-  // details cannot drift. The counts mean what /api/countries means - every
-  // opinio ABOUT this country, summed - and the bar's brackets are the lifetime
-  // figure the same endpoint now returns.
-  //
-  // Outside the fold, exactly as in the opinio modal: the chevron hides the
-  // list so the map can be read, and the numbers are the one thing that must
-  // survive that. It replaces the stacked ▲/▼ stat that used to sit in the
-  // header, which gave the live counts and nothing else.
-  //
-  // subject="country" keeps both explainer panels and re-words them: the agree
-  // line names the country rather than an opinio, and the net line drops
-  // "Opinios are sorted by this" - net ranks opinios, and nothing here is
-  // ordered by it. The bar's own live-vs-lifetime panels never name a subject,
-  // so they carry over untouched.
+  // Votes from this country: today, and ever. Stays outside the fold.
   const VoteBlock = (
-    <VoteHeadline
-      likes={counts.likes}
-      dislikes={counts.dislikes}
-      totalLikes={counts.totalLikes ?? 0}
-      totalDislikes={counts.totalDislikes ?? 0}
-      subject="country"
-    />
+    <p className="text-sm text-text-secondary tabular-nums">
+      <span className="font-semibold text-white">{plural(p.votes, locale, counts.today, formatNumber)}</span>
+      {' '}{p.votesToday}
+      <span className="text-white/30"> · </span>
+      {plural(p.votes, locale, counts.total, formatNumber)} {p.allTime}
+    </p>
   );
 
   // Folds the opinio list away, leaving the header and the vote strip over an
@@ -347,14 +282,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
             <div>
               <div className="details-fold-inner overflow-y-auto overscroll-y-contain max-h-[60vh] px-4 pt-4 pb-4 space-y-4">
                 {notFound ? NotFoundView : (
-                  <ProfileList
-                    profiles={profiles}
-                    label={t.userReportedProfiles}
-                    emptyText={t.noProfiles}
-                    loading={profilesLoading}
-                    loadingText={t.loading}
-                    onOpen={openProfile}
-                  />
+                  <CountryPollList code={code} countryName={name} onOpen={openProfile} />
                 )}
               </div>
             </div>
@@ -425,14 +353,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
                 subtle-scrollbar matches the opinio modal's lists. */}
             <div className="details-fold-inner overflow-y-auto subtle-scrollbar max-h-[min(max(350px,calc(50dvh-190px)),calc(100dvh-21rem),602px)] px-6 py-4">
               {notFound ? NotFoundView : (
-                <ProfileList
-                  profiles={profiles}
-                  label={t.userReportedProfiles}
-                  emptyText={t.noProfiles}
-                  loading={profilesLoading}
-                  loadingText={t.loading}
-                  onOpen={openProfile}
-                />
+                <CountryPollList code={code} countryName={name} onOpen={openProfile} />
               )}
             </div>
           </div>

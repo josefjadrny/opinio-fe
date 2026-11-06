@@ -3,7 +3,7 @@ import { useFilters } from '../../context/useFilters';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
-import { getNewsList, getNewsOpinios } from '../../api/client';
+import { getNewsList, getNewsPolls } from '../../api/client';
 import { getCountryName } from '../../utils/countries';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { FlagImg } from '../common/CountryFlag';
@@ -107,8 +107,8 @@ export function NewsArticle({ news, hero = true }: { news: NewsItem; hero?: bool
   const country = getCountryName(news.countryCode, locale);
   const { toCountry } = useNewsLinks(news);
   const opinios = useQuery({
-    queryKey: ['news', 'opinios', news.id, locale],
-    queryFn: () => getNewsOpinios(news.id, locale),
+    queryKey: ['news', 'polls', news.id, locale],
+    queryFn: () => getNewsPolls(news.id, locale),
     staleTime: 60_000,
   }).data?.profiles ?? [];
 
@@ -194,7 +194,7 @@ export function NewsArticle({ news, hero = true }: { news: NewsItem; hero?: bool
           </span>
           <p className="flex-1 min-w-0 text-sm text-white/70">{opinios.length ? NEWS_COPY.opiniosMore : NEWS_COPY.opiniosEmpty}</p>
           <button
-            onClick={() => navigate('/add' + location.search)}
+            onClick={() => navigate('/add' + location.search, { state: { newsId: news.id, newsTitle: news.title } })}
             className="shrink-0 flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-xl bg-accent text-white hover:bg-accent/90 shadow-lg shadow-accent/20 transition-all active:scale-95"
           >
             {NEWS_COPY.opiniosCta}

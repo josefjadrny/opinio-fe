@@ -5,7 +5,7 @@ import { useI18n } from '../../i18n/I18nContext';
 import type { Role } from '../../types/profile';
 
 export function RoleFilter() {
-  const { roles, fresh, toggleRole, toggleFresh, clearCategories } = useFilters();
+  const { roles, toggleRole, clearCategories } = useFilters();
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -18,13 +18,11 @@ export function RoleFilter() {
     return () => document.removeEventListener('mousedown', onOut);
   }, [open]);
 
-  // NEW counts as a selection alongside the roles, so an empty selection
-  // still reads "all categories" and a lone NEW gets the single-chip preview.
-  const selectedCount = roles.length + (fresh ? 1 : 0);
+  const selectedCount = roles.length;
   const label = selectedCount === 0
     ? t.allCategories
     : selectedCount === 1
-    ? (fresh ? t.newBadge : t.roles[roles[0]])
+    ? t.roles[roles[0]]
     : `${selectedCount} categories`;
   const nothingSelected = selectedCount === 0;
 
@@ -35,8 +33,8 @@ export function RoleFilter() {
         className="flex items-center gap-1.5 bg-surface-light text-text-primary text-sm rounded-lg border border-border px-3 py-1.5 focus:outline-none focus:border-accent min-w-[8rem] max-w-[11rem]"
       >
         {selectedCount === 1 ? (
-          <span className={`${fresh ? 'bg-orange-500' : ROLE_COLORS[roles[0]]} text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full uppercase tracking-wide`}>
-            {fresh ? t.newBadge : t.roles[roles[0]]}
+          <span className={`${ROLE_COLORS[roles[0]]} text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full uppercase tracking-wide`}>
+            {t.roles[roles[0]]}
           </span>
         ) : (
           <span className={`flex-1 text-left truncate ${selectedCount > 0 ? 'text-accent' : 'text-text-primary/70'}`}>
@@ -65,17 +63,6 @@ export function RoleFilter() {
                 </button>
               );
             })}
-            {/* NEW is not a category - it filters by age (< 2h), the same
-                condition that earns the NEW badge. Kept last so it reads as
-                the badge it already is, not as another category. */}
-            <button
-              onClick={toggleFresh}
-              className={`bg-orange-500 text-white text-[11px] leading-none font-semibold px-2 py-1 rounded-full uppercase tracking-wide transition-opacity ${
-                fresh || nothingSelected ? 'opacity-100' : 'opacity-35'
-              } hover:opacity-80`}
-            >
-              {t.newBadge}
-            </button>
           </div>
           {selectedCount > 0 && (
             <button

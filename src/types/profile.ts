@@ -7,47 +7,70 @@ export type Role =
   | 'health'
   | 'science'
   | 'environment'
-  | 'tech';
+  | 'tech'
+  | 'lifestyle';
 
+// One answer of a poll. `text` is in the requested UI language when a
+// translation exists; originalText is what the author typed.
+export interface PollOption {
+  id: string;
+  position: number;
+  text: string;
+  originalText: string;
+  /** One of the picker's nine (utils/pollColors.ts). */
+  color: string;
+  /** Optional small round picture. */
+  imageUrl: string | null;
+}
+
+// Per-option totals of one poll: all voters, and signed-in voters only.
+export interface PollResults {
+  total: number;
+  registeredTotal: number;
+  /** Distinct voter countries. */
+  countries: number;
+  options: { optionId: string; n: number; registered: number }[];
+}
+
+// A poll. The type keeps its old name (Profile, /p/:id, profiles table): what
+// people share is a poll, the code identifiers stayed - POLLS-DESIGN.md.
 export interface Profile {
   id: string;
+  /** The question. */
   name: string;
   role: Role;
+  /** 128x128 thumbnail of the poll's image (lists). */
   imageUrl: string | null;
-  // Optional large content image (720p JPEG) shown on the detail page and
-  // desktop hover preview. Separate from imageUrl, which is the 128×128 avatar.
+  /** The poll's image (720p JPEG) on the poll page. */
   contentImageUrl: string | null;
-  // True when the opinio carries a source link. The raw URL is never sent to the
+  // True when the poll carries a source link. The raw URL is never sent to the
   // client; it is reached only via GET /l/:id (see profileLinkUrl), which
-  // redirects + counts the click. linkHost is just the destination hostname
-  // (e.g. "reuters.com") for display so users see where the link goes.
+  // redirects + counts the click. linkHost is the destination hostname.
   hasLink?: boolean;
   linkHost?: string | null;
-  countryCode: string;
+  /** Optional context; '' when the author gave none. */
   description: string;
-  // name/description above carry the translation for the requested UI language
-  // when one exists. originalName/originalDescription are the untranslated text
-  // (always present); sourceLang is the auto-detected original language. When no
-  // translation applies, name === originalName and there's nothing to toggle.
+  // name/description carry the translation for the requested UI language when
+  // one exists; original* is the untranslated text, sourceLang its language.
   originalName?: string;
   originalDescription?: string;
   sourceLang?: string | null;
   addedBy: string;
   addedById: string | null;
   createdAt: string;
-  likes: number;
-  dislikes: number;
-  // Lifetime votes received — only ever increment, never decremented by expiry.
-  // Unlike likes/dislikes (active 24h window), these accumulate forever. May be
-  // absent on lightweight payloads (e.g. realtime banner) — treat as 0.
-  totalLikes?: number;
-  totalDislikes?: number;
-  label?: 'new' | 'rising' | 'falling';
-  // Lifetime comment count. ABSENT means the API does not serve comments yet
-  // and the whole comment UI stays off; 0 means "none" and the UI is live. The
-  // FE shipped ahead of the BE on purpose - this field is the switch.
+  /** Lifetime votes. */
+  voteCount: number;
+  /** Votes in the last 24h (Trending). May be absent on realtime payloads. */
+  votes24h?: number;
+  options: PollOption[];
+  /** Detail and vote responses only. */
+  results?: PollResults;
+  /** The caller's own option id on this poll (detail only), null = not voted. */
+  myVote?: string | null;
+  // Lifetime comment count. ABSENT means the comment UI stays off; 0 means
+  // "none" and the UI is live.
   commentCount?: number;
-  // The news story the opinio is about: posted from the story, or linked by
-  // the API's news link job. Null/absent = none.
+  // The news story the poll is about: asked from the story, or linked by the
+  // API's news link job. Null/absent = none.
   newsId?: string | null;
 }

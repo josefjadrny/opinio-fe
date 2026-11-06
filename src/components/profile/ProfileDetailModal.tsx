@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
-import { useAnimatedValue } from '../../hooks/useAnimatedValue';
 import { Link, useLocation } from 'react-router-dom';
 import type { Profile } from '../../types/profile';
-import type { PersonBreakdownResponse } from '../../types/api';
-import { Avatar } from './Avatar';
+import { PollThumb } from '../poll/PollThumb';
+import { PollOptions } from '../poll/PollOptions';
+import { PollCountries } from '../poll/PollCountries';
+import { GlobeIcon } from '../poll/PollIcons';
+import { DELETE_MAX_VOTES } from '../../utils/polls';
+import { useProfile } from '../../hooks/useProfile';
 import { ShareButton } from './ShareButton';
 import { ReportProfileButton } from './ReportProfileButton';
 import { DeleteProfileButton } from './DeleteProfileButton';
-import { VoteHeadline } from './VoteHeadline';
 import { ContentImageLightbox } from './ContentImageLightbox';
 import { useMe } from '../../hooks/useMe';
 import { RoleBadge } from '../common/RoleBadge';
@@ -15,9 +17,6 @@ import { HoverTip } from '../common/HoverTip';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { SourceLink } from './SourceLink';
 import { LinkedNews } from '../news/LinkedNews';
-import { CountryFlagLink } from '../common/CountryFlag';
-import { BreakdownRow } from './BreakdownRow';
-import { BreakdownHeader } from './BreakdownHeader';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useI18n } from '../../i18n/I18nContext';
 import { useProfileText } from '../../hooks/useProfileText';
@@ -30,12 +29,14 @@ import { CommentsSheet } from '../comments/CommentsSheet';
 
 interface ProfileDetailModalProps {
   profile: Profile;
-  breakdown: PersonBreakdownResponse | undefined;
-  isLoading: boolean;
   onClose: () => void;
 }
 
-export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: ProfileDetailModalProps) {
+export function ProfileDetailModal({ profile: seed, onClose }: ProfileDetailModalProps) {
+  // The route hands in the poll it has; reading the query here too keeps the
+  // results and the caller's vote live after a vote patches the cache.
+  const { data } = useProfile(seed.id);
+  const profile = data ?? seed;
   const location = useLocation();
   const { t, locale } = useI18n();
   const { data: me } = useMe();
@@ -63,8 +64,6 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
   }, [profile.id, registerSheet]);
   const { name, description, hasTranslation, showingOriginal, toggle } = useProfileText(profile);
   const { sheetRef, dragHandlers } = useSheetDrag(onClose);
-  const animatedLikes = useAnimatedValue(profile.likes);
-  const animatedDislikes = useAnimatedValue(profile.dislikes);
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       // Lightbox handles its own ESC (and stops propagation); only close the
@@ -120,20 +119,19 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
                 </HoverTip>
               );
             })()}
-            <Avatar name={profile.name} imageUrl={profile.imageUrl} className="w-10 h-10 shrink-0" />
+            <PollThumb role={profile.role} imageUrl={profile.imageUrl} className="w-10 h-10" />
             <div className="min-w-0 flex-1">
-              <h1 className="block font-semibold text-white truncate mb-1">{name}</h1>
+              <h1 className="block font-semibold text-white leading-snug break-words mb-1">{name}</h1>
               <div className="flex items-center gap-1.5">
-                <CountryFlagLink code={profile.countryCode} />
                 <RoleBadge role={profile.role} />
                 <div className="flex items-center gap-0.5 shrink-0 ml-auto -mr-1">
                   <CollapseDetailsButton collapsed={detailsCollapsed} onToggle={toggleDetails} />
                   <ShareButton profileId={profile.id} profileName={profile.name} />
                   <ReportProfileButton profileId={profile.id} />
-                  {me?.user.id && profile.addedById === me.user.id && (
+                  {me?.user.id && (me.user.tier === 'admin' || (profile.addedById === me.user.id && profile.voteCount <= DELETE_MAX_VOTES)) && (
                     <DeleteProfileButton
                       profileId={profile.id}
-                      voteCount={profile.likes + profile.dislikes}
+                      voteCount={profile.voteCount}
                       onDeleted={onClose}
                     />
                   )}
@@ -155,52 +153,48 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
         </div>
         </div>
 
-        <div className="px-6 pt-2 pb-5 space-y-4">
-          {/* Live votes as a sentiment bar: green = likes' share of the active
-              (24h) votes, red = dislikes'. Replaces the old ▲/▼ counts. */}
-          <VoteHeadline
-            likes={animatedLikes}
-            dislikes={animatedDislikes}
-            totalLikes={profile.totalLikes ?? 0}
-            totalDislikes={profile.totalDislikes ?? 0}
-          />
-
-          {/* Collapsing to 0fr animates the sheet's height, which max-height
-              cannot do without a magic number that is wrong for every other
-              opinio. .details-fold (index.css) owns that, plus the overflow-hidden
-              + min-h-0 the clipped child must carry or the content refuses to be
-              squeezed - and the fade/lift on .details-fold-inner, which is what
-              keeps the text from being guillotined by the closing clip edge.
-              Shared with the desktop modal, so both fold at one speed. */}
+        <div className="px-4 pt-4 pb-5 space-y-4">
+          {/* Context first - description, picture, news - since it can decide
+              the vote; folded by the chevron. Then the answers, which are the
+              vote buttons and always stay. .details-fold (index.css) animates
+              the fold to the content's own height (0fr), plus the overflow-hidden
+              + min-h-0 the clipped child needs and the fade/lift on
+              .details-fold-inner. Shared with the desktop modal. */}
+          {(description || profile.contentImageUrl || profile.hasLink || profile.newsId) && (
           <div className="details-fold" data-collapsed={detailsCollapsed}>
           <div>
-          <div className="details-fold-inner space-y-4">
-          <p className="text-sm text-white/80 leading-relaxed">{description}</p>
+          <div className="details-fold-inner space-y-3 pb-4 border-b border-border">
+          {(description || profile.contentImageUrl) && (
+            <div className="flow-root">
+              {profile.contentImageUrl && (
+                // A thumbnail beside the text; full size is one tap away.
+                <button
+                  type="button"
+                  onClick={() => setLightboxOpen(true)}
+                  aria-label={profile.name}
+                  className={`relative block overflow-hidden rounded-xl bg-black/30 ring-1 ring-white/10 focus:outline-none focus:ring-2 focus:ring-accent/60 ${
+                    description ? 'float-right ml-3 mb-1 w-28 h-20' : 'w-full h-44'
+                  }`}
+                >
+                  <img
+                    src={profile.contentImageUrl}
+                    alt={profile.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              )}
+              {description && <p className="text-[15px] text-white/80 leading-relaxed">{description}</p>}
+            </div>
+          )}
           {hasTranslation && (
             <button
               type="button"
               onClick={toggle}
-              className="text-xs text-text-secondary/70 hover:text-accent transition-colors"
+              className="text-[13px] text-text-secondary hover:text-accent transition-colors"
             >
               {showingOriginal ? t.seeTranslation : t.seeOriginal}
-            </button>
-          )}
-          {profile.contentImageUrl && (
-            // Text first, image second — the opinion is the primary content.
-            // 220 px cap keeps the image as supporting context, not the focus;
-            // full size is one tap away via the lightbox.
-            <button
-              type="button"
-              onClick={() => setLightboxOpen(true)}
-              className="block w-full rounded-lg overflow-hidden bg-black/30 border border-border focus:outline-none focus:ring-2 focus:ring-accent/60"
-            >
-              <img
-                src={profile.contentImageUrl}
-                alt={profile.name}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-auto max-h-[220px] object-contain"
-              />
             </button>
           )}
           <LinkedNews profile={profile} />
@@ -209,14 +203,28 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
               <SourceLink profileId={profile.id} host={profile.linkHost} />
             </div>
           )}
+          </div>
+          </div>
+          </div>
+          )}
+
+          <PollOptions
+            profile={profile}
+            showingOriginal={showingOriginal}
+            pictureClass="w-11 h-11"
+          />
+
+          <div className="details-fold" data-collapsed={detailsCollapsed}>
+          <div>
+          <div className="details-fold-inner space-y-4">
           {profile.addedBy && (
-            <p className="text-xs text-white/50">
+            <p className="text-[13px] text-white/60">
               {t.reportedBy}{' '}
               {profile.addedById ? (
                 <Link
                   to={`/u/${profile.addedById}${location.search}`}
                   state={{ fromProfileId: profile.id, fromProfileName: profile.name }}
-                  className="text-white/55 hover:text-white/85 hover:underline underline-offset-2 decoration-white/30 transition-colors"
+                  className="text-white/75 hover:text-white hover:underline underline-offset-2 decoration-white/30 transition-colors"
                 >
                   @{profile.addedBy}
                 </Link>
@@ -254,35 +262,14 @@ export function ProfileDetailModal({ profile, breakdown, isLoading, onClose }: P
             </div>
           )}
 
-          {isLoading && (
-            <p className="text-xs text-white/50 pt-1">Loading...</p>
-          )}
-          {breakdown && (breakdown.topLiking.length > 0 || breakdown.topDisliking.length > 0) && (
-            <div className="grid grid-cols-2 gap-4 pt-1 border-t border-border">
-              <div className="pt-3 flex flex-col">
-                <BreakdownHeader side="like" />
-                <div className="overflow-y-auto max-h-[180px] pr-1 subtle-scrollbar">
-                  {(() => {
-                    const max = Math.max(1, ...breakdown.topLiking.map(r => r.count));
-                    return breakdown.topLiking.map(({ countryCode, count, voters }, i) => (
-                      <BreakdownRow key={countryCode} countryCode={countryCode} count={count} voters={voters} max={max} index={i} side="like" />
-                    ));
-                  })()}
-                </div>
-              </div>
-              <div className="pt-3 flex flex-col">
-                <BreakdownHeader side="dislike" />
-                <div className="overflow-y-auto max-h-[180px] pr-1 subtle-scrollbar">
-                  {(() => {
-                    const max = Math.max(1, ...breakdown.topDisliking.map(r => r.count));
-                    return breakdown.topDisliking.map(({ countryCode, count, voters }, i) => (
-                      <BreakdownRow key={countryCode} countryCode={countryCode} count={count} voters={voters} max={max} index={i} side="dislike" />
-                    ));
-                  })()}
-                </div>
-              </div>
-            </div>
-          )}
+          <div className="pt-3 border-t border-border">
+            <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-white/70 mb-2">
+              <GlobeIcon className="w-3.5 h-3.5" />{t.commentsTabCountries}
+            </p>
+            {/* No scroller of its own: the sheet scrolls, and a list scrolling
+                inside it trapped the finger. Eight rows, then "+N". */}
+            <PollCountries profile={profile} limit={8} />
+          </div>
           </div>
           </div>
           </div>

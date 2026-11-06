@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { PollThumb } from '../poll/PollThumb';
 import { Avatar } from '../profile/Avatar';
 import { RoleBadge } from '../common/RoleBadge';
 import { useRealtimeFeed } from '../../hooks/useRealtimeFeed';
@@ -151,7 +152,7 @@ export function HotBanner({
   const showingOriginal = translated && next.kind === 'news' && originalFor === next.news.id;
   const card = next.kind === 'opinio'
     ? { name: next.profile.name, imageUrl: next.profile.imageUrl, title: next.profile.name,
-        text: next.profile.description, role: next.profile.role, countryCode: next.profile.countryCode,
+        text: next.profile.description || next.profile.options.map((o) => o.text).join(' / '), role: next.profile.role, countryCode: null,
         label: t.justReported, source: null }
     : { name: next.news.person.name, imageUrl: next.news.person.photoUrl,
         title: showingOriginal ? next.news.originalTitle : next.news.title,
@@ -222,8 +223,14 @@ export function HotBanner({
             aria-hidden
             className={`shrink-0 rounded-full ring-2 ring-white/5 bg-white/[0.06] flex items-center justify-center transition-transform duration-500 ease-out ${hovered ? 'scale-[1.04]' : ''} ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
           >
-            <FlagImg code={card.countryCode} size={mobile ? 26 : 30} />
+            {card.countryCode && <FlagImg code={card.countryCode} size={mobile ? 26 : 30} />}
           </div>
+        ) : next.kind === 'opinio' ? (
+          <PollThumb
+            role={next.profile.role}
+            imageUrl={next.profile.imageUrl}
+            className={`shrink-0 ring-2 ring-white/5 transition-transform duration-500 ease-out ${hovered ? 'scale-[1.04]' : ''} ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
+          />
         ) : (
           <Avatar
             name={card.name}
@@ -262,7 +269,7 @@ export function HotBanner({
               {card.title}
             </span>
             <div className="flex items-center gap-1.5 shrink-0">
-              {!flagAsPicture && <CountryFlag code={card.countryCode} tip={false} />}
+              {!flagAsPicture && card.countryCode && <CountryFlag code={card.countryCode} tip={false} />}
               <RoleBadge role={card.role} className={mobile ? undefined : 'text-xs! px-2! py-1! min-[2200px]:text-sm!'} />
             </div>
           </div>

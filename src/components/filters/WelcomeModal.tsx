@@ -1,7 +1,6 @@
 import { ModalShell } from '../common/ModalShell';
 import { BrandHero } from '../common/BrandHero';
 import { Plans } from '../common/Plans';
-import { VoteBullets } from '../common/VoteBullets';
 import { Principles } from '../common/Principles';
 import { useI18n } from '../../i18n/I18nContext';
 
@@ -36,7 +35,7 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
       onClose={onClose}
       title={t.welcomeTitle}
       icon={<WelcomeIcon />}
-      maxWidth="max-w-md"
+      maxWidth="max-w-xl"
       desktopScrollable
       footer={
         <button
@@ -52,8 +51,6 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
         {/* Hero — brand wordmark + tagline */}
         <BrandHero />
 
-        {/* Principle bullets — what to expect, in one glance */}
-        <VoteBullets />
 
         {/* Plans — display-only, anonymous highlighted as the current tier */}
         <Plans activeTier="muted" />

@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, type CSSProperties, type ReactNode } from 'react';
 import { useI18n } from '../../i18n/I18nContext';
+import { PollThumb } from '../poll/PollThumb';
 import { Avatar } from '../profile/Avatar';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useNotifications, useMarkNotificationsSeen, useClickNotification } from '../../hooks/useNotifications';
@@ -15,7 +16,7 @@ const KNOWN_KINDS = new Set(['milestone', 'comment', 'support']);
 
 // 🌱 1, 🔥 10, ⭐ 50, 💯 100, 🚀 250, 🏆 500, 👑 1000 and up.
 function milestoneIcon(m: number): string {
-  return m >= 1000 ? '👑' : m >= 500 ? '🏆' : m >= 250 ? '🚀' : m >= 100 ? '💯' : m >= 50 ? '⭐' : m >= 10 ? '🔥' : '🌱';
+  return m >= 1000 ? '👑' : m >= 500 ? '🏆' : m >= 250 ? '🚀' : m >= 100 ? '💯' : m >= 50 ? '⭐' : m >= 20 ? '🔥' : m >= 5 ? '✨' : '🌱';
 }
 
 // Splices the opinio name (or ticket title, the acting user, a status) into a
@@ -80,7 +81,7 @@ function commentSentence(item: NotificationItem, t: ReturnType<typeof useI18n>['
 }
 
 function NotificationRow({ item, index, onClick }: { item: NotificationItem; index: number; onClick: () => void }) {
-  const { t, locale } = useI18n();
+  const { t, p, locale } = useI18n();
   const m = item.milestone ?? 0;
   const unread = !item.clicked;
   const ticket = item.ticket;
@@ -122,7 +123,7 @@ function NotificationRow({ item, index, onClick }: { item: NotificationItem; ind
             </span>
           )
         ) : (
-          <Avatar name={item.profile?.name ?? '?'} imageUrl={item.profile?.imageUrl ?? null} className="w-11 h-11 ring-2 ring-white/10" />
+          <PollThumb role={item.profile?.role ?? 'politics'} imageUrl={item.profile?.imageUrl ?? null} className="w-11 h-11 ring-2 ring-white/10" />
         )}
       </span>
       <span className="flex-1 min-w-0 pr-3">
@@ -138,7 +139,7 @@ function NotificationRow({ item, index, onClick }: { item: NotificationItem; ind
             <>
               {/* The milestone glyph opens the sentence, leaving the picture clear. */}
               <span aria-hidden className="mr-1.5">{milestoneIcon(m)}</span>
-              {m === 1 ? fill(t.notifMilestoneFirst, target, '1') : fill(t.notifMilestone, target, number)}
+              {m === 1 ? fill(p.notifMilestoneFirst, target, '1') : fill(p.notifMilestone, target, number)}
             </>
           )}
         </span>

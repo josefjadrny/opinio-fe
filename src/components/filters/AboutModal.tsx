@@ -3,7 +3,6 @@ import { ModalShell } from '../common/ModalShell';
 import { type TierTone } from '../common/TierCard';
 import { BrandHero } from '../common/BrandHero';
 import { Plans } from '../common/Plans';
-import { VoteBullets } from '../common/VoteBullets';
 import { Principles } from '../common/Principles';
 import { useI18n } from '../../i18n/I18nContext';
 import { useMe } from '../../hooks/useMe';
@@ -54,13 +53,11 @@ export function AboutModal({ onClose }: AboutModalProps) {
         : handleCheckout;
 
   return (
-    <ModalShell onClose={onClose} title={t.about} titleAs="h1" icon={<AboutIcon />} maxWidth="max-w-md" desktopScrollable>
+    <ModalShell onClose={onClose} title={t.about} titleAs="h1" icon={<AboutIcon />} maxWidth="max-w-xl" desktopScrollable>
       <div className="px-6 pt-6 pb-4 space-y-6">
         {/* Hero — centered brand + tagline */}
         <BrandHero />
 
-        {/* Principle bullets — shared with WelcomeModal so both headers match */}
-        <VoteBullets />
 
         {/* Tier comparison — interactive: sign-in / Stripe Checkout + price tag */}
         <Plans

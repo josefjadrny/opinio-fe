@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useFilters } from '../../context/useFilters';
 import { getCountryName } from '../../utils/countries';
 import { Avatar } from '../profile/Avatar';
+import { PollThumb } from '../poll/PollThumb';
 import { FlagImg } from '../common/CountryFlag';
 import { HoverTip } from '../common/HoverTip';
 import { AiMark } from '../news/NewsBits';
@@ -464,7 +465,7 @@ function CaptionRow({
   motion: string;
   onAnimationEnd?: (e: AnimationEvent) => void;
 }) {
-  const { t } = useI18n();
+  const { t, p } = useI18n();
   const leaving = motion === 'caption-leave' || motion === 'caption-slide-leave';
   if (subject?.kind === 'news') {
     return (
@@ -481,10 +482,10 @@ function CaptionRow({
            text as exactly the opinio name instead of "what the world thinks
            <name>". */
         <>
-          <Avatar
-            name={subject.profile.name}
+          <PollThumb
+            role={subject.profile.role}
             imageUrl={subject.profile.imageUrl}
-            className={`caption-mark ${PROMO_MARK} shrink-0 ring-2 ring-white/10 [&>span]:text-xl @[1100px]:[&>span]:text-2xl`}
+            className={`caption-mark ${PROMO_MARK} ring-2 ring-white/10`}
           />
           <div className={`${COLUMN} caption-text`}>
             <h1 style={{ fontSize: NAME_SIZE }} className={`${NAME} text-white`}>
@@ -520,7 +521,7 @@ function CaptionRow({
               {subject.name}
             </span>
             <span style={{ fontSize: KICKER_SIZE }} className={KICKER}>
-              {t.mapWorldThinks}
+              {p.votedFrom}
             </span>
           </div>
         </>

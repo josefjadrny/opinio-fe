@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import { NewPollIcon } from '../poll/PollIcons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
-import { CountryFilter } from './CountryFilter';
 import { RoleFilter } from './RoleFilter';
 import { SearchWhisperer } from './SearchWhisperer';
 import { MobileFilterSheet } from './MobileFilterSheet';
@@ -37,8 +37,8 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
   const isHome = barePath === '' || HOME_OVERLAY_PATHS.includes(barePath);
   const { data: me, isLoading: meLoading } = useMe();
   const isAnonymous = !me?.user || me.user.tier === 'anonymous';
-  const { country, roles, fresh, search, clearFilters } = useFilters();
-  const hasFilters = !!(country || roles.length || fresh || search);
+  const { roles, search, clearFilters } = useFilters();
+  const hasFilters = !!(roles.length || search);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   // The bell's panel lives here so the news button can see it: over an open
   // story, notifications cover the news sheet, and a tap on news then means
@@ -81,7 +81,6 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
           </button>
           {/* Desktop filters - md+ only */}
           <div className="hidden md:flex items-center gap-3">
-            <CountryFilter />
             <RoleFilter />
             <SearchWhisperer variant="desktop" />
             <button
@@ -119,10 +118,7 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
                 onClick={() => { setFilterSheetOpen(false); onAddProfile(); }}
                 aria-label={t.addProfileTitle}
               >
-                <svg className="w-6 h-6 md:w-7 md:h-7 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75}>
-                  <path stroke="var(--color-negative)" strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
-                  <path stroke="var(--color-positive)" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v6M9 12h6" />
-                </svg>
+                <NewPollIcon className="w-6 h-6 md:w-7 md:h-7" />
               </HeaderButton>
             </HoverTip>
           )}

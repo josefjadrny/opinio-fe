@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { LANGUAGES, getDefaultLocale, type Locale, type Strings } from './strings';
+import { POLL_STRINGS, type PollStrings } from './pollStrings';
 import { updateMe } from '../api/client';
 import { useQuery } from '@tanstack/react-query';
 import { getMe } from '../api/client';
@@ -7,6 +8,8 @@ import { getMe } from '../api/client';
 interface I18nContextValue {
   locale: Locale;
   t: Strings;
+  /** Poll copy (pollStrings.ts). */
+  p: PollStrings;
   setLocale: (locale: Locale) => void;
 }
 
@@ -64,10 +67,12 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     }
   }, [me?.user?.tier]);
 
-  const t = LANGUAGES[locale].strings;
+  // The poll relaunch's replacements sit on top of the base strings.
+  const t = useMemo(() => ({ ...LANGUAGES[locale].strings, ...POLL_STRINGS[locale].t }) as Strings, [locale]);
+  const p = POLL_STRINGS[locale].p;
 
   return (
-    <I18nContext.Provider value={{ locale, t, setLocale }}>
+    <I18nContext.Provider value={{ locale, t, p, setLocale }}>
       {children}
     </I18nContext.Provider>
   );
