@@ -23,6 +23,9 @@ jobs:
       - run: npm run build
         env:
           OPINIO_API_URL: https://api.opinio.live
+          # Cloudflare Turnstile site key - public by design (it ships in the
+          # page). The matching secret lives only in the API's ECS task def.
+          OPINIO_TURNSTILE_SITE_KEY: 0x4AAAAAAF2017eRX-KR2KlC
 
       - uses: aws-actions/configure-aws-credentials@v6
         with:
