@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { ModalShell } from '../common/ModalShell';
 import { HoverTip } from '../common/HoverTip';
 import { addNewProfile, uploadContentImage, uploadOptionImage } from '../../api/client';
+import { clearDraftImages, loadDraftImages, saveDraftImages } from '../../utils/draftImages';
 import { ALL_ROLES, ROLE_COLORS } from '../../utils/roles';
 import { useI18n } from '../../i18n/I18nContext';
 import { plural } from '../../i18n/pollStrings';
@@ -28,9 +29,10 @@ const blankOption = (used: string[]): FormOption => ({ text: '', color: nextFree
 // A new poll starts with two answers in the brand red and green.
 const startOptions = (): FormOption[] => [blankOption([]), blankOption([OPTION_COLORS[0]])];
 
-// Draft persisted to localStorage so a half-composed poll survives closing the
-// modal (or a reload). Images (the poll's and the answers') are NOT kept - raw uploads run up to 10MB,
-// which blows the ~5MB localStorage quota.
+// Draft persisted so a half-composed poll survives closing the modal (or a
+// reload): the text in localStorage, the pictures (the poll's and the
+// answers', raw uploads up to 10MB - past localStorage's ~5MB) in IndexedDB,
+// see utils/draftImages.
 const DRAFT_KEY = 'opinio:add-poll-draft';
 // Drafts older than this are dropped on load.
 const DRAFT_TTL_MS = 24 * 60 * 60 * 1000;
@@ -41,6 +43,8 @@ interface PollDraft {
   description: string;
   options: { text: string; color: string }[];
   link: string;
+  /** Pictures were chosen; they live in IndexedDB (utils/draftImages). */
+  images?: boolean;
   savedAt: number;
 }
 
@@ -65,8 +69,9 @@ function loadDraft(): PollDraft | null {
       options.push({ text, color: typeof c === 'string' && (OPTION_COLORS as readonly string[]).includes(c) && !used.includes(c) ? c : nextFreeColor(used) });
     }
     while (options.length < POLL_OPTIONS_MIN) options.push({ text: '', color: nextFreeColor(options.map((x) => x.color)) });
-    if (!name.trim() && !description.trim() && !link.trim() && !options.some((o) => o.text.trim())) return null;
-    return { name, description, link, options, savedAt: d.savedAt, role: ALL_ROLES.includes(d.role as Role) ? (d.role as Role) : 'politics' };
+    const images = d.images === true;
+    if (!name.trim() && !description.trim() && !link.trim() && !options.some((o) => o.text.trim()) && !images) return null;
+    return { name, description, link, options, images, savedAt: d.savedAt, role: ALL_ROLES.includes(d.role as Role) ? (d.role as Role) : 'politics' };
   } catch {
     return null;
   }
@@ -223,16 +228,52 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     });
   };
 
+  // The draft's pictures come back from IndexedDB a moment after the form
+  // opens; until then the save below must not overwrite them with "none".
+  const [imagesReady, setImagesReady] = useState(() => !restoredDraft?.images);
+  useEffect(() => {
+    if (imagesReady) {
+      // Nothing to restore: drop pictures left by an expired or empty draft.
+      if (!restoredDraft && !newsId) void clearDraftImages();
+      return;
+    }
+    let live = true;
+    loadDraftImages().then((saved) => {
+      if (!live) return;
+      if (saved?.main) {
+        setContentImageFile(saved.main);
+        setContentPreviewUrl(URL.createObjectURL(saved.main));
+      }
+      if (saved) {
+        setOptions((prev) => prev.map((o, i) => {
+          const file = saved.options[i];
+          return file ? { ...o, file, preview: URL.createObjectURL(file) } : o;
+        }));
+      }
+      setImagesReady(true);
+    });
+    return () => { live = false; };
+    // Once, on open.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const hasImages = !!contentImageFile || options.some((o) => o.file);
   useEffect(() => {
     if (newsId) return;
-    const hasContent = name.trim() || description.trim() || link.trim() || options.some((o) => o.text.trim());
+    const hasContent = name.trim() || description.trim() || link.trim() || options.some((o) => o.text.trim()) || hasImages;
     try {
       if (!hasContent) localStorage.removeItem(DRAFT_KEY);
-      else localStorage.setItem(DRAFT_KEY, JSON.stringify({ name, role, description, options: options.map(({ text, color }) => ({ text, color })), link, savedAt: Date.now() }));
+      else localStorage.setItem(DRAFT_KEY, JSON.stringify({ name, role, description, options: options.map(({ text, color }) => ({ text, color })), link, images: hasImages, savedAt: Date.now() }));
     } catch {
       // localStorage unavailable - drafts just won't persist.
     }
-  }, [name, role, description, options, link, newsId]);
+  }, [name, role, description, options, link, newsId, hasImages]);
+
+  // Pictures follow the text into the draft, by answer position.
+  useEffect(() => {
+    if (newsId || !imagesReady) return;
+    void saveDraftImages({ main: contentImageFile, options: options.map((o) => o.file) });
+  }, [contentImageFile, options, newsId, imagesReady]);
 
   const discardDraft = () => {
     setName('');
@@ -242,8 +283,12 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     setOptions(startOptions());
     setLink('');
     setLinkOpen(false);
+    setContentImageFile(null);
+    setContentPreviewUrl(null);
+    setContentImageError(null);
     setRestoredDraft(null);
     try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+    void clearDraftImages();
   };
 
   const ACCEPTED_CONTENT_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -353,6 +398,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     },
     onSuccess: (created) => {
       try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+      void clearDraftImages();
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
       // Straight to the new poll - the author is its first likely voter.
       navigate('/p/' + created.id + location.search, { replace: true });
