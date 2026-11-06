@@ -44,15 +44,41 @@ export function useTurnstile() {
     if (!el || !api) throw new Error('turnstile not ready');
     return new Promise<string>((resolve, reject) => {
       let id = '';
-      const done = (fn: () => void) => { try { api.remove(id); } catch { /* gone */ } fn(); };
-      id = api.render(el, {
+      let settled = false;
+      // Cloudflare is showing its click box: leave it alone.
+      let interactive = false;
+      const timers: number[] = [];
+      const finish = (fn: () => void) => {
+        if (settled) return;
+        settled = true;
+        timers.forEach((t) => window.clearTimeout(t));
+        try { api.remove(id); } catch { /* gone */ }
+        fn();
+      };
+      const fail = (why: string) => () => finish(() => reject(new Error('turnstile ' + why)));
+      const render = (appearance: 'interaction-only' | 'always') => api.render(el, {
         sitekey: SITE_KEY,
-        appearance: 'interaction-only',
+        appearance,
         theme: 'dark',
-        callback: (token: string) => done(() => resolve(token)),
-        'error-callback': () => done(() => reject(new Error('turnstile error'))),
-        'expired-callback': () => done(() => reject(new Error('turnstile expired'))),
+        callback: (token: string) => finish(() => resolve(token)),
+        'error-callback': fail('error'),
+        'expired-callback': fail('expired'),
+        'timeout-callback': fail('timeout'),
+        'unsupported-callback': fail('unsupported'),
+        'before-interactive-callback': () => { interactive = true; },
       });
+      id = render('interaction-only');
+      // An invisible check normally answers within a couple of seconds. One
+      // that has not after 8s is swapped for Cloudflare's visible widget, so
+      // the visitor sees what it is doing (and can click it) instead of a
+      // silent "Checking..." that never moves - which is what prod showed.
+      timers.push(window.setTimeout(() => {
+        if (settled || interactive) return;
+        try { api.remove(id); } catch { /* gone */ }
+        id = render('always');
+      }, 8_000));
+      // Never wait forever: give up and let the visitor press again.
+      timers.push(window.setTimeout(fail('gave up'), 60_000));
     });
   }, []);
 
