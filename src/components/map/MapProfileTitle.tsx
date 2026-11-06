@@ -4,7 +4,6 @@ import { useFilters } from '../../context/useFilters';
 import { getCountryName } from '../../utils/countries';
 import { Avatar } from '../profile/Avatar';
 import { PollThumb } from '../poll/PollThumb';
-import { NewPollIcon } from '../poll/PollIcons';
 import { FlagImg } from '../common/CountryFlag';
 import { HoverTip } from '../common/HoverTip';
 import { AiMark } from '../news/NewsBits';
@@ -30,14 +29,14 @@ type Shown = CaptionSubject | { kind: 'news'; key: string; news: NewsItem } | { 
 // The relaunch announcement, the second slide of every rotation. Hard-coded
 // here rather than in the i18n files on purpose: it is temporary - delete the
 // slide (and this table) once the change is old news.
-const NOTICE: Record<string, { label: string; title: string; text: string }> = {
-  en: { label: 'New', title: 'Opinio is changing', text: 'Likes and dislikes are gone: ask the world a question with up to five answers and see how every country votes. Votes no longer expire after 24 hours.' },
-  cs: { label: 'Novinka', title: 'Opinio se mění', text: 'Palce nahoru a dolů končí: zeptejte se světa s až pěti odpověďmi a uvidíte, jak hlasuje každá země. Hlasy už po 24 hodinách nemizí.' },
-  es: { label: 'Novedad', title: 'Opinio está cambiando', text: 'Se acabaron los me gusta y no me gusta: pregunta al mundo con hasta cinco respuestas y mira cómo vota cada país. Los votos ya no caducan a las 24 horas.' },
-  de: { label: 'Neu', title: 'Opinio verändert sich', text: 'Likes und Dislikes sind Geschichte: Stell der Welt eine Frage mit bis zu fünf Antworten und sieh, wie jedes Land abstimmt. Stimmen verfallen nicht mehr nach 24 Stunden.' },
-  fr: { label: 'Nouveau', title: 'Opinio change', text: "Fini les j'aime et je n'aime pas : posez une question au monde avec jusqu'à cinq réponses et voyez comment vote chaque pays. Les votes n'expirent plus après 24 heures." },
-  it: { label: 'Novità', title: 'Opinio sta cambiando', text: 'Addio a mi piace e non mi piace: fai una domanda al mondo con fino a cinque risposte e guarda come vota ogni paese. I voti non scadono più dopo 24 ore.' },
-  pl: { label: 'Nowość', title: 'Opinio się zmienia', text: 'Koniec z polubieniami i niepolubieniami: zadaj światu pytanie z maksymalnie pięcioma odpowiedziami i zobacz, jak głosuje każdy kraj. Głosy nie wygasają już po 24 godzinach.' },
+const NOTICE: Record<string, { label: string; title: string; text: string; more: string }> = {
+  en: { label: 'New', title: 'Opinio is changing', text: 'Likes and dislikes are gone: ask the world a question with up to five answers and see how every country votes. Votes no longer expire after 24 hours.', more: 'More on Facebook' },
+  cs: { label: 'Novinka', title: 'Opinio se mění', text: 'Palce nahoru a dolů končí: zeptejte se světa s až pěti odpověďmi a uvidíte, jak hlasuje každá země. Hlasy už po 24 hodinách nemizí.', more: 'Více na Facebooku' },
+  es: { label: 'Novedad', title: 'Opinio está cambiando', text: 'Se acabaron los me gusta y no me gusta: pregunta al mundo con hasta cinco respuestas y mira cómo vota cada país. Los votos ya no caducan a las 24 horas.', more: 'Más en Facebook' },
+  de: { label: 'Neu', title: 'Opinio verändert sich', text: 'Likes und Dislikes sind Geschichte: Stell der Welt eine Frage mit bis zu fünf Antworten und sieh, wie jedes Land abstimmt. Stimmen verfallen nicht mehr nach 24 Stunden.', more: 'Mehr auf Facebook' },
+  fr: { label: 'Nouveau', title: 'Opinio change', text: "Fini les j'aime et je n'aime pas : posez une question au monde avec jusqu'à cinq réponses et voyez comment vote chaque pays. Les votes n'expirent plus après 24 heures.", more: 'Plus sur Facebook' },
+  it: { label: 'Novità', title: 'Opinio sta cambiando', text: 'Addio a mi piace e non mi piace: fai una domanda al mondo con fino a cinque risposte e guarda come vota ogni paese. I voti non scadono più dopo 24 ore.', more: 'Altro su Facebook' },
+  pl: { label: 'Nowość', title: 'Opinio się zmienia', text: 'Koniec z polubieniami i niepolubieniami: zadaj światu pytanie z maksymalnie pięcioma odpowiedziami i zobacz, jak głosuje każdy kraj. Głosy nie wygasają już po 24 godzinach.', more: 'Więcej na Facebooku' },
 };
 const NOTICE_SLIDE = { kind: 'notice' as const, key: 'notice' };
 
@@ -571,26 +570,51 @@ function CaptionRow({
   );
 }
 
-// The announcement slide: a news row's anatomy - picture, label pill, title,
-// text - with the new-poll mark for the picture and the brand green for the
-// pill, so it reads as Opinio's own news rather than a story from the feed.
+// The announcement slide, styled as a news row - picture, label pill with its
+// source line, title, text - with the Opinio mark for the picture and the
+// brand green for the pill, so it reads as Opinio's own news. The source line
+// links to the full story on Facebook.
+const FACEBOOK_URL = 'https://www.facebook.com/opinio.live';
+
 function NoticeRow() {
   const { locale } = useI18n();
   const n = NOTICE[locale] ?? NOTICE.en;
   return (
     <div className="flex w-full max-w-[960px] @[1100px]:max-w-[1120px] mx-auto items-center gap-4 @[1100px]:gap-5 pb-2">
-      <span className="caption-mark w-[64px] h-[64px] @[700px]:w-[80px] @[700px]:h-[80px] @[1100px]:w-[96px] @[1100px]:h-[96px] shrink-0 rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center">
-        <NewPollIcon className="w-1/2 h-1/2" accentWidth={2.75} />
-      </span>
+      {/* The Opinio mark, the same disc as the first slide: this is Opinio
+          speaking. Its clip plays once per visit, so here it is the logo. */}
+      <LogoIntro className={`caption-mark ${PROMO_MARK} shrink-0`} />
+      {/* The news row's text column, line for line: the label pill (in the
+          brand green instead of the news red) with its source line - here the
+          link to the full story on Facebook - then the title, then the text. */}
       <div className="caption-text min-w-0 flex-1 text-left">
-        {/* Label and title share a line, so the slide stays the news rows' height. */}
-        <div className="flex items-center gap-2.5 min-w-0">
-          <span className="shrink-0 uppercase font-bold tracking-[0.16em] text-xs @[900px]:text-sm text-positive bg-positive/15 border border-positive/50 rounded-full px-2 py-0.5">
+        <div className="flex items-center gap-2 min-w-0 text-xs @[900px]:text-sm">
+          <span className="shrink-0 uppercase font-bold tracking-[0.16em] text-positive bg-positive/15 border border-positive/60 rounded-full px-2 py-0.5">
+            <span className="relative inline-flex w-1.5 h-1.5 mr-1.5 align-middle">
+              <span className="absolute inset-0 rounded-full bg-positive animate-ping motion-reduce:hidden" />
+              <span className="relative w-1.5 h-1.5 rounded-full bg-positive" />
+            </span>
             {n.label}
           </span>
-          <span className="min-w-0 truncate font-bold text-white leading-snug text-lg @[700px]:text-xl @[1100px]:text-2xl">{n.title}</span>
+          <span className="min-w-0 flex items-center gap-1 text-white/50">
+            <span className="truncate">
+              <a
+                href={FACEBOOK_URL}
+                target="_blank"
+                rel="me noopener noreferrer"
+                className="text-white/70 hover:text-white underline decoration-white/30 underline-offset-2 hover:decoration-white transition-colors"
+              >
+                {n.more}
+              </a>
+            </span>
+          </span>
         </div>
-        <span className="mt-1 block text-white/75 leading-snug text-[13px] @[700px]:text-sm @[900px]:text-[15px] @[1100px]:text-base">{n.text}</span>
+        <div className="mt-1 min-w-0">
+          <span className="font-semibold text-white leading-snug line-clamp-2 min-w-0" style={{ fontSize: 'clamp(15px, 2.6cqi, 26px)' }}>
+            {n.title}
+          </span>
+        </div>
+        <p className="text-text-secondary leading-snug mt-0.5 text-sm line-clamp-3 @[900px]:text-base">{n.text}</p>
       </div>
     </div>
   );
