@@ -166,7 +166,12 @@ const SUBJECT_SLOT = 'subject';
 // measured at that size, so no slide makes the card grow.
 const CARD =
   '@container relative isolate w-full rounded-xl backdrop-blur-md ring-1 shadow-xl shadow-black/20 px-5 py-[14px] transition-[background-color,box-shadow] duration-200';
-const STACK_HEIGHT = 'min-h-[116px] @[700px]:min-h-[112px] @[900px]:min-h-[120px] @[1100px]:min-h-[128px]';
+// Sized for what the card shows today: one subject row - a picture beside a
+// kicker over a name (two lines of name at most on a narrow card). The taller
+// minimums this had were for text slides, which are gone; a future slide that
+// needs more room raises the minimum for its own width here, rather than every
+// state paying for it.
+const STACK_HEIGHT = 'min-h-[76px] @[700px]:min-h-[80px] @[1100px]:min-h-[88px]';
 
 // One subject's row inside the shell.
 const ROW = 'flex w-full items-center justify-center gap-4';
@@ -193,7 +198,7 @@ const STACK = '[grid-area:1/1]';
 // name that needed 543.x, so the last word dropped to a second line with the room
 // to fit it sitting right there, unused. The column is shrink-0 and bounded by a
 // max-width instead, which leaves this the only item that can yield.
-const SPACER = 'w-[64px] @[700px]:w-[76px] @[1100px]:w-[88px]';
+const SPACER = 'w-[52px] @[700px]:w-[60px] @[1100px]:w-[68px]';
 
 // flex-col-REVERSE keeps the source order h1-then-h2 while the kicker still
 // renders above the name, so the heading outline never runs an h2 ahead of the
@@ -206,7 +211,7 @@ const SPACER = 'w-[64px] @[700px]:w-[76px] @[1100px]:w-[88px]';
 // what the column can occupy once the spacer has collapsed. Keep it in step with
 // the picture size and the row gap.
 const COLUMN =
-  'flex min-w-0 shrink-0 max-w-[calc(100%-96px)] @[700px]:max-w-[calc(100%-108px)] @[1100px]:max-w-[calc(100%-120px)] flex-col-reverse items-center gap-0.5 text-center';
+  'flex min-w-0 shrink-0 max-w-[calc(100%-84px)] @[700px]:max-w-[calc(100%-92px)] @[1100px]:max-w-[calc(100%-100px)] flex-col-reverse items-center gap-0.5 text-center';
 
 const NAME = 'font-extrabold tracking-tight leading-[1.15]';
 
@@ -216,7 +221,7 @@ const NAME = 'font-extrabold tracking-tight leading-[1.15]';
 // brought, so an opinio or a country reads at the same scale as the promo and
 // the text slides beside it. Below the promo's own wordmark size: these are names of
 // up to 40 characters, not a five-letter word.
-const NAME_SIZE = 'clamp(22px, 4.8cqi, 40px)';
+const NAME_SIZE = 'clamp(20px, 3.8cqi, 28px)';
 
 // The kicker tracks the column too, and for the same reason: at a 1400px window
 // the longest of them ("live world opinion on every country") wrapped its last
@@ -224,14 +229,14 @@ const NAME_SIZE = 'clamp(22px, 4.8cqi, 40px)';
 // fixed on purpose - the row's height must not move with the font size, because
 // the close button's clearance is measured from it.
 const KICKER = 'font-semibold uppercase tracking-[0.16em] leading-5 text-white/50';
-const KICKER_SIZE = 'clamp(11px, 2.4cqi, 16px)';
+const KICKER_SIZE = 'clamp(11px, 2.2cqi, 15px)';
 
 // Every state fills the taller card a text slide needs: the picture (the
 // mark, an opinio's avatar, a country's flag) grows with it, so no state sits
 // as a small island in a large card. The spacer mirrors the picture at each
 // size to keep the text centred (see SPACER).
-const PROMO_MARK = 'w-[64px] h-[64px] @[700px]:w-[76px] @[700px]:h-[76px] @[1100px]:w-[88px] @[1100px]:h-[88px]';
-const PROMO_NAME_SIZE = 'clamp(26px, 5.6cqi, 44px)';
+const PROMO_MARK = 'w-[52px] h-[52px] @[700px]:w-[60px] @[700px]:h-[60px] @[1100px]:w-[68px] @[1100px]:h-[68px]';
+const PROMO_NAME_SIZE = 'clamp(24px, 5cqi, 38px)';
 const PROMO_KICKER_SIZE = KICKER_SIZE;
 
 export function MapProfileTitle({

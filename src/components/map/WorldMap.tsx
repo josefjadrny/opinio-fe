@@ -79,6 +79,17 @@ function CursorTooltip({ cursor, ...props }: { cursor: CursorStore } & Omit<Comp
 // Projected once at module load - the projection is fixed.
 const CITY_POINTS = CITIES.map((city) => ({ city, p: projection(city.coords) }));
 
+// The projection leaves ~9.4% of the map's width as empty margin above the land
+// (see `projection` in mapShared), so a map centred in its column floated
+// ~170px below the caption card, with the open window sitting over it. The map
+// is instead pinned to the top (xMidYMin) under a top padding that brings the
+// land to 140px from the column's top - the caption card's bottom edge (16px +
+// its 104-116px) plus a gap. Percent padding resolves against the column's
+// WIDTH, which is also what sizes the map on every layout that renders it (it
+// is width-limited from 1366px); once the margin alone is 140px (2560 and up)
+// the padding is 0.
+const MAP_TOP_PAD = 'max(0px, calc(140px - 9.4%))';
+
 export function WorldMap({ bannerVisible = false }: { bannerVisible?: boolean } = {}) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -413,11 +424,11 @@ export function WorldMap({ bannerVisible = false }: { bannerVisible?: boolean } 
   );
 
   return (
-    <div className="relative flex-1 min-h-0" onMouseMove={handleMouseMove}>
+    <div className="relative flex-1 min-h-0" style={{ paddingTop: MAP_TOP_PAD }} onMouseMove={handleMouseMove}>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="xMidYMin meet"
         style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible', userSelect: 'none', WebkitUserSelect: 'none' }}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
