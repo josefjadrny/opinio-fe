@@ -5,6 +5,7 @@ import polylabel from 'polylabel';
 import { CITIES, cityLabel } from '../../utils/cities';
 import { numericToAlpha2, getCountryName, isKnownCountry } from '../../utils/countries';
 import type { Locale } from '../../i18n/strings';
+import { MAP_MAX_TINT } from '../../utils/pollColors';
 
 // Shared map geometry + styling used by both the desktop WorldMap and the mobile
 // MobileMap so the projection, sentiment colours, and city-label decluttering
@@ -212,6 +213,8 @@ function mixHex(a: string, b: string, t: number): string {
   return '#' + pa.map((v, k) => Math.round(v + (pb[k] - v) * t).toString(16).padStart(2, '0')).join('');
 }
 
+const MIN_TINT = 0.45;
+
 export function pollFill(options: { n: number; color: string }[]): string {
   const total = options.reduce((s, o) => s + o.n, 0);
   if (total <= 0) return NO_DATA_FILL;
@@ -220,9 +223,9 @@ export function pollFill(options: { n: number; color: string }[]): string {
   const second = sorted[1]?.n ?? 0;
   if (top.n === second) return DEFAULT_FILL;
   // 0 margin -> 45% of the way from the neutral base to the colour, a margin
-  // of half the votes or more -> the full colour.
+  // of half the votes or more -> MAP_MAX_TINT (not the full colour).
   const margin = (top.n - second) / total;
-  return mixHex(DEFAULT_FILL, top.color, 0.45 + 0.55 * Math.min(1, margin / 0.5));
+  return mixHex(DEFAULT_FILL, top.color, MIN_TINT + (MAP_MAX_TINT - MIN_TINT) * Math.min(1, margin / 0.5));
 }
 
 export function clampTranslate(tx: number, ty: number, scale: number) {

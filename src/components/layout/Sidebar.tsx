@@ -30,8 +30,8 @@ export function SortIcon({ sort, className = 'w-4 h-4' }: { sort: PollSort; clas
   const { red, green } = SORT_ICON[sort];
   return (
     <svg className={`shrink-0 ${className}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} aria-hidden>
-      <path stroke="#ef4444" strokeLinecap="round" strokeLinejoin="round" d={red} />
-      <path stroke="#22c55e" strokeLinecap="round" strokeLinejoin="round" d={green} />
+      <path className="stroke-negative" strokeLinecap="round" strokeLinejoin="round" d={red} />
+      <path className="stroke-positive" strokeLinecap="round" strokeLinejoin="round" d={green} />
     </svg>
   );
 }

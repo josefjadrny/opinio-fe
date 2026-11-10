@@ -25,3 +25,10 @@ export function nextFreeColor(used: string[]): string {
 export function colorById(options: { id: string; color: string }[]): Map<string, string> {
   return new Map(options.map((o) => [o.id, o.color]));
 }
+
+/** How far a country's fill travels from the map's neutral base toward the
+ *  winning answer's colour when it leads by a wide margin. Under 1 on purpose:
+ *  the picked colours are tuned for thin bars and dots, and as a filled area on
+ *  the dark map the pure red/green glare. Bars, dots and the legend keep the
+ *  exact pick, so the link stays clear. */
+export const MAP_MAX_TINT = 0.78;
