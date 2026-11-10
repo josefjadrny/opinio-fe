@@ -8,7 +8,7 @@ import { getCountryName, isKnownCountry } from '../../utils/countries';
 import { formatNumber } from '../../utils/formatNumber';
 import { useI18n } from '../../i18n/I18nContext';
 import { plural } from '../../i18n/pollStrings';
-import { OptionAvatar } from './OptionAvatar';
+import { OptionAvatar, OptionMark, TiedMarks } from './OptionAvatar';
 
 interface PollCountriesProps {
   profile: Profile;
@@ -45,11 +45,38 @@ export function PollCountries({ profile, limit }: PollCountriesProps) {
         const parts = [...c.options].sort((a, b) => (position.get(a.optionId) ?? 0) - (position.get(b.optionId) ?? 0));
         const best = [...c.options].sort((a, b) => b.n - a.n);
         const tie = best.length > 1 && best[0].n === best[1].n;
+        const tied = tie
+          ? parts.filter((o) => o.n === best[0].n).map((o) => option.get(o.optionId)).filter((o) => !!o)
+          : [];
         const clickable = isKnownCountry(c.code);
         const go = () => navigate('/c/' + c.code + location.search);
         const tip = `${name}: ` + parts.map((o) => `${text.get(o.optionId)} ${Math.round((o.n / c.total) * 100)}%`).join(', ');
+        // The same split as a small table: the country and its total on top,
+        // then every answer biggest first - mark, text, votes, share.
+        const panel = (
+          <div>
+            <div className="flex items-center gap-2 pb-2 mb-2 border-b border-border">
+              <FlagImg code={c.code} className="shrink-0" />
+              <span className="flex-1 min-w-0 truncate text-sm font-semibold text-white">{name}</span>
+              <span className="shrink-0 text-[13px] tabular-nums text-white/60">{plural(p.votes, locale, c.total, formatNumber)}</span>
+            </div>
+            <ul className="space-y-1.5">
+              {best.map((o) => {
+                const opt = option.get(o.optionId);
+                return (
+                  <li key={o.optionId} className="flex items-center gap-2 text-sm">
+                    {opt && <OptionMark color={opt.color} imageUrl={opt.imageUrl} className="w-5 h-5" />}
+                    <span className="flex-1 min-w-0 truncate text-white/80">{text.get(o.optionId)}</span>
+                    <span className="shrink-0 tabular-nums font-semibold text-white">{formatNumber(o.n)}</span>
+                    <span className="shrink-0 w-10 text-right tabular-nums text-white/60">{Math.round((o.n / c.total) * 100)}%</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
         return (
-          <HoverTip key={c.code} label={tip} className="contents">
+          <HoverTip key={c.code} label={tip} panel={panel} panelWidth={280} panelClassName="px-3 py-2.5" className="contents">
             <div
               role={clickable ? 'button' : undefined}
               tabIndex={clickable ? 0 : undefined}
@@ -69,10 +96,11 @@ export function PollCountries({ profile, limit }: PollCountriesProps) {
                 ))}
               </span>
               {/* Who leads there: the answer's own mark, not its text - a
-                  truncated "Aged Dutch ..." said less than the picture does. */}
-              <span className="w-6 shrink-0 flex justify-center" aria-hidden>
+                  truncated "Aged Dutch ..." said less than the picture does.
+                  A tie shows the tied answers' marks overlapped. */}
+              <span className="w-10 shrink-0 flex justify-center" aria-hidden>
                 {tie ? (
-                  <span className="text-[13px] font-semibold text-white/60">=</span>
+                  <TiedMarks options={tied} />
                 ) : (() => {
                   const lead = option.get(best[0].optionId);
                   return lead?.imageUrl

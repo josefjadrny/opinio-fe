@@ -9,7 +9,7 @@ import { useCountries } from '../../hooks/useCountries';
 import { useCountryPolls } from '../../hooks/useCountryPolls';
 import { formatNumber } from '../../utils/formatNumber';
 import { PollThumb } from '../poll/PollThumb';
-import { OptionMark } from '../poll/OptionAvatar';
+import { OptionMark, TiedMarks } from '../poll/OptionAvatar';
 import { activityFill } from './mapShared';
 
 interface CountryTooltipProps {
@@ -125,6 +125,8 @@ export function CountryTooltip({ countryCode, position, fetchPolls, subjectPoll,
                 const lead = it.country.leading;
                 const leadOpt = lead && !lead.tie ? it.poll.options.find((o) => o.id === lead.optionId) : undefined;
                 const here = new Map(it.country.options?.map((x) => [x.optionId, x.n]) ?? []);
+                const top = Math.max(0, ...here.values());
+                const tied = lead?.tie ? it.poll.options.filter((o) => top > 0 && here.get(o.id) === top) : [];
                 return (
                   <div key={it.poll.id} className="flex items-start gap-2.5">
                     <PollThumb role={it.poll.role} imageUrl={it.poll.imageUrl} className="w-10 h-10" />
@@ -142,7 +144,7 @@ export function CountryTooltip({ countryCode, position, fetchPolls, subjectPoll,
                         <div className="mt-1.5 flex items-center gap-1.5 text-[13px] min-w-0">
                           {leadOpt
                             ? <OptionMark color={leadOpt.color} imageUrl={leadOpt.imageUrl} className="w-5 h-5" />
-                            : <span className="w-5 text-center font-semibold text-white/60">=</span>}
+                            : <TiedMarks options={tied} />}
                           <span className="truncate text-white/90">{lead.tie ? p.tie : lead.text}</span>
                           {!lead.tie && <span className="shrink-0 tabular-nums font-semibold text-white">{lead.pct}%</span>}
                         </div>

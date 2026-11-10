@@ -33,3 +33,20 @@ export function OptionMark({ color, imageUrl, className }: { color: string; imag
     </span>
   );
 }
+
+// A tie: the tied answers' marks side by side, each overlapping the one
+// before by half, so the reader sees WHO is level rather than a bare "=".
+// At most three - 20 + 10 + 10 = 40px, which is the leader column's width;
+// a wider tie is in the row's tooltip.
+export function TiedMarks({ options }: { options: { color: string; imageUrl: string | null }[] }) {
+  const shown = options.slice(0, 3);
+  return (
+    <span aria-hidden className="flex items-center">
+      {shown.map((o, i) => (
+        <span key={i} className={`relative ${i ? '-ml-2.5' : ''}`} style={{ zIndex: shown.length - i }}>
+          <OptionMark color={o.color} imageUrl={o.imageUrl} className="w-5 h-5" />
+        </span>
+      ))}
+    </span>
+  );
+}
