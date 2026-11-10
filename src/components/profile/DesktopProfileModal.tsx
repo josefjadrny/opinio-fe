@@ -175,16 +175,30 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
               </div>
             </div>
 
+            {/* Folded by the chevron: the body closes and the summary strip
+                opens in its place, both on .details-fold (index.css), so the
+                window eases between the two heights as the country window does.
+                Both stay mounted - unmounting one was what made it jump - and
+                the hidden one is inert so focus cannot land in it. */}
+            <div className="details-fold shrink-0" data-collapsed={!detailsCollapsed}>
+            <div inert={!detailsCollapsed}>
+            <div className="details-fold-inner px-6 py-5">
+              <PollSummary profile={profile} />
+            </div>
+            </div>
+            </div>
+
             {/* Body - two columns, each its own scroller. The body itself never
                 scrolls: an outer scroller around an inner list put two scrollbars
                 side by side. Its height is the left column's content (the right
                 column is absolute, see below), capped by the card's max-height. */}
-            <div className="flex-1 min-h-0 flex divide-x divide-border">
+            <div className="details-fold flex-1 min-h-0" data-collapsed={detailsCollapsed}>
+            <div className="flex" inert={detailsCollapsed}>
+            <div className="details-fold-inner flex-1 min-w-0 flex divide-x divide-border">
                     {/* Left: the context first (description, picture, link), as
-                        it can decide the vote; then the answers, which are the
-                        vote buttons and are never folded by the chevron. */}
+                        it can decide the vote; then the answers. */}
                     <div className="flex-1 basis-0 min-w-0 overflow-y-auto subtle-scrollbar px-6 py-5">
-                      {!detailsCollapsed && (description || profile.contentImageUrl || profile.hasLink) && (
+                      {(description || profile.contentImageUrl || profile.hasLink) && (
                       <div className="mb-5 pb-5 border-b border-border space-y-3">
                       {(description || profile.contentImageUrl) && (
                         // flow-root contains the floated picture, so the next
@@ -240,7 +254,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                         profile={profile}
                         showingOriginal={showingOriginal}
                         pictureClass="w-12 h-12"
-                        summary={detailsCollapsed}
+                        summary={false}
                       />
                     </div>
 
@@ -258,7 +272,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                         The floor follows the feature, NOT the open tab: keyed
                         on the tab it made the whole modal jump on every
                         Countries <-> Comments switch when the text was short. */}
-                    {!detailsCollapsed && <div className={`relative flex-1 basis-0 min-w-0 ${commentsEnabled ? 'min-h-[360px]' : 'min-h-[200px]'}`}>
+                    <div className={`relative flex-1 basis-0 min-w-0 ${commentsEnabled ? 'min-h-[360px]' : 'min-h-[200px]'}`}>
                       <div className="absolute inset-0 px-6 py-5 flex flex-col">
                         <div className="shrink-0 mb-4"><PollSummary profile={profile} /></div>
                         {/* Segmented switch over the column. Countries is the
@@ -306,7 +320,9 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                           </div>
                         )}
                       </div>
-                    </div>}
+                    </div>
+            </div>
+            </div>
             </div>
 
           </>
