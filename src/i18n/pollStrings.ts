@@ -49,6 +49,10 @@ export interface PollStrings {
   addOption: string;
   removeOption: string;
   optionColor: string;
+  activityVotedAnswer: string;
+  activityVotedAnswerYou: string;
+  showVotes: string;
+  showVotesHint: string;
   optionPicture: string;
   optionPictureRemove: string;
   duplicateOption: string;
@@ -127,6 +131,10 @@ const en: { p: PollStrings; t: Partial<Strings> } = {
     addOption: 'Add answer',
     removeOption: 'Remove answer',
     optionColor: 'Answer colour',
+    activityVotedAnswer: '{actor} voted "{answer}" on {target}',
+    activityVotedAnswerYou: 'You voted "{answer}" on {target}',
+    showVotes: 'Show my answers on my profile',
+    showVotesHint: 'Your profile lists which answer you chose on each poll. Turn off to show only that you voted.',
     optionPicture: 'Add a picture',
     optionPictureRemove: 'Remove picture',
     duplicateOption: 'Two answers are the same',
@@ -240,6 +248,10 @@ const cs: typeof en = {
     addOption: 'Přidat odpověď',
     removeOption: 'Odebrat odpověď',
     optionColor: 'Barva odpovědi',
+    activityVotedAnswer: 'Hlasováno "{answer}": {target}',
+    activityVotedAnswerYou: 'Hlasováno "{answer}": {target}',
+    showVotes: 'Zobrazit mé odpovědi na profilu',
+    showVotesHint: 'Na tvém profilu je u každé ankety vidět, jakou odpověď jsi zvolil. Vypni, aby se zobrazilo jen to, že jsi hlasoval.',
     optionPicture: 'Přidat obrázek',
     optionPictureRemove: 'Odebrat obrázek',
     duplicateOption: 'Dvě odpovědi jsou stejné',
@@ -351,6 +363,10 @@ const es: typeof en = {
     addOption: 'Añadir respuesta',
     removeOption: 'Quitar respuesta',
     optionColor: 'Color de la respuesta',
+    activityVotedAnswer: '{actor} votó "{answer}" en {target}',
+    activityVotedAnswerYou: 'Votaste "{answer}" en {target}',
+    showVotes: 'Mostrar mis respuestas en mi perfil',
+    showVotesHint: 'Tu perfil indica qué respuesta elegiste en cada encuesta. Desactívalo para mostrar solo que votaste.',
     optionPicture: 'Añadir imagen',
     optionPictureRemove: 'Quitar imagen',
     duplicateOption: 'Dos respuestas son iguales',
@@ -462,6 +478,10 @@ const de: typeof en = {
     addOption: 'Antwort hinzufügen',
     removeOption: 'Antwort entfernen',
     optionColor: 'Farbe der Antwort',
+    activityVotedAnswer: '{actor} hat bei {target} für "{answer}" abgestimmt',
+    activityVotedAnswerYou: 'Du hast bei {target} für "{answer}" abgestimmt',
+    showVotes: 'Meine Antworten im Profil zeigen',
+    showVotesHint: 'Dein Profil zeigt, welche Antwort du bei jeder Umfrage gewählt hast. Schalte es aus, um nur zu zeigen, dass du abgestimmt hast.',
     optionPicture: 'Bild hinzufügen',
     optionPictureRemove: 'Bild entfernen',
     duplicateOption: 'Zwei Antworten sind gleich',
@@ -573,6 +593,10 @@ const fr: typeof en = {
     addOption: 'Ajouter une réponse',
     removeOption: 'Retirer la réponse',
     optionColor: 'Couleur de la réponse',
+    activityVotedAnswer: '{actor} a voté "{answer}" sur {target}',
+    activityVotedAnswerYou: 'Vous avez voté "{answer}" sur {target}',
+    showVotes: 'Afficher mes réponses sur mon profil',
+    showVotesHint: 'Votre profil indique quelle réponse vous avez choisie à chaque sondage. Désactivez pour n\'afficher que le fait d\'avoir voté.',
     optionPicture: 'Ajouter une image',
     optionPictureRemove: "Retirer l'image",
     duplicateOption: 'Deux réponses sont identiques',
@@ -684,6 +708,10 @@ const it: typeof en = {
     addOption: 'Aggiungi risposta',
     removeOption: 'Rimuovi risposta',
     optionColor: 'Colore della risposta',
+    activityVotedAnswer: '{actor} ha votato "{answer}" su {target}',
+    activityVotedAnswerYou: 'Hai votato "{answer}" su {target}',
+    showVotes: 'Mostra le mie risposte sul profilo',
+    showVotesHint: 'Il tuo profilo indica quale risposta hai scelto in ogni sondaggio. Disattiva per mostrare solo che hai votato.',
     optionPicture: "Aggiungi un'immagine",
     optionPictureRemove: 'Rimuovi immagine',
     duplicateOption: 'Due risposte sono uguali',
@@ -795,6 +823,10 @@ const pl: typeof en = {
     addOption: 'Dodaj odpowiedź',
     removeOption: 'Usuń odpowiedź',
     optionColor: 'Kolor odpowiedzi',
+    activityVotedAnswer: 'Zagłosowano "{answer}": {target}',
+    activityVotedAnswerYou: 'Zagłosowano "{answer}": {target}',
+    showVotes: 'Pokaż moje odpowiedzi na profilu',
+    showVotesHint: 'Twój profil pokazuje, jaką odpowiedź wybrałeś w każdej ankiecie. Wyłącz, aby pokazać tylko, że głosowałeś.',
     optionPicture: 'Dodaj obrazek',
     optionPictureRemove: 'Usuń obrazek',
     duplicateOption: 'Dwie odpowiedzi są takie same',

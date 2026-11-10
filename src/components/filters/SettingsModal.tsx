@@ -79,7 +79,7 @@ function SettingsContent({
   setLocale,
 }: {
   displayName: string;
-  user: { avatarUrl: string | null; provider: string | null; tier?: string; countryCode: string | null; bio?: string | null; canChangeCountry?: boolean; countryChangeAvailableAt?: string | null } | undefined;
+  user: { avatarUrl: string | null; provider: string | null; tier?: string; countryCode: string | null; bio?: string | null; showVotes?: boolean; canChangeCountry?: boolean; countryChangeAvailableAt?: string | null } | undefined;
   isAnonymous: boolean;
   t: ReturnType<typeof useI18n>['t'];
   locale: Locale;
@@ -92,6 +92,20 @@ function SettingsContent({
   const [nameError, setNameError] = useState<string | null>(null);
   const [bioValue, setBioValue] = useState(user?.bio ?? '');
   const [bioSaving, setBioSaving] = useState(false);
+  const { p } = useI18n();
+  const [votesSaving, setVotesSaving] = useState(false);
+  const showVotes = user?.showVotes ?? true;
+  const handleShowVotes = async () => {
+    setVotesSaving(true);
+    try {
+      await updateMe({ showVotes: !showVotes });
+      await refreshIdentity(queryClient);
+    } catch {
+      // the switch stays where the server has it
+    } finally {
+      setVotesSaving(false);
+    }
+  };
   const { promptSignIn } = useSignIn();
 
   useEffect(() => {
@@ -252,6 +266,27 @@ function SettingsContent({
           </p>
         </div>
       </div>
+
+      {/* Whether the profile's activity names the answer chosen on each vote */}
+      {!isAnonymous && (
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p id="show-votes-label" className="text-xs font-medium text-white/80">{p.showVotes}</p>
+            <p className={`${HINT} mt-1`}>{p.showVotesHint}</p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={showVotes}
+            aria-labelledby="show-votes-label"
+            disabled={votesSaving}
+            onClick={handleShowVotes}
+            className={`relative shrink-0 mt-0.5 w-10 h-6 rounded-full transition-colors disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-accent ${showVotes ? 'bg-positive' : 'bg-white/20'}`}
+          >
+            <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${showVotes ? 'translate-x-4' : ''}`} />
+          </button>
+        </div>
+      )}
 
       {/* Country */}
       <div>

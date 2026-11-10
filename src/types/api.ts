@@ -58,6 +58,7 @@ export interface MeUser {
   canChangeCountry: boolean;
   countryChangeAvailableAt: string | null;
   language: string | null;
+  showVotes?: boolean;
   blockedUntil: string | null;
 }
 
@@ -174,6 +175,8 @@ export interface UserActivityItem {
   at: string;
   profile: UserProfileSummary;
   comment: { id: string; body: string; mentions: Comment['mentions'] } | null;
+  /** A vote row's chosen answer; null when the user keeps answers private. */
+  answer?: { text: string; color: string | null } | null;
 }
 
 export interface UserDetailResponse {

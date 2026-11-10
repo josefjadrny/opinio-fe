@@ -13,8 +13,8 @@ import type { UserActivityItem } from '../../types/api';
 // i18n string per kind with {actor}/{target} tokens, so each language
 // orders the sentence its own way; the *You variants carry no {actor} at
 // all, because "you" declines differently from a handle in half the
-// languages. A vote row says only that the user voted, never which answer -
-// the API does not send it.
+// languages. A vote row also names the answer when the API sends one (the
+// user's "show my answers" setting); without it, it says only that they voted.
 
 interface UserActivityListProps {
   items: UserActivityItem[];
@@ -27,9 +27,10 @@ interface UserActivityListProps {
 }
 
 // Splices React nodes into a "{actor} did {target}" template.
-function fill(template: string, parts: { actor: ReactNode; target: ReactNode }): ReactNode {
-  return template.split(/(\{actor\}|\{target\})/).map((piece, i) =>
+function fill(template: string, parts: { actor: ReactNode; target: ReactNode; answer?: ReactNode }): ReactNode {
+  return template.split(/(\{actor\}|\{target\}|\{answer\})/).map((piece, i) =>
     piece === '{actor}' ? <Fragment key={i}>{parts.actor}</Fragment>
+      : piece === '{answer}' ? <Fragment key={i}>{parts.answer}</Fragment>
       : piece === '{target}' ? <Fragment key={i}>{parts.target}</Fragment>
       : <Fragment key={i}>{piece}</Fragment>,
   );
@@ -38,14 +39,21 @@ function fill(template: string, parts: { actor: ReactNode; target: ReactNode }):
 function ActivityRow({ item, handle, isMe, index, onOpen, onOpenProfile }: {
   item: UserActivityItem; handle: string; isMe: boolean; index: number; onOpen: () => void; onOpenProfile: () => void;
 }) {
-  const { t, locale } = useI18n();
+  const { t, p, locale } = useI18n();
   const location = useLocation();
   const isComment = item.kind === 'comment';
   const template = isComment
     ? (isMe ? t.activityCommentedYou : t.activityCommented)
     : item.kind === 'vote'
-      ? (isMe ? t.activityVotedYou : t.activityVoted)
+      ? (item.answer
+          ? (isMe ? p.activityVotedAnswerYou : p.activityVotedAnswer)
+          : (isMe ? t.activityVotedYou : t.activityVoted))
       : (isMe ? t.activityPostedYou : t.activityPosted);
+  // The answer in its own colour, quoted as the strings write it. Full strength
+  // (a faded brand colour is unreadable text) - the picks are all >= 3:1.
+  const answer = item.answer ? (
+    <span className="font-semibold" style={{ color: item.answer.color ?? undefined }}>{item.answer.text}</span>
+  ) : null;
   const actor = <span className="font-semibold text-white">@{handle}</span>;
   // The target always opens the opinio itself (its country view) even on a
   // comment row - the row as a whole is what opens the thread.
@@ -70,8 +78,8 @@ function ActivityRow({ item, handle, isMe, index, onOpen, onOpenProfile }: {
       style={{ '--i': Math.min(index, 8) } as CSSProperties}
       className="activity-row-in group flex gap-2.5 md:gap-3 px-2 md:px-2.5 py-2 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 hover:bg-surface-light/70 hover:translate-x-0.5 transition-all duration-200 cursor-pointer select-none"
     >
-      {/* Kind glyph, two-tone like every app icon. A vote shows only that the
-          user voted (a ticked box), never which answer - the API does not send it. */}
+      {/* Kind glyph, two-tone like every app icon. A vote is a ticked box; the
+          answer, when public, is in the caption. */}
       <span className="shrink-0 -my-0.5 w-7 h-7 rounded-full flex items-center justify-center bg-white/[0.06] ring-1 ring-white/10 transition-transform duration-200 group-hover:scale-110">
         {isComment ? <CommentIcon className="w-4 h-4" /> : item.kind === 'vote' ? <VotedIcon /> : <NewPollIcon />}
       </span>
@@ -80,7 +88,7 @@ function ActivityRow({ item, handle, isMe, index, onOpen, onOpenProfile }: {
             a right-aligned "před 49 minutami" leaves a 390px row no room
             for the sentence. */}
         <p className="text-sm text-white/70 leading-snug">
-          {fill(template, { actor, target })}
+          {fill(template, { actor, target, answer })}
           <span className="text-xs text-white/50 whitespace-nowrap"> · {formatRelativeTime(item.at, locale, t.justNow)}</span>
         </p>
       </div>
