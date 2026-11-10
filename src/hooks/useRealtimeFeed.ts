@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import type { Profile } from '../types/profile';
-import type { NewsItem } from '../types/api';
-import { getNews, getProfile, isNotFound } from '../api/client';
+import { getProfile, isNotFound } from '../api/client';
 import { useI18n } from '../i18n/I18nContext';
 
 const API_URL = import.meta.env.OPINIO_API_URL as string;
@@ -15,15 +13,10 @@ const VISIBILITY_GRACE_MS = 60_000;
 
 type Message =
   | { type: 'hello' }
-  | { type: 'profile_created'; profile: Profile }
-  | { type: 'news_created'; newsId: string };
+  | { type: 'profile_created'; profile: Profile };
 
-// What the live banner shows, in arrival order. One queue for both kinds: they
-// share the banner's slot, so a news item waits its turn behind a new opinio
-// and the other way round.
-export type LiveItem =
-  | { kind: 'opinio'; profile: Profile }
-  | { kind: 'news'; news: NewsItem };
+// What the live banner shows, in arrival order.
+export type LiveItem = { kind: 'opinio'; profile: Profile };
 
 export function useRealtimeFeed(enabled: boolean) {
   const [queue, setQueue] = useState<LiveItem[]>([]);
@@ -34,9 +27,6 @@ export function useRealtimeFeed(enabled: boolean) {
   // reads the current value without reconnecting the socket on every language
   // switch.
   const { locale } = useI18n();
-  // Stable for the app's lifetime, so listing it in the socket effect's deps
-  // never reconnects.
-  const queryClient = useQueryClient();
   const localeRef = useRef(locale);
   localeRef.current = locale;
 
@@ -93,19 +83,6 @@ export function useRealtimeFeed(enabled: boolean) {
               if (isNotFound(err)) return;
               push({ kind: 'opinio', profile: original });
             });
-        }
-        if (msg.type === 'news_created' && msg.newsId) {
-          // The map caption's rotation reads the latest list; refresh it now
-          // rather than on its next minute's poll (the API dropped its cached
-          // copy on the same event), even if the banner queue is full.
-          queryClient.invalidateQueries({ queryKey: ['news', 'latest'] });
-          if (queueRef.current.length >= QUEUE_CAP) return;
-          // Only the id is pushed; the item is read in the viewer's locale
-          // (sent after its translation landed). Nothing to fall back to, so a
-          // failed read drops it.
-          getNews(msg.newsId, localeRef.current)
-            .then((news) => push({ kind: 'news', news }))
-            .catch(() => {});
         }
       };
 
@@ -175,7 +152,7 @@ export function useRealtimeFeed(enabled: boolean) {
         try { ws.close(); } catch { /* noop */ }
       }
     };
-  }, [enabled, queryClient]);
+  }, [enabled]);
 
   return { next: queue[0], dequeue, queueLength: queue.length };
 }

@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PollThumb } from '../poll/PollThumb';
-import { Avatar } from '../profile/Avatar';
 import { RoleBadge } from '../common/RoleBadge';
 import { useRealtimeFeed } from '../../hooks/useRealtimeFeed';
 import { useI18n } from '../../i18n/I18nContext';
-import { CountryFlag, FlagImg } from '../common/CountryFlag';
-import { AiSource } from '../news/NewsBits';
 
 const FADE_IN_MS = 500;
 const HOLD_MS = 10_000;
@@ -15,13 +12,8 @@ const GAP_MS = 3_000;
 
 type Phase = 'in' | 'hold' | 'out' | 'gap';
 
-// The two things the live slot announces. Same card, timing and behaviour;
-// the accent and the label tell them apart at a glance - orange is the
-// app's "new" signal and stays with opinios. News takes the brand red as a
-// broadcast-style pulsing NEWS pill: the pill's text is the lifted red, since
-// --color-accent itself sits just under 4.5:1 on the navy.
-const VARIANTS = {
-  opinio: {
+// The live slot's look: orange is the app's "new" signal.
+const V = {
     border: 'border-orange-500/70',
     borderHover: 'border-orange-400',
     label: 'text-orange-400',
@@ -29,16 +21,6 @@ const VARIANTS = {
     shadow: '0 0 0 1px rgba(249,115,22,0.35), 0 10px 30px -10px rgba(249,115,22,0.55), 0 18px 50px -20px rgba(0,0,0,0.6)',
     shadowHover: '0 0 0 1px rgba(249,115,22,0.55), 0 12px 36px -10px rgba(249,115,22,0.75), 0 18px 50px -20px rgba(0,0,0,0.6)',
     glow: 'rgba(249,115,22,0.18)',
-  },
-  news: {
-    border: 'border-accent/70',
-    borderHover: 'border-accent',
-    label: 'live-pill text-negative-soft bg-accent/15 border border-accent/60 rounded-full px-2 py-0.5',
-    dot: 'bg-accent',
-    shadow: '0 0 0 1px rgba(233,69,96,0.35), 0 10px 30px -10px rgba(233,69,96,0.55), 0 18px 50px -20px rgba(0,0,0,0.6)',
-    shadowHover: '0 0 0 1px rgba(233,69,96,0.55), 0 12px 36px -10px rgba(233,69,96,0.75), 0 18px 50px -20px rgba(0,0,0,0.6)',
-    glow: 'rgba(233,69,96,0.2)',
-  },
 } as const;
 
 export function HotBanner({
@@ -56,11 +38,8 @@ export function HotBanner({
   const { next, dequeue, queueLength } = useRealtimeFeed(enabled);
   const navigate = useNavigate();
   const location = useLocation();
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const [phase, setPhase] = useState<Phase>('in');
-  // The news item (by id) the reader switched to its English original. Keyed
-  // by id, so the next item starts translated again without an effect.
-  const [originalFor, setOriginalFor] = useState<string | null>(null);
   const [hovered, setHovered] = useState(false);
   const hoveredRef = useRef(false);
   hoveredRef.current = hovered;
@@ -140,27 +119,11 @@ export function HotBanner({
 
   if (!showBanner) return null;
 
-  // An opinio opens its detail, a news item its story on the news page.
-  const go = next.kind === 'opinio'
-    ? () => navigate('/p/' + next.profile.id + location.search)
-    : () => navigate('/n/' + next.news.id + location.search);
-  const v = VARIANTS[next.kind];
-  // Same "See original" toggle as the opinio detail: news text is machine
-  // translated, and this is where a reader can check it.
-  const translated = next.kind === 'news' && locale !== 'en'
-    && (next.news.title !== next.news.originalTitle || next.news.body !== next.news.originalBody);
-  const showingOriginal = translated && next.kind === 'news' && originalFor === next.news.id;
-  const card = next.kind === 'opinio'
-    ? { name: next.profile.name, imageUrl: next.profile.imageUrl, title: next.profile.name,
-        text: next.profile.description || next.profile.options.map((o) => o.text).join(' / '), role: next.profile.role, countryCode: null,
-        label: t.justReported, source: null }
-    : { name: next.news.person.name, imageUrl: next.news.person.photoUrl,
-        title: showingOriginal ? next.news.originalTitle : next.news.title,
-        text: showingOriginal ? next.news.originalBody : next.news.body, role: next.news.role, countryCode: next.news.countryCode,
-        label: t.newsLabel, source: next.news.sourceName };
-  // A news item whose person has no photo yet shows its country's flag as the
-  // picture; the inline flag after the title would then say it twice.
-  const flagAsPicture = next.kind === 'news' && !card.imageUrl;
+  const go = () => navigate('/p/' + next.profile.id + location.search);
+  const v = V;
+  const card = { title: next.profile.name,
+    text: next.profile.description || next.profile.options.map((o) => o.text).join(' / '), role: next.profile.role,
+    label: t.justReported };
   const inAnim = mobile ? 'hot-banner-in-up' : 'hot-banner-in';
   const outAnim = mobile ? 'hot-banner-out-down' : 'hot-banner-out';
   // Held under the cursor: no animation and a pinned opacity, so a card whose
@@ -218,58 +181,27 @@ export function HotBanner({
             title with its flag and category inline after it, then the text.
             The banner sits a size up from the card, and another step up on
             very wide screens, where it also widens with the map. */}
-        {flagAsPicture ? (
-          <div
-            aria-hidden
-            className={`shrink-0 rounded-full ring-2 ring-white/5 bg-white/[0.06] flex items-center justify-center transition-transform duration-500 ease-out ${hovered ? 'scale-[1.04]' : ''} ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
-          >
-            {card.countryCode && <FlagImg code={card.countryCode} size={mobile ? 26 : 30} />}
-          </div>
-        ) : next.kind === 'opinio' ? (
-          <PollThumb
-            role={next.profile.role}
-            imageUrl={next.profile.imageUrl}
-            className={`shrink-0 ring-2 ring-white/5 transition-transform duration-500 ease-out ${hovered ? 'scale-[1.04]' : ''} ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
-          />
-        ) : (
-          <Avatar
-            name={card.name}
-            imageUrl={card.imageUrl}
-            className={`shrink-0 ring-2 ring-white/5 transition-transform duration-500 ease-out ${hovered ? 'scale-[1.04]' : ''} ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
-          />
-        )}
+        <PollThumb
+          role={next.profile.role}
+          imageUrl={next.profile.imageUrl}
+          className={`shrink-0 ring-2 ring-white/5 transition-transform duration-500 ease-out ${hovered ? 'scale-[1.04]' : ''} ${mobile ? 'w-12 h-12' : 'w-14 h-14 min-[2200px]:w-16 min-[2200px]:h-16'}`}
+        />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 min-w-0">
             <div className={`shrink-0 uppercase font-bold ${v.label} ${mobile ? 'text-[11px] tracking-widest' : 'text-xs tracking-[0.16em] min-[2200px]:text-sm'}`}>
-              {/* The dot pings on the same 2s-ish beat as the news pill's glow. */}
               <span className={`relative inline-flex mr-1.5 align-middle ${mobile ? 'w-1.5 h-1.5' : 'w-2 h-2'}`}>
                 <span className={`absolute inset-0 rounded-full ${v.dot} animate-ping motion-reduce:hidden`} />
                 <span className={`relative w-full h-full rounded-full ${v.dot}`} />
               </span>
               {card.label}
             </div>
-            {/* News credits the outlet its facts came from, with the AI mark. */}
-            {card.source && <AiSource name={card.source} className={`text-white/50 ${mobile ? 'text-[11px]' : 'text-xs min-[2200px]:text-sm'}`} markClassName={mobile ? 'w-3.5 h-3.5' : 'w-4 h-4 min-[2200px]:w-5 min-[2200px]:h-5'} />}
-            {/* Swaps the text in place; it must not open the article, nor
-                count as the mobile tap that dismisses the banner. */}
-            {translated && next.kind === 'news' && (
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); setOriginalFor(showingOriginal ? null : next.news.id); }}
-                className={`shrink-0 text-white/50 hover:text-white underline-offset-2 hover:underline transition-colors ${mobile ? 'text-[11px]' : 'text-xs min-[2200px]:text-sm'}`}
-              >
-                {showingOriginal ? t.seeTranslation : t.seeOriginal}
-              </button>
-            )}
           </div>
           <div className="flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
-            {/* Two lines at most: a translated news title runs up to ~1.8x
-                the English one, which is capped to fit one desktop line. */}
+            {/* Two lines at most. */}
             <span className={`font-semibold text-white leading-snug break-words min-w-0 line-clamp-2 ${mobile ? 'text-sm' : 'text-lg min-[2200px]:text-xl'}`}>
               {card.title}
             </span>
             <div className="flex items-center gap-1.5 shrink-0">
-              {!flagAsPicture && card.countryCode && <CountryFlag code={card.countryCode} tip={false} />}
               <RoleBadge role={card.role} className={mobile ? undefined : 'text-xs! px-2! py-1! min-[2200px]:text-sm!'} />
             </div>
           </div>

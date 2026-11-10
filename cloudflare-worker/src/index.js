@@ -15,8 +15,7 @@ const PROFILE_LANG_PATH_RE = /^\/(cs|es|de|fr|it|pl)\/p\/([^\/]+)\/?$/;
 const LANG_PREFIX_RE = /^\/(cs|es|de|fr|it|pl)(\/.*)?$/;
 const USER_PATH_RE = /^\/u\/([^\/]+)\/?$/;
 const COUNTRY_PATH_RE = /^\/c\/([^\/]+)\/?$/;
-// /news and /n/<id> (the news page and one story). Matched without the id
-// check: a bad id is the SPA's not-found, and the page is noindex either way.
+// /news and /n/<id>: the removed news pages, all answered 410.
 const NEWS_PATH_RE = /^\/(?:news|n\/[^\/]+)\/?$/;
 const COUNTRY_CODE_RE = /^[A-Z]{2}$/;
 
@@ -1051,30 +1050,18 @@ async function handleHome(request, lang = null) {
   return new Response(html, { status: 200, headers });
 }
 
-// /news and /n/<id>. S3 has no file for them, so without the worker they came
-// back 404 (with the home canonical) while the SPA rendered fine. Served 200
-// but noindex: the stories are AI summaries of other outlets' feeds, which is
-// not content to put in Google's index. "follow" keeps the links to opinios
-// crawlable.
-async function handleNews(request, path, lang = null) {
+// /news and /n/<id>: news is gone for good, so every such URL is 410 Gone
+// (Google drops it faster than a 404 and stops recrawling). The shell is still
+// served, so a person following an old link lands in the app.
+async function handleNews(request) {
   const shellRes = await fetchShellHtml(request);
   const shellText = await shellRes.text();
   const headers = new Headers();
   headers.set('content-type', 'text/html; charset=utf-8');
   headers.set('cache-control', 'public, max-age=300, s-maxage=300');
-  headers.set('x-opinio-og', lang ? 'news-lang' : 'news');
+  headers.set('x-opinio-og', 'gone');
   headers.set('x-robots-tag', NOINDEX);
-  const html = injectProfileMeta(shellText, {
-    title: 'News - Opinio',
-    description: 'The news stories people on Opinio are voting on right now.',
-    image: DEFAULT_OG_IMAGE,
-    imageAlt: 'Opinio',
-    url: lang ? `${SITE_BASE}/${lang}${path}` : `${SITE_BASE}${path}`,
-    isAvatar: false,
-    ogLocale: lang ? LANG_UI[lang].ogLocale : null,
-    noindex: true,
-  });
-  return new Response(html, { status: 200, headers });
+  return new Response(shellText, { status: 410, headers });
 }
 
 // lang = null → bare English (/c/<code>); lang set → prefixed (/<lang>/c/<code>),
@@ -1146,7 +1133,7 @@ function handleLangPrefixed(request, lang, inner) {
   }
 
   if (NEWS_PATH_RE.test(inner)) {
-    return handleNews(request, inner, lang);
+    return handleNews(request);
   }
 
   const staticPage = STATIC_PAGES[inner];
@@ -1200,7 +1187,7 @@ export default {
     }
 
     if (NEWS_PATH_RE.test(path)) {
-      return handleNews(request, path);
+      return handleNews(request);
     }
 
     const profileMatch = path.match(PROFILE_PATH_RE);

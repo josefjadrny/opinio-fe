@@ -1,21 +1,12 @@
-import { useEffect, useMemo, useRef, useState, type AnimationEvent, type ReactNode } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useFilters } from '../../context/useFilters';
-import { getCountryName } from '../../utils/countries';
-import { Avatar } from '../profile/Avatar';
+import { useEffect, useMemo, useRef, useState, type AnimationEvent } from 'react';
 import { PollThumb } from '../poll/PollThumb';
 import { FlagImg } from '../common/CountryFlag';
 import { HoverTip } from '../common/HoverTip';
-import { AiMark } from '../news/NewsBits';
-import { RoleBadge } from '../common/RoleBadge';
 import { useI18n } from '../../i18n/I18nContext';
 import { useSubjectSwap } from '../../hooks/useSubjectSwap';
-import { useLatestNews } from '../../hooks/useLatestNews';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import type { Profile } from '../../types/profile';
-import type { NewsItem } from '../../types/api';
 import { LogoIntro } from '../common/LogoIntro';
-import { formatRelativeTime } from '../../utils/formatRelativeTime';
 
 // What the caption is currently about. The two subject kinds are the two
 // voter-side map tints (see WorldMap): one opinio, or one country's opinios.
@@ -23,8 +14,8 @@ export type CaptionSubject =
   | { kind: 'profile'; key: string; profile: Profile }
   | { kind: 'country'; key: string; code: string; name: string };
 
-// A slide of the default state's rotation: the news kind exists only there.
-type Shown = CaptionSubject | { kind: 'news'; key: string; news: NewsItem } | { kind: 'notice'; key: string };
+// A slide of the rotation: the subject, then the notice.
+type Shown = CaptionSubject | { kind: 'notice'; key: string };
 
 // The relaunch announcement, the second slide of every rotation. Hard-coded
 // here rather than in the i18n files on purpose: it is temporary - delete the
@@ -41,9 +32,8 @@ const NOTICE: Record<string, { label: string; title: string; text: string; more:
 const NOTICE_SLIDE = { kind: 'notice' as const, key: 'notice' };
 
 // The default state rotates: the Opinio mark first - it is what a new visitor
-// should read before anything else - then the relaunch notice, then the five
-// newest news items (the
-// last 12 hours), 10s each, then the mark again. It
+// should read before anything else - then the relaunch notice, 10s each, then
+// the mark again. It
 // holds while the pointer is on the card and while HotBanner has the slot, and
 // never advances by itself under reduced motion; the dots switch by hand.
 //
@@ -56,10 +46,10 @@ const NOTICE_SLIDE = { kind: 'notice' as const, key: 'notice' };
 // only changes what the FIRST slot holds (the mark, the opinio, the country):
 // if that slot is up, it crossfades to the new subject and gets a fresh 10s
 // (the change was asked for, so it is not the banner moving by itself); if a
-// news item is up, nothing on screen changes and the new subject waits for its
+// notice is up, nothing on screen changes and the new subject waits for its
 // turn. So the caption can name something other than the tint for a while -
 // accepted: the modal and the sidebars name the opinio, and the X sits on the
-// card through the news. A fresh load always starts on the first slot, so a
+// card through the notice. A fresh load always starts on the first slot, so a
 // first visit and a crawler still get the opinio's h1 / home's h2 there.
 const SLIDE_MS = 10_000;
 const SUBJECT_SLOT = 'subject';
@@ -177,14 +167,14 @@ const SUBJECT_SLOT = 'subject';
 // the ring, the blur, the padding, and the container query the type is sized
 // from. It holds no layout of its own beyond the stack; the row does that.
 //
-// One fixed height for every state (min-h on the stack), sized for the news
+// One fixed height for every state (min-h on the stack), sized for the notice
 // row - label, two-line title, two lines of text - so the card never jumps as the
 // rotation or the subject changes. It grows with the card's width, since a wide
 // card has the room to say more: at 1366-1536 (460px card) the title takes two
 // lines and so does the text - one line of text there was all a MacBook (1440,
 // 1512) ever showed of it; from 700px of card (Full HD) the title holds one
 // line; from 900px the text steps up a size, and from 1100px (2560 and up) the
-// picture and the type do as well. Each minimum is the tallest news row
+// picture and the type do as well. Each minimum is the tallest row
 // measured at that size, so no slide makes the card grow.
 const CARD =
   '@container relative isolate w-full rounded-xl backdrop-blur-md ring-1 shadow-xl shadow-black/20 px-5 py-[14px] transition-[background-color,box-shadow] duration-200';
@@ -236,7 +226,7 @@ const NAME = 'font-extrabold tracking-tight leading-[1.15]';
 // collapses on a narrow one; between those it tracks the column.
 // Set a step up from the original 18-30px with the taller card the rotation
 // brought, so an opinio or a country reads at the same scale as the promo and
-// the news beside it. Below the promo's own wordmark size: these are names of
+// the notice beside it. Below the promo's own wordmark size: these are names of
 // up to 40 characters, not a five-letter word.
 const NAME_SIZE = 'clamp(22px, 4.8cqi, 40px)';
 
@@ -248,7 +238,7 @@ const NAME_SIZE = 'clamp(22px, 4.8cqi, 40px)';
 const KICKER = 'font-semibold uppercase tracking-[0.16em] leading-5 text-white/50';
 const KICKER_SIZE = 'clamp(11px, 2.4cqi, 16px)';
 
-// Every state fills the taller card the news rotation needs: the picture (the
+// Every state fills the taller card the notice slide needs: the picture (the
 // mark, an opinio's avatar, a country's flag) grows with it, so no state sits
 // as a small island in a large card. The spacer mirrors the picture at each
 // size to keep the text centred (see SPACER).
@@ -272,23 +262,15 @@ export function MapProfileTitle({
   const reducedMotion = useReducedMotion();
   // Every state rotates the same way: what the caption is about - the mark on
   // the global map, the open opinio or country on a detail - is the first
-  // slide, then the news. The subject's dismiss X stays on the card through the
-  // news slides, since the map stays tinted for the subject all the while.
+  // slide, then the notice. The subject's dismiss X stays on the card through
+  // the notice, since the map stays tinted for the subject all the while.
   const subjectKey = subject?.key ?? 'global';
-  const { data: latest } = useLatestNews(true);
   // Memoized, not rebuilt per render: useSubjectSwap compares the shown value by
-  // identity, so a fresh news-slide object on every render made it set state on
+  // identity, so a fresh slide object on every render made it set state on
   // every commit - an endless re-render that starved the router's navigation
   // transition (a map or flag click changed the URL and nothing opened).
-  const slides = useMemo<(Shown | null)[]>(
-    () => [subject, NOTICE_SLIDE, ...(latest?.items ?? []).map((n) => ({ kind: 'news' as const, key: 'n:' + n.id, news: n }))],
-    [subject, latest],
-  );
-  // The slide is followed by its key, not its position: a new item enters the
-  // list at the top and shifts every news slide down one, and a position would
-  // swap the story on screen mid-turn (it then got a few seconds, and the next
-  // turn showed it again). A key that left the list (aged out) restarts at the
-  // first slot. The first slot's key is SUBJECT_SLOT whatever it holds, which is
+  const slides = useMemo<(Shown | null)[]>(() => [subject, NOTICE_SLIDE], [subject]);
+  // The slide is followed by its key, not its position. The first slot's key is SUBJECT_SLOT whatever it holds, which is
   // what keeps the cycle's place when the subject changes.
   const [slideKey, setSlideKey] = useState(SUBJECT_SLOT);
   const [hovered, setHovered] = useState(false);
@@ -349,8 +331,8 @@ export function MapProfileTitle({
     };
   }, [paused, clockKey, nextKey]);
   const shown: Shown | null = slides[at];
-  // Subject keys are namespaced by kind ('p:<id>' / 'c:<CODE>' / 'n:<id>'), so
-  // an opinio, a country and a news item can never collide and moving between
+  // Subject keys are namespaced by kind ('p:<id>' / 'c:<CODE>'), so
+  // an opinio and a country can never collide and moving between
   // them crossfades like any other subject change.
   // The rotation's dissolve outlasts the swap's default 600ms failsafe.
   const { current, outgoing, endOutgoing } = useSubjectSwap(shown?.key ?? 'global', shown, 1_000);
@@ -370,9 +352,9 @@ export function MapProfileTitle({
       }`}
       aria-hidden={suppressed}
     >
-      {/* The card takes the pointer only while it rotates news: hovering holds
-          the slide and a news row opens its article. Otherwise it stays
-          transparent to the map under it. */}
+      {/* The card takes the pointer only while it rotates: hovering holds the
+          slide and the notice's link opens. Otherwise it stays transparent to
+          the map under it. */}
       <div
         className={`${CARD} ${slides.length > 1 ? 'pointer-events-auto' : ''} ${
           hovered ? 'bg-surface-light/80 ring-white/25' : 'bg-surface-light/60 ring-white/[0.08]'
@@ -381,15 +363,7 @@ export function MapProfileTitle({
         onMouseLeave={() => setHovered(false)}
       >
         {/* Hover holds the rotation, and the card says so: a firmer surface and
-            ring, plus the sidebar card's corner glow in the news pill's red while a
-            news slide is up. No lift - the card itself opens nothing. */}
-        <div
-          aria-hidden
-          className={`pointer-events-none absolute inset-0 -z-10 rounded-[inherit] transition-opacity duration-300 ${
-            hovered && current.value?.kind === 'news' ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{ background: 'radial-gradient(120% 80% at 0% 0%, rgba(233,69,96,0.24), transparent 65%)' }}
-        />
+            ring. No lift - the card itself opens nothing. */}
         {/* One grid cell holding both rows (see STACK), so the outgoing subject
             fades out over the incoming one instead of before it. Its height is
             the taller of the two, which for equal-height rows is simply the row
@@ -415,7 +389,7 @@ export function MapProfileTitle({
                 key={keyOf(s, i)}
                 type="button"
                 onClick={() => goTo(keyOf(s, i))}
-                aria-label={s?.kind === 'news' ? s.news.title : s?.kind === 'notice' ? (NOTICE[locale] ?? NOTICE.en).title : s?.kind === 'profile' ? s.profile.name : s?.kind === 'country' ? s.name : t.appName}
+                aria-label={s?.kind === 'notice' ? (NOTICE[locale] ?? NOTICE.en).title : s?.kind === 'profile' ? s.profile.name : s?.kind === 'country' ? s.name : t.appName}
                 aria-current={i === at || undefined}
                 className="p-1.5"
               >
@@ -482,13 +456,6 @@ function CaptionRow({
 }) {
   const { t, p } = useI18n();
   const leaving = motion === 'caption-leave' || motion === 'caption-slide-leave';
-  if (subject?.kind === 'news') {
-    return (
-      <div className={`${STACK} ${motion}`} onAnimationEnd={onAnimationEnd} aria-hidden={leaving || undefined}>
-        <NewsRow news={subject.news} />
-      </div>
-    );
-  }
   if (subject?.kind === 'notice') {
     return (
       <div className={`${STACK} ${motion}`} onAnimationEnd={onAnimationEnd} aria-hidden={leaving || undefined}>
@@ -570,9 +537,9 @@ function CaptionRow({
   );
 }
 
-// The announcement slide, styled as a news row - picture, label pill with its
-// source line, title, text - with the Opinio mark for the picture and the
-// brand green for the pill, so it reads as Opinio's own news. The source line
+// The announcement slide - picture, label pill with its source line, title,
+// text - with the Opinio mark for the picture and the brand green for the
+// pill, so it reads as an announcement from Opinio. The source line
 // links to the full story on Facebook.
 const FACEBOOK_URL = 'https://www.facebook.com/opinio.live';
 
@@ -584,9 +551,8 @@ function NoticeRow() {
       {/* The Opinio mark, the same disc as the first slide: this is Opinio
           speaking. Its clip plays once per visit, so here it is the logo. */}
       <LogoIntro className={`caption-mark ${PROMO_MARK} shrink-0`} />
-      {/* The news row's text column, line for line: the label pill (in the
-          brand green instead of the news red) with its source line - here the
-          link to the full story on Facebook - then the title, then the text. */}
+      {/* The label pill with its source line - the link to the full story on
+          Facebook - then the title, then the text. */}
       <div className="caption-text min-w-0 flex-1 text-left">
         <div className="flex items-center gap-2 min-w-0 text-xs @[900px]:text-sm">
           <span className="shrink-0 uppercase font-bold tracking-[0.16em] text-positive bg-positive/15 border border-positive/60 rounded-full px-2 py-0.5">
@@ -615,126 +581,6 @@ function NoticeRow() {
           </span>
         </div>
         <p className="text-text-secondary leading-snug mt-0.5 text-sm line-clamp-3 @[900px]:text-base">{n.text}</p>
-      </div>
-    </div>
-  );
-}
-
-// A news slide: the HotBanner card's anatomy at the caption's size - picture,
-// the news pill with the source and age, the title with its flag and category,
-// a line of text. Left-aligned, unlike the centred subject rows: it is
-// something to read, not a name to frame. Plain spans, never headings - the
-// mark's h2 is home's only content heading.
-//
-// The picture, the title and the text open the story's page on the news page; a flag
-// opens that country's detail, the category chip filters by it, and the source
-// name opens the article. Safe to click: hovering the caption pauses its
-// rotation, so the slide cannot change between aiming and clicking.
-function host(url: string): string {
-  try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; }
-}
-
-function NewsRow({ news }: { news: NewsItem }) {
-  const { t, locale } = useI18n();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { toggleRole } = useFilters();
-  const country = getCountryName(news.countryCode, locale);
-  const toCountry = () => navigate('/c/' + news.countryCode + location.search);
-  const toStory = () => navigate('/n/' + news.id + location.search);
-  // On home the chip toggles the filter in place. On a detail (/p, /c, /u) it
-  // goes to the filtered home feed instead: toggling there pushed
-  // /p/<id>?roles=x as a new history entry, so the detail's close (one step
-  // back) landed on the same detail and seemed not to work.
-  const filterByRole = () => {
-    if (location.pathname === '/') return toggleRole(news.role);
-    const params = new URLSearchParams(location.search);
-    const roles = (params.get('roles') ?? '').split(',').filter(Boolean);
-    if (!roles.includes(news.role)) roles.push(news.role);
-    params.set('roles', roles.join(','));
-    navigate('/?' + params.toString());
-  };
-  const onKey = (go: () => void) => (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
-  };
-  // A flag that opens its country, named on hover - most people cannot read
-  // every flag (same as the sidebar card's).
-  const flagLink = (flag: ReactNode, className = '') => (
-    <HoverTip label={country}>
-      <span role="link" tabIndex={0} aria-label={country} onClick={toCountry} onKeyDown={onKey(toCountry)}
-        className={`cursor-pointer hover:opacity-80 transition-opacity ${className}`}>
-        {flag}
-      </span>
-    </HoverTip>
-  );
-  // The flag (only when the picture is a photo - a flag picture already says
-  // it) and the category. Both are sized for the sidebar cards by default and
-  // read as an afterthought beside this title, so they step up with it.
-  const tags = (flag: number) => (
-    <>
-      {news.person.photoUrl && flagLink(<FlagImg code={news.countryCode} size={flag} />, 'inline-flex')}
-      <HoverTip label={`${t.filterBy}: ${t.roles[news.role]}`}>
-        <span role="button" tabIndex={0} onClick={filterByRole} onKeyDown={onKey(filterByRole)}
-          className="cursor-pointer hover:opacity-80 transition-opacity">
-          <RoleBadge role={news.role} className="text-xs! px-2! py-1! @[1100px]:text-sm!" />
-        </span>
-      </HoverTip>
-    </>
-  );
-  const PICTURE = 'caption-mark w-[64px] h-[64px] @[700px]:w-[80px] @[700px]:h-[80px] @[1100px]:w-[96px] @[1100px]:h-[96px] shrink-0';
-  return (
-    <div className="flex w-full max-w-[960px] @[1100px]:max-w-[1120px] mx-auto items-center gap-4 @[1100px]:gap-5 pb-2">
-      {news.person.photoUrl ? (
-        <span role="link" tabIndex={0} aria-label={news.title} onClick={toStory} onKeyDown={onKey(toStory)} className="block shrink-0 cursor-pointer rounded-full transition-transform duration-300 hover:scale-[1.04]">
-          <Avatar name={news.person.name} imageUrl={news.person.photoUrl} className={`${PICTURE} ring-2 ring-white/10`} />
-        </span>
-      ) : (
-        flagLink(
-          <span className={`${PICTURE} rounded-full bg-white/[0.06] ring-2 ring-white/10 flex items-center justify-center overflow-hidden`}>
-            <FlagImg code={news.countryCode} size={40} />
-          </span>,
-          'block shrink-0',
-        )
-      )}
-      <div className="caption-text min-w-0 flex-1 text-left">
-        <div className="flex items-center gap-2 min-w-0 text-xs @[900px]:text-sm">
-          <span className="live-pill shrink-0 uppercase font-bold tracking-[0.16em] text-negative-soft bg-accent/15 border border-accent/60 rounded-full px-2 py-0.5">
-            <span className="relative inline-flex w-1.5 h-1.5 mr-1.5 align-middle">
-              <span className="absolute inset-0 rounded-full bg-accent animate-ping motion-reduce:hidden" />
-              <span className="relative w-1.5 h-1.5 rounded-full bg-accent" />
-            </span>
-            {t.newsLabel}
-          </span>
-          {/* "Source ✨ · time", as AiSource lays it out: only the name truncates. */}
-          <span className="min-w-0 flex items-center gap-1 text-white/50">
-            <span className="truncate">
-              {/* Same tip as an opinio's SourceLink: "Source: theguardian.com". */}
-              <HoverTip label={`${t.sourceLink}: ${host(news.sourceUrl)}`} className="inline">
-                <a
-                  href={news.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white/70 hover:text-white underline decoration-white/30 underline-offset-2 hover:decoration-white transition-colors"
-                >
-                  {news.sourceName}
-                </a>
-              </HoverTip>
-            </span>
-            <AiMark className="w-3.5 h-3.5 @[900px]:w-4 @[900px]:h-4" />
-            <span className="shrink-0 whitespace-nowrap">· {formatRelativeTime(news.createdAt, locale, t.justNow)}</span>
-          </span>
-          {/* On the narrow card (1366-1536) the title already takes two lines,
-              so the flag and the category ride up here instead of wrapping to
-              a third; from 700px they sit after the title, as on every card. */}
-          <span className="flex items-center gap-1.5 shrink-0 @[700px]:hidden">{tags(18)}</span>
-        </div>
-        <div className="mt-1 flex items-center gap-x-1.5 gap-y-0.5 flex-wrap min-w-0">
-          <span role="link" tabIndex={0} onClick={toStory} onKeyDown={onKey(toStory)} className="font-semibold text-white leading-snug line-clamp-2 min-w-0 cursor-pointer hover:underline decoration-white/40 underline-offset-4" style={{ fontSize: 'clamp(15px, 2.6cqi, 26px)' }}>
-            {news.title}
-          </span>
-          <span className="hidden @[700px]:flex items-center gap-2 shrink-0">{tags(24)}</span>
-        </div>
-        <p onClick={toStory} className="text-text-secondary leading-snug mt-0.5 text-sm line-clamp-2 @[900px]:text-base cursor-pointer hover:text-white/80 transition-colors">{news.body}</p>
       </div>
     </div>
   );

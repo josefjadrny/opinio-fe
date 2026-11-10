@@ -154,8 +154,6 @@ export interface Strings {
   termsImageUploadsBody: string;
   termsVotingTitle: string;
   termsVotingBody: string;
-  termsNewsTitle: string;
-  termsNewsBody: string;
   termsSubscriptionTitle: string;
   termsSubscriptionBody: string;
   termsLiabilityTitle: string;
@@ -298,19 +296,6 @@ export interface Strings {
   notifOthersFew: string;
   notifOthersMany: string;
   justReported: string;
-  // The red pill that marks a news item, on the live banner and the map caption.
-  // Says "news", not "live": the item is laid out like an opinio card, so the
-  // word is all that tells the two apart.
-  newsLabel: string;
-  // The AI Act disclosure on news (Art. 50(4)): the title and body are written
-  // by a model with no human review. Tip and label of the sparkles mark beside
-  // the source, and the line under a story's body.
-  newsAiNote: string;
-  newsOnTheNews: string;
-  newsLinkRemove: string;
-  newsLinkRemoveTitle: string;
-  newsLinkRemoveBody: string;
-  newsLinkRemoveConfirm: string;
   delete: string;
   deleteProfile: string;
   deleteProfileConfirm: string;
@@ -469,7 +454,7 @@ const en: Strings = {
   privacyRightsBody: 'Under GDPR you have the right to access, correct, or delete your data, or to object to processing. Contact us through {support} or by email at {email}. We respond within 7 days.',
   privacyOpenSupport: 'Open support',
   terms: 'Terms',
-  termsLastUpdated: 'Last updated: November 6, 2026',
+  termsLastUpdated: 'Last updated: November 10, 2026',
   termsOperatorTitle: 'Operator',
   termsOperatorBody: 'Operator: {operator}. Contact: {email}.',
   termsAcceptTitle: 'Using Opinio',
@@ -494,8 +479,6 @@ const en: Strings = {
   termsImageUploadsBody: 'One optional image per poll and one small picture per answer: JPEG, PNG or WebP up to 10 MB, resized on our server. Uploads are automatically scanned and rejected if flagged for explicit nudity or hate symbols. Child sexual abuse material is strictly prohibited, separately detected at serve time, and reported as required by EU law. By uploading you confirm you have the right to share the image and grant Opinio a non-exclusive license to host and display it.',
   termsVotingTitle: 'Voting',
   termsVotingBody: 'You can vote once on each poll. Without an account you can cast one vote a day; signed in, you can vote on every poll and change your vote. Votes do not expire. A vote counts for your country at the time you cast it.',
-  termsNewsTitle: 'News',
-  termsNewsBody: 'News summaries are written by AI from publicly available news feeds. Each one links its source and may contain mistakes - the linked article is the authority.',
   termsSubscriptionTitle: 'Supporter subscription',
   termsSubscriptionBody: 'The Supporter subscription is €3.49/month, billed by Stripe. You can cancel at any time from the Stripe customer portal. Your supporter benefits remain active until the end of the paid period. EU consumer law refund rights still apply through Stripe.',
   termsLiabilityTitle: 'No warranty',
@@ -662,13 +645,6 @@ const en: Strings = {
   notifOthersFew: '{n} others',
   notifOthersMany: '{n} others',
   justReported: 'New opinio just dropped',
-  newsLabel: 'NEWS',
-  newsAiNote: 'AI summary - it may contain mistakes.',
-  newsOnTheNews: 'On the news',
-  newsLinkRemove: 'Remove link',
-  newsLinkRemoveTitle: 'Remove the link to this story?',
-  newsLinkRemoveBody: 'This opinio will not be linked to any story again. This can\'t be undone.',
-  newsLinkRemoveConfirm: 'Remove',
   delete: 'Delete',
   deleteProfile: 'Delete opinio',
   deleteProfileConfirm: 'Delete this opinio permanently?',
@@ -863,7 +839,7 @@ const cs: Strings = {
   privacyRightsBody: 'Podle GDPR máš právo na přístup ke svým údajům, jejich opravu nebo smazání, případně proti jejich zpracování vznést námitku. Piš přes {support} nebo e-mailem na {email}. Odpovídáme do 7 dnů.',
   privacyOpenSupport: 'Otevřít podporu',
   terms: 'Podmínky',
-  termsLastUpdated: 'Aktualizováno: 6. listopadu 2026',
+  termsLastUpdated: 'Aktualizováno: 10. listopadu 2026',
   termsOperatorTitle: 'Provozovatel',
   termsOperatorBody: 'Provozovatel: {operator}. Kontakt: {email}.',
   termsAcceptTitle: 'Používání Opinia',
@@ -888,8 +864,6 @@ const cs: Strings = {
   termsImageUploadsBody: 'Jeden volitelný obrázek na anketu a jeden malý obrázek na odpověď: JPEG, PNG nebo WebP do 10 MB, zmenšené na našem serveru. Nahrávky jsou automaticky kontrolovány a v případě nahoty nebo nenávistných symbolů zamítnuty. Materiál sexuálního zneužívání dětí je přísně zakázán, samostatně detekován při zobrazování a hlášen v souladu s právem EU. Nahráním potvrzuješ, že máš právo obrázek sdílet, a uděluješ Opinio nevýhradní licenci k jeho hostování a zobrazování.',
   termsVotingTitle: 'Hlasování',
   termsVotingBody: 'V každé anketě můžeš hlasovat jednou. Bez účtu můžeš hlasovat jednou denně; přihlášený můžeš hlasovat ve všech anketách a svůj hlas změnit. Hlasy nevyprší. Hlas se započítá zemi, ve které jsi byl v okamžiku hlasování.',
-  termsNewsTitle: 'Zprávy',
-  termsNewsBody: 'Shrnutí zpráv píše AI z veřejně dostupných zpravodajských kanálů. Každé odkazuje na svůj zdroj a může obsahovat chyby - rozhodující je odkazovaný článek.',
   termsSubscriptionTitle: 'Předplatné Supporter',
   termsSubscriptionBody: 'Předplatné Supporter stojí 3,49 € měsíčně a fakturuje ho Stripe. Můžeš ho kdykoli zrušit přes zákaznický portál Stripu. Výhody zůstávají aktivní do konce zaplaceného období. Práva spotřebitelů na vrácení peněz podle EU práva platí prostřednictvím Stripu.',
   termsLiabilityTitle: 'Bez záruk',
@@ -1058,13 +1032,6 @@ const cs: Strings = {
   notifOthersFew: '{n} další',
   notifOthersMany: '{n} dalších',
   justReported: 'Padlo nové opinio',
-  newsLabel: 'ZPRÁVY',
-  newsAiNote: 'Shrnuto AI - může obsahovat chyby.',
-  newsOnTheNews: 'Ve zprávách',
-  newsLinkRemove: 'Odebrat odkaz',
-  newsLinkRemoveTitle: 'Odebrat odkaz na tuto zprávu?',
-  newsLinkRemoveBody: 'Toto opinio už nebude propojeno s žádnou zprávou. Nelze vrátit zpět.',
-  newsLinkRemoveConfirm: 'Odebrat',
   delete: 'Smazat',
   deleteProfile: 'Smazat opinio',
   deleteProfileConfirm: 'Opravdu trvale smazat toto opinio?',
@@ -1259,7 +1226,7 @@ const es: Strings = {
   privacyRightsBody: 'Conforme al RGPD, tienes derecho a acceder a tus datos, rectificarlos, suprimirlos u oponerte a su tratamiento. Contáctanos a través de {support} o por correo electrónico en {email}. Respondemos en un plazo de 7 días.',
   privacyOpenSupport: 'Abrir soporte',
   terms: 'Términos',
-  termsLastUpdated: 'Actualizado: 6 de noviembre de 2026',
+  termsLastUpdated: 'Actualizado: 10 de noviembre de 2026',
   termsOperatorTitle: 'Responsable',
   termsOperatorBody: 'Responsable: {operator}. Contacto: {email}.',
   termsAcceptTitle: 'Uso de Opinio',
@@ -1284,8 +1251,6 @@ const es: Strings = {
   termsImageUploadsBody: 'Una imagen opcional por encuesta y una pequeña por respuesta: JPEG, PNG o WebP hasta 10 MB, redimensionadas en nuestro servidor. Las subidas se analizan automáticamente y se rechazan si se marcan por desnudez explícita o símbolos de odio. El material de abuso sexual infantil está estrictamente prohibido, se detecta por separado al servirse y se denuncia conforme al derecho de la UE. Al subir confirmas que tienes derecho a compartir la imagen y otorgas a Opinio una licencia no exclusiva para alojarla y mostrarla.',
   termsVotingTitle: 'Votación',
   termsVotingBody: 'Puedes votar una vez en cada encuesta. Sin cuenta puedes emitir un voto al día; con la sesión iniciada puedes votar en todas las encuestas y cambiar tu voto. Los votos no caducan. Un voto cuenta para tu país en el momento en que lo emites.',
-  termsNewsTitle: 'Noticias',
-  termsNewsBody: 'Los resúmenes de noticias los escribe una IA a partir de canales de noticias públicos. Cada uno enlaza su fuente y puede contener errores - lo que cuenta es el artículo enlazado.',
   termsSubscriptionTitle: 'Suscripción Supporter',
   termsSubscriptionBody: 'La suscripción Supporter cuesta 3,49 €/mes y la factura Stripe. Puedes cancelarla en cualquier momento desde el portal de cliente de Stripe. Los beneficios se mantienen hasta el final del período pagado. Los derechos de reembolso del consumidor de la UE siguen aplicándose a través de Stripe.',
   termsLiabilityTitle: 'Sin garantías',
@@ -1452,13 +1417,6 @@ const es: Strings = {
   notifOthersFew: '{n} más',
   notifOthersMany: '{n} más',
   justReported: 'Acaba de caer un opinio',
-  newsLabel: 'NOTICIAS',
-  newsAiNote: 'Resumen hecho por IA - puede contener errores.',
-  newsOnTheNews: 'En las noticias',
-  newsLinkRemove: 'Quitar enlace',
-  newsLinkRemoveTitle: '¿Quitar el enlace a esta noticia?',
-  newsLinkRemoveBody: 'Este opinio ya no se vinculará a ninguna noticia. No se puede deshacer.',
-  newsLinkRemoveConfirm: 'Quitar',
   delete: 'Eliminar',
   deleteProfile: 'Eliminar opinio',
   deleteProfileConfirm: '¿Eliminar este opinio permanentemente?',
@@ -1653,7 +1611,7 @@ const de: Strings = {
   privacyRightsBody: 'Nach der DSGVO hast du das Recht, auf deine Daten zuzugreifen, sie zu berichtigen oder zu löschen oder der Verarbeitung zu widersprechen. Kontaktiere uns über den {support} oder per E-Mail unter {email}. Wir antworten innerhalb von 7 Tagen.',
   privacyOpenSupport: 'Support öffnen',
   terms: 'Nutzungsbedingungen',
-  termsLastUpdated: 'Zuletzt aktualisiert: 6. November 2026',
+  termsLastUpdated: 'Zuletzt aktualisiert: 10. November 2026',
   termsOperatorTitle: 'Betreiber',
   termsOperatorBody: 'Betreiber: {operator}. Kontakt: {email}.',
   termsAcceptTitle: 'Nutzung von Opinio',
@@ -1678,8 +1636,6 @@ const de: Strings = {
   termsImageUploadsBody: 'Ein optionales Bild pro Umfrage und ein kleines Bild pro Antwort: JPEG, PNG oder WebP bis 10 MB, auf unserem Server verkleinert. Uploads werden automatisch geprüft und bei expliziter Nacktheit oder Hasssymbolen abgelehnt. Material über sexuellen Kindesmissbrauch ist strikt verboten, wird beim Ausliefern separat erkannt und nach EU-Recht gemeldet. Mit dem Upload bestätigst du, dass du das Recht hast, das Bild zu teilen, und gewährst Opinio eine nicht-exklusive Lizenz, es zu hosten und anzuzeigen.',
   termsVotingTitle: 'Abstimmen',
   termsVotingBody: 'Du kannst bei jeder Umfrage einmal abstimmen. Ohne Konto kannst du eine Stimme pro Tag abgeben; angemeldet kannst du bei jeder Umfrage abstimmen und deine Stimme ändern. Stimmen verfallen nicht. Eine Stimme zählt für dein Land zum Zeitpunkt der Abgabe.',
-  termsNewsTitle: 'Nachrichten',
-  termsNewsBody: 'Nachrichtenzusammenfassungen werden von KI aus öffentlich verfügbaren Newsfeeds geschrieben. Jede verlinkt ihre Quelle und kann Fehler enthalten - maßgeblich ist der verlinkte Artikel.',
   termsSubscriptionTitle: 'Supporter-Abo',
   termsSubscriptionBody: 'Das Supporter-Abo kostet 3,49 €/Monat und wird von Stripe abgerechnet. Du kannst es jederzeit über das Stripe-Kundenportal kündigen. Deine Supporter-Vorteile bleiben bis zum Ende des bezahlten Zeitraums aktiv. Die Widerrufsrechte für Verbraucher nach EU-Recht gelten weiterhin über Stripe.',
   termsLiabilityTitle: 'Keine Gewährleistung',
@@ -1846,13 +1802,6 @@ const de: Strings = {
   notifOthersFew: '{n} weitere',
   notifOthersMany: '{n} weitere',
   justReported: 'Frisches opinio reingeworfen',
-  newsLabel: 'NACHRICHTEN',
-  newsAiNote: 'KI-Zusammenfassung - kann Fehler enthalten.',
-  newsOnTheNews: 'In den Nachrichten',
-  newsLinkRemove: 'Verknüpfung entfernen',
-  newsLinkRemoveTitle: 'Verknüpfung zu dieser Nachricht entfernen?',
-  newsLinkRemoveBody: 'Dieses opinio wird mit keiner Nachricht mehr verknüpft. Das lässt sich nicht rückgängig machen.',
-  newsLinkRemoveConfirm: 'Entfernen',
   delete: 'Löschen',
   deleteProfile: 'opinio löschen',
   deleteProfileConfirm: 'Dieses opinio dauerhaft löschen?',
@@ -2047,7 +1996,7 @@ const fr: Strings = {
   privacyRightsBody: "Conformément au RGPD, vous avez le droit d'accéder à vos données, de les rectifier, de les supprimer ou de vous opposer à leur traitement. Contactez-nous via {support} ou par e-mail à {email}. Nous répondons sous 7 jours.",
   privacyOpenSupport: 'Ouvrir le support',
   terms: 'Conditions',
-  termsLastUpdated: 'Dernière mise à jour : 6 novembre 2026',
+  termsLastUpdated: 'Dernière mise à jour : 10 novembre 2026',
   termsOperatorTitle: 'Exploitant',
   termsOperatorBody: 'Exploitant : {operator}. Contact : {email}.',
   termsAcceptTitle: "Utilisation d'Opinio",
@@ -2072,8 +2021,6 @@ const fr: Strings = {
   termsImageUploadsBody: "Une image facultative par sondage et une petite image par réponse : JPEG, PNG ou WebP jusqu'à 10 Mo, redimensionnées sur notre serveur. Les envois sont analysés automatiquement et rejetés s'ils sont signalés pour nudité explicite ou symboles haineux. Le matériel pédopornographique est strictement interdit, détecté séparément au moment de l'affichage et signalé conformément au droit de l'UE. En envoyant une image, vous confirmez avoir le droit de la partager et accordez à Opinio une licence non exclusive pour l'héberger et l'afficher.",
   termsVotingTitle: 'Vote',
   termsVotingBody: 'Vous pouvez voter une fois par sondage. Sans compte, vous pouvez voter une fois par jour ; connecté, vous pouvez voter sur tous les sondages et modifier votre vote. Les votes n\'expirent pas. Un vote compte pour votre pays au moment où vous le déposez.',
-  termsNewsTitle: 'Actualités',
-  termsNewsBody: "Les résumés d'actualité sont rédigés par une IA à partir de flux d'information publics. Chacun renvoie à sa source et peut contenir des erreurs - l'article lié fait foi.",
   termsSubscriptionTitle: 'Abonnement Supporter',
   termsSubscriptionBody: "L'abonnement Supporter coûte 3,49 €/mois et est facturé par Stripe. Vous pouvez l'annuler à tout moment depuis le portail client Stripe. Vos avantages Supporter restent actifs jusqu'à la fin de la période payée. Les droits de remboursement des consommateurs prévus par le droit de l'UE s'appliquent toujours via Stripe.",
   termsLiabilityTitle: 'Aucune garantie',
@@ -2240,13 +2187,6 @@ const fr: Strings = {
   notifOthersFew: '{n} autres',
   notifOthersMany: '{n} autres',
   justReported: 'Un opinio vient de tomber',
-  newsLabel: 'ACTU',
-  newsAiNote: 'Résumé généré par IA - il peut contenir des erreurs.',
-  newsOnTheNews: 'Dans l\'actualité',
-  newsLinkRemove: 'Retirer le lien',
-  newsLinkRemoveTitle: 'Retirer le lien vers cette actualité ?',
-  newsLinkRemoveBody: 'Cet opinio ne sera plus lié à aucune actualité. Action irréversible.',
-  newsLinkRemoveConfirm: 'Retirer',
   delete: 'Supprimer',
   deleteProfile: "Supprimer l'opinio",
   deleteProfileConfirm: 'Supprimer définitivement cet opinio ?',
@@ -2441,7 +2381,7 @@ const it: Strings = {
   privacyRightsBody: 'In conformità al GDPR, hai il diritto di accedere ai tuoi dati, rettificarli, eliminarli od opporti al loro trattamento. Contattaci tramite {support} o via e-mail a {email}. Rispondiamo entro 7 giorni.',
   privacyOpenSupport: 'Apri assistenza',
   terms: 'Termini',
-  termsLastUpdated: 'Ultimo aggiornamento: 6 novembre 2026',
+  termsLastUpdated: 'Ultimo aggiornamento: 10 novembre 2026',
   termsOperatorTitle: 'Titolare',
   termsOperatorBody: 'Titolare: {operator}. Contatto: {email}.',
   termsAcceptTitle: 'Utilizzo di Opinio',
@@ -2466,8 +2406,6 @@ const it: Strings = {
   termsImageUploadsBody: 'Un\'immagine facoltativa per sondaggio e una piccola per risposta: JPEG, PNG o WebP fino a 10 MB, ridimensionate sul nostro server. I caricamenti vengono analizzati automaticamente e rifiutati se segnalati per nudità esplicita o simboli d\'odio. Il materiale pedopornografico è severamente vietato, rilevato separatamente al momento della visualizzazione e segnalato in conformità al diritto dell\'UE. Caricando un\'immagine, confermi di avere il diritto di condividerla e concedi a Opinio una licenza non esclusiva per ospitarla e mostrarla.',
   termsVotingTitle: 'Voto',
   termsVotingBody: 'Puoi votare una volta per ogni sondaggio. Senza account puoi esprimere un voto al giorno; con l\'accesso puoi votare in tutti i sondaggi e cambiare il tuo voto. I voti non scadono. Un voto conta per il tuo paese al momento in cui lo esprimi.',
-  termsNewsTitle: 'Notizie',
-  termsNewsBody: "I riassunti delle notizie sono scritti da un'IA a partire da feed di notizie pubblici. Ognuno rimanda alla sua fonte e può contenere errori - fa fede l'articolo collegato.",
   termsSubscriptionTitle: 'Abbonamento Supporter',
   termsSubscriptionBody: 'L\'abbonamento Supporter costa 3,49 €/mese ed è fatturato da Stripe. Puoi annullarlo in qualsiasi momento dal portale clienti Stripe. I tuoi vantaggi Supporter restano attivi fino alla fine del periodo pagato. I diritti di rimborso dei consumatori previsti dal diritto dell\'UE si applicano sempre tramite Stripe.',
   termsLiabilityTitle: 'Nessuna garanzia',
@@ -2634,13 +2572,6 @@ const it: Strings = {
   notifOthersFew: '{n} altri',
   notifOthersMany: '{n} altri',
   justReported: 'È appena arrivato un opinio',
-  newsLabel: 'NOTIZIE',
-  newsAiNote: "Riassunto generato dall'IA - può contenere errori.",
-  newsOnTheNews: 'Nelle notizie',
-  newsLinkRemove: 'Rimuovi collegamento',
-  newsLinkRemoveTitle: 'Rimuovere il collegamento a questa notizia?',
-  newsLinkRemoveBody: 'Questo opinio non verrà più collegato ad alcuna notizia. L\'azione non si può annullare.',
-  newsLinkRemoveConfirm: 'Rimuovi',
   delete: 'Elimina',
   deleteProfile: 'Elimina opinio',
   deleteProfileConfirm: 'Eliminare definitivamente questo opinio?',
@@ -2835,7 +2766,7 @@ const pl: Strings = {
   privacyRightsBody: 'Zgodnie z RODO masz prawo dostępu do swoich danych, ich poprawienia lub usunięcia, a także wniesienia sprzeciwu wobec ich przetwarzania. Skontaktuj się przez {support} lub e-mailem na {email}. Odpowiadamy w ciągu 7 dni.',
   privacyOpenSupport: 'Otwórz pomoc',
   terms: 'Regulamin',
-  termsLastUpdated: 'Ostatnia aktualizacja: 6 listopada 2026',
+  termsLastUpdated: 'Ostatnia aktualizacja: 10 listopada 2026',
   termsOperatorTitle: 'Operator',
   termsOperatorBody: 'Operator: {operator}. Kontakt: {email}.',
   termsAcceptTitle: 'Korzystanie z Opinio',
@@ -2860,8 +2791,6 @@ const pl: Strings = {
   termsImageUploadsBody: 'Jeden opcjonalny obraz na ankietę i jeden mały obraz na odpowiedź: JPEG, PNG lub WebP do 10 MB, zmniejszane na naszym serwerze. Przesłane pliki są automatycznie skanowane i odrzucane, jeśli zostaną oznaczone za jednoznaczną nagość lub symbole nienawiści. Materiały przedstawiające seksualne wykorzystywanie dzieci są surowo zabronione, osobno wykrywane przy wyświetlaniu i zgłaszane zgodnie z prawem UE. Przesyłając, potwierdzasz, że masz prawo udostępnić obraz, i udzielasz Opinio niewyłącznej licencji na jego hosting i wyświetlanie.',
   termsVotingTitle: 'Głosowanie',
   termsVotingBody: 'W każdej ankiecie możesz zagłosować raz. Bez konta możesz oddać jeden głos dziennie; po zalogowaniu możesz głosować we wszystkich ankietach i zmienić swój głos. Głosy nie wygasają. Głos liczy się dla Twojego kraju w chwili jego oddania.',
-  termsNewsTitle: 'Wiadomości',
-  termsNewsBody: 'Podsumowania wiadomości pisze AI na podstawie publicznie dostępnych kanałów informacyjnych. Każde zawiera link do źródła i może zawierać błędy - rozstrzyga artykuł, do którego prowadzi link.',
   termsSubscriptionTitle: 'Subskrypcja Supporter',
   termsSubscriptionBody: 'Subskrypcja Supporter kosztuje 3,49 € miesięcznie i jest rozliczana przez Stripe. Możesz ją anulować w dowolnym momencie w portalu klienta Stripe. Korzyści wspierającego pozostają aktywne do końca opłaconego okresu. Prawa konsumenckie do zwrotu według prawa UE nadal obowiązują przez Stripe.',
   termsLiabilityTitle: 'Brak gwarancji',
@@ -3029,13 +2958,6 @@ const pl: Strings = {
   notifOthersFew: '{n} inne osoby',
   notifOthersMany: '{n} innych osób',
   justReported: 'Pojawiło się nowe opinio',
-  newsLabel: 'WIADOMOŚCI',
-  newsAiNote: 'Podsumowanie AI - może zawierać błędy.',
-  newsOnTheNews: 'W wiadomościach',
-  newsLinkRemove: 'Usuń powiązanie',
-  newsLinkRemoveTitle: 'Usunąć powiązanie z tą wiadomością?',
-  newsLinkRemoveBody: 'To opinio nie zostanie już powiązane z żadną wiadomością. Tej operacji nie można cofnąć.',
-  newsLinkRemoveConfirm: 'Usuń',
   delete: 'Usuń',
   deleteProfile: 'Usuń opinio',
   deleteProfileConfirm: 'Trwale usunąć to opinio?',

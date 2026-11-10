@@ -440,7 +440,7 @@ body {
 .caption-enter .caption-mark { animation: caption-pop 300ms cubic-bezier(0.34, 1.56, 0.64, 1) 40ms both; }
 .caption-enter .caption-text { animation: caption-rise 260ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both; }
 
-/* The default caption's rotation (mark -> news -> news ...) is not a reaction
+/* The default caption's rotation (mark -> notice) is not a reaction
    to a click, so it does not need the subject swap's snap. It is a slow
    dissolve instead: the outgoing slide blurs and lifts away, the incoming one
    follows a beat later and settles out of a soft blur, the picture first and
@@ -474,131 +474,8 @@ body {
 }
 .caption-progress { animation: caption-progress linear both; transform-origin: left; }
 
-/* The news pill breathes: a soft brand-red glow swells out of its edge and
-   fades, every 2s, so the label reads as on-air rather than as a static tag.
-   Its dot carries a ping ring (Tailwind's animate-ping) on the same beat.
-   The glow is a pseudo-element moved by transform + opacity only, so it runs
-   on the compositor - an animated box-shadow repainted the pill on every frame
-   for as long as it was on screen. Scaled per axis so it grows ~6px on each
-   side of a NEWS-sized pill. */
-@keyframes live-glow {
-  0%   { transform: scale(1, 1); opacity: 1; }
-  70%  { transform: scale(1.2, 1.6); opacity: 0; }
-  100% { transform: scale(1, 1); opacity: 0; }
-}
-.live-pill { position: relative; isolation: isolate; }
-.live-pill::after {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: rgba(233, 69, 96, 0.45);
-  z-index: -1;
-  pointer-events: none;
-  animation: live-glow 2s ease-out infinite;
-}
-
-/* The mobile pill is a fifth of the size and sits 40px above the sheet that
-   repeats the same name, so it gets the entrance only - no stagger, nothing to
-   stagger. */
-.caption-pill-enter { animation: caption-enter 260ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-
-/* A fast animation is still an animation. Everything above collapses to an
-   instant state change when the OS asks for reduced motion; the swap's JS
-   timer is skipped by useSubjectSwap for the same reason. */
-@media (prefers-reduced-motion: reduce) {
-  .details-fold,
-  .details-fold-inner,
-  .details-fold[data-collapsed='true'] .details-fold-inner {
-    transition-duration: 1ms;
-    transition-delay: 0ms;
-  }
-  /* No pulse at all, like the dot's ping (motion-reduce:hidden). */
-  .live-pill::after { display: none; }
-  .caption-enter,
-  .caption-leave,
-  .caption-slide-enter,
-  .caption-slide-leave,
-  .caption-slide-enter .caption-mark,
-  .caption-slide-enter .caption-text,
-  .caption-pill-enter,
-  .caption-enter .caption-mark,
-  .caption-enter .caption-text {
-    animation-duration: 1ms;
-    animation-delay: 0ms;
-  }
-}
-
-/* Comment thread motion. A comment you just posted rises in and its edge
-   flashes brand red before settling to the normal ring; a reply also lights
-   the thread line it joined. The send button swaps its label for a spinner,
-   then a check that draws itself. All of it is off under reduced motion. */
-@keyframes comment-arrive {
-  from { opacity: 0; transform: translateY(10px) scale(0.98); }
-  to   { opacity: 1; transform: none; }
-}
-.comment-arrive {
-  animation: comment-arrive 320ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
-}
-@keyframes comment-flash {
-  0%, 55% { opacity: 1; }
-  100%    { opacity: 0; }
-}
-.comment-flash {
-  animation: comment-flash 1.6s ease-out both;
-  pointer-events: none;
-}
-@keyframes thread-flash {
-  0%, 40% { border-color: rgb(233 69 96 / 0.7); }
-  100%    { border-color: rgb(255 255 255 / 0.1); }
-}
-.thread-flash {
-  animation: thread-flash 1.6s ease-out;
-}
-/* A comment count that just changed - the vote counters' bump. */
-.comment-bump {
-  animation: vote-bump 0.25s cubic-bezier(0.36, 0.07, 0.19, 0.97);
-}
-/* Mention picker - opens upward, so it settles from the composer below. */
-.comment-pop {
-  transform-origin: bottom left;
-  animation: map-tip-in 150ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
-}
-@keyframes check-draw {
-  to { stroke-dashoffset: 0; }
-}
-.send-check path {
-  stroke-dasharray: 24;
-  stroke-dashoffset: 24;
-  animation: check-draw 280ms ease-out 40ms forwards;
-}
-@media (prefers-reduced-motion: reduce) {
-  .comment-arrive, .thread-flash, .comment-pop, .comment-bump { animation: none; }
-  .comment-flash { animation: none; opacity: 0; }
-  .send-check path { animation: none; stroke-dashoffset: 0; }
-}
-
-/* Support window: each view (list, new ticket, a ticket) slides in from the
-   right as it opens. */
-@keyframes support-view-in {
-  from { opacity: 0; transform: translateX(14px); }
-  to   { opacity: 1; transform: none; }
-}
-.support-view-in {
-  animation: support-view-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
 @media (prefers-reduced-motion: reduce) {
   .support-view-in { animation: none; }
-}
-
-/* A slowly turning angle for conic rings (the news page's ring). */
-@property --ring-spin {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: 0deg;
-}
-@keyframes ring-spin {
-  to { --ring-spin: 360deg; }
 }
 
 /* Soft two-colour wash behind a header (support, the bell). Two radial
@@ -624,75 +501,4 @@ body {
   .activity-row-in {
     animation: none;
   }
-}
-
-/* ── News page ────────────────────────────────────────────────────────────────
-   Built from the moves the rest of the app already makes: the sidebar card's
-   hover glow and lift, the caption's pop-and-rise, the user page's staggered
-   rows and header wash, the comment thread's arrival flash. What is new here
-   is only what a page of stories needs: the list and a story slide sideways
-   into each other, the lead story's wash drifts slowly, the picture of a
-   story sits in a turning ring of the brand's two sides, and the locator map
-   breathes around the country. */
-@keyframes news-view-in {
-  from { opacity: 0; transform: translateX(18px); }
-  to   { opacity: 1; transform: none; }
-}
-@keyframes news-view-back {
-  from { opacity: 0; transform: translateX(-18px); }
-  to   { opacity: 1; transform: none; }
-}
-.news-view-in   { animation: news-view-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-.news-view-back { animation: news-view-back 320ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-
-/* Red into green and back, turning once every 8s (--ring-spin above). */
-.news-ring {
-  background: conic-gradient(
-    from var(--ring-spin, 0deg),
-    var(--color-accent),
-    rgba(233, 69, 96, 0.12) 30%,
-    var(--color-positive) 55%,
-    rgba(34, 197, 94, 0.12) 80%,
-    var(--color-accent)
-  );
-  box-shadow: 0 0 26px -6px rgba(233, 69, 96, 0.55);
-  animation: ring-spin 8s linear infinite;
-}
-
-.news-aurora {
-  background:
-    radial-gradient(35% 60% at 20% 25%, rgba(233, 69, 96, 0.24), transparent 70%),
-    radial-gradient(40% 65% at 80% 80%, rgba(34, 197, 94, 0.14), transparent 70%);
-  background-size: 180% 180%;
-  animation: news-aurora 16s ease-in-out infinite alternate;
-}
-@keyframes news-aurora {
-  from { background-position: 0% 0%; }
-  to   { background-position: 100% 100%; }
-}
-
-.news-locator-glow {
-  filter: blur(4px);
-  animation: news-locator-pulse 2.6s ease-in-out infinite;
-}
-@keyframes news-locator-pulse {
-  0%, 100% { opacity: 0.15; }
-  50%      { opacity: 0.65; }
-}
-
-/* The world map under the news page: dimmed as the page arrives over it and
-   faded out toward the bottom, where the timeline runs long. */
-.news-map-backdrop {
-  opacity: 0.32;
-  mask-image: linear-gradient(to bottom, black 35%, transparent 95%);
-  animation: news-map-dim 450ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-@keyframes news-map-dim {
-  from { opacity: 1; }
-  to   { opacity: 0.32; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .news-view-in, .news-view-back, .news-ring, .news-aurora, .news-map-backdrop { animation: none; }
-  .news-locator-glow { animation: none; opacity: 0.4; }
 }

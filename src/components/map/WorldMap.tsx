@@ -79,10 +79,7 @@ function CursorTooltip({ cursor, ...props }: { cursor: CursorStore } & Omit<Comp
 // Projected once at module load - the projection is fixed.
 const CITY_POINTS = CITIES.map((city) => ({ city, p: projection(city.coords) }));
 
-// `backdrop`: the map behind the news page - drawn and tinted as usual, and
-// still ringing the hovered country, but with no caption, legend, zoom or
-// tooltip. The wrapper in App takes its pointer events and focus away.
-export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVisible?: boolean; backdrop?: boolean } = {}) {
+export function WorldMap({ bannerVisible = false }: { bannerVisible?: boolean } = {}) {
   const navigate = useNavigate();
   const location = useLocation();
   const { locale } = useI18n();
@@ -548,19 +545,15 @@ export function WorldMap({ bannerVisible = false, backdrop = false }: { bannerVi
         </g>
       </svg>
 
-      {!backdrop && (
-        <>
-          <MapProfileTitle
-            subject={captionSubject}
-            onDismiss={() => setDismissedSubject(routeSubject)}
-            suppressed={bannerVisible}
-          />
-          <MapLegend poll={openProfileId ? openProfile ?? null : null} />
-          <MapZoomControl scale={zoom.scale} min={MIN_ZOOM} max={MAX_ZOOM} onZoom={zoomToScale} onStep={stepZoom} />
-        </>
-      )}
+      <MapProfileTitle
+        subject={captionSubject}
+        onDismiss={() => setDismissedSubject(routeSubject)}
+        suppressed={bannerVisible}
+      />
+      <MapLegend poll={openProfileId ? openProfile ?? null : null} />
+      <MapZoomControl scale={zoom.scale} min={MIN_ZOOM} max={MAX_ZOOM} onZoom={zoomToScale} onStep={stepZoom} />
 
-      {hoveredCountry && !backdrop && (
+      {hoveredCountry && (
         // Keyed on the country so crossing a border remounts the card and
         // replays its entrance (and the bar fill) for the new one.
         <CursorTooltip

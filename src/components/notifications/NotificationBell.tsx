@@ -12,7 +12,7 @@ import { WASH } from '../common/wash';
 import type { NotificationItem } from '../../types/api';
 
 // The panel's open state is FilterBar's, which also closes it on navigation
-// and sign-out (the news button needs to see it).
+// and sign-out.
 interface NotificationBellProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;

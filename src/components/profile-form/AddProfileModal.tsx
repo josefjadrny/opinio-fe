@@ -158,9 +158,6 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const location = useLocation();
   const isMobile = useIsMobile();
   const { promptSignIn } = useSignIn();
-  // "Ask the world about this" from a news story carries the story along.
-  const fromNews = location.state as { newsId?: string; newsTitle?: string } | null;
-  const newsId = fromNews?.newsId ?? null;
 
   const canPaste = typeof navigator !== 'undefined' && !!navigator.clipboard?.readText;
 
@@ -170,7 +167,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const [mountedAt] = useState(() => Date.now());
   const isBlocked = !!blockedUntilDate && blockedUntilDate.getTime() > mountedAt;
 
-  const [restoredDraft, setRestoredDraft] = useState(() => (newsId ? null : loadDraft()));
+  const [restoredDraft, setRestoredDraft] = useState(() => loadDraft());
   const [name, setName] = useState(() => restoredDraft?.name ?? '');
   const [role, setRole] = useState<Role>(() => restoredDraft?.role ?? 'politics');
   const [options, setOptions] = useState<FormOption[]>(() => restoredDraft?.options.map((o) => ({ ...o, file: null, preview: null })) ?? startOptions());
@@ -234,7 +231,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   useEffect(() => {
     if (imagesReady) {
       // Nothing to restore: drop pictures left by an expired or empty draft.
-      if (!restoredDraft && !newsId) void clearDraftImages();
+      if (!restoredDraft) void clearDraftImages();
       return;
     }
     let live = true;
@@ -259,7 +256,6 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
 
   const hasImages = !!contentImageFile || options.some((o) => o.file);
   useEffect(() => {
-    if (newsId) return;
     const hasContent = name.trim() || description.trim() || link.trim() || options.some((o) => o.text.trim()) || hasImages;
     try {
       if (!hasContent) localStorage.removeItem(DRAFT_KEY);
@@ -267,13 +263,13 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     } catch {
       // localStorage unavailable - drafts just won't persist.
     }
-  }, [name, role, description, options, link, newsId, hasImages]);
+  }, [name, role, description, options, link, hasImages]);
 
   // Pictures follow the text into the draft, by answer position.
   useEffect(() => {
-    if (newsId || !imagesReady) return;
+    if (!imagesReady) return;
     void saveDraftImages({ main: contentImageFile, options: options.map((o) => o.file) });
-  }, [contentImageFile, options, newsId, imagesReady]);
+  }, [contentImageFile, options, imagesReady]);
 
   const discardDraft = () => {
     setName('');
@@ -393,7 +389,6 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
         imageKey: image?.thumbKey,
         contentImageUrl: image?.url,
         contentImageKey: image?.key,
-        newsId: newsId ?? undefined,
       });
     },
     onSuccess: () => {
@@ -454,11 +449,6 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
               {t.draftDiscard}
             </button>
           </div>
-        )}
-        {fromNews?.newsTitle && (
-          <p className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/70">
-            {p.askAboutThis}: <span className="text-white/90 font-medium">{fromNews.newsTitle}</span>
-          </p>
         )}
 
         {/* The question, with the poll's one picture inline to its left - the

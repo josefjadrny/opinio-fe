@@ -1,7 +1,7 @@
 import type {
   ProfilesResponse, MeResponse, VoteResponse, ProfileFilters, PollCountry,
   CountryActivity, CountryPollsResponse,
-  SupportTicket, SupportTicketDetail, SupportMessage, UserDetailResponse, ProfileReportGroup, Person, NewsItem,
+  SupportTicket, SupportTicketDetail, SupportMessage, UserDetailResponse, ProfileReportGroup, Person,
 } from '../types/api';
 import type { Profile } from '../types/profile';
 
@@ -122,7 +122,6 @@ export function addNewProfile(data: {
   contentImageUrl?: string;
   contentImageKey?: string;
   link?: string;
-  newsId?: string;
 }): Promise<import('../types/profile').Profile> {
   return apiFetch('/api/profiles', {
     method: 'POST',
@@ -144,19 +143,6 @@ export function profileLinkUrl(profileId: string): string {
 
 export async function deleteProfile(profileId: string): Promise<void> {
   const res = await fetch(`${API_URL}/api/profiles/${profileId}`, {
-    method: 'DELETE',
-    credentials: 'include',
-  });
-  if (!res.ok && res.status !== 204) {
-    const body = await res.json().catch(() => ({}));
-    throw Object.assign(new Error(body.error ?? res.statusText), { status: res.status });
-  }
-}
-
-// The author takes the news link off their opinio. Final on the API side:
-// the link job never sets one again.
-export async function removeProfileNews(profileId: string): Promise<void> {
-  const res = await fetch(`${API_URL}/api/profiles/${profileId}/news`, {
     method: 'DELETE',
     credentials: 'include',
   });
@@ -233,34 +219,6 @@ export function getCountryPolls(code: string, sort: 'top' | 'recent', limit: num
 // One well-known person by id.
 export function getPerson(id: number): Promise<Person> {
   return apiFetch(`/api/persons/${id}`);
-}
-
-export function getNews(id: string, lang?: string): Promise<NewsItem> {
-  const qs = lang ? `?lang=${lang}` : '';
-  return apiFetch(`/api/news/${id}${qs}`);
-}
-
-// The polls asked about one story, newest first (capped by the API).
-export function getNewsPolls(id: string, lang: string): Promise<{ profiles: Profile[] }> {
-  return apiFetch(`/api/news/${id}/polls?lang=${lang}`);
-}
-
-// The newest news of the last 12 hours, newest first (the map caption's rotation).
-export function getLatestNews(lang: string, limit = 3): Promise<{ items: NewsItem[] }> {
-  return apiFetch(`/api/news?limit=${limit}&lang=${lang}`);
-}
-
-// The news list (last 7 days, newest first) with the feed's filters; `before`
-// is the last item's createdAt for the next page.
-export function getNewsList(
-  lang: string,
-  opts: { country?: string; roles?: string[]; before?: string; limit?: number } = {},
-): Promise<{ items: NewsItem[] }> {
-  const params = new URLSearchParams({ lang, limit: String(opts.limit ?? 20) });
-  if (opts.country) params.set('country', opts.country);
-  if (opts.roles?.length) params.set('roles', opts.roles.join(','));
-  if (opts.before) params.set('before', opts.before);
-  return apiFetch(`/api/news/list?${params}`);
 }
 
 export interface StatsSummary { votes: number; polls: number; countries: number; voters: number }

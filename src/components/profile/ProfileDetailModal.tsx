@@ -16,7 +16,6 @@ import { RoleBadge } from '../common/RoleBadge';
 import { HoverTip } from '../common/HoverTip';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { SourceLink } from './SourceLink';
-import { LinkedNews } from '../news/LinkedNews';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useI18n } from '../../i18n/I18nContext';
 import { useProfileText } from '../../hooks/useProfileText';
@@ -154,13 +153,13 @@ export function ProfileDetailModal({ profile: seed, onClose }: ProfileDetailModa
         </div>
 
         <div className="px-4 pt-4 pb-5 space-y-4">
-          {/* Context first - description, picture, news - since it can decide
+          {/* Context first - description, picture, link - since it can decide
               the vote; folded by the chevron. Then the answers, which are the
               vote buttons and always stay. .details-fold (index.css) animates
               the fold to the content's own height (0fr), plus the overflow-hidden
               + min-h-0 the clipped child needs and the fade/lift on
               .details-fold-inner. Shared with the desktop modal. */}
-          {(description || profile.contentImageUrl || profile.hasLink || profile.newsId) && (
+          {(description || profile.contentImageUrl || profile.hasLink) && (
           <div className="details-fold" data-collapsed={detailsCollapsed}>
           <div>
           <div className="details-fold-inner space-y-3 pb-4 border-b border-border">
@@ -197,7 +196,6 @@ export function ProfileDetailModal({ profile: seed, onClose }: ProfileDetailModa
               {showingOriginal ? t.seeTranslation : t.seeOriginal}
             </button>
           )}
-          <LinkedNews profile={profile} />
           {profile.hasLink && (
             <div>
               <SourceLink profileId={profile.id} host={profile.linkHost} />

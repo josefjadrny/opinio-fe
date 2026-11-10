@@ -9,7 +9,6 @@ import { useFilters } from '../../context/useFilters';
 import { ProfileMenu } from './ProfileMenu';
 import { useMe } from '../../hooks/useMe';
 import { HeaderButton } from '../ui/HeaderButton';
-import { NewsIcon } from '../news/NewsBits';
 import { HoverTip } from '../common/HoverTip';
 import { LogoMark } from '../common/LogoMark';
 import { NotificationBell } from '../notifications/NotificationBell';
@@ -40,9 +39,7 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
   const { roles, search, clearFilters } = useFilters();
   const hasFilters = !!(roles.length || search);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-  // The bell's panel lives here so the news button can see it: over an open
-  // story, notifications cover the news sheet, and a tap on news then means
-  // "back to the story", not the toggle's "leave news".
+  // The bell's panel lives here so opening it can close the filter sheet.
   const [bellOpen, setBellOpen] = useState(false);
   const onBellChange = (next: boolean) => {
     setBellOpen(next);
@@ -58,7 +55,6 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
   }
   // Signing out with the panel open.
   if (bellOpen && isAnonymous) setBellOpen(false);
-  const onNews = /^\/(news|n\/)/.test(barePath);
 
   return (
     <>
@@ -122,22 +118,6 @@ export function FilterBar({ onAddProfile }: FilterBarProps) {
               </HeaderButton>
             </HoverTip>
           )}
-          {/* News: a toggle - in the news page it leads back to the map,
-              unless notifications cover it, when it only closes them. */}
-          <HoverTip label="News">
-            <HeaderButton
-              shape="circle"
-              active={onNews}
-              onClick={() => {
-                setFilterSheetOpen(false);
-                if (onNews && bellOpen) setBellOpen(false);
-                else navigate((onNews ? '/' : '/news') + location.search);
-              }}
-              aria-label="News"
-            >
-              <NewsIcon brand className="w-6 h-6 md:w-7 md:h-7 shrink-0" />
-            </HeaderButton>
-          </HoverTip>
           <NotificationBell open={bellOpen} onOpenChange={onBellChange} />
           <ProfileMenu onOpen={() => setFilterSheetOpen(false)} />
         </div>

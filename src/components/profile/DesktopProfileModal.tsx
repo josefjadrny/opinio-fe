@@ -18,7 +18,6 @@ import { RoleBadge } from '../common/RoleBadge';
 import { HoverTip } from '../common/HoverTip';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { SourceLink } from './SourceLink';
-import { LinkedNews } from '../news/LinkedNews';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { useDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { CommentIcon, BumpNumber } from '../comments/CommentCount';
@@ -181,11 +180,11 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                 side by side. Its height is the left column's content (the right
                 column is absolute, see below), capped by the card's max-height. */}
             <div className="flex-1 min-h-0 flex divide-x divide-border">
-                    {/* Left: the context first (description, picture, news), as
+                    {/* Left: the context first (description, picture, link), as
                         it can decide the vote; then the answers, which are the
                         vote buttons and are never folded by the chevron. */}
                     <div className="flex-1 basis-0 min-w-0 overflow-y-auto subtle-scrollbar px-6 py-5">
-                      {!detailsCollapsed && (description || profile.contentImageUrl || profile.hasLink || profile.newsId) && (
+                      {!detailsCollapsed && (description || profile.contentImageUrl || profile.hasLink) && (
                       <div className="mb-5 pb-5 border-b border-border space-y-3">
                       {(description || profile.contentImageUrl) && (
                         // flow-root contains the floated picture, so the next
@@ -230,7 +229,6 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                           {showingOriginal ? t.seeTranslation : t.seeOriginal}
                         </button>
                       )}
-                      <LinkedNews profile={profile} />
                       {profile.hasLink && (
                         <div>
                           <SourceLink profileId={profile.id} host={profile.linkHost} />

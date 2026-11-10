@@ -101,9 +101,6 @@ export function TermsModal({ onClose }: TermsModalProps) {
           <p>{t.termsVotingBody}</p>
         </Section>
 
-        <Section title={t.termsNewsTitle}>
-          <p>{t.termsNewsBody}</p>
-        </Section>
 
         <Section title={t.termsSubscriptionTitle}>
           <p>{t.termsSubscriptionBody}</p>

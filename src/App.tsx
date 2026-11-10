@@ -16,8 +16,6 @@ import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { useModalClose } from './hooks/useModalClose';
 import { FilterBar } from './components/filters/FilterBar';
 import { Sidebar } from './components/layout/Sidebar';
-import { NewsPage } from './components/news/NewsPage';
-import { NewsSheet } from './components/news/NewsSheet';
 import { OfflineBanner } from './components/common/Offline';
 import { MobileFeed } from './components/layout/MobileFeed';
 // Desktop map is code-split so d3-geo + topojson + the city table stay out of
@@ -281,13 +279,6 @@ function AppLayout() {
   // Only /p/:id renders MapProfileTitle, so only that route needs the banner out
   // of the way (see the HotBanner comment below).
   const isProfileRoute = /^\/p\/[^/?#]+/.test(feedPrefix ? location.pathname.slice(feedPrefix.length) : location.pathname);
-  // /news and /n/:id are a page, not a window: on the wide layout the news
-  // takes the map's place between the two feed columns, on the compact one
-  // the feed columns' place. Rendered here rather than from the route because
-  // it replaces part of this layout; mobile gets a sheet from the route.
-  const newsMatch = /^\/(?:news\/?$|n\/([^/?#]+))/.exec(feedPrefix ? location.pathname.slice(feedPrefix.length) : location.pathname);
-  const newsPage = !!newsMatch && !isMobile;
-  const newsId = newsMatch?.[1] ?? null;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -399,7 +390,6 @@ function AppLayout() {
         </div>
       ) : isCompact ? (
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-          {newsPage ? <NewsPage newsId={newsId} /> : (
           <div className="flex-1 flex min-h-0">
             <div className="flex-1 min-w-0">
               <Sidebar
@@ -424,7 +414,6 @@ function AppLayout() {
               />
             </div>
           </div>
-          )}
         </div>
       ) : (
         <div className="flex-1 flex min-h-0 overflow-hidden">
@@ -449,22 +438,12 @@ function AppLayout() {
                 h1) renders, and it promotes a different opinio than the one the
                 map is currently tinted for. */}
             <HotBanner
-              enabled={!isMobile && !isCompact && !isProfileRoute && !newsPage}
+              enabled={!isMobile && !isCompact && !isProfileRoute}
               onVisibilityChange={setBannerVisible}
             />
-            {/* The map stays mounted under the news page as a dimmed,
-                inert backdrop (same element, so returning to it is instant
-                and keeps its zoom); the page scrolls over it. */}
             <Suspense fallback={<div className="flex-1 min-h-0" />}>
-              <div
-                className={newsPage ? 'news-map-backdrop absolute inset-0 flex flex-col pointer-events-none' : 'contents'}
-                aria-hidden={newsPage || undefined}
-                inert={newsPage}
-              >
-                <WorldMap bannerVisible={bannerVisible} backdrop={newsPage} />
-              </div>
+              <WorldMap bannerVisible={bannerVisible} />
             </Suspense>
-            {newsPage && <NewsPage newsId={newsId} />}
           </div>
           <ResizeHandle side="right" onDrag={handleRightDrag} />
           <div
@@ -668,14 +647,6 @@ function UserDetailRoute() {
   return <UserDetailModal userId={id ?? ''} />;
 }
 
-// /news and /n/:id. Desktop renders the page inside AppLayout (it replaces
-// the map); the route itself only carries the mobile sheet.
-function NewsRoute() {
-  const { id } = useParams<{ id: string }>();
-  const isMobile = useIsMobile();
-  return isMobile ? <NewsSheet newsId={id ?? null} /> : null;
-}
-
 function CountryDetailRoute() {
   const { code } = useParams<{ code: string }>();
   const { t, locale } = useI18n();
@@ -714,9 +685,7 @@ function AppContent() {
     if (
       !routedPath.startsWith('/p/') &&
       !routedPath.startsWith('/u/') &&
-      !routedPath.startsWith('/c/') &&
-      !routedPath.startsWith('/n/') &&
-      routedPath !== '/news'
+      !routedPath.startsWith('/c/')
     ) {
       applySeo(routedPath, t.seo, prefix);
     }
@@ -740,9 +709,11 @@ function AppContent() {
         <Route path="p/:id" element={<ProfileDetailRoute />} />
         <Route path="u/:id" element={<UserDetailRoute />} />
         <Route path="c/:code" element={<CountryDetailRoute />} />
-        <Route path="news" element={<NewsRoute />} />
-        <Route path="n/:id" element={<NewsRoute />} />
       </Route>
+      {/* Anything else (the removed /news and /n/:id, a mistyped path) goes
+          home - unmatched, the router rendered a blank page. Crawlers never
+          get here for /news: the worker answers those with 410. */}
+      <Route path="*" element={<Navigate to={'/' + location.search} replace />} />
     </Routes>
   );
 }

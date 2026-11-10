@@ -11,7 +11,6 @@ import { useProfileText } from '../../hooks/useProfileText';
 import { useI18n } from '../../i18n/I18nContext';
 import { plural } from '../../i18n/pollStrings';
 import { CommentCount } from '../comments/CommentCount';
-import { NewsLinkBadge } from '../news/NewsLinkBadge';
 import { PollThumb } from '../poll/PollThumb';
 import { PollPreview } from '../poll/PollPreview';
 
@@ -129,7 +128,6 @@ export function ProfileCard({ profile, dense = false, rank }: ProfileCardProps) 
             {plural(p.votes, locale, profile.voteCount, formatNumber)}
           </span>
           <span className="ml-auto flex items-center">
-            <NewsLinkBadge newsId={profile.newsId} size={dense ? 'xs' : undefined} />
             <CommentCount count={profile.commentCount ?? 0} size={dense ? 'xs' : 'sm'} onClick={openComments} />
           </span>
         </div>

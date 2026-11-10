@@ -70,7 +70,4 @@ export interface Profile {
   // Lifetime comment count. ABSENT means the comment UI stays off; 0 means
   // "none" and the UI is live.
   commentCount?: number;
-  // The news story the poll is about: asked from the story, or linked by the
-  // API's news link job. Null/absent = none.
-  newsId?: string | null;
 }
