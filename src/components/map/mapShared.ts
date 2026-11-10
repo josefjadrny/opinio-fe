@@ -186,6 +186,14 @@ export const ACTIVITY_RAMP = ['#223a31', '#2a473b', '#325541', '#3b6247'];
 /** Lower bound of each band, in votes today. */
 export const ACTIVITY_BANDS = [1, 6, 21, 51];
 
+/** Which legend cell a country's votes today fall in: 0 = none, then the bands. */
+export function activityBand(today: number): number {
+  if (today <= 0) return 0;
+  let i = 0;
+  while (i + 1 < ACTIVITY_BANDS.length && today >= ACTIVITY_BANDS[i + 1]) i++;
+  return i + 1;
+}
+
 export function activityFill(today: number): string {
   if (today <= 0) return NO_DATA_FILL;
   let i = 0;

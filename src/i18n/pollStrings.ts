@@ -34,6 +34,8 @@ export interface PollStrings {
   votesTodayFrom: string;
   noVotesTodayFrom: string;
   mapNobody: string;
+  /** Map hover, a country nobody voted from in the last 24h (the map's window). */
+  noVotesToday: string;
   mapLegendTitle: string;
   aboutTagline: string;
   aboutExplain: string;
@@ -111,6 +113,7 @@ const en: { p: PollStrings; t: Partial<Strings> } = {
     votesTodayFrom: '{votes} today',
     noVotesTodayFrom: 'No votes from here yet',
     mapNobody: 'No votes',
+    noVotesToday: 'No votes today',
     mapLegendTitle: 'Votes in the last 24h',
     aboutTagline: 'Ask the world. See how every country answers.',
     aboutExplain: 'Opinio is a world poll. Anyone can ask a question, people everywhere vote in their own language and discuss it, and the map shows how each country voted.',
@@ -223,6 +226,7 @@ const cs: typeof en = {
     votesTodayFrom: 'dnes {votes}',
     noVotesTodayFrom: 'Odsud zatím nikdo nehlasoval',
     mapNobody: 'Bez hlasů',
+    noVotesToday: 'Dnes bez hlasů',
     mapLegendTitle: 'Hlasy za posledních 24 h',
     aboutTagline: 'Zeptej se světa. Uvidíš, jak odpoví každá země.',
     aboutExplain: 'Opinio je světová anketa. Kdokoli se může zeptat, lidé z celého světa hlasují ve svém jazyce a diskutují o tom, a mapa ukáže, jak hlasovala každá země.',
@@ -333,6 +337,7 @@ const es: typeof en = {
     votesTodayFrom: '{votes} hoy',
     noVotesTodayFrom: 'Aún no hay votos desde aquí',
     mapNobody: 'Sin votos',
+    noVotesToday: 'Sin votos hoy',
     mapLegendTitle: 'Votos en las últimas 24 h',
     aboutTagline: 'Pregunta al mundo. Mira cómo responde cada país.',
     aboutExplain: 'Opinio es una encuesta mundial. Cualquiera puede hacer una pregunta, gente de todo el mundo vota en su idioma y la comenta, y el mapa muestra cómo votó cada país.',
@@ -443,6 +448,7 @@ const de: typeof en = {
     votesTodayFrom: 'heute {votes}',
     noVotesTodayFrom: 'Von hier hat noch niemand abgestimmt',
     mapNobody: 'Keine Stimmen',
+    noVotesToday: 'Heute keine Stimmen',
     mapLegendTitle: 'Stimmen der letzten 24 Std.',
     aboutTagline: 'Frag die Welt. Sieh, wie jedes Land antwortet.',
     aboutExplain: 'Opinio ist eine Weltumfrage. Jeder kann eine Frage stellen, Menschen überall stimmen in ihrer Sprache ab und diskutieren darüber, und die Karte zeigt, wie jedes Land abgestimmt hat.',
@@ -553,6 +559,7 @@ const fr: typeof en = {
     votesTodayFrom: '{votes} aujourd\'hui',
     noVotesTodayFrom: 'Aucun vote d\'ici pour l\'instant',
     mapNobody: 'Aucun vote',
+    noVotesToday: 'Aucun vote aujourd\'hui',
     mapLegendTitle: 'Votes des dernières 24 h',
     aboutTagline: 'Interrogez le monde. Voyez comment chaque pays répond.',
     aboutExplain: 'Opinio est un sondage mondial. Chacun peut poser une question, les gens du monde entier votent dans leur langue et en discutent, et la carte montre comment chaque pays a voté.',
@@ -663,6 +670,7 @@ const it: typeof en = {
     votesTodayFrom: '{votes} oggi',
     noVotesTodayFrom: 'Ancora nessun voto da qui',
     mapNobody: 'Nessun voto',
+    noVotesToday: 'Nessun voto oggi',
     mapLegendTitle: 'Voti nelle ultime 24 ore',
     aboutTagline: 'Chiedi al mondo. Guarda come risponde ogni paese.',
     aboutExplain: 'Opinio è un sondaggio mondiale. Chiunque può fare una domanda, persone di tutto il mondo votano nella propria lingua e ne discutono, e la mappa mostra come ha votato ogni paese.',
@@ -773,6 +781,7 @@ const pl: typeof en = {
     votesTodayFrom: 'dziś {votes}',
     noVotesTodayFrom: 'Stąd nikt jeszcze nie głosował',
     mapNobody: 'Brak głosów',
+    noVotesToday: 'Dziś brak głosów',
     mapLegendTitle: 'Głosy z ostatnich 24 h',
     aboutTagline: 'Zapytaj świat. Zobacz, jak odpowiada każdy kraj.',
     aboutExplain: 'Opinio to światowa ankieta. Każdy może zadać pytanie, ludzie z całego świata głosują w swoim języku i dyskutują, a mapa pokazuje, jak głosował każdy kraj.',

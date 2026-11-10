@@ -11,7 +11,7 @@ import { formatNumber } from '../../utils/formatNumber';
 import { PollThumb } from '../poll/PollThumb';
 import { OptionMark } from '../poll/OptionAvatar';
 import { CountrySplit } from '../country/CountrySplit';
-import { activityFill } from './mapShared';
+import { ACTIVITY_RAMP, NO_DATA_FILL, activityBand } from './mapShared';
 
 interface CountryTooltipProps {
   countryCode: string;
@@ -81,9 +81,20 @@ export function CountryTooltip({ countryCode, position, fetchPolls, subjectPoll,
             )
           ) : (
             <p className="mt-1 flex items-center gap-1.5 text-[13px] text-text-secondary tabular-nums">
-              {/* The country's own map shade, so the line ties back to the legend. */}
-              <span aria-hidden className="w-2.5 h-2.5 rounded-sm shrink-0 ring-1 ring-white/15" style={{ background: activityFill(today) }} />
-              {today > 0 ? p.votesTodayFrom.replace('{votes}', plural(p.votes, locale, today, formatNumber)) : p.mapNobody}
+              {/* A miniature of the map legend's scale with this country's cell
+                  outlined: the line explains the country's shade on the map,
+                  and the ramp's dark greens are too close to the card for a
+                  lone swatch to read as "that colour". */}
+              <span aria-hidden className="flex h-2.5 w-14 gap-px shrink-0">
+                {[NO_DATA_FILL, ...ACTIVITY_RAMP].map((c, i) => (
+                  <span
+                    key={i}
+                    className={`flex-1 first:rounded-l-full last:rounded-r-full ${i === activityBand(today) ? 'ring-[1.5px] ring-white/80 relative z-10' : ''}`}
+                    style={{ background: c }}
+                  />
+                ))}
+              </span>
+              {today > 0 ? p.votesTodayFrom.replace('{votes}', plural(p.votes, locale, today, formatNumber)) : p.noVotesToday}
             </p>
           )}
         </div>
@@ -125,10 +136,10 @@ export function CountryTooltip({ countryCode, position, fetchPolls, subjectPoll,
               {polls.items.map((it) => {
                 return (
                   <div key={it.poll.id} className="flex items-start gap-2.5">
-                    <PollThumb role={it.poll.role} imageUrl={it.poll.imageUrl} className="w-10 h-10" />
+                    <PollThumb role={it.poll.role} imageUrl={it.poll.contentImageUrl ?? it.poll.imageUrl} className="w-12 h-12 rounded-xl" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-white leading-snug line-clamp-2">{it.poll.name}</p>
-                      <div className="mt-1.5"><CountrySplit item={it} /></div>
+                      <div className="mt-1.5"><CountrySplit item={it} noBar /></div>
                     </div>
                   </div>
                 );

@@ -10,8 +10,10 @@ import { OptionMark, TiedMarks } from '../poll/OptionAvatar';
 // and "tie"), then the poll detail's votes-tile line under it - a thin bar
 // split by every answer in its colour, and the votes it stands on. The country
 // page wraps the bar line in a StatTip that spells the split out (SplitList);
-// the map hover, which cannot be interacted with, shows it as it is.
-export function CountrySplit({ item, bar }: { item: CountryPollItem; bar?: (line: React.ReactNode) => React.ReactNode }) {
+// the map hover (noBar) shows the winner only, with the votes on its line:
+// it cannot be interacted with, so there is nothing to tell a reader which
+// colour is which answer, and a bar there is noise.
+export function CountrySplit({ item, bar, noBar }: { item: CountryPollItem; bar?: (line: React.ReactNode) => React.ReactNode; noBar?: boolean }) {
   const { p, locale } = useI18n();
   const total = item.country.total;
   const leading = item.country.leading;
@@ -36,8 +38,9 @@ export function CountrySplit({ item, bar }: { item: CountryPollItem; bar?: (line
         {leading.tie || !lead ? <TiedMarks options={tied} /> : <OptionMark color={lead.color} imageUrl={lead.imageUrl} className="w-5 h-5" />}
         <span className="truncate text-white/90">{leading.tie ? p.tie : leading.text}</span>
         {!leading.tie && <span className="shrink-0 tabular-nums font-semibold text-white">{leading.pct}%</span>}
+        {noBar && <span className="ml-auto pl-2 shrink-0 text-white/60 tabular-nums">{plural(p.votes, locale, total, formatNumber)}</span>}
       </div>
-      {bar ? bar(line) : line}
+      {noBar ? null : bar ? bar(line) : line}
     </div>
   );
 }
