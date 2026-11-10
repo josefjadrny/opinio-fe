@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import type { Profile } from '../../types/profile';
 import { PollThumb } from '../poll/PollThumb';
 import { PollOptions } from '../poll/PollOptions';
+import { PollSummary } from '../poll/PollSummary';
 import { PollCountries } from '../poll/PollCountries';
 import { GlobeIcon } from '../poll/PollIcons';
 import { DELETE_MAX_VOTES } from '../../utils/polls';
@@ -152,17 +153,22 @@ export function ProfileDetailModal({ profile: seed, onClose }: ProfileDetailModa
         </div>
         </div>
 
-        <div className="px-4 pt-4 pb-5 space-y-4">
-          {/* Context first - description, picture, link - since it can decide
-              the vote; folded by the chevron. Then the answers, which are the
-              vote buttons and always stay. .details-fold (index.css) animates
+        <div className="px-4 pt-4 pb-5">
+          {/* The summary tiles lead and never move: the chevron folds
+              everything under them and the sheet shrinks around them. No
+              space-y here: each fold carries its own spacing, so a folded
+              section takes its gap with it instead of leaving an empty one.
+              Then the context - description, picture, link - since it can
+              decide the vote; then the answers. .details-fold (index.css) animates
               the fold to the content's own height (0fr), plus the overflow-hidden
               + min-h-0 the clipped child needs and the fade/lift on
               .details-fold-inner. Shared with the desktop modal. */}
+          <PollSummary profile={profile} />
+
           {(description || profile.contentImageUrl || profile.hasLink) && (
           <div className="details-fold" data-collapsed={detailsCollapsed}>
           <div>
-          <div className="details-fold-inner space-y-3 pb-4 border-b border-border">
+          <div className="details-fold-inner space-y-3 pt-4 pb-4 border-b border-border">
           {(description || profile.contentImageUrl) && (
             <div className="flow-root">
               {profile.contentImageUrl && (
@@ -206,15 +212,23 @@ export function ProfileDetailModal({ profile: seed, onClose }: ProfileDetailModa
           </div>
           )}
 
+          <div className="details-fold" data-collapsed={detailsCollapsed}>
+          <div inert={detailsCollapsed}>
+          <div className="details-fold-inner pt-4">
           <PollOptions
             profile={profile}
             showingOriginal={showingOriginal}
             pictureClass="w-11 h-11"
+            summary={false}
           />
+          </div>
+          </div>
+          </div>
+
 
           <div className="details-fold" data-collapsed={detailsCollapsed}>
           <div>
-          <div className="details-fold-inner space-y-4">
+          <div className="details-fold-inner space-y-4 pt-4">
           {profile.addedBy && (
             <p className="text-[13px] text-white/60">
               {t.reportedBy}{' '}
