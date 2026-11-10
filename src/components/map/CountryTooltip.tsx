@@ -9,7 +9,8 @@ import { useCountries } from '../../hooks/useCountries';
 import { useCountryPolls } from '../../hooks/useCountryPolls';
 import { formatNumber } from '../../utils/formatNumber';
 import { PollThumb } from '../poll/PollThumb';
-import { OptionMark, TiedMarks } from '../poll/OptionAvatar';
+import { OptionMark } from '../poll/OptionAvatar';
+import { CountrySplit } from '../country/CountrySplit';
 import { activityFill } from './mapShared';
 
 interface CountryTooltipProps {
@@ -122,33 +123,12 @@ export function CountryTooltip({ countryCode, position, fetchPolls, subjectPoll,
           ) : polls && polls.items.length > 0 ? (
             <div className="space-y-3">
               {polls.items.map((it) => {
-                const lead = it.country.leading;
-                const leadOpt = lead && !lead.tie ? it.poll.options.find((o) => o.id === lead.optionId) : undefined;
-                const here = new Map(it.country.options?.map((x) => [x.optionId, x.n]) ?? []);
-                const top = Math.max(0, ...here.values());
-                const tied = lead?.tie ? it.poll.options.filter((o) => top > 0 && here.get(o.id) === top) : [];
                 return (
                   <div key={it.poll.id} className="flex items-start gap-2.5">
                     <PollThumb role={it.poll.role} imageUrl={it.poll.imageUrl} className="w-10 h-10" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-white leading-snug line-clamp-2">{it.poll.name}</p>
-                      {/* How the country split, every answer in its colour. */}
-                      {it.country.total > 0 && (
-                        <span aria-hidden className="mt-1.5 flex h-1.5 rounded-full overflow-hidden gap-[2px] bg-white/5">
-                          {it.poll.options.filter((o) => (here.get(o.id) ?? 0) > 0).map((o) => (
-                            <span key={o.id} style={{ width: `${((here.get(o.id) ?? 0) / it.country.total) * 100}%`, background: o.color }} />
-                          ))}
-                        </span>
-                      )}
-                      {lead && (
-                        <div className="mt-1.5 flex items-center gap-1.5 text-[13px] min-w-0">
-                          {leadOpt
-                            ? <OptionMark color={leadOpt.color} imageUrl={leadOpt.imageUrl} className="w-5 h-5" />
-                            : <TiedMarks options={tied} />}
-                          <span className="truncate text-white/90">{lead.tie ? p.tie : lead.text}</span>
-                          {!lead.tie && <span className="shrink-0 tabular-nums font-semibold text-white">{lead.pct}%</span>}
-                        </div>
-                      )}
+                      <div className="mt-1.5"><CountrySplit item={it} /></div>
                     </div>
                   </div>
                 );

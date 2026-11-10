@@ -64,8 +64,8 @@ function LeaderTile({ leader, person }: { leader: CountryFactsLeader; person: Pe
   const since = leader.since ? `${title} ${t.factsSince.replace('{date}', formatDate(leader.since, locale))}` : null;
   const credit = person.photo ? t.factsPhoto.replace('{credit}', person.photo.credit).replace('{license}', person.photo.license) : null;
   const body = (
-    <span className="flex items-center gap-3 min-w-0 text-left">
-      <LeaderPhoto person={person} size={isMobile ? 'w-12 h-12' : 'w-14 h-14'} />
+    <span className={`flex items-center ${isMobile ? 'gap-2.5' : 'gap-3'} min-w-0 text-left`}>
+      <LeaderPhoto person={person} size={isMobile ? 'w-10 h-10' : 'w-14 h-14'} />
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5 flex-wrap">
           <span className="text-xs text-white/60 leading-tight">{title}</span>
@@ -75,12 +75,14 @@ function LeaderTile({ leader, person }: { leader: CountryFactsLeader; person: Pe
             </span>
           )}
         </span>
-        <span className="block text-sm md:text-[15px] font-semibold text-white leading-snug mt-0.5 truncate">{person.name}</span>
+        {/* Two lines on a phone, where two tiles share a row and a long name
+            ("Frank-Walter Steinmeier") would otherwise be cut. */}
+        <span className={`block text-sm md:text-[15px] font-semibold text-white leading-snug mt-0.5 ${isMobile ? 'line-clamp-2 break-words' : 'truncate'}`}>{person.name}</span>
         {years && <span className="block text-xs text-white/50 leading-tight mt-0.5">{t.factsAge.replace('{age}', years)}</span>}
       </span>
     </span>
   );
-  const tile = `${TILE} block w-full px-3 py-2.5 min-w-0`;
+  const tile = `${TILE} block w-full ${isMobile ? 'px-2.5 py-2' : 'px-3 py-2.5'} min-w-0`;
   if (!since && !credit) return <div className={tile}>{body}</div>;
   return (
     <StatTip
@@ -112,7 +114,9 @@ export function CountryLeaders({ facts }: { facts: Facts | undefined }) {
     : [];
   if (leaders.length === 0) return null;
   return (
-    <div className={`grid gap-2 grid-cols-1 ${leaders.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
+    // Two to a row on a phone too: stacked one per row, two leaders took
+    // ~170px of the sheet and pushed the country's polls below the fold.
+    <div className={`grid gap-2 ${leaders.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} ${leaders.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
       {leaders.map(({ leader, person }) => <LeaderTile key={leader.role + person.id} leader={leader} person={person} />)}
     </div>
   );

@@ -212,8 +212,8 @@ export function getProfileCountries(profileId: string, registered = false): Prom
 // Polls people from one country voted on, with that country's answer next to
 // the world's. top = most votes from there today (then lifetime), recent =
 // latest vote first.
-export function getCountryPolls(code: string, sort: 'top' | 'recent', limit: number, lang: string): Promise<CountryPollsResponse> {
-  return apiFetch(`/api/countries/${code}/polls?sort=${sort}&limit=${limit}&lang=${lang}`);
+export function getCountryPolls(code: string, sort: 'top' | 'recent', limit: number, lang: string, offset = 0): Promise<CountryPollsResponse> {
+  return apiFetch(`/api/countries/${code}/polls?sort=${sort}&limit=${limit}&offset=${offset}&lang=${lang}`);
 }
 
 // One well-known person by id.

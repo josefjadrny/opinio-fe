@@ -36,6 +36,7 @@ export function PollThumb({ role, imageUrl, className = 'w-10 h-10' }: { role: R
       <img
         src={imageUrl}
         alt=""
+        loading="lazy"
         className={`rounded-lg object-cover shrink-0 ${className}`}
         onError={() => setErrored(imageUrl)}
       />

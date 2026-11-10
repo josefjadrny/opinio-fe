@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSheetDrag } from '../../hooks/useSheetDrag';
 import { useI18n } from '../../i18n/I18nContext';
-import { useCountries } from '../../hooks/useCountries';
 import { useMapPanel } from '../../context/useMapPanel';
 import { useCountryDetailsCollapsed } from '../../hooks/useDetailsCollapsed';
 import { getCountryName, isKnownCountry } from '../../utils/countries';
@@ -11,8 +10,6 @@ import { FlagImg } from '../common/CountryFlag';
 import { CollapseDetailsButton } from '../common/CollapseDetailsButton';
 import { HoverTip } from '../common/HoverTip';
 import { CountryPollList } from './CountryPollList';
-import { plural } from '../../i18n/pollStrings';
-import { formatNumber } from '../../utils/formatNumber';
 import { useCountryFacts } from '../../hooks/useCountryFacts';
 import { CountryLeaders, CountryStats } from './CountryFacts';
 
@@ -67,10 +64,6 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
   const code = countryCode.toUpperCase();
   const notFound = !isKnownCountry(code);
   const name = getCountryName(code, locale);
-  const { data } = useCountries();
-  // Votes cast FROM this country, today and ever. Zeros while the shared
-  // countries query is in flight and for a country nobody has voted from.
-  const counts = data?.countries.find((c) => c.code === code) ?? { today: 0, total: 0 };
   const washStyle = {
     '--wash-a': 'rgba(255,255,255,0.05)',
     '--wash-b': 'transparent',
@@ -158,16 +151,6 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
         {!isMobile && hasStats && <div className="mt-1.5"><CountryStats facts={facts} /></div>}
       </div>
     </>
-  );
-
-  // Votes from this country: today, and ever. Stays outside the fold.
-  const VoteBlock = (
-    <p className="text-sm text-text-secondary tabular-nums">
-      <span className="font-semibold text-white">{plural(p.votes, locale, counts.today, formatNumber)}</span>
-      {' '}{p.votesToday}
-      <span className="text-white/30"> · </span>
-      {plural(p.votes, locale, counts.total, formatNumber)} {p.allTime}
-    </p>
   );
 
   // Folds the opinio list away, leaving the header and the vote strip over an
@@ -269,8 +252,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
           {/* Who is in office, straight under the header and outside the
               fold - the country's basic facts stay readable with the opinio
               list folded away. */}
-          {hasLeaders && <div className="px-4 pt-3 shrink-0"><CountryLeaders facts={facts} /></div>}
-          {!notFound && <div className="px-4 pt-3 pb-1 shrink-0">{VoteBlock}</div>}
+          {hasLeaders && <div className="px-4 pt-3 pb-1 shrink-0"><CountryLeaders facts={facts} /></div>}
           {/* Collapsing to 0fr animates the SHEET's height, which a max-height
               cannot do without a magic number that is wrong for every other
               country. .details-fold (index.css) owns that, plus the min-h-0 +
@@ -278,9 +260,14 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
               to be squeezed. Shared with the profile sheet, so both fold at one
               speed. min-h-0 on the fold itself keeps it a well-behaved flex child
               inside the max-h-full sheet. */}
+          {/* The wrapper is a flex column so the scroller can shrink to the
+              room the sheet has left (min-h-0), rather than keep its 60vh and
+              be clipped by the fold: with the leaders above it, a fixed 60vh
+              ran off the bottom of a phone, cutting the last card and hiding
+              the infinite-scroll sentinel. */}
           <div className="details-fold min-h-0" data-collapsed={detailsCollapsed}>
-            <div>
-              <div className="details-fold-inner overflow-y-auto overscroll-y-contain max-h-[60vh] px-4 pt-4 pb-4 space-y-4">
+            <div className="flex flex-col">
+              <div className="details-fold-inner min-h-0 overflow-y-auto overscroll-y-contain max-h-[60vh] px-4 pt-4 pb-4 space-y-4">
                 {notFound ? NotFoundView : (
                   <CountryPollList code={code} countryName={name} onOpen={openProfile} />
                 )}
@@ -323,8 +310,7 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
             {CloseButton}
           </div>
         </div>
-        {hasLeaders && <div className="px-6 pt-4 shrink-0"><CountryLeaders facts={facts} /></div>}
-        {!notFound && <div className="px-6 pt-4 pb-3 border-b border-border shrink-0">{VoteBlock}</div>}
+        {hasLeaders && <div className="px-6 py-4 border-b border-border shrink-0"><CountryLeaders facts={facts} /></div>}
         {/* Same fold as the mobile sheet and as both profile modals. The card is
             anchored to the bottom of the screen (justify-end + mb-16), so folding
             pulls it DOWN and uncovers the map from the top - which is where the
@@ -347,8 +333,8 @@ export function CountryDetailModal({ countryCode }: CountryDetailModalProps) {
                 may take some of it.
                 The dvh term keeps it honest on a short window, where four rows
                 would be taller than the room the card has: whichever is smaller
-                wins. Its 21rem is the header, the vote strip and the card's own
-                bottom margin - the reservation grew with the strip.
+                wins. Its 21rem is the header, the leaders and the card's own
+                bottom margin.
                 Same class in UserDetailModal - keep the two in step.
                 subtle-scrollbar matches the opinio modal's lists. */}
             <div className="details-fold-inner overflow-y-auto subtle-scrollbar max-h-[min(max(350px,calc(50dvh-190px)),calc(100dvh-21rem),602px)] px-6 py-4">

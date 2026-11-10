@@ -1,86 +1,121 @@
-import { useState } from 'react';
-import type { CountryPollItem, PollLeading } from '../../types/api';
-import { useCountryPolls } from '../../hooks/useCountryPolls';
+import { useEffect, useMemo, useRef } from 'react';
+import type { CountryPollItem } from '../../types/api';
+import { useCountryPollsInfinite } from '../../hooks/useCountryPolls';
 import { useI18n } from '../../i18n/I18nContext';
-import { plural } from '../../i18n/pollStrings';
-import { formatNumber } from '../../utils/formatNumber';
-import { FlagImg } from '../common/CountryFlag';
 import { PollThumb } from '../poll/PollThumb';
+import { CountrySplit } from './CountrySplit';
+import { countryRows, splitLabel } from '../../utils/split';
+import { StatTip } from '../common/StatTip';
+import { SplitList } from '../poll/SplitList';
 
-function Answer({ item, leading, label, flag }: { item: CountryPollItem; leading: PollLeading; label: string; flag?: string }) {
-  const { p } = useI18n();
-  if (!leading) return null;
-  const color = item.poll.options.find((o) => o.id === leading.optionId)?.color ?? '#8e94ad';
+// The country's result (CountrySplit, as on the map hover); hovering or
+// tapping the bar line opens the split spelled out - the poll detail's votes-tile pattern. The tap opens the
+// popup only, it does not open the poll (StatTip stops the click).
+function CountryResult({ item }: { item: CountryPollItem }) {
+  const rows = countryRows(item);
+  const total = item.country.total;
+  if (total === 0) return null;
+  const shown = rows.filter((r) => r.n > 0);
   return (
-    <span className="flex items-center gap-1.5 min-w-0 text-[13px]">
-      {flag ? <FlagImg code={flag} className="shrink-0" /> : (
-        <svg className="w-4 h-4 shrink-0 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 010 18M12 3a15 15 0 000 18M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+    <CountrySplit
+      item={item}
+      bar={(line) => (
+        <StatTip
+          label={splitLabel(shown, total)}
+          width={260}
+          className="relative z-10 block w-full text-left py-1 -my-1"
+          panel={<SplitList rows={shown} total={total} />}
+        >
+          {line}
+        </StatTip>
       )}
-      <span className="sr-only">{label}: </span>
-      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: leading.tie ? '#8e94ad' : color }} />
-      <span className="truncate text-white/85">{leading.tie ? p.tie : leading.text}</span>
-      {!leading.tie && <span className="shrink-0 tabular-nums font-semibold text-white">{leading.pct}%</span>}
-    </span>
+    />
   );
 }
 
-// "What {country} answers": the polls people from this country voted on, each
-// with the country's leading answer next to the world's. That contrast is the
-// page's evergreen content (POLLS-DESIGN.md section 8 "Country page").
+// "What {country} answers": the polls people from this country voted on, most
+// voted first, each with how this country answered it (POLLS-DESIGN.md
+// section 8 "Country page"). Pages of 20 load as the reader nears the end.
 export function CountryPollList({ code, countryName, onOpen }: { code: string; countryName: string; onOpen: (id: string) => void }) {
-  const { p, locale } = useI18n();
-  const [sort, setSort] = useState<'top' | 'recent'>('top');
-  const { data, isLoading } = useCountryPolls(code, sort, 20);
-  const items = data?.items ?? [];
+  const { p } = useI18n();
+  const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = useCountryPollsInfinite(code);
+
+  // "top" leans on the last 24h, so a poll can move across a page boundary
+  // between two loads; keep its first appearance only.
+  const items = useMemo(() => {
+    const seen = new Set<string>();
+    const out: CountryPollItem[] = [];
+    for (const page of data?.pages ?? []) {
+      for (const it of page.items) {
+        if (seen.has(it.poll.id)) continue;
+        seen.add(it.poll.id);
+        out.push(it);
+      }
+    }
+    return out;
+  }, [data]);
+
+  // The sentinel sits under the last card. IntersectionObserver respects the
+  // scrolling ancestor's clip, so the default root (the viewport) works inside
+  // the modal's own scroller; the margin starts the next page a little early.
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasNextPage) return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting && !isFetchingNextPage) fetchNextPage();
+    }, { rootMargin: '0px 0px 300px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, items.length]);
+
+  if (isLoading && items.length === 0) {
+    return <p className="text-sm text-white/50 py-4 text-center">...</p>;
+  }
+  if (items.length === 0) {
+    return <p className="text-sm text-white/50 py-4 text-center">{p.countryNoPolls.replace('{country}', countryName)}</p>;
+  }
 
   return (
     <div>
-      <div className="flex items-center gap-1 mb-2" role="tablist">
-        {(['top', 'recent'] as const).map((s) => (
-          <button
-            key={s}
-            type="button"
-            role="tab"
-            aria-selected={sort === s}
-            onClick={() => setSort(s)}
-            className={`rounded-md px-2 py-1 text-xs font-bold uppercase tracking-wider transition-colors ${
-              sort === s ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80 hover:bg-white/5'
-            }`}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+        {items.map((it) => (
+          // A real link for crawlers, middle-click and long-press: the question
+          // is an <a href> whose ::after covers the whole card (a "stretched
+          // link"), so the card is one link without wrapping the bar's popup
+          // button in it - a button inside an <a> is invalid. A plain click
+          // stays in-app (onOpen keeps the query and the back-to-country state).
+          <div
+            key={it.poll.id}
+            className="relative flex items-stretch gap-3 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 hover:bg-surface-light/60 has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-accent/60 p-2 cursor-pointer transition-all"
           >
-            {s === 'top' ? p.tabTop : p.tabRecent}
-          </button>
+            {/* The full image where there is one - the 128px thumb is soft on
+                a retina screen. Lazy, since a long country list is 20 per page. */}
+            <PollThumb
+              role={it.poll.role}
+              imageUrl={it.poll.contentImageUrl ?? it.poll.imageUrl}
+              className="w-16 h-16 rounded-xl"
+            />
+            <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+              <a
+                href={`/p/${it.poll.id}`}
+                onClick={(e) => {
+                  if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                  e.preventDefault();
+                  onOpen(it.poll.id);
+                }}
+                className="text-sm font-semibold text-white leading-snug line-clamp-2 focus:outline-none after:absolute after:inset-0 after:rounded-xl"
+              >
+                {it.poll.name}
+              </a>
+              <CountryResult item={it} />
+            </div>
+          </div>
         ))}
       </div>
-      {isLoading && items.length === 0 ? (
-        <p className="text-sm text-white/50 py-4 text-center">...</p>
-      ) : items.length === 0 ? (
-        <p className="text-sm text-white/50 py-4 text-center">{p.countryNoPolls.replace('{country}', countryName)}</p>
-      ) : (
-        <div className="space-y-1.5">
-          {items.map((it) => (
-            <div
-              key={it.poll.id}
-              role="link"
-              tabIndex={0}
-              onClick={() => onOpen(it.poll.id)}
-              onKeyDown={(e) => { if (e.key === 'Enter') onOpen(it.poll.id); }}
-              className="flex items-start gap-3 rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 px-3 py-2.5 cursor-pointer transition-all"
-            >
-              <PollThumb role={it.poll.role} imageUrl={it.poll.imageUrl} className="w-9 h-9" />
-              <div className="flex-1 min-w-0">
-                <p className="text-[15px] font-semibold text-white leading-snug line-clamp-2">{it.poll.name}</p>
-                <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5">
-                  <Answer item={it} leading={it.country.leading} label={countryName} flag={code} />
-                  <Answer item={it} leading={it.world.leading} label={p.world} />
-                </div>
-                <p className="mt-0.5 text-[12px] text-text-secondary tabular-nums">
-                  {plural(p.votes, locale, it.country.total, formatNumber)} · {p.world}: {formatNumber(it.world.total)}
-                </p>
-              </div>
-            </div>
-          ))}
+      {hasNextPage && (
+        <div ref={sentinelRef} className="py-3 text-center text-sm text-white/50" aria-hidden>
+          {isFetchingNextPage ? '...' : ''}
         </div>
       )}
     </div>

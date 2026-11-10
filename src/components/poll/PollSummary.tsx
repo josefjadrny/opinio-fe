@@ -7,6 +7,8 @@ import { formatNumber } from '../../utils/formatNumber';
 import { FlagImg } from '../common/CountryFlag';
 import { StatTip } from '../common/StatTip';
 import { GlobeIcon, VotedIcon } from './PollIcons';
+import { SplitList } from './SplitList';
+import { splitLabel } from '../../utils/split';
 
 // How far a plural template's words sit from its number: "{n} votes" ->
 // ['', ' votes'], so the figure can be set large and the word small without a
@@ -54,10 +56,6 @@ export function PollSummary({ profile }: { profile: Profile }) {
     text: o.text,
     n: profile.results?.options.find((r) => r.optionId === o.id)?.n ?? 0,
   }));
-  const pct = (n: number) => `${Math.round((n / total) * 100)}%`;
-  // The split spelled out, biggest first - the bar alone only says "mostly
-  // red". Same figures the answer rows show when the details are open.
-  const ranked = [...shares].sort((a, b) => b.n - a.n);
   const votesTile = (
     <Tile icon={<VotedIcon className="w-7 h-7" />} value={formatNumber(total)} label={join(votesWord)}>
       {/* The split in one line: every answer's share, in its colour. */}
@@ -72,21 +70,10 @@ export function PollSummary({ profile }: { profile: Profile }) {
   return (
     <div className="grid grid-cols-2 gap-2" style={{ animation: 'stat-in 0.35s ease-out' }}>
       <StatTip
-        label={ranked.map((x) => `${x.text}: ${formatNumber(x.n)} (${pct(x.n)})`).join(', ')}
+        label={splitLabel(shares, total)}
         width={260}
         className="block w-full text-left !rounded-xl"
-        panel={
-          <ul className="space-y-1.5">
-            {ranked.map((x) => (
-              <li key={x.id} className="flex items-center gap-2 text-sm">
-                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: x.color }} aria-hidden />
-                <span className="flex-1 min-w-0 truncate text-white/80">{x.text}</span>
-                <span className="shrink-0 tabular-nums text-white font-semibold">{formatNumber(x.n)}</span>
-                <span className="shrink-0 w-10 text-right tabular-nums text-white/60">{pct(x.n)}</span>
-              </li>
-            ))}
-          </ul>
-        }
+        panel={<SplitList rows={shares} total={total} />}
       >
         {votesTile}
       </StatTip>

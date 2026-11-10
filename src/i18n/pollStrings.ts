@@ -39,8 +39,6 @@ export interface PollStrings {
   aboutExplain: string;
   countryAnswers: string;
   world: string;
-  tabTop: string;
-  tabRecent: string;
   countryNoPolls: string;
   questionLabel: string;
   questionPlaceholder: string;
@@ -60,8 +58,6 @@ export interface PollStrings {
   votedFromAll: string;
   statsTrendingHelp: string;
   statsCountriesHelp: string;
-  votesToday: string;
-  allTime: string;
   notifMilestone: string;
   notifMilestoneFirst: string;
   previewTitle: string;
@@ -120,8 +116,6 @@ const en: { p: PollStrings; t: Partial<Strings> } = {
     aboutExplain: 'Opinio is a world poll. Anyone can ask a question, people everywhere vote in their own language and discuss it, and the map shows how each country voted.',
     countryAnswers: '{country}: how people there vote',
     world: 'World',
-    tabTop: 'Top',
-    tabRecent: 'Recent',
     countryNoPolls: 'Nobody from {country} has voted yet.',
     questionLabel: 'Question',
     questionPlaceholder: 'Ask the world something...',
@@ -141,8 +135,6 @@ const en: { p: PollStrings; t: Partial<Strings> } = {
     votedFromAll: 'Everywhere',
     statsTrendingHelp: 'Polls with the most votes in the last 24 hours.',
     statsCountriesHelp: 'Countries whose people voted the most in the last 24 hours.',
-    votesToday: 'today',
-    allTime: 'all time',
     notifMilestone: 'Your poll {target} reached {n} votes',
     notifMilestoneFirst: 'First vote on your poll {target}',
     previewTitle: 'Preview',
@@ -236,8 +228,6 @@ const cs: typeof en = {
     aboutExplain: 'Opinio je světová anketa. Kdokoli se může zeptat, lidé z celého světa hlasují ve svém jazyce a diskutují o tom, a mapa ukáže, jak hlasovala každá země.',
     countryAnswers: '{country}: jak tam lidé hlasují',
     world: 'Svět',
-    tabTop: 'Nejvíc hlasů',
-    tabRecent: 'Nedávné',
     countryNoPolls: '{country}: zatím nikdo nehlasoval.',
     questionLabel: 'Otázka',
     questionPlaceholder: 'Zeptejte se světa...',
@@ -257,8 +247,6 @@ const cs: typeof en = {
     votedFromAll: 'Odkudkoli',
     statsTrendingHelp: 'Ankety s nejvíce hlasy za posledních 24 hodin.',
     statsCountriesHelp: 'Země, jejichž lidé za posledních 24 hodin hlasovali nejvíc.',
-    votesToday: 'dnes',
-    allTime: 'celkem',
     notifMilestone: 'Tvoje anketa {target} dosáhla {n} hlasů',
     notifMilestoneFirst: 'První hlas ve tvé anketě {target}',
     previewTitle: 'Náhled',
@@ -350,8 +338,6 @@ const es: typeof en = {
     aboutExplain: 'Opinio es una encuesta mundial. Cualquiera puede hacer una pregunta, gente de todo el mundo vota en su idioma y la comenta, y el mapa muestra cómo votó cada país.',
     countryAnswers: '{country}: cómo vota la gente allí',
     world: 'Mundo',
-    tabTop: 'Más votadas',
-    tabRecent: 'Recientes',
     countryNoPolls: '{country}: nadie ha votado todavía.',
     questionLabel: 'Pregunta',
     questionPlaceholder: 'Pregunta algo al mundo...',
@@ -371,8 +357,6 @@ const es: typeof en = {
     votedFromAll: 'Todo el mundo',
     statsTrendingHelp: 'Encuestas con más votos en las últimas 24 horas.',
     statsCountriesHelp: 'Países cuya gente más votó en las últimas 24 horas.',
-    votesToday: 'hoy',
-    allTime: 'en total',
     notifMilestone: 'Tu encuesta {target} alcanzó {n} votos',
     notifMilestoneFirst: 'Primer voto en tu encuesta {target}',
     previewTitle: 'Vista previa',
@@ -464,8 +448,6 @@ const de: typeof en = {
     aboutExplain: 'Opinio ist eine Weltumfrage. Jeder kann eine Frage stellen, Menschen überall stimmen in ihrer Sprache ab und diskutieren darüber, und die Karte zeigt, wie jedes Land abgestimmt hat.',
     countryAnswers: '{country}: wie die Menschen dort abstimmen',
     world: 'Welt',
-    tabTop: 'Top',
-    tabRecent: 'Neueste',
     countryNoPolls: '{country}: Noch hat niemand abgestimmt.',
     questionLabel: 'Frage',
     questionPlaceholder: 'Frag die Welt etwas...',
@@ -485,8 +467,6 @@ const de: typeof en = {
     votedFromAll: 'Überall',
     statsTrendingHelp: 'Umfragen mit den meisten Stimmen in den letzten 24 Stunden.',
     statsCountriesHelp: 'Länder, deren Menschen in den letzten 24 Stunden am meisten abgestimmt haben.',
-    votesToday: 'heute',
-    allTime: 'insgesamt',
     notifMilestone: 'Deine Umfrage {target} hat {n} Stimmen erreicht',
     notifMilestoneFirst: 'Erste Stimme bei deiner Umfrage {target}',
     previewTitle: 'Vorschau',
@@ -578,8 +558,6 @@ const fr: typeof en = {
     aboutExplain: 'Opinio est un sondage mondial. Chacun peut poser une question, les gens du monde entier votent dans leur langue et en discutent, et la carte montre comment chaque pays a voté.',
     countryAnswers: '{country} : comment les gens y votent',
     world: 'Monde',
-    tabTop: 'Top',
-    tabRecent: 'Récents',
     countryNoPolls: '{country} : personne n\'a encore voté.',
     questionLabel: 'Question',
     questionPlaceholder: 'Posez une question au monde...',
@@ -599,8 +577,6 @@ const fr: typeof en = {
     votedFromAll: 'Partout',
     statsTrendingHelp: 'Les sondages les plus votés ces dernières 24 heures.',
     statsCountriesHelp: 'Les pays dont les habitants ont le plus voté ces dernières 24 heures.',
-    votesToday: 'aujourd\'hui',
-    allTime: 'au total',
     notifMilestone: 'Votre sondage {target} a atteint {n} votes',
     notifMilestoneFirst: 'Premier vote sur votre sondage {target}',
     previewTitle: 'Aperçu',
@@ -692,8 +668,6 @@ const it: typeof en = {
     aboutExplain: 'Opinio è un sondaggio mondiale. Chiunque può fare una domanda, persone di tutto il mondo votano nella propria lingua e ne discutono, e la mappa mostra come ha votato ogni paese.',
     countryAnswers: '{country}: come vota la gente lì',
     world: 'Mondo',
-    tabTop: 'Più votati',
-    tabRecent: 'Recenti',
     countryNoPolls: '{country}: nessuno ha ancora votato.',
     questionLabel: 'Domanda',
     questionPlaceholder: 'Chiedi qualcosa al mondo...',
@@ -713,8 +687,6 @@ const it: typeof en = {
     votedFromAll: 'Ovunque',
     statsTrendingHelp: 'I sondaggi più votati nelle ultime 24 ore.',
     statsCountriesHelp: 'I paesi le cui persone hanno votato di più nelle ultime 24 ore.',
-    votesToday: 'oggi',
-    allTime: 'in totale',
     notifMilestone: 'Il tuo sondaggio {target} ha raggiunto {n} voti',
     notifMilestoneFirst: 'Primo voto sul tuo sondaggio {target}',
     previewTitle: 'Anteprima',
@@ -806,8 +778,6 @@ const pl: typeof en = {
     aboutExplain: 'Opinio to światowa ankieta. Każdy może zadać pytanie, ludzie z całego świata głosują w swoim języku i dyskutują, a mapa pokazuje, jak głosował każdy kraj.',
     countryAnswers: '{country}: jak tam głosują ludzie',
     world: 'Świat',
-    tabTop: 'Najwięcej głosów',
-    tabRecent: 'Ostatnie',
     countryNoPolls: '{country}: nikt jeszcze nie głosował.',
     questionLabel: 'Pytanie',
     questionPlaceholder: 'Zapytaj o coś świat...',
@@ -827,8 +797,6 @@ const pl: typeof en = {
     votedFromAll: 'Wszędzie',
     statsTrendingHelp: 'Ankiety z największą liczbą głosów w ostatnich 24 godzinach.',
     statsCountriesHelp: 'Kraje, których mieszkańcy głosowali najwięcej w ostatnich 24 godzinach.',
-    votesToday: 'dziś',
-    allTime: 'łącznie',
     notifMilestone: 'Twoja ankieta {target} osiągnęła {n} głosów',
     notifMilestoneFirst: 'Pierwszy głos w twojej ankiecie {target}',
     previewTitle: 'Podgląd',
