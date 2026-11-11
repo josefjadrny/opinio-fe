@@ -47,8 +47,8 @@ export default defineConfig({
         // opinio-android/twa-manifest.json.
         shortcuts: [
           {
-            name: 'Drop an opinio',
-            short_name: 'Drop',
+            name: 'Ask the world',
+            short_name: 'Ask',
             url: '/add',
             icons: [{ src: '/shortcut-add.png', sizes: '192x192', type: 'image/png' }],
           },
@@ -56,8 +56,8 @@ export default defineConfig({
             // /me is a redirect: it resolves to the signed-in user's /u/:id, or
             // to /sign-in when there is nobody to resolve. A shortcut needs a
             // static URL and /u/:id is only known at runtime.
-            name: 'My opinios',
-            short_name: 'Opinios',
+            name: 'My profile',
+            short_name: 'Profile',
             url: '/me',
             icons: [{ src: '/shortcut-me.png', sizes: '192x192', type: 'image/png' }],
           },
