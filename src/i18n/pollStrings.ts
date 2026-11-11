@@ -42,6 +42,14 @@ export interface PollStrings {
   countryAnswers: string;
   world: string;
   countryNoPolls: string;
+  /** /p/:id/c/:code - one poll seen from one country. {country} leads with a
+   *  colon everywhere: the name table holds no case endings. */
+  pollCountryTitle: string;
+  /** When the country's winner is not the world's: {a} = the country's
+   *  answer, {b} = the world's, each drawn as a chip in its colour. */
+  pollCountryDiffers: string;
+  pollCountryFew: string;
+  pollCountryNone: string;
   questionLabel: string;
   questionPlaceholder: string;
   optionsLabel: string;
@@ -124,6 +132,10 @@ const en: { p: PollStrings; t: Partial<Strings> } = {
     countryAnswers: '{country}: how people there vote',
     world: 'World',
     countryNoPolls: 'Nobody from {country} has voted yet.',
+    pollCountryTitle: '{country}: {question}',
+    pollCountryDiffers: '{country}: most chose {a}, the world {b}',
+    pollCountryFew: 'Only a few votes so far',
+    pollCountryNone: '{country}: no votes yet',
     questionLabel: 'Question',
     questionPlaceholder: 'Ask the world something...',
     optionsLabel: 'Answers',
@@ -241,6 +253,10 @@ const cs: typeof en = {
     countryAnswers: '{country}: jak tam lidé hlasují',
     world: 'Svět',
     countryNoPolls: '{country}: zatím nikdo nehlasoval.',
+    pollCountryTitle: '{country}: {question}',
+    pollCountryDiffers: '{country}: nejvíc {a}, svět {b}',
+    pollCountryFew: 'Zatím jen pár hlasů',
+    pollCountryNone: '{country}: zatím bez hlasů',
     questionLabel: 'Otázka',
     questionPlaceholder: 'Zeptejte se světa...',
     optionsLabel: 'Odpovědi',
@@ -356,6 +372,10 @@ const es: typeof en = {
     countryAnswers: '{country}: cómo vota la gente allí',
     world: 'Mundo',
     countryNoPolls: '{country}: nadie ha votado todavía.',
+    pollCountryTitle: '{country}: {question}',
+    pollCountryDiffers: '{country}: la mayoría eligió {a}, el mundo {b}',
+    pollCountryFew: 'De momento, pocos votos',
+    pollCountryNone: '{country}: aún sin votos',
     questionLabel: 'Pregunta',
     questionPlaceholder: 'Pregunta algo al mundo...',
     optionsLabel: 'Respuestas',
@@ -471,6 +491,10 @@ const de: typeof en = {
     countryAnswers: '{country}: wie die Menschen dort abstimmen',
     world: 'Welt',
     countryNoPolls: '{country}: Noch hat niemand abgestimmt.',
+    pollCountryTitle: '{country}: {question}',
+    pollCountryDiffers: '{country}: die meisten wählten {a}, die Welt {b}',
+    pollCountryFew: 'Bisher nur wenige Stimmen',
+    pollCountryNone: '{country}: noch keine Stimmen',
     questionLabel: 'Frage',
     questionPlaceholder: 'Frag die Welt etwas...',
     optionsLabel: 'Antworten',
@@ -586,6 +610,10 @@ const fr: typeof en = {
     countryAnswers: '{country} : comment les gens y votent',
     world: 'Monde',
     countryNoPolls: '{country} : personne n\'a encore voté.',
+    pollCountryTitle: '{country} : {question}',
+    pollCountryDiffers: '{country} : la majorité a choisi {a}, le monde {b}',
+    pollCountryFew: 'Peu de votes pour l\'instant',
+    pollCountryNone: '{country} : pas encore de votes',
     questionLabel: 'Question',
     questionPlaceholder: 'Posez une question au monde...',
     optionsLabel: 'Réponses',
@@ -701,6 +729,10 @@ const it: typeof en = {
     countryAnswers: '{country}: come vota la gente lì',
     world: 'Mondo',
     countryNoPolls: '{country}: nessuno ha ancora votato.',
+    pollCountryTitle: '{country}: {question}',
+    pollCountryDiffers: '{country}: i più hanno scelto {a}, il mondo {b}',
+    pollCountryFew: 'Per ora pochi voti',
+    pollCountryNone: '{country}: ancora nessun voto',
     questionLabel: 'Domanda',
     questionPlaceholder: 'Chiedi qualcosa al mondo...',
     optionsLabel: 'Risposte',
@@ -816,6 +848,10 @@ const pl: typeof en = {
     countryAnswers: '{country}: jak tam głosują ludzie',
     world: 'Świat',
     countryNoPolls: '{country}: nikt jeszcze nie głosował.',
+    pollCountryTitle: '{country}: {question}',
+    pollCountryDiffers: '{country}: najwięcej wybrało {a}, świat {b}',
+    pollCountryFew: 'Na razie tylko kilka głosów',
+    pollCountryNone: '{country}: jeszcze brak głosów',
     questionLabel: 'Pytanie',
     questionPlaceholder: 'Zapytaj o coś świat...',
     optionsLabel: 'Odpowiedzi',

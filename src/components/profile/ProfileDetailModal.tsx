@@ -26,13 +26,17 @@ import { useMapPanel } from '../../context/useMapPanel';
 import { CommentIcon, BumpNumber } from '../comments/CommentCount';
 import { WASH } from '../common/wash';
 import { CommentsSheet } from '../comments/CommentsSheet';
+import { CountryLabel, CountryNotes, CountryTitle, WorldLabel } from '../poll/PollCountryView';
+import { usePollCountryView } from '../../hooks/usePollCountryView';
 
 interface ProfileDetailModalProps {
   profile: Profile;
   onClose: () => void;
+  /** /p/:id/c/:code - the same sheet, seen from this country. */
+  countryCode?: string;
 }
 
-export function ProfileDetailModal({ profile: seed, onClose }: ProfileDetailModalProps) {
+export function ProfileDetailModal({ profile: seed, onClose, countryCode }: ProfileDetailModalProps) {
   // The route hands in the poll it has; reading the query here too keeps the
   // results and the caller's vote live after a vote patches the cache.
   const { data } = useProfile(seed.id);
@@ -63,6 +67,7 @@ export function ProfileDetailModal({ profile: seed, onClose }: ProfileDetailModa
     return () => registerSheet(null);
   }, [profile.id, registerSheet]);
   const { name, description, hasTranslation, showingOriginal, toggle } = useProfileText(profile);
+  const view = usePollCountryView(profile, countryCode);
   const { sheetRef, dragHandlers } = useSheetDrag(onClose);
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -121,7 +126,7 @@ export function ProfileDetailModal({ profile: seed, onClose }: ProfileDetailModa
             })()}
             <PollThumb role={profile.role} imageUrl={profile.imageUrl} className="w-10 h-10" />
             <div className="min-w-0 flex-1">
-              <h1 className="block font-semibold text-white leading-snug break-words mb-1">{name}</h1>
+              <h1 className="block font-semibold text-white leading-snug break-words mb-1">{view ? <CountryTitle view={view} question={name} pollId={profile.id} /> : name}</h1>
               <div className="flex items-center gap-1.5">
                 <RoleBadge role={profile.role} />
                 <div className="flex items-center gap-0.5 shrink-0 ml-auto -mr-1">
@@ -163,6 +168,7 @@ export function ProfileDetailModal({ profile: seed, onClose }: ProfileDetailModa
               the fold to the content's own height (0fr), plus the overflow-hidden
               + min-h-0 the clipped child needs and the fade/lift on
               .details-fold-inner. Shared with the desktop modal. */}
+          {view && <WorldLabel />}
           <PollSummary profile={profile} />
 
           {(description || profile.contentImageUrl || profile.hasLink) && (
@@ -215,12 +221,27 @@ export function ProfileDetailModal({ profile: seed, onClose }: ProfileDetailModa
           <div className="details-fold" data-collapsed={detailsCollapsed}>
           <div inert={detailsCollapsed}>
           <div className="details-fold-inner pt-4">
-          <PollOptions
-            profile={profile}
-            showingOriginal={showingOriginal}
-            pictureClass="w-11 h-11"
-            summary={false}
-          />
+          {view ? (
+            <>
+              <CountryLabel view={view} />
+              {view.loaded && (
+                <PollOptions
+                  profile={view.countryProfile}
+                  showingOriginal={showingOriginal}
+                  pictureClass="w-11 h-11"
+                  summary={false}
+                />
+              )}
+              <CountryNotes view={view} />
+            </>
+          ) : (
+            <PollOptions
+              profile={profile}
+              showingOriginal={showingOriginal}
+              pictureClass="w-11 h-11"
+              summary={false}
+            />
+          )}
           </div>
           </div>
           </div>

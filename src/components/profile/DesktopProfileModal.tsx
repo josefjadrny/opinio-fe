@@ -24,12 +24,16 @@ import { CommentIcon, BumpNumber } from '../comments/CommentCount';
 import { commentCountLabel } from '../comments/commentCountLabel';
 import { WASH } from '../common/wash';
 import { CommentList, CommentComposer, CommentThreadProvider } from '../comments/CommentThread';
+import { CountryLabel, CountryNotes, CountryTitle, WorldLabel } from '../poll/PollCountryView';
+import { usePollCountryView } from '../../hooks/usePollCountryView';
 
 interface DesktopProfileModalProps {
   profileId: string;
+  /** /p/:id/c/:code - the same window, seen from this country. */
+  countryCode?: string;
 }
 
-export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
+export function DesktopProfileModal({ profileId, countryCode }: DesktopProfileModalProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, locale } = useI18n();
@@ -56,6 +60,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
   // Shared with the mobile sheet's chevron - same choice, one key.
   const [detailsCollapsed, toggleDetails] = useDetailsCollapsed();
   const { name, description, hasTranslation, showingOriginal, toggle } = useProfileText(profile);
+  const view = usePollCountryView(profile, countryCode);
 
   const close = () => navigate('/' + location.search);
 
@@ -131,7 +136,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                       20px from lg up, 16 below: a question runs to 80
                       characters, so it wraps either way and the role badge
                       follows it on the line (flex-wrap). */}
-                  <h1 className="text-base lg:text-xl font-semibold text-white leading-snug break-words min-w-0">{name}</h1>
+                  <h1 className="text-base lg:text-xl font-semibold text-white leading-snug break-words min-w-0">{view ? <CountryTitle view={view} question={name} pollId={profile.id} /> : name}</h1>
                   <RoleBadge role={profile.role} />
                 </div>
                 <p className="text-[13px] text-white/60">
@@ -183,6 +188,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
             <div className="details-fold shrink-0" data-collapsed={!detailsCollapsed}>
             <div inert={!detailsCollapsed}>
             <div className="details-fold-inner px-6 py-5">
+              {view && <WorldLabel />}
               <PollSummary profile={profile} />
             </div>
             </div>
@@ -250,12 +256,27 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                       )}
                       </div>
                       )}
-                      <PollOptions
-                        profile={profile}
-                        showingOriginal={showingOriginal}
-                        pictureClass="w-12 h-12"
-                        summary={false}
-                      />
+                      {view ? (
+                        <>
+                          <CountryLabel view={view} />
+                          {view.loaded && (
+                            <PollOptions
+                              profile={view.countryProfile}
+                              showingOriginal={showingOriginal}
+                              pictureClass="w-12 h-12"
+                              summary={false}
+                            />
+                          )}
+                          <CountryNotes view={view} />
+                        </>
+                      ) : (
+                        <PollOptions
+                          profile={profile}
+                          showingOriginal={showingOriginal}
+                          pictureClass="w-12 h-12"
+                          summary={false}
+                        />
+                      )}
                     </div>
 
                     {/* Right: breakdown. The wrapper is `relative` with its content
@@ -274,7 +295,7 @@ export function DesktopProfileModal({ profileId }: DesktopProfileModalProps) {
                         Countries <-> Comments switch when the text was short. */}
                     <div className={`relative flex-1 basis-0 min-w-0 ${commentsEnabled ? 'min-h-[360px]' : 'min-h-[200px]'}`}>
                       <div className="absolute inset-0 px-6 py-5 flex flex-col">
-                        <div className="shrink-0 mb-4"><PollSummary profile={profile} /></div>
+                        <div className="shrink-0 mb-4">{view && <WorldLabel />}<PollSummary profile={profile} /></div>
                         {/* Segmented switch over the column. Countries is the
                             default; the count on the other segment is the only
                             place the detail advertises comments. */}

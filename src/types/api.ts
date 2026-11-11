@@ -14,6 +14,13 @@ export interface CountryPollItem {
   world: { total: number; leading: PollLeading };
 }
 
+/** One poll seen from one country, next to the world: /p/:id/c/:code. */
+export interface PollCountryResponse {
+  poll: Profile;
+  country: { code: string; total: number; leading: PollLeading; options: { optionId: string; n: number }[] };
+  world: { total: number; leading: PollLeading; options: { optionId: string; n: number }[] };
+}
+
 export interface CountryPollsResponse {
   items: CountryPollItem[];
 }

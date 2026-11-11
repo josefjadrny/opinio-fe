@@ -1,3 +1,5 @@
+import { pollCountryMeta } from './pollCountryMeta.js';
+
 const API_BASE = 'https://api.opinio.live';
 const SITE_BASE = 'https://opinio.live';
 const DEFAULT_OG_IMAGE = `${SITE_BASE}/og-image.png`;
@@ -13,6 +15,9 @@ const PROFILE_LANG_PATH_RE = /^\/(cs|es|de|fr|it|pl)\/p\/([^\/]+)\/?$/;
 // render); everything else under a prefix is served as the SPA shell with
 // translated meta (see handleLangShell).
 const LANG_PREFIX_RE = /^\/(cs|es|de|fr|it|pl)(\/.*)?$/;
+// One poll seen from one country: /p/<uuid>/c/<code> (+ its /<lang>/ versions,
+// matched on the prefix-stripped path). SPA-backed, head from the worker.
+const POLL_COUNTRY_PATH_RE = /^\/p\/([^\/]+)\/c\/([^\/]+)\/?$/;
 const USER_PATH_RE = /^\/u\/([^\/]+)\/?$/;
 const COUNTRY_PATH_RE = /^\/c\/([^\/]+)\/?$/;
 // /news and /n/<id>: the removed news pages, all answered 410.
@@ -403,6 +408,20 @@ async function fetchProfile(id, lang) {
     // original when a translation is missing, so this is never an error path).
     const qs = lang ? `?lang=${lang}` : '';
     const res = await fetch(`${API_BASE}/api/profiles/${id}${qs}`, {
+      headers: { accept: 'application/json' },
+      cf: { cacheTtl: 300, cacheEverything: true },
+    });
+    if (res.ok) return { ok: true, data: await res.json() };
+    return { ok: false, notFound: res.status === 404 };
+  } catch {
+    return { ok: false, notFound: false };
+  }
+}
+
+async function fetchPollCountry(id, code, lang) {
+  try {
+    const qs = lang ? `?lang=${lang}` : '';
+    const res = await fetch(`${API_BASE}/api/profiles/${id}/countries/${code}${qs}`, {
       headers: { accept: 'application/json' },
       cf: { cacheTtl: 300, cacheEverything: true },
     });
@@ -1064,6 +1083,58 @@ async function handleNews(request) {
   return new Response(shellText, { status: 410, headers });
 }
 
+// /p/<id>/c/<code> and /<lang>/p/<id>/c/<code>: the SPA shell with the head of
+// "{country}: {question}" (pollCountryMeta.js, shared with the SPA).
+// Listed in the sitemap (the country gave the poll enough votes) = indexable,
+// self-canonical, with hreflang. Not listed = canonical to the poll page and no
+// alternates, so Google folds it into the poll rather than indexing a thin
+// page; no noindex on top (noindex + a canonical elsewhere are mixed signals).
+async function handlePollCountry(request, id, code, lang = null) {
+  const name = countryName(code, lang);
+  const [result, shellRes, paths] = await Promise.all([
+    name ? fetchPollCountry(id, code, lang) : Promise.resolve({ ok: false, notFound: true }),
+    fetchShellHtml(request),
+    fetchAdvertisedPaths(),
+  ]);
+  const shellText = await shellRes.text();
+  const headers = new Headers();
+  headers.set('content-type', 'text/html; charset=utf-8');
+  headers.set('cache-control', 'public, max-age=300, s-maxage=300');
+
+  if (!result.ok) {
+    // Unknown country or a deleted poll never comes back -> 410 (as /p/);
+    // an API outage keeps the 200 shell.
+    headers.set('x-opinio-og', result.notFound ? 'notfound' : 'fallback');
+    if (result.notFound) headers.set('x-robots-tag', NOINDEX);
+    return new Response(shellText, { status: result.notFound ? 410 : 200, headers });
+  }
+
+  const item = result.data;
+  headers.set('x-opinio-og', lang ? 'poll-country-lang' : 'poll-country');
+  const { title, description } = pollCountryMeta(lang || 'en', name, item);
+  const basePath = `/p/${id}/c/${code}`;
+  const prefix = lang ? `/${lang}` : '';
+  const listed = !isUnadvertised(paths, basePath);
+  // The poll's own page in the same language: /<lang>/p/<id> is its own
+  // translated page, so a folded Czech page folds into the Czech poll.
+  const canonicalUrl = listed ? `${SITE_BASE}${prefix}${basePath}` : `${SITE_BASE}${prefix}/p/${id}`;
+  const poll = item.poll || {};
+  const hasAvatar = !!poll.imageUrl;
+
+  const html = injectProfileMeta(shellText, {
+    title,
+    description,
+    image: hasAvatar ? upscaleAvatarUrl(poll.imageUrl) : DEFAULT_OG_IMAGE,
+    imageAlt: title,
+    url: canonicalUrl,
+    isAvatar: hasAvatar,
+    alternatesBase: listed ? basePath : null,
+    ogLocale: lang ? LANG_UI[lang].ogLocale : null,
+    noindex: false,
+  });
+  return new Response(html, { status: 200, headers });
+}
+
 // lang = null → bare English (/c/<code>); lang set → prefixed (/<lang>/c/<code>),
 // with the country name from COUNTRY_NAMES_I18N.
 async function handleCountry(request, code, lang = null) {
@@ -1114,6 +1185,14 @@ async function handleCountry(request, code, lang = null) {
 // are handled earlier (standalone render); here we cover user / country / static
 // / home, all served as the SPA shell with translated meta.
 function handleLangPrefixed(request, lang, inner) {
+  const pollCountryMatch = inner.match(POLL_COUNTRY_PATH_RE);
+  if (pollCountryMatch) {
+    const id = pollCountryMatch[1].toLowerCase();
+    const code = pollCountryMatch[2].toUpperCase();
+    if (!UUID_RE.test(id) || !COUNTRY_CODE_RE.test(code)) return fetch(request);
+    return handlePollCountry(request, id, code, lang);
+  }
+
   const userMatch = inner.match(USER_PATH_RE);
   if (userMatch) {
     const id = userMatch[1].toLowerCase();
@@ -1188,6 +1267,14 @@ export default {
 
     if (NEWS_PATH_RE.test(path)) {
       return handleNews(request);
+    }
+
+    const pollCountryMatch = path.match(POLL_COUNTRY_PATH_RE);
+    if (pollCountryMatch) {
+      const id = pollCountryMatch[1].toLowerCase();
+      const code = pollCountryMatch[2].toUpperCase();
+      if (!UUID_RE.test(id) || !COUNTRY_CODE_RE.test(code)) return fetch(request);
+      return handlePollCountry(request, id, code);
     }
 
     const profileMatch = path.match(PROFILE_PATH_RE);

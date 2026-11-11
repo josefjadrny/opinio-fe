@@ -19,6 +19,7 @@ export function useVote() {
         old ? { ...old, voteAllowance: data.voteAllowance } : old,
       );
       queryClient.invalidateQueries({ queryKey: ['profile-countries', vars.profileId] });
+      queryClient.invalidateQueries({ queryKey: ['poll-country', vars.profileId] });
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
       queryClient.invalidateQueries({ queryKey: ['country-polls'] });
       queryClient.invalidateQueries({ queryKey: ['countries'] });

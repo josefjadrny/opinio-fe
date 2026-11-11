@@ -209,6 +209,11 @@ export function getProfileCountries(profileId: string, registered = false): Prom
   return apiFetch(`/api/profiles/${profileId}/countries${registered ? '?registered=1' : ''}`);
 }
 
+// One poll seen from one country, with the world's answers next to it.
+export function getPollCountry(profileId: string, code: string, lang: string): Promise<import('../types/api').PollCountryResponse> {
+  return apiFetch(`/api/profiles/${profileId}/countries/${code}?lang=${lang}`);
+}
+
 // Polls people from one country voted on, with that country's answer next to
 // the world's. top = most votes from there today (then lifetime), recent =
 // latest vote first.

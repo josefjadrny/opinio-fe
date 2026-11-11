@@ -29,6 +29,8 @@ import { ProfileNotFoundModal } from './components/profile/ProfileNotFoundModal'
 import { isNotFound } from './api/client';
 import { UserDetailModal } from './components/profile/UserDetailModal';
 import { CountryDetailModal } from './components/country/CountryDetailModal';
+import { usePollCountry } from './hooks/usePollCountry';
+import { POLL_COUNTRY_MIN_VOTES, pollCountryMeta } from '../cloudflare-worker/src/pollCountryMeta.js';
 import { getCountryName, isKnownCountry } from './utils/countries';
 import { AddProfileModal } from './components/profile-form/AddProfileModal';
 import { AddOpinioFab } from './components/ui/AddOpinioFab';
@@ -159,6 +161,23 @@ function applyCountrySeo(code: string, seo: Strings['seo'], locale: Locale) {
   const title = tpl.title.replace(/\{country\}/g, name);
   const description = tpl.description.replace(/\{country\}/g, name);
   const canonicalUrl = `${BASE_URL}${currentLocalePrefix()}/c/${code}`;
+  document.title = title;
+  upsertMeta('meta[name="description"]', { name: 'description', content: description });
+  upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title });
+  upsertMeta('meta[property="og:description"]', { property: 'og:description', content: description });
+  upsertMeta('meta[property="og:url"]', { property: 'og:url', content: canonicalUrl });
+  upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title });
+  upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
+  upsertCanonical(canonicalUrl);
+}
+
+// /p/:id/c/:code. Same title and description as the worker's head (one shared
+// builder). Canonical: the page itself once the country gave the poll enough
+// votes to be listed, else the poll - mirrors the worker, whose real test is
+// the sitemap list (same threshold).
+function applyPollCountrySeo(title: string, description: string, selfPath: string, pollPath: string, listed: boolean) {
+  const prefix = currentLocalePrefix();
+  const canonicalUrl = `${BASE_URL}${prefix}${listed ? selfPath : pollPath}`;
   document.title = title;
   upsertMeta('meta[name="description"]', { name: 'description', content: description });
   upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title });
@@ -638,6 +657,34 @@ function ProfileDetailRoute() {
   return <DesktopProfileModal key={id ?? ''} profileId={id ?? ''} />;
 }
 
+// The poll's own detail window, seen from one country - see PollCountryView.
+function PollCountryRoute() {
+  const { id, code } = useParams<{ id: string; code: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isMobile = useIsMobile();
+  const { locale } = useI18n();
+  const upper = (code ?? '').toUpperCase();
+  const known = isKnownCountry(upper);
+  const { data, error } = usePollCountry(id ?? null, known ? upper : null);
+  const { data: profile, error: profileError } = useProfile(known ? id ?? null : null);
+  const notFound = !known || isNotFound(error) || isNotFound(profileError);
+
+  useEffect(() => {
+    if (data) {
+      const { title, description } = pollCountryMeta(locale, getCountryName(upper, locale), data);
+      applyPollCountrySeo(title, description, `/p/${data.poll.id}/c/${upper}`, `/p/${data.poll.id}`, data.country.total >= POLL_COUNTRY_MIN_VOTES);
+    } else if (notFound) document.title = `Page not found - ${BRAND}`;
+  }, [data, notFound, upper, locale]);
+
+  if (notFound) return <ProfileNotFoundModal onClose={() => navigate('/' + location.search)} />;
+  if (isMobile) {
+    if (!profile) return null;
+    return <ProfileDetailModal profile={profile} countryCode={upper} onClose={() => navigate('/' + location.search)} />;
+  }
+  return <DesktopProfileModal key={`${id ?? ''}:${upper}`} profileId={id ?? ''} countryCode={upper} />;
+}
+
 function UserDetailRoute() {
   const { id } = useParams<{ id: string }>();
   const { data: user } = useUser(id ?? null);
@@ -707,6 +754,7 @@ function AppContent() {
         <Route path="viewer-mode" element={<ViewerModeRoute />} />
         <Route path="welcome" element={<WelcomeRoute />} />
         <Route path="p/:id" element={<ProfileDetailRoute />} />
+        <Route path="p/:id/c/:code" element={<PollCountryRoute />} />
         <Route path="u/:id" element={<UserDetailRoute />} />
         <Route path="c/:code" element={<CountryDetailRoute />} />
       </Route>

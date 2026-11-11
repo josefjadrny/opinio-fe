@@ -40,3 +40,14 @@ export function GlobeIcon({ className = 'w-4 h-4', accentWidth = 2 }: IconProps)
     </svg>
   );
 }
+
+/** "Different from the world": one path splitting in two - the red shape goes
+ *  one way, the green accent the other. */
+export function DivergeIcon({ className = 'w-4 h-4', accentWidth = 2 }: IconProps) {
+  return (
+    <svg className={`shrink-0 ${className}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} aria-hidden>
+      <path stroke="var(--color-negative)" strokeLinecap="round" strokeLinejoin="round" d="M12 21v-6.5c0-2-1-3.5-3-4.5L5 8M5 13V8h5" />
+      <path stroke="var(--color-positive)" strokeLinecap="round" strokeLinejoin="round" strokeWidth={accentWidth} d="M12 14.5c0-2 1-3.5 3-4.5l4-2M19 13V8h-5" />
+    </svg>
+  );
+}
