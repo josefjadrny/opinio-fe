@@ -1,25 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <!-- Same colours and spread as the Play store icon (gen-icon-variants.py v5):
        each gradient spans the store icon's whole canvas in user space, so the
-       bubble and its tail share one gradient (no seam) and each arrow takes
-       the slice of its gradient that sits behind it. -->
+       bubble and its tail share one gradient (no seam) and each answer column
+       takes the slice of its gradient that sits behind it. -->
   <defs>
     <linearGradient id="bub" gradientUnits="userSpaceOnUse" x1="0" y1="-41.67" x2="0" y2="553.67">
       <stop offset="0" stop-color="#3076c2"/><stop offset="1" stop-color="#103a6c"/>
     </linearGradient>
-    <linearGradient id="up" gradientUnits="userSpaceOnUse" x1="0" y1="-41.67" x2="0" y2="553.67">
+    <linearGradient id="c1" gradientUnits="userSpaceOnUse" x1="0" y1="-41.67" x2="0" y2="553.67">
       <stop offset="0" stop-color="#4ade80"/><stop offset="1" stop-color="#16a34a"/>
     </linearGradient>
-    <linearGradient id="dn" gradientUnits="userSpaceOnUse" x1="0" y1="-41.67" x2="0" y2="553.67">
+    <linearGradient id="c2" gradientUnits="userSpaceOnUse" x1="0" y1="-41.67" x2="0" y2="553.67">
       <stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#be123c"/>
+    </linearGradient>
+    <linearGradient id="c3" gradientUnits="userSpaceOnUse" x1="0" y1="-41.67" x2="0" y2="553.67">
+      <stop offset="0" stop-color="#fde047"/><stop offset="1" stop-color="#eab308"/>
     </linearGradient>
   </defs>
   <!-- Background circle (gen-pwa-icons.mjs drops it for favicon.png) -->
   <circle id="bg" cx="256" cy="256" r="256" fill="#1a1a2e"/>
   <g>
     <rect x="64" y="80" width="384" height="272" rx="56" fill="url(#bub)"/>
-    <path d="M144 352 L96 448 L256 352 Z" fill="url(#bub)"/>
-    <polygon points="256,112 176,208 336,208" fill="url(#up)"/>
-    <polygon points="256,320 176,224 336,224" fill="url(#dn)"/>
+    <!-- tail starts 12 units inside the bubble, on the same lines: touching edges leave an antialiased seam -->
+    <path d="M150 340 L96 448 L276 340 Z" fill="url(#bub)"/>
+    <rect x="142" y="128" width="60" height="176" rx="14" fill="url(#c1)"/>
+    <rect x="226" y="184" width="60" height="120" rx="14" fill="url(#c2)"/>
+    <rect x="310" y="232" width="60" height="72" rx="14" fill="url(#c3)"/>
   </g>
 </svg>

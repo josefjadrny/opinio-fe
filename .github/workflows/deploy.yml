@@ -56,7 +56,6 @@ jobs:
             --exclude "manifest.webmanifest" \
             --exclude ".well-known/*" \
             --exclude "data/*" \
-            --exclude "video/*" \
             --cache-control "public, max-age=31536000, immutable"
           aws s3 sync dist/ s3://www.opinio.live \
             --delete \
@@ -72,7 +71,6 @@ jobs:
             --exclude "manifest.webmanifest" \
             --exclude ".well-known/*" \
             --exclude "data/*" \
-            --exclude "video/*" \
             --cache-control "public, max-age=31536000, immutable"
 
       # Hashed JS/CSS: never deleted on deploy. Google renders a page minutes to
@@ -133,13 +131,6 @@ jobs:
             aws s3 cp dist/favicon.png "s3://$bucket/favicon.png" \
               --cache-control "public, max-age=86400"
             aws s3 cp dist/apple-touch-icon.png "s3://$bucket/apple-touch-icon.png" \
-              --cache-control "public, max-age=86400"
-          done
-          # Clips (the caption's logo intro) and their posters: 1-day cache, not
-          # immutable, so a re-cut clip can replace one under the same name.
-          for bucket in opinio.live www.opinio.live; do
-            aws s3 sync dist/video/ "s3://$bucket/video/" \
-              --delete \
               --cache-control "public, max-age=86400"
           done
 

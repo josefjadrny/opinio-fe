@@ -6,7 +6,6 @@ import { useI18n } from '../../i18n/I18nContext';
 import { useSubjectSwap } from '../../hooks/useSubjectSwap';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import type { Profile } from '../../types/profile';
-import { LogoIntro } from '../common/LogoIntro';
 
 // What the caption is currently about. The two subject kinds are the two
 // voter-side map tints (see WorldMap): one opinio, or one country's opinios.
@@ -507,7 +506,7 @@ function CaptionRow({
            wordmark is a plain span, NOT a heading: on home the h1 is FilterBar's
            wordmark and a second one here would double it. */
         <>
-          <LogoIntro className={`caption-mark ${PROMO_MARK} shrink-0`} />
+          <img src="/icon.svg" alt="" aria-hidden="true" draggable={false} className={`caption-mark ${PROMO_MARK} shrink-0 block rounded-full ring-2 ring-white/10`} />
           <div className={`${COLUMN} caption-text`}>
             <span style={{ fontSize: PROMO_NAME_SIZE }} className={`${NAME} text-accent`}>
               {t.appName}

@@ -37,9 +37,9 @@ export default defineConfig({
         // Root PNGs deploy with a year-long immutable cache, so a redrawn icon
         // takes a new filename (-v2 = the Play store artwork), never an overwrite.
         icons: [
-          { src: '/pwa-192x192-v2.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-          { src: '/pwa-512x512-v2.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-          { src: '/maskable-icon-512x512-v2.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: '/pwa-192x192-v3.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/pwa-512x512-v3.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: '/maskable-icon-512x512-v3.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
         // Long-press the installed launcher icon (Android) / taskbar icon
         // (desktop) to jump straight into a route. Bubblewrap mirrors these
