@@ -1,5 +1,5 @@
 // The Opinio mark, the same artwork as the store icon on Play:
-// /icons/logo-mark.png is rendered from the store icon's own generator
+// /icons/logo-mark-v3.png is rendered from the store icon's own generator
 // (opinio-android/play-assets/gen-logo-mark.py) with the background left out,
 // cropped to the bubble. Not /favicon.svg - every logo asset we ship bakes in
 // an opaque background, which on a lighter surface reads as a dark tile
@@ -14,5 +14,5 @@
 // /icons/* deploys with a year-long immutable cache, so a regenerated mark
 // needs a new filename, not an overwrite.
 export function LogoMark({ className }: { className?: string }) {
-  return <img src="/icons/logo-mark.png" alt="" aria-hidden="true" draggable={false} className={`object-contain ${className ?? ''}`} />;
+  return <img src="/icons/logo-mark-v3.png" alt="" aria-hidden="true" draggable={false} className={`object-contain ${className ?? ''}`} />;
 }
