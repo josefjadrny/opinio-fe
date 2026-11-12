@@ -135,7 +135,15 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
 
   return (
     <div>
-      <div className="space-y-2" role="list">
+      {/* While Cloudflare checks an anonymous vote (it can take 5-10s) the
+          answers dim and the check sits over them - a line of text under the
+          answers went unnoticed. */}
+      <div className={`relative ${verifying ? 'min-h-[10rem]' : ''}`}>
+      <div
+        className={`space-y-2 transition-[opacity,filter] duration-200 ${verifying ? 'opacity-25 blur-[1px] pointer-events-none' : ''}`}
+        role="list"
+        aria-hidden={verifying || undefined}
+      >
         {orderedOptions.map((o, i) => {
           const n = counts.get(o.id) ?? 0;
           const pct = total > 0 ? Math.round((n / total) * 100) : 0;
@@ -192,15 +200,28 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
         })}
       </div>
 
-      {/* Turnstile renders here only when Cloudflare wants an interaction. */}
-      <div ref={containerRef} className="flex justify-center empty:hidden mt-2" />
+      <div
+        role="status"
+        aria-live="polite"
+        className={`absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-2xl ${verifying ? '' : 'hidden'}`}
+      >
+        {verifying && (
+          <span className="flex items-center gap-2.5 rounded-full bg-surface-light/90 px-4 py-2 ring-1 ring-white/15 shadow-lg text-sm font-medium text-white">
+            <span aria-hidden className="block w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin motion-reduce:animate-none" />
+            {p.verifying}
+          </span>
+        )}
+        {/* Turnstile renders here; visible only when Cloudflare wants a click
+            (or after 8s, see useTurnstile). Always mounted: the hook renders
+            into it before React has painted the overlay. */}
+        <div ref={containerRef} className="flex justify-center empty:hidden" />
+      </div>
+      </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-text-secondary empty:hidden">
         {!hasCountry ? (
           <span>{isRegistered ? t.noCountryWarningRegistered : t.noCountryWarning}</span>
-        ) : verifying ? (
-          <span>{p.verifying}</span>
-        ) : error ? (
+        ) : verifying ? null : error ? (
           <span className="text-negative-soft">{error}</span>
         ) : voted ? (
           isRegistered ? (
