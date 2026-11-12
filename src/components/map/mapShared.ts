@@ -203,12 +203,21 @@ export function activityFill(today: number): string {
 }
 
 // --- Poll map: each country in its winning answer's colour -------------------
-// The fill is the answer's exact colour, the one picked when the poll was
-// posted (and drawn on its bars, dots and the legend) - a tint mixed toward the
-// navy base read as a different colour (the user's call). A tie is stripes of
-// the tied answers' colours, nobody voted is NO_DATA_FILL. No sample floor
-// (decided with the user): a country takes its winner's colour from its first
-// vote - "1:0 is a win" - and the tooltip says how many votes that is.
+// One fill per answer, the same for every country it wins (no shading by
+// margin): the answer's picker colour taken MAP_TINT of the way from the map's
+// navy base. The pure picker colour is right for dots and bars but, spread over
+// a whole country on the dark map, reads "super shiny" (the user's call).
+// A tie is stripes of the tied answers' fills, nobody voted is NO_DATA_FILL.
+// No sample floor (decided with the user): a country takes its winner's colour
+// from its first vote - "1:0 is a win" - and the tooltip says how many votes.
+const MAP_TINT = 0.6;
+
+function mapFill(color: string): string {
+  const pa = [1, 3, 5].map((k) => parseInt(DEFAULT_FILL.slice(k, k + 2), 16));
+  const pb = [1, 3, 5].map((k) => parseInt(color.slice(k, k + 2), 16));
+  return '#' + pa.map((v, k) => Math.round(v + (pb[k] - v) * MAP_TINT).toString(16).padStart(2, '0')).join('');
+}
+
 const TIE_PREFIX = 'map-tie-';
 
 // The stripe colours of every tie fill in `fills`, keyed by pattern id.
@@ -227,11 +236,11 @@ export function pollFill(options: { n: number; color: string }[]): string {
   const sorted = [...options].sort((a, b) => b.n - a.n);
   const top = sorted[0];
   const second = sorted[1]?.n ?? 0;
-  if (top.n !== second) return top.color;
-  // A tie paints diagonal stripes of every tied answer's colour. Colours are
+  if (top.n !== second) return mapFill(top.color);
+  // A tie paints diagonal stripes of every tied answer's fill. Colours are
   // unique per poll, so one pattern id per combination (sorted, so the same
   // tie always stripes the same way); TiePatterns renders the <pattern>s.
-  const tied = [...new Set(sorted.filter((o) => o.n === top.n).map((o) => o.color.toLowerCase()))].sort();
+  const tied = [...new Set(sorted.filter((o) => o.n === top.n).map((o) => mapFill(o.color)))].sort();
   if (tied.length < 2) return DEFAULT_FILL;
   return `url(#${TIE_PREFIX}${tied.map((c) => c.slice(1)).join('-')})`;
 }
