@@ -5,7 +5,6 @@ import polylabel from 'polylabel';
 import { CITIES, cityLabel } from '../../utils/cities';
 import { numericToAlpha2, getCountryName, isKnownCountry } from '../../utils/countries';
 import type { Locale } from '../../i18n/strings';
-import { MAP_MAX_TINT } from '../../utils/pollColors';
 
 // Shared map geometry + styling used by both the desktop WorldMap and the mobile
 // MobileMap so the projection, sentiment colours, and city-label decluttering
@@ -69,7 +68,8 @@ export const HOVER_WIDTH_PX = 1.8;
 //
 // It looks like it should be confusable with hover and it is not, because hover
 // carries a second signal the selection never has: it brightens the fill
-// (brightness(1.7)). The doubt worth testing was the darkest case, where there
+// (brightness(1.3); never on a poll map, where a fill is always the answer's
+// exact picker colour - and a poll has no selected country). The doubt worth testing was the darkest case, where there
 // is least fill to brighten - a NO_DATA country hovered while another NO_DATA
 // country is selected. Measured on the live map: hovered Greenland renders
 // #47477e against selected Canada's #2a2a4a, which is not a subtle difference.
@@ -203,17 +203,23 @@ export function activityFill(today: number): string {
 }
 
 // --- Poll map: each country in its winning answer's colour -------------------
-// Intensity by the margin over the runner-up; a tie is DEFAULT_FILL, nobody
-// voted is NO_DATA_FILL. No sample floor (decided with the user): a country
-// takes its winner's colour from its first vote - "1:0 is a win" - and the
-// tooltip says how many votes that is.
-function mixHex(a: string, b: string, t: number): string {
-  const pa = [1, 3, 5].map((k) => parseInt(a.slice(k, k + 2), 16));
-  const pb = [1, 3, 5].map((k) => parseInt(b.slice(k, k + 2), 16));
-  return '#' + pa.map((v, k) => Math.round(v + (pb[k] - v) * t).toString(16).padStart(2, '0')).join('');
-}
+// The fill is the answer's exact colour, the one picked when the poll was
+// posted (and drawn on its bars, dots and the legend) - a tint mixed toward the
+// navy base read as a different colour (the user's call). A tie is stripes of
+// the tied answers' colours, nobody voted is NO_DATA_FILL. No sample floor
+// (decided with the user): a country takes its winner's colour from its first
+// vote - "1:0 is a win" - and the tooltip says how many votes that is.
+const TIE_PREFIX = 'map-tie-';
 
-const MIN_TINT = 0.45;
+// The stripe colours of every tie fill in `fills`, keyed by pattern id.
+export function tiePatterns(fills: Iterable<string>): { id: string; colors: string[] }[] {
+  const out = new Map<string, string[]>();
+  for (const f of fills) {
+    const m = /^url\(#(map-tie-[0-9a-f-]+)\)$/.exec(f);
+    if (m && !out.has(m[1])) out.set(m[1], m[1].slice(TIE_PREFIX.length).split('-').map((h) => '#' + h));
+  }
+  return [...out].map(([id, colors]) => ({ id, colors }));
+}
 
 export function pollFill(options: { n: number; color: string }[]): string {
   const total = options.reduce((s, o) => s + o.n, 0);
@@ -221,11 +227,13 @@ export function pollFill(options: { n: number; color: string }[]): string {
   const sorted = [...options].sort((a, b) => b.n - a.n);
   const top = sorted[0];
   const second = sorted[1]?.n ?? 0;
-  if (top.n === second) return DEFAULT_FILL;
-  // 0 margin -> 45% of the way from the neutral base to the colour, a margin
-  // of half the votes or more -> MAP_MAX_TINT (not the full colour).
-  const margin = (top.n - second) / total;
-  return mixHex(DEFAULT_FILL, top.color, MIN_TINT + (MAP_MAX_TINT - MIN_TINT) * Math.min(1, margin / 0.5));
+  if (top.n !== second) return top.color;
+  // A tie paints diagonal stripes of every tied answer's colour. Colours are
+  // unique per poll, so one pattern id per combination (sorted, so the same
+  // tie always stripes the same way); TiePatterns renders the <pattern>s.
+  const tied = [...new Set(sorted.filter((o) => o.n === top.n).map((o) => o.color.toLowerCase()))].sort();
+  if (tied.length < 2) return DEFAULT_FILL;
+  return `url(#${TIE_PREFIX}${tied.map((c) => c.slice(1)).join('-')})`;
 }
 
 export function clampTranslate(tx: number, ty: number, scale: number) {

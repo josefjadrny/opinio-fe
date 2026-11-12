@@ -8,6 +8,7 @@ import { useProfile } from '../../hooks/useProfile';
 import { colorById } from '../../utils/pollColors';
 import { numericToAlpha2 } from '../../utils/countries';
 import { CITIES, cityLabel } from '../../utils/cities';
+import { TiePatterns } from './TiePatterns';
 import { useI18n } from '../../i18n/I18nContext';
 import { MapLegend } from './MapLegend';
 import {
@@ -308,6 +309,7 @@ export function MobileMap({
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
+        <TiePatterns fills={countryColors} scale={zoom.scale} />
         <g transform={`translate(${zoom.tx},${zoom.ty}) scale(${zoom.scale})`}>
           {countries.map((geo, i) => {
             const id = String((geo as GeoJSON.Feature & { id?: string | number }).id ?? '');

@@ -9,6 +9,7 @@ import { useProfile } from '../../hooks/useProfile';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { numericToAlpha2, isKnownCountry, getCountryName } from '../../utils/countries';
 import { CITIES, cityLabel } from '../../utils/cities';
+import { TiePatterns } from './TiePatterns';
 import { useI18n } from '../../i18n/I18nContext';
 import { CountryTooltip } from './CountryTooltip';
 import { MapZoomControl } from './MapZoomControl';
@@ -434,6 +435,7 @@ export function WorldMap({ bannerVisible = false }: { bannerVisible?: boolean } 
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
+        <TiePatterns fills={countryColors} scale={zoom.scale} />
         <g transform={`translate(${zoom.tx},${zoom.ty}) scale(${zoom.scale})`}>
           {countryShapes.map(({ key, alpha2, d }) => {
             const isHovered = !!alpha2 && (alpha2 === hoveredCountry || alpha2 === hoveredProfileCountry);
@@ -460,11 +462,12 @@ export function WorldMap({ bannerVisible = false }: { bannerVisible?: boolean } 
                   cursor: alpha2 ? 'pointer' : 'default',
                   transition: reducedMotion ? undefined : `fill ${TINT_FADE_MS}ms ease`,
                   transitionDelay: reducedMotion ? undefined : `${tintDelays.get(key) ?? 0}ms`,
-                  // Keep the country's own sentiment colour on hover (red/green
-                  // mean "unpopular/popular" in the legend, so don't repaint it);
-                  // signal selection by brightening it, and by the white outline
-                  // the border layer draws for the hovered country.
-                  filter: isHovered ? 'brightness(1.3)' : undefined,
+                  // On a poll, hover never changes the fill: a country is always
+                  // its answer's exact picker colour (the user's call) and the
+                  // white outline of the border layer is the hover signal. The
+                  // activity map (home, /c/:code) still brightens - there it is
+                  // what tells hover from the selected country (see mapShared).
+                  filter: isHovered && !openProfileId ? 'brightness(1.3)' : undefined,
                 }}
                 onMouseEnter={() => alpha2 && handleMouseEnter(alpha2)}
                 onMouseLeave={handleMouseLeave}
@@ -496,7 +499,7 @@ export function WorldMap({ bannerVisible = false }: { bannerVisible?: boolean } 
             ))}
             {/* The /c/:code subject country, in the same outline the hover uses -
                 see the note in mapShared for why that is not confusable (hover
-                also brightens its fill; this never does). Drawn after the hover
+                also brightens its fill off a poll; this never does). Drawn after the hover
                 paths so the selected country's outline survives whole when it is
                 also the hovered one. */}
             {selectedPaths.map((d, i) => (
