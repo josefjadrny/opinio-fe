@@ -67,6 +67,8 @@ export interface PollStrings {
   duplicatePoll: string;
   descriptionOptional: string;
   imageLabel: string;
+  /** Under Post, when the picture is the last thing missing; tapping it opens the picker. */
+  pictureHint: string;
   askButton: string;
   votedFrom: string;
   votedFromAll: string;
@@ -152,7 +154,8 @@ const en: { p: PollStrings; t: Partial<Strings> } = {
     duplicateOption: 'Two answers are the same',
     duplicatePoll: 'This question has already been asked',
     descriptionOptional: 'Context (optional)',
-    imageLabel: 'Image (optional)',
+    imageLabel: 'Image (required)',
+    pictureHint: 'Add a picture to post your poll',
     askButton: 'Ask the world',
     votedFrom: 'Voted from',
     votedFromAll: 'Everywhere',
@@ -273,7 +276,8 @@ const cs: typeof en = {
     duplicateOption: 'Dvě odpovědi jsou stejné',
     duplicatePoll: 'Tuto otázku už někdo položil',
     descriptionOptional: 'Kontext (nepovinné)',
-    imageLabel: 'Obrázek (nepovinné)',
+    imageLabel: 'Obrázek (povinný)',
+    pictureHint: 'Pro zveřejnění ankety přidejte obrázek',
     askButton: 'Zeptat se světa',
     votedFrom: 'Hlasovali z',
     votedFromAll: 'Odkudkoli',
@@ -392,7 +396,8 @@ const es: typeof en = {
     duplicateOption: 'Dos respuestas son iguales',
     duplicatePoll: 'Esta pregunta ya existe',
     descriptionOptional: 'Contexto (opcional)',
-    imageLabel: 'Imagen (opcional)',
+    imageLabel: 'Imagen (obligatoria)',
+    pictureHint: 'Añade una imagen para publicar tu encuesta',
     askButton: 'Preguntar al mundo',
     votedFrom: 'Votado desde',
     votedFromAll: 'Todo el mundo',
@@ -511,7 +516,8 @@ const de: typeof en = {
     duplicateOption: 'Zwei Antworten sind gleich',
     duplicatePoll: 'Diese Frage wurde schon gestellt',
     descriptionOptional: 'Kontext (optional)',
-    imageLabel: 'Bild (optional)',
+    imageLabel: 'Bild (erforderlich)',
+    pictureHint: 'Füge ein Bild hinzu, um deine Umfrage zu posten',
     askButton: 'Die Welt fragen',
     votedFrom: 'Abgestimmt aus',
     votedFromAll: 'Überall',
@@ -630,7 +636,8 @@ const fr: typeof en = {
     duplicateOption: 'Deux réponses sont identiques',
     duplicatePoll: 'Cette question a déjà été posée',
     descriptionOptional: 'Contexte (facultatif)',
-    imageLabel: 'Image (facultatif)',
+    imageLabel: 'Image (obligatoire)',
+    pictureHint: 'Ajoutez une image pour publier votre sondage',
     askButton: 'Demander au monde',
     votedFrom: 'Voté depuis',
     votedFromAll: 'Partout',
@@ -749,7 +756,8 @@ const it: typeof en = {
     duplicateOption: 'Due risposte sono uguali',
     duplicatePoll: 'Questa domanda è già stata fatta',
     descriptionOptional: 'Contesto (facoltativo)',
-    imageLabel: 'Immagine (facoltativa)',
+    imageLabel: 'Immagine (obbligatoria)',
+    pictureHint: 'Aggiungi un\'immagine per pubblicare il sondaggio',
     askButton: 'Chiedi al mondo',
     votedFrom: 'Votato da',
     votedFromAll: 'Ovunque',
@@ -868,7 +876,8 @@ const pl: typeof en = {
     duplicateOption: 'Dwie odpowiedzi są takie same',
     duplicatePoll: 'To pytanie już ktoś zadał',
     descriptionOptional: 'Kontekst (opcjonalnie)',
-    imageLabel: 'Obraz (opcjonalnie)',
+    imageLabel: 'Obraz (wymagany)',
+    pictureHint: 'Dodaj obraz, aby opublikować ankietę',
     askButton: 'Zapytaj świat',
     votedFrom: 'Głosowano z',
     votedFromAll: 'Wszędzie',

@@ -409,7 +409,14 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   // A draft saved under the old 80-char cap can come back longer: the red
   // counter shows it and Post waits for a shorter question, rather than cutting
   // the text mid-word.
-  const canSubmit = name.trim().length > 0 && name.length <= POLL_TITLE_MAX && filledOptions.length >= POLL_OPTIONS_MIN && !hasDuplicate;
+  const textReady = name.trim().length > 0 && name.length <= POLL_TITLE_MAX && filledOptions.length >= POLL_OPTIONS_MIN && !hasDuplicate;
+  const canSubmit = textReady && !!contentImageFile;
+  // The picture is the one requirement with no visible gap: an empty question
+  // or answer field says what it wants, a 44px square does not. So once the
+  // text is ready and only the picture is missing, the square takes the accent
+  // ring and a hint under Post opens the picker - a disabled button never
+  // stands there without a reason.
+  const needsPicture = textReady && !contentImageFile;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -453,7 +460,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
 
         {/* The question, with the poll's one picture inline to its left - the
             pair is what a list card shows, so they are chosen together. The
-            picture is optional: the upload keeps it full size for the detail
+            picture is required: the upload keeps it full size for the detail
             and cuts the square thumbnail for lists. The remove badge sits in
             its own non-clipping box, partly outside the square, and is not
             nested in the picker button (no button inside a button). */}
@@ -467,7 +474,11 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
                   onClick={() => contentFileInputRef.current?.click()}
                   aria-label={contentPreviewUrl ? t.contentImageChange : p.imageLabel}
                   className={`group w-11 h-11 rounded-lg overflow-hidden bg-surface transition-colors ${
-                    contentPreviewUrl ? 'border border-border hover:border-white/25' : 'border border-dashed border-white/25 hover:border-white/50'
+                    contentPreviewUrl
+                      ? 'border border-border hover:border-white/25'
+                      : needsPicture
+                        ? 'border-2 border-accent text-accent'
+                        : 'border border-dashed border-white/25 hover:border-white/50'
                   }`}
                 >
                   {contentPreviewUrl ? (
@@ -480,7 +491,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
                       </span>
                     </>
                   ) : (
-                    <span className="w-full h-full flex items-center justify-center text-white/50 group-hover:text-white/85 transition-colors">
+                    <span className={`w-full h-full flex items-center justify-center transition-colors ${needsPicture ? 'text-accent' : 'text-white/50 group-hover:text-white/85'}`}>
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M21 3.75H3A.75.75 0 002.25 4.5v15a.75.75 0 00.75.75h18a.75.75 0 00.75-.75v-15A.75.75 0 0021 3.75z" />
                       </svg>
@@ -772,10 +783,22 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
             disabled={!canSubmit || mutation.isPending}
             // Brand accent (#e94560) - the app-wide primary CTA color (matches
             // SupportModal / report / welcome). Disabled until the required
-            // fields are valid, so it gates rather than validating post-click.
+            // fields (question, answers, picture) are valid, so it gates rather than validating post-click.
             className="w-full py-2.5 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {mutation.isPending ? t.adding : p.askButton}
+          </button>
+        )}
+        {needsPicture && !isAnonymous && !isBlocked && (
+          <button
+            type="button"
+            onClick={() => contentFileInputRef.current?.click()}
+            className="-mt-2 mx-auto flex w-fit items-center gap-1.5 text-xs font-medium text-accent hover:text-accent/80 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M21 3.75H3A.75.75 0 002.25 4.5v15a.75.75 0 00.75.75h18a.75.75 0 00.75-.75v-15A.75.75 0 0021 3.75z" />
+            </svg>
+            {p.pictureHint}
           </button>
         )}
       </form>
