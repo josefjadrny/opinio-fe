@@ -99,16 +99,17 @@ export function ProfileCard({ profile, dense = false, rank }: ProfileCardProps) 
   );
 
   return (
+    // The whole card opens the poll; the question inside is the real <a href>
+    // (crawlers follow only hrefs, and it gives the keyboard its tab stop and
+    // middle/ctrl-click a new tab). A plain click on it cancels the page load
+    // and bubbles to the card's onClick.
     <div
       ref={cardRef}
-      role="link"
-      tabIndex={0}
       onMouseEnter={armPreview}
       onMouseMove={armPreview}
       onMouseLeave={leaveCard}
       onClick={() => openDetail()}
-      onKeyDown={(e) => { if (e.key === 'Enter') openDetail(); }}
-      className={`group relative flex items-start rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 hover:bg-surface-light/70 transition-all duration-200 cursor-pointer select-none ${
+      className={`group relative flex items-start rounded-xl bg-surface-light/40 ring-1 ring-white/[0.06] hover:ring-white/15 hover:bg-surface-light/70 has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-accent/60 transition-all duration-200 cursor-pointer select-none ${
         dense ? 'gap-2.5 px-2.5 py-2' : 'gap-3 px-3 py-2.5'
       }`}
     >
@@ -120,7 +121,20 @@ export function ProfileCard({ profile, dense = false, rank }: ProfileCardProps) 
       <PollThumb role={profile.role} imageUrl={profile.imageUrl} className={dense ? 'w-11 h-11' : 'w-14 h-14'} />
       <div className="flex-1 min-w-0">
         <p className={`font-semibold text-white leading-snug line-clamp-3 break-words ${dense ? 'text-[15px]' : 'text-[15px] lg:text-base'}`}>
-          {name}
+          <a
+            href={`/p/${profile.id}`}
+            onClick={(e) => {
+              if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+                e.stopPropagation();
+                return;
+              }
+              e.preventDefault();
+            }}
+            draggable={false}
+            className="focus:outline-none"
+          >
+            {name}
+          </a>
         </p>
         <div className="flex items-center gap-2 mt-1 min-w-0">
           {roleEl}

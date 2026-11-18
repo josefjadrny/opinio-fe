@@ -27,7 +27,10 @@ routes = [
   { pattern = "opinio.live/support", zone_name = "opinio.live" },
   { pattern = "opinio.live/add", zone_name = "opinio.live" },
   { pattern = "opinio.live/sign-in", zone_name = "opinio.live" },
-  # News page + stories: served 200 but noindex (AI summaries of other feeds).
+  # Home overlays: home's head with canonical "/" (S3 has no such files).
+  { pattern = "opinio.live/welcome", zone_name = "opinio.live" },
+  { pattern = "opinio.live/viewer-mode", zone_name = "opinio.live" },
+  # Removed news page + stories: 410 Gone + noindex.
   { pattern = "opinio.live/news", zone_name = "opinio.live" },
   { pattern = "opinio.live/n/*", zone_name = "opinio.live" }
 ]

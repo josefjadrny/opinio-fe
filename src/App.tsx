@@ -6,6 +6,8 @@ import { MapPanelProvider } from './context/MapPanelContext';
 import { useFilters } from './context/useFilters';
 import { I18nProvider, useI18n } from './i18n/I18nContext';
 import type { Locale, Strings } from './i18n/strings';
+import { plural, type PollStrings } from './i18n/pollStrings';
+import type { Profile } from './types/profile';
 import type { PollSort } from './types/api';
 import { SignInProvider } from './components/auth/SignInContext';
 import { SignInModal } from './components/auth/SignInModal';
@@ -137,6 +139,25 @@ function applySeo(pathname: string, seo: Strings['seo'], prefix = '') {
   upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: meta.title });
   upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: meta.description });
   upsertCanonical(canonicalUrl);
+}
+
+// The poll's meta description, built like the worker's (cloudflare-worker
+// handleProfile / renderLangPage): "Yes 68%, No 32% - 19 votes from 9
+// countries. <description>", cut at 200 chars. Keep the two in step, or the
+// rendered page (what Google indexes) disagrees with the served head.
+function pollMetaDescription(profile: Profile, locale: Locale, p: PollStrings): string {
+  const total = profile.results?.total ?? 0;
+  const answers = profile.options.map((o) => {
+    if (!total) return o.text;
+    const n = profile.results?.options.find((r) => r.optionId === o.id)?.n ?? 0;
+    return `${o.text} ${Math.round((n / total) * 100)}%`;
+  }).join(', ');
+  const countries = profile.results?.countries ?? 0;
+  // English names the countries too (the bare page's head); the other
+  // languages stop at the vote count, as the translated pages do.
+  const counts = !total ? '' : ` - ${plural(p.votes, locale, total)}${locale === 'en' ? ` from ${plural(p.countries, locale, countries)}` : ''}`;
+  const full = `${answers}${counts}. ${profile.description ?? ''}`.trim();
+  return full.length <= 200 ? full : `${full.slice(0, 197).trimEnd()}...`;
 }
 
 function applyProfileSeo(name: string, description: string, id: string) {
@@ -628,13 +649,14 @@ function ProfileDetailRoute() {
   const isMobile = useIsMobile();
   const { data: profile, isLoading, error } = useProfile(id ?? null);
   const notFound = isNotFound(error);
+  const { locale, p } = useI18n();
 
   useEffect(() => {
-    if (profile) applyProfileSeo(profile.name, profile.description || profile.options.map((o) => o.text).join(' / '), profile.id);
+    if (profile) applyProfileSeo(profile.name, pollMetaDescription(profile, locale, p), profile.id);
     // Unknown id: the worker already serves a 404; don't leave the tab on the
     // last profile's title - mark it as not found.
     else if (notFound) document.title = `Page not found - ${BRAND}`;
-  }, [profile, notFound]);
+  }, [profile, notFound, locale, p]);
 
   // Genuine 404 (expired or bad link) - friendly not-found for both platforms.
   if (notFound) {

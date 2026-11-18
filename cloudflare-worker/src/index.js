@@ -23,6 +23,9 @@ const COUNTRY_PATH_RE = /^\/c\/([^\/]+)\/?$/;
 // /news and /n/<id>: the removed news pages, all answered 410.
 const NEWS_PATH_RE = /^\/(?:news|n\/[^\/]+)\/?$/;
 const COUNTRY_CODE_RE = /^[A-Z]{2}$/;
+// Home overlays (FE FilterBar HOME_OVERLAY_PATHS): the SPA opens them over
+// home, so they get home's head - canonical "/" - instead of S3's 404.
+const HOME_OVERLAY_PATHS = new Set(['/welcome', '/viewer-mode']);
 
 // Locales that get their own prefixed URL. English is excluded — it stays on
 // the bare path and is emitted as hreflang="en" + x-default. Keep in sync with
@@ -375,7 +378,7 @@ function escapeHtml(value) {
 function truncate(value, max) {
   const s = String(value ?? '').trim();
   if (s.length <= max) return s;
-  return s.slice(0, max - 1).trimEnd() + '…';
+  return s.slice(0, max - 3).trimEnd() + '...';
 }
 
 const GOOGLE_AVATAR_SIZE = 256;
@@ -569,6 +572,9 @@ function injectProfileMeta(html, meta) {
   const url = escapeHtml(meta.url);
 
   let out = html.replace(/<title>[^<]*<\/title>/i, `<title>${title}</title>`);
+  // The shell says <html lang="en">; a prefixed page is in its own language
+  // before any JS runs (the SPA sets the same value once it boots).
+  if (meta.htmlLang) out = out.replace(/(<html[^>]*\blang=")[^"]*(")/i, `$1${meta.htmlLang}$2`);
   out = replaceMetaContent(out, 'name="description"', description);
   out = replaceMetaContent(out, 'property="og:title"', title);
   out = replaceMetaContent(out, 'property="og:description"', description);
@@ -596,6 +602,12 @@ function injectProfileMeta(html, meta) {
       out = removeMetaTag(out, 'property="og:image:height"');
     }
     out = replaceMetaContent(out, 'name="twitter:card"', 'summary');
+  } else if (meta.imageSizeUnknown) {
+    // A poll's full picture: a JPEG of the uploader's proportions, so drop the
+    // shell's 1200x630 PNG hints rather than state wrong ones.
+    out = replaceMetaContent(out, 'property="og:image:type"', 'image/jpeg');
+    out = removeMetaTag(out, 'property="og:image:width"');
+    out = removeMetaTag(out, 'property="og:image:height"');
   }
 
   out = out.replace(
@@ -671,9 +683,12 @@ async function handleProfile(request, id) {
   const countries = profile.results?.countries ?? 0;
   const descSource = `${pollAnswersLine(profile)}${total ? ` - ${total} vote${total === 1 ? '' : 's'} from ${countries} ${countries === 1 ? 'country' : 'countries'}` : ''}. ${profile.description || ''}`.trim();
   const description = truncate(descSource, 200);
-  const hasAvatar = !!profile.imageUrl;
-  const image = hasAvatar ? upscaleAvatarUrl(profile.imageUrl) : DEFAULT_OG_IMAGE;
-  const imageAlt = hasAvatar ? profile.name : 'Opinio live global social voting';
+  // The full poll picture where there is one (the 128px thumb is too small
+  // for a large preview), then the thumb, then the site card.
+  const full = profile.contentImageUrl || null;
+  const hasAvatar = !full && !!profile.imageUrl;
+  const image = full || (hasAvatar ? upscaleAvatarUrl(profile.imageUrl) : DEFAULT_OG_IMAGE);
+  const imageAlt = full || hasAvatar ? profile.name : 'Opinio live global social voting';
   const canonicalUrl = `${SITE_BASE}/p/${id}`;
   const noindex = isUnadvertised(paths, `/p/${id}`);
   if (noindex) headers.set('x-robots-tag', NOINDEX);
@@ -685,6 +700,7 @@ async function handleProfile(request, id) {
     imageAlt,
     url: canonicalUrl,
     isAvatar: hasAvatar,
+    imageSizeUnknown: !!full,
     alternatesBase: `/p/${id}`,
     noindex,
   });
@@ -892,6 +908,7 @@ async function handleUser(request, id, lang = null) {
     isAvatar: true, // both avatar and anon mask are square — use small twitter card
     alternatesBase: basePath,
     ogLocale: lang ? LANG_UI[lang].ogLocale : null,
+    htmlLang: lang,
     noindex,
   });
 
@@ -932,13 +949,17 @@ const STATIC_PAGES = {
     title: 'Support - Opinio',
     description: 'Contact Opinio support, follow your tickets and get help with polls, voting and your account.',
   },
+  // The poll form and the sign-in screen are app screens, not content: served
+  // 200 so the SPA renders, but noindex (and absent from the sitemap).
   '/add': {
     title: 'Ask the world - Opinio',
     description: 'Create a poll with up to 5 answers and see how every country votes.',
+    noindex: true,
   },
   '/sign-in': {
     title: 'Sign in - Opinio',
     description: 'Sign in with Google or Microsoft to vote on every poll, ask your own and join the discussion.',
+    noindex: true,
   },
 };
 
@@ -1023,6 +1044,7 @@ async function handleStatic(request, page, path, lang = null) {
   headers.set('content-type', 'text/html; charset=utf-8');
   headers.set('cache-control', 'public, max-age=300, s-maxage=300');
   headers.set('x-opinio-og', lang ? 'static-lang' : 'static');
+  if (page.noindex) headers.set('x-robots-tag', NOINDEX);
   // Localized shell title/description for prefixed pages (falls back to the
   // English STATIC_PAGES copy when a page has no translation, e.g. /add).
   const loc = lang ? STATIC_I18N[lang]?.[path] : null;
@@ -1035,6 +1057,8 @@ async function handleStatic(request, page, path, lang = null) {
     isAvatar: false,
     alternatesBase: path,
     ogLocale: lang ? LANG_UI[lang].ogLocale : null,
+    htmlLang: lang,
+    noindex: !!page.noindex,
   });
   return new Response(html, { status: 200, headers });
 }
@@ -1048,13 +1072,13 @@ async function handleStatic(request, page, path, lang = null) {
 // the SPA in the active locale, so nothing here is language-specific body text.
 // Trailing slash on the prefixed canonical keeps it byte-identical to the
 // hreflang "/<lang>/" entry.
-async function handleHome(request, lang = null) {
+async function handleHome(request, lang = null, notFound = false) {
   const shellRes = await fetchShellHtml(request);
   const shellText = await shellRes.text();
   const headers = new Headers();
   headers.set('content-type', 'text/html; charset=utf-8');
   headers.set('cache-control', 'public, max-age=300, s-maxage=300');
-  headers.set('x-opinio-og', lang ? 'home-lang' : 'home');
+  headers.set('x-opinio-og', notFound ? 'notfound' : lang ? 'home-lang' : 'home');
   const loc = lang ? STATIC_I18N[lang]?.['/'] : null;
   const html = injectProfileMeta(shellText, {
     title: loc?.title ?? 'Opinio - Ask the world, see how every country votes',
@@ -1065,8 +1089,9 @@ async function handleHome(request, lang = null) {
     isAvatar: false,
     alternatesBase: '/',
     ogLocale: lang ? LANG_UI[lang].ogLocale : null,
+    htmlLang: lang,
   });
-  return new Response(html, { status: 200, headers });
+  return new Response(html, { status: notFound ? 404 : 200, headers });
 }
 
 // /news and /n/<id>: news is gone for good, so every such URL is 410 Gone
@@ -1119,17 +1144,20 @@ async function handlePollCountry(request, id, code, lang = null) {
   // translated page, so a folded Czech page folds into the Czech poll.
   const canonicalUrl = listed ? `${SITE_BASE}${prefix}${basePath}` : `${SITE_BASE}${prefix}/p/${id}`;
   const poll = item.poll || {};
-  const hasAvatar = !!poll.imageUrl;
+  const full = poll.contentImageUrl || null;
+  const hasAvatar = !full && !!poll.imageUrl;
 
   const html = injectProfileMeta(shellText, {
     title,
     description,
-    image: hasAvatar ? upscaleAvatarUrl(poll.imageUrl) : DEFAULT_OG_IMAGE,
+    image: full || (hasAvatar ? upscaleAvatarUrl(poll.imageUrl) : DEFAULT_OG_IMAGE),
     imageAlt: title,
     url: canonicalUrl,
     isAvatar: hasAvatar,
+    imageSizeUnknown: !!full,
     alternatesBase: listed ? basePath : null,
     ogLocale: lang ? LANG_UI[lang].ogLocale : null,
+    htmlLang: lang,
     noindex: false,
   });
   return new Response(html, { status: 200, headers });
@@ -1175,6 +1203,7 @@ async function handleCountry(request, code, lang = null) {
     isAvatar: false,
     alternatesBase: basePath,
     ogLocale: lang ? LANG_UI[lang].ogLocale : null,
+    htmlLang: lang,
     noindex,
   });
   return new Response(html, { status: 200, headers });
@@ -1207,7 +1236,7 @@ function handleLangPrefixed(request, lang, inner) {
     return handleCountry(request, code, lang);
   }
 
-  if (inner === '/' || inner === '') {
+  if (inner === '/' || inner === '' || HOME_OVERLAY_PATHS.has(inner)) {
     return handleHome(request, lang);
   }
 
@@ -1220,10 +1249,10 @@ function handleLangPrefixed(request, lang, inner) {
     return handleStatic(request, staticPage, inner, lang);
   }
 
-  // Unknown prefixed path (e.g. /fr/settings, /fr/typo) — serve the shell with
-  // the home scaffolding so the SPA can render or 404 client-side, but keep the
-  // canonical on the prefixed URL so it isn't mistaken for an English dupe.
-  return handleHome(request, lang);
+  // Any other prefixed path (/fr/settings, /fr/typo): 404, as its bare version
+  // gets from S3 - a 200 home here was a soft 404. The shell still loads, so
+  // a person lands in the app (and the SPA renders /fr/settings).
+  return handleHome(request, lang, true);
 }
 
 export default {
@@ -1238,7 +1267,7 @@ export default {
     // Bare English home — served through the worker (not straight from S3) so it
     // emits the reciprocal hreflang set. Head-only injection; the SPA still
     // renders the visible home UI. Query strings (e.g. /?country=US) keep path "/".
-    if (path === '/' || path === '') {
+    if (path === '/' || path === '' || HOME_OVERLAY_PATHS.has(path)) {
       return handleHome(request, null);
     }
 
