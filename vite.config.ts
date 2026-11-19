@@ -79,7 +79,7 @@ export default defineConfig({
         // Precache the app shell only. The map data and the social OG image are not
         // needed inside the standalone app, so keep them out of the SW cache.
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
-        globIgnores: ['**/topojson/**', 'og-image.png', 'og-image.svg'],
+        globIgnores: ['**/topojson/**', 'og-image.png', 'og-image-v3.png', 'og-image.svg'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//, /^\/\.well-known\//, /^\/sitemap\.xml$/, /^\/robots\.txt$/],
         cleanupOutdatedCaches: true,

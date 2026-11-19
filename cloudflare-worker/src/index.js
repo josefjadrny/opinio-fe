@@ -2,7 +2,7 @@ import { pollCountryMeta } from './pollCountryMeta.js';
 
 const API_BASE = 'https://api.opinio.live';
 const SITE_BASE = 'https://opinio.live';
-const DEFAULT_OG_IMAGE = `${SITE_BASE}/og-image.png`;
+const DEFAULT_OG_IMAGE = `${SITE_BASE}/og-image-v3.png`;
 const ANON_OG_IMAGE = `${SITE_BASE}/icons/anonymous-mask.png`;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PROFILE_PATH_RE = /^\/p\/([^\/]+)\/?$/;
