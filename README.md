@@ -24,10 +24,11 @@ A world poll. Anyone can ask a question, people everywhere vote in their own lan
 
 - **Polls** - a question with 2 to 5 answers, each with its own colour and an optional picture.
 - **One person, one vote** - results are visible to everyone, always. Votes stay; they never expire.
+- **An end date** - every poll takes votes for 14 days, 1 month or 6 months, picked by its author. In the last 3 days it says how long is left; once closed, its results stay for good.
 - **The world map** - on a poll, every country takes the colour of its leading answer. On the home page, the map shows where people voted in the last 24 hours.
 - **Country pages** - what people in a country voted on, next to how the world voted.
 - **Trending, new and top** - trending ranks polls by the votes of the last 24 hours, top by all votes.
-- **Comments and notifications** - registered users discuss polls and hear when theirs reach new milestones.
+- **Comments and notifications** - registered users discuss polls and hear when theirs reach new milestones or close.
 - **Seven languages** - English, Czech, Spanish, German, French, Italian and Polish. Questions and answers are translated automatically.
 
 ## Plans
