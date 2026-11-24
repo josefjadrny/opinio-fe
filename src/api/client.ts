@@ -4,6 +4,7 @@ import type {
   SupportTicket, SupportTicketDetail, SupportMessage, UserDetailResponse, ProfileReportGroup, Person,
 } from '../types/api';
 import type { Profile } from '../types/profile';
+import type { PollDuration } from '../utils/polls';
 
 const API_URL = import.meta.env.OPINIO_API_URL as string;
 
@@ -122,6 +123,8 @@ export function addNewProfile(data: {
   contentImageUrl?: string;
   contentImageKey?: string;
   link?: string;
+  /** How long it takes votes (the API's POLL_DURATIONS); default 6m. */
+  duration?: PollDuration;
 }): Promise<import('../types/profile').Profile> {
   return apiFetch('/api/profiles', {
     method: 'POST',

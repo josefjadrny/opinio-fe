@@ -7,6 +7,7 @@ import { CountrySplit } from './CountrySplit';
 import { countryRows, splitLabel } from '../../utils/split';
 import { StatTip } from '../common/StatTip';
 import { SplitList } from '../poll/SplitList';
+import { PollDeadline } from '../poll/PollDeadline';
 
 // The country's result (CountrySplit, as on the map hover); hovering or
 // tapping the bar line opens the split spelled out - the poll detail's votes-tile pattern. The tap opens the
@@ -109,6 +110,8 @@ export function CountryPollList({ code, countryName, onOpen }: { code: string; c
                 {it.poll.name}
               </a>
               <CountryResult item={it} />
+              {/* Nothing while open; "Ends in 2 days" / "Ended" otherwise. */}
+              <PollDeadline endsAt={it.poll.endsAt} variant="short" className="text-xs" />
             </div>
           </div>
         ))}

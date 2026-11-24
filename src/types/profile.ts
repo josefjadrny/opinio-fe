@@ -58,6 +58,9 @@ export interface Profile {
   addedBy: string;
   addedById: string | null;
   createdAt: string;
+  /** Voting closes here (ISO). After it the poll and its results stay, only
+   *  the vote buttons go (utils/pollDeadline.ts). */
+  endsAt: string;
   /** Lifetime votes. */
   voteCount: number;
   /** Votes in the last 24h (Trending). May be absent on realtime payloads. */

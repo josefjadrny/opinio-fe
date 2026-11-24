@@ -19,7 +19,7 @@ import { nextFreeColor, OPTION_COLORS } from '../../utils/pollColors';
 import { OptionAvatar } from '../poll/OptionAvatar';
 import { OptionColorPicker } from '../poll/OptionColorPicker';
 import { NewPollIcon } from '../poll/PollIcons';
-import { POLL_BODY_MAX, POLL_OPTION_MAX, POLL_OPTIONS_MAX, POLL_OPTIONS_MIN, POLL_TITLE_MAX } from '../../utils/polls';
+import { DEFAULT_POLL_DURATION, POLL_BODY_MAX, POLL_DURATIONS, POLL_OPTION_MAX, POLL_OPTIONS_MAX, POLL_OPTIONS_MIN, POLL_TITLE_MAX, type PollDuration } from '../../utils/polls';
 import { EmojiPickerPopover } from '../common/EmojiPickerPopover';
 
 // One answer in the form. The picture stays a local File until submit, like
@@ -43,6 +43,7 @@ interface PollDraft {
   description: string;
   options: { text: string; color: string }[];
   link: string;
+  duration?: PollDuration;
   /** Pictures were chosen; they live in IndexedDB (utils/draftImages). */
   images?: boolean;
   savedAt: number;
@@ -71,7 +72,8 @@ function loadDraft(): PollDraft | null {
     while (options.length < POLL_OPTIONS_MIN) options.push({ text: '', color: nextFreeColor(options.map((x) => x.color)) });
     const images = d.images === true;
     if (!name.trim() && !description.trim() && !link.trim() && !options.some((o) => o.text.trim()) && !images) return null;
-    return { name, description, link, options, images, savedAt: d.savedAt, role: ALL_ROLES.includes(d.role as Role) ? (d.role as Role) : 'politics' };
+    const duration = (POLL_DURATIONS as readonly string[]).includes(d.duration as string) ? d.duration : DEFAULT_POLL_DURATION;
+    return { name, description, link, options, images, duration, savedAt: d.savedAt, role: ALL_ROLES.includes(d.role as Role) ? (d.role as Role) : 'politics' };
   } catch {
     return null;
   }
@@ -182,6 +184,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const [contentPreviewUrl, setContentPreviewUrl] = useState<string | null>(null);
   const [contentImageError, setContentImageError] = useState<string | null>(null);
   const [link, setLink] = useState(() => restoredDraft?.link ?? '');
+  const [duration, setDuration] = useState<PollDuration>(() => restoredDraft?.duration ?? DEFAULT_POLL_DURATION);
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkError, setLinkError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -259,11 +262,11 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
     const hasContent = name.trim() || description.trim() || link.trim() || options.some((o) => o.text.trim()) || hasImages;
     try {
       if (!hasContent) localStorage.removeItem(DRAFT_KEY);
-      else localStorage.setItem(DRAFT_KEY, JSON.stringify({ name, role, description, options: options.map(({ text, color }) => ({ text, color })), link, images: hasImages, savedAt: Date.now() }));
+      else localStorage.setItem(DRAFT_KEY, JSON.stringify({ name, role, description, options: options.map(({ text, color }) => ({ text, color })), link, duration, images: hasImages, savedAt: Date.now() }));
     } catch {
       // localStorage unavailable - drafts just won't persist.
     }
-  }, [name, role, description, options, link, hasImages]);
+  }, [name, role, description, options, link, duration, hasImages]);
 
   // Pictures follow the text into the draft, by answer position.
   useEffect(() => {
@@ -357,7 +360,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
   const hasDuplicate = duplicateIndex.size > 0;
 
   const mutation = useMutation({
-    mutationFn: async (fields: { name: string; role: Role; description: string; options: FormOption[]; link?: string }) => {
+    mutationFn: async (fields: { name: string; role: Role; description: string; options: FormOption[]; link?: string; duration: PollDuration }) => {
       let image: { url: string; key: string; thumbUrl: string; thumbKey: string } | undefined;
       if (contentImageFile) {
         try {
@@ -434,6 +437,7 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
       description: description.trim(),
       options: filledOptions,
       link: trimmedLink || undefined,
+      duration,
     });
   };
 
@@ -643,6 +647,31 @@ export function AddProfileModal({ onClose }: AddProfileModalProps) {
                 {t.roles[r]}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* How long the poll takes votes. 6 months preselected; the short
+            ones are for questions tied to a moment (a match, an election). */}
+        <div>
+          <label id="poll-duration-label" className={LABEL}>{p.durationLabel}</label>
+          <div role="radiogroup" aria-labelledby="poll-duration-label" className="inline-flex rounded-lg bg-surface p-0.5 ring-1 ring-border">
+            {POLL_DURATIONS.map((d) => {
+              const on = duration === d;
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => setDuration(d)}
+                  className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    on ? 'bg-white/15 text-white' : 'text-white/60 hover:text-white/90 hover:bg-white/5'
+                  }`}
+                >
+                  {d === '14d' ? p.duration14d : d === '1m' ? p.duration1m : p.duration6m}
+                </button>
+              );
+            })}
           </div>
         </div>
 

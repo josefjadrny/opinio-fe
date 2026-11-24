@@ -5,12 +5,15 @@ import { useMe } from '../../hooks/useMe';
 import { useVote } from '../../hooks/useVote';
 import { useTurnstile } from '../../hooks/useTurnstile';
 import { useCountdown } from '../../hooks/useCountdown';
+import { usePollDeadline } from '../../hooks/usePollDeadline';
 import { useI18n } from '../../i18n/I18nContext';
 import { plural } from '../../i18n/pollStrings';
 import { useSignIn } from '../auth/SignInContext';
 import { OptionAvatar } from './OptionAvatar';
 import { formatNumber } from '../../utils/formatNumber';
+import { formatPollDate } from '../../utils/formatRelativeTime';
 import { PollSummary } from './PollSummary';
+import { LockIcon } from './PollIcons';
 
 // The tick on my answer: a disc in the answer's colour.
 function MineBadge({ color, className = '' }: { color: string; className?: string }) {
@@ -64,7 +67,10 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
   const canVoteNow = isRegistered || (me?.voteAllowance.canVote ?? true);
   const myVote = profile.myVote ?? null;
   const voted = myVote !== null;
-  const nextIn = useRelativeIn(!isRegistered && !canVoteNow ? me?.voteAllowance.nextVoteAt ?? null : null);
+  // Past its end date a poll is read-only for everyone: same bars, same tick
+  // on my answer, no taps (the API refuses with poll_ended anyway).
+  const ended = usePollDeadline(profile.endsAt) === 'ended';
+  const nextIn = useRelativeIn(!ended && !isRegistered && !canVoteNow ? me?.voteAllowance.nextVoteAt ?? null : null);
 
   const results = profile.results;
   // One set of numbers: everyone who voted. Votes keep a signed-in flag in the
@@ -75,12 +81,12 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
 
   // Which taps vote: not voted yet and allowed, or a registered voter in
   // "change vote" mode. Everyone else sees the same bars, read-only.
-  const tappable = hasCountry && !verifying && !voteMutation.isPending
+  const tappable = !ended && hasCountry && !verifying && !voteMutation.isPending
     && (voted ? isRegistered && changing : canVoteNow);
 
   const handleTap = async (optionId: string) => {
     setError(null);
-    if (!hasCountry) return;
+    if (ended || !hasCountry) return;
     if (!isRegistered && !canVoteNow && !voted) { promptSignIn(); return; }
     if (!tappable) return;
     if (voted && optionId === myVote) { setChanging(false); return; }
@@ -102,11 +108,13 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
         onSuccess: () => setChanging(false),
         onError: (err) => {
           const msg = (err as Error).message;
-          if (msg === 'anon_limit' || msg === 'already_voted') {
+          if (msg === 'anon_limit' || msg === 'already_voted' || msg === 'poll_ended') {
             queryClient.invalidateQueries({ queryKey: ['me'] });
             queryClient.invalidateQueries({ queryKey: ['profile', profile.id] });
           }
-          setError(msg === 'already_voted' ? p.alreadyVoted : msg === 'anon_limit' ? p.signInToKeepVoting : p.voteFailed);
+          // poll_ended: the page outlived the deadline (or this clock runs
+          // behind the server's) - say so; the refetch above re-reads endsAt.
+          setError(msg === 'poll_ended' ? p.votingEnded.replace('{date}', formatPollDate(profile.endsAt, locale)) : msg === 'already_voted' ? p.alreadyVoted : msg === 'anon_limit' ? p.signInToKeepVoting : p.voteFailed);
         },
       },
     );
@@ -157,7 +165,7 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
               type="button"
               role="listitem"
               onClick={() => handleTap(o.id)}
-              disabled={!tappable && !(!isRegistered && !canVoteNow && !voted)}
+              disabled={!tappable && (ended || !(!isRegistered && !canVoteNow && !voted))}
               aria-pressed={mine}
               aria-label={`${showingOriginal ? o.originalText : o.text}: ${pct}%, ${plural(p.votes, locale, n, formatNumber)}${mine ? `, ${p.yourVote}` : ''}`}
               className={`group relative w-full rounded-2xl text-left px-3 transition-[background-color,box-shadow,transform] duration-200 ${
@@ -219,7 +227,12 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-text-secondary empty:hidden">
-        {!hasCountry ? (
+        {ended ? (
+          <span className="flex items-start gap-1.5">
+            <LockIcon className="w-4 h-4 mt-0.5 opacity-60" />
+            {p.votingEnded.replace('{date}', formatPollDate(profile.endsAt, locale))}
+          </span>
+        ) : !hasCountry ? (
           <span>{isRegistered ? t.noCountryWarningRegistered : t.noCountryWarning}</span>
         ) : verifying ? null : error ? (
           <span className="text-negative-soft">{error}</span>

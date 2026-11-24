@@ -51,3 +51,24 @@ export function DivergeIcon({ className = 'w-4 h-4', accentWidth = 2 }: IconProp
     </svg>
   );
 }
+
+/** Time left to vote: a clock face, the user's call to flip the family's
+ *  order - a green rim with the red hands inside. */
+export function TimerIcon({ className = 'w-4 h-4', accentWidth = 2.25 }: IconProps) {
+  return (
+    <svg className={`shrink-0 ${className}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} aria-hidden>
+      <circle cx="12" cy="12" r="8.75" stroke="var(--color-positive)" />
+      <path stroke="var(--color-negative)" strokeLinecap="round" strokeLinejoin="round" strokeWidth={accentWidth} d="M12 7.25V12l3.25 2" />
+    </svg>
+  );
+}
+
+/** Voting ended: a lock, red body with the green shackle. */
+export function LockIcon({ className = 'w-4 h-4', accentWidth = 2 }: IconProps) {
+  return (
+    <svg className={`shrink-0 ${className}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} aria-hidden>
+      <rect x="4.75" y="10.5" width="14.5" height="10" rx="2.5" stroke="var(--color-negative)" />
+      <path stroke="var(--color-positive)" strokeLinecap="round" strokeLinejoin="round" strokeWidth={accentWidth} d="M8.25 10.5V7.75a3.75 3.75 0 017.5 0v2.75" />
+    </svg>
+  );
+}

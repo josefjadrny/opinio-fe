@@ -4,6 +4,7 @@ import type { Profile } from '../../types/profile';
 import { PollThumb } from '../poll/PollThumb';
 import { PollOptions } from '../poll/PollOptions';
 import { PollSummary } from '../poll/PollSummary';
+import { PollDeadline } from '../poll/PollDeadline';
 import { PollCountries } from '../poll/PollCountries';
 import { GlobeIcon } from '../poll/PollIcons';
 import { DELETE_MAX_VOTES } from '../../utils/polls';
@@ -153,6 +154,10 @@ export function ProfileDetailModal({ profile: seed, onClose, countryCode }: Prof
                   </HoverTip>
                 </div>
               </div>
+              {/* The last 3 days and after the end, on its own line: the
+                  sheet's "asked by" line sits under the answers, out of sight,
+                  and beside the badge a long language ran under the buttons. */}
+              <PollDeadline endsAt={profile.endsAt} variant="full" className="flex mt-1 text-[13px]" />
             </div>
           </div>
         </div>

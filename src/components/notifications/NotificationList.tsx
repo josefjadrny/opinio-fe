@@ -9,10 +9,11 @@ import { WASH } from '../common/wash';
 import { CategoryIcon, StatusPill } from '../support/supportIcons';
 import { formatNumber } from '../../utils/formatNumber';
 import { CommentIcon } from '../comments/CommentCount';
+import { LockIcon } from '../poll/PollIcons';
 
 // Kinds this build can draw. A later phase's kind reaching an older FE is
 // skipped rather than drawn as an empty row.
-const KNOWN_KINDS = new Set(['milestone', 'comment', 'support']);
+const KNOWN_KINDS = new Set(['milestone', 'comment', 'support', 'closed']);
 
 // 🌱 1, 🔥 10, ⭐ 50, 💯 100, 🚀 250, 🏆 500, 👑 1000 and up.
 function milestoneIcon(m: number): string {
@@ -87,11 +88,12 @@ function NotificationRow({ item, index, onClick }: { item: NotificationItem; ind
   const ticket = item.ticket;
   const target = <span className={`font-semibold ${unread ? 'text-white' : 'text-white/80'}`}>{ticket ? ticket.title : item.profile?.name}</span>;
   // The number is the news, so it gets a chip of its own inside the sentence.
-  const number = (
+  const chip = (n: number) => (
     <span className={`inline-block px-1.5 rounded-md font-bold tabular-nums ${unread ? 'bg-white/[0.12] text-white' : 'bg-white/[0.06] text-white/75'}`}>
-      {m}
+      {formatNumber(n)}
     </span>
   );
+  const number = chip(m);
   return (
     <button
       onClick={onClick}
@@ -128,7 +130,14 @@ function NotificationRow({ item, index, onClick }: { item: NotificationItem; ind
       </span>
       <span className="flex-1 min-w-0 pr-3">
         <span className={`block text-sm leading-relaxed break-words ${unread ? 'text-white/85' : 'text-white/60'}`}>
-          {ticket ? supportSentence(item, t, target) : item.kind === 'comment' ? (
+          {ticket ? supportSentence(item, t, target) : item.kind === 'closed' ? (
+            <>
+              {/* The lock the closed poll wears, two-tone, at the size of a
+                  milestone glyph. The total is final, so it gets the chip. */}
+              <LockIcon className="inline-block w-[1.25em] h-[1.25em] -mt-1 mr-1.5 align-middle" />
+              {fill(p.notifClosed, target, chip(item.finalVotes ?? 0))}
+            </>
+          ) : item.kind === 'comment' ? (
             <>
               {/* The opinio bubble the comments tab wears, in the slot and at the
                   size of a milestone glyph. */}

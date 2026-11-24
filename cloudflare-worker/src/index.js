@@ -40,6 +40,10 @@ const LANG_UI = {
   cs: {
     ogLocale: 'cs_CZ',
     cta: 'Hlasovat na Opinio',
+    ctaEnded: 'Výsledky na Opinio',
+    endedOn: 'Hlasování uzavřeno {date}',
+    dateLocale: 'cs-CZ',
+    finalResults: 'Konečné výsledky',
     tagline: 'Zeptej se světa. Uvidíš, jak odpoví každá země.',
     votes: 'hlasů', countries: 'zemí',
     original: 'Originál:',
@@ -49,6 +53,10 @@ const LANG_UI = {
   es: {
     ogLocale: 'es_ES',
     cta: 'Vota en Opinio',
+    ctaEnded: 'Resultados en Opinio',
+    endedOn: 'Votación cerrada el {date}',
+    dateLocale: 'es-ES',
+    finalResults: 'Resultados finales',
     tagline: 'Pregunta al mundo. Mira cómo responde cada país.',
     votes: 'votos', countries: 'países',
     original: 'Original:',
@@ -58,6 +66,10 @@ const LANG_UI = {
   de: {
     ogLocale: 'de_DE',
     cta: 'Auf Opinio abstimmen',
+    ctaEnded: 'Ergebnisse auf Opinio',
+    endedOn: 'Abstimmung geschlossen am {date}',
+    dateLocale: 'de-DE',
+    finalResults: 'Endergebnis',
     tagline: 'Frag die Welt. Sieh, wie jedes Land antwortet.',
     votes: 'Stimmen', countries: 'Länder',
     original: 'Original:',
@@ -67,6 +79,10 @@ const LANG_UI = {
   fr: {
     ogLocale: 'fr_FR',
     cta: 'Voter sur Opinio',
+    ctaEnded: 'Résultats sur Opinio',
+    endedOn: 'Vote clôturé le {date}',
+    dateLocale: 'fr-FR',
+    finalResults: 'Résultats définitifs',
     tagline: 'Interrogez le monde. Voyez comment chaque pays répond.',
     votes: 'votes', countries: 'pays',
     original: 'Original:',
@@ -76,6 +92,10 @@ const LANG_UI = {
   it: {
     ogLocale: 'it_IT',
     cta: 'Vota su Opinio',
+    ctaEnded: 'Risultati su Opinio',
+    endedOn: 'Votazione chiusa il {date}',
+    dateLocale: 'it-IT',
+    finalResults: 'Risultati finali',
     tagline: 'Chiedi al mondo. Guarda come risponde ogni paese.',
     votes: 'voti', countries: 'paesi',
     original: 'Originale:',
@@ -85,6 +105,10 @@ const LANG_UI = {
   pl: {
     ogLocale: 'pl_PL',
     cta: 'Głosuj na Opinio',
+    ctaEnded: 'Wyniki na Opinio',
+    endedOn: 'Głosowanie zamknięte {date}',
+    dateLocale: 'pl-PL',
+    finalResults: 'Wyniki końcowe',
     tagline: 'Zapytaj świat. Zobacz, jak odpowiada każdy kraj.',
     votes: 'głosów', countries: 'krajów',
     original: 'Oryginał:',
@@ -681,7 +705,9 @@ async function handleProfile(request, id) {
   const title = `${profile.name} - Opinio`;
   const total = profile.results?.total ?? 0;
   const countries = profile.results?.countries ?? 0;
-  const descSource = `${pollAnswersLine(profile)}${total ? ` - ${total} vote${total === 1 ? '' : 's'} from ${countries} ${countries === 1 ? 'country' : 'countries'}` : ''}. ${profile.description || ''}`.trim();
+  // A closed poll's preview reads as a result, not a call to vote.
+  const closed = !!profile.endsAt && new Date(profile.endsAt).getTime() <= Date.now();
+  const descSource = `${closed ? 'Final results: ' : ''}${pollAnswersLine(profile)}${total ? ` - ${total} vote${total === 1 ? '' : 's'} from ${countries} ${countries === 1 ? 'country' : 'countries'}` : ''}. ${profile.description || ''}`.trim();
   const description = truncate(descSource, 200);
   // The full poll picture where there is one (the 128px thumb is too small
   // for a large preview), then the thumb, then the site card.
@@ -774,7 +800,13 @@ function renderLangPage({ id, lang, profile, noindex }) {
     || (profile.imageUrl ? upscaleAvatarUrl(profile.imageUrl) : DEFAULT_OG_IMAGE);
   const title = `${name} - Opinio`;
   const total = profile.results?.total ?? 0;
-  const metaDesc = truncate(`${pollAnswersLine(profile)}${total ? ` - ${total} ${ui.votes}` : ''}. ${description}`.trim(), 200);
+  // Past ends_at the poll takes no votes: the page offers the results instead
+  // of a vote, and says when voting closed (the SPA's PollDeadline wording).
+  const ended = !!profile.endsAt && new Date(profile.endsAt).getTime() <= Date.now();
+  const endedLine = ended
+    ? ui.endedOn.replace('{date}', new Intl.DateTimeFormat(ui.dateLocale, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(profile.endsAt)))
+    : '';
+  const metaDesc = truncate(`${ended ? `${ui.finalResults}: ` : ''}${pollAnswersLine(profile)}${total ? ` - ${total} ${ui.votes}` : ''}. ${description}`.trim(), 200);
 
   const hero = profile.contentImageUrl
     ? `<img class="hero" src="${escapeHtml(profile.contentImageUrl)}" alt="${escapeHtml(name)}" />`
@@ -803,8 +835,8 @@ function renderLangPage({ id, lang, profile, noindex }) {
       const pct = total ? Math.round((n / total) * 100) : 0;
       return `<li><span>${escapeHtml(o.text)}</span><b>${pct}%</b></li>`;
     }).join('')}</ul>\n` +
-    `        <div class="counts">${total} ${escapeHtml(ui.votes)} · ${profile.results?.countries ?? 0} ${escapeHtml(ui.countries)}</div>\n` +
-    `        <a class="cta" href="${appUrl}">${escapeHtml(ui.cta)} &rarr;</a>\n` +
+    `        <div class="counts">${total} ${escapeHtml(ui.votes)} · ${profile.results?.countries ?? 0} ${escapeHtml(ui.countries)}${endedLine ? ` · ${escapeHtml(endedLine)}` : ''}</div>\n` +
+    `        <a class="cta" href="${appUrl}">${escapeHtml(ended ? ui.ctaEnded : ui.cta)} &rarr;</a>\n` +
     `      </div>\n    </article>\n` +
     `    <p class="tag">${escapeHtml(ui.tagline)}</p>\n` +
     `  </div>\n</body>\n</html>\n`;

@@ -10,6 +10,7 @@ import { PollOptions } from '../poll/PollOptions';
 import { PollCountries } from '../poll/PollCountries';
 import { GlobeIcon } from '../poll/PollIcons';
 import { PollSummary } from '../poll/PollSummary';
+import { PollDeadline } from '../poll/PollDeadline';
 import { DELETE_MAX_VOTES } from '../../utils/polls';
 import { ShareButton } from './ShareButton';
 import { ReportProfileButton } from './ReportProfileButton';
@@ -153,6 +154,8 @@ export function DesktopProfileModal({ profileId, countryCode }: DesktopProfileMo
                     <span>@{profile.addedBy}</span>
                   )}
                   {' · '}{formatRelativeTime(profile.createdAt, locale, t.justNow)}
+                  {/* The last 3 days and after the end only. */}
+                  <PollDeadline endsAt={profile.endsAt} variant="full" className="align-[-2px]" lead={' · '} />
                 </p>
               </div>
               <div className="flex items-center gap-1 shrink-0">

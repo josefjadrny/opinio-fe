@@ -13,6 +13,7 @@ import { plural } from '../../i18n/pollStrings';
 import { CommentCount } from '../comments/CommentCount';
 import { PollThumb } from '../poll/PollThumb';
 import { PollPreview } from '../poll/PollPreview';
+import { PollDeadline } from '../poll/PollDeadline';
 
 // Hover dwell before the preview opens (ms): responsive, but no flashing while
 // the pointer sweeps down a list.
@@ -141,6 +142,8 @@ export function ProfileCard({ profile, dense = false, rank }: ProfileCardProps) 
           <span className="text-[13px] text-text-secondary tabular-nums whitespace-nowrap">
             {plural(p.votes, locale, profile.voteCount, formatNumber)}
           </span>
+          {/* The last 3 days and after the end only - nothing while open. */}
+          <PollDeadline endsAt={profile.endsAt} variant="short" className="text-[13px] min-w-0 overflow-hidden" />
           <span className="ml-auto flex items-center">
             <CommentCount count={profile.commentCount ?? 0} size={dense ? 'xs' : 'sm'} onClick={openComments} />
           </span>

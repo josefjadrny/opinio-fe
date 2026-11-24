@@ -11,8 +11,9 @@ import type { MeResponse, NotificationItem, NotificationKind, NotificationsRespo
 
 // Lines one click clears, by the view the click opens (spec "Read state").
 const VIEW_KINDS: Record<NotificationKind, NotificationKind[]> = {
-  milestone: ['milestone', 'vote'],
-  vote: ['milestone', 'vote'],
+  milestone: ['milestone', 'vote', 'closed'],
+  vote: ['milestone', 'vote', 'closed'],
+  closed: ['milestone', 'vote', 'closed'],
   comment: ['comment', 'mention'],
   mention: ['comment', 'mention'],
   support: ['support'],

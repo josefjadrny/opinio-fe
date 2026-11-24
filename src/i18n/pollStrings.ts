@@ -76,6 +76,8 @@ export interface PollStrings {
   statsCountriesHelp: string;
   notifMilestone: string;
   notifMilestoneFirst: string;
+  /** Bell line when the owner's poll closes; {n} = its final vote total. */
+  notifClosed: string;
   previewTitle: string;
   planPerDay: string;
   statsPolls: string;
@@ -100,6 +102,27 @@ export interface PollStrings {
   planRegisteredComments: string;
   planRegisteredNotifications: string;
   planSupporterPromo: string;
+  /** New-poll form: how long the poll takes votes. */
+  durationLabel: string;
+  duration14d: string;
+  duration1m: string;
+  duration6m: string;
+  /** Detail views, always while open: {n} = "12 days" / "5 hours" / "30
+   *  minutes" (Intl unit), the form picked by its number - the verb agrees
+   *  with it in cs/es. */
+  timeLeftToVote: Plural;
+  /** Lists, the last 3 days only: the same, shorter. */
+  timeLeft: Plural;
+  /** Short marker on a list card of an ended poll. */
+  ended: string;
+  /** Detail header / preview of a closed poll - no date, the line is full. */
+  votingClosed: string;
+  /** Tooltip on the detail's deadline line: the exact end, date and time. */
+  closedOnTip: string;
+  closesOnTip: string;
+  /** Under the answers of a closed poll, in place of the vote hints;
+   *  {date} = the end date. */
+  votingEnded: string;
 }
 
 const en: { p: PollStrings; t: Partial<Strings> } = {
@@ -163,6 +186,7 @@ const en: { p: PollStrings; t: Partial<Strings> } = {
     statsCountriesHelp: 'Countries whose people voted the most in the last 24 hours.',
     notifMilestone: 'Your poll {target} reached {n} votes',
     notifMilestoneFirst: 'First vote on your poll {target}',
+    notifClosed: 'Voting closed on your poll {target} - total votes: {n}',
     previewTitle: 'Preview',
     planPerDay: 'vote / day',
     statsPolls: 'Polls',
@@ -187,6 +211,17 @@ const en: { p: PollStrings; t: Partial<Strings> } = {
     planRegisteredComments: 'Comment ✓',
     planRegisteredNotifications: 'Notifications ✓',
     planSupporterPromo: 'Keeps Opinio running',
+    durationLabel: 'Voting open for',
+    duration14d: '14 days',
+    duration1m: '1 month',
+    duration6m: '6 months',
+    timeLeftToVote: { one: '{n} left to vote', few: '{n} left to vote', many: '{n} left to vote', other: '{n} left to vote' },
+    timeLeft: { one: '{n} left', few: '{n} left', many: '{n} left', other: '{n} left' },
+    ended: 'Closed',
+    votingClosed: 'Voting closed',
+    closedOnTip: 'Closed on {date}',
+    closesOnTip: 'Closes on {date}',
+    votingEnded: 'Voting closed on {date} - these are the final results.',
   },
   t: {
     aboutPrincipleTimeTitle: 'We respect your time',
@@ -285,6 +320,7 @@ const cs: typeof en = {
     statsCountriesHelp: 'Země, jejichž lidé za posledních 24 hodin hlasovali nejvíc.',
     notifMilestone: 'Tvoje anketa {target} dosáhla {n} hlasů',
     notifMilestoneFirst: 'První hlas ve tvé anketě {target}',
+    notifClosed: 'Hlasování ve tvé anketě {target} je uzavřeno. Celkem hlasů: {n}',
     previewTitle: 'Náhled',
     planPerDay: 'hlas / den',
     statsPolls: 'Ankety',
@@ -309,6 +345,17 @@ const cs: typeof en = {
     planRegisteredComments: 'Komentování ✓',
     planRegisteredNotifications: 'Oznámení ✓',
     planSupporterPromo: 'Drží Opinio v chodu',
+    durationLabel: 'Hlasování otevřeno',
+    duration14d: '14 dní',
+    duration1m: '1 měsíc',
+    duration6m: '6 měsíců',
+    timeLeftToVote: { one: 'Zbývá {n} na hlasování', few: 'Zbývají {n} na hlasování', many: 'Zbývá {n} na hlasování', other: 'Zbývá {n} na hlasování' },
+    timeLeft: { one: 'Zbývá {n}', few: 'Zbývají {n}', many: 'Zbývá {n}', other: 'Zbývá {n}' },
+    ended: 'Uzavřeno',
+    votingClosed: 'Hlasování uzavřeno',
+    closedOnTip: 'Uzavřeno {date}',
+    closesOnTip: 'Uzavírá se {date}',
+    votingEnded: 'Hlasování uzavřeno {date} - toto jsou konečné výsledky.',
   },
   t: {
     aboutPrincipleTimeTitle: 'Respektujeme tvůj čas',
@@ -405,6 +452,7 @@ const es: typeof en = {
     statsCountriesHelp: 'Países cuya gente más votó en las últimas 24 horas.',
     notifMilestone: 'Tu encuesta {target} alcanzó {n} votos',
     notifMilestoneFirst: 'Primer voto en tu encuesta {target}',
+    notifClosed: 'La votación de tu encuesta {target} se ha cerrado. Votos totales: {n}',
     previewTitle: 'Vista previa',
     planPerDay: 'voto / día',
     statsPolls: 'Encuestas',
@@ -429,6 +477,17 @@ const es: typeof en = {
     planRegisteredComments: 'Comentar ✓',
     planRegisteredNotifications: 'Notificaciones ✓',
     planSupporterPromo: 'Mantiene Opinio en marcha',
+    durationLabel: 'Votación abierta durante',
+    duration14d: '14 días',
+    duration1m: '1 mes',
+    duration6m: '6 meses',
+    timeLeftToVote: { one: 'Queda {n} para votar', few: 'Quedan {n} para votar', many: 'Quedan {n} para votar', other: 'Quedan {n} para votar' },
+    timeLeft: { one: 'Queda {n}', few: 'Quedan {n}', many: 'Quedan {n}', other: 'Quedan {n}' },
+    ended: 'Cerrada',
+    votingClosed: 'Votación cerrada',
+    closedOnTip: 'Cerrada el {date}',
+    closesOnTip: 'Se cierra el {date}',
+    votingEnded: 'Votación cerrada el {date} - estos son los resultados finales.',
   },
   t: {
     aboutPrincipleTimeTitle: 'Respetamos tu tiempo',
@@ -525,6 +584,7 @@ const de: typeof en = {
     statsCountriesHelp: 'Länder, deren Menschen in den letzten 24 Stunden am meisten abgestimmt haben.',
     notifMilestone: 'Deine Umfrage {target} hat {n} Stimmen erreicht',
     notifMilestoneFirst: 'Erste Stimme bei deiner Umfrage {target}',
+    notifClosed: 'Die Abstimmung zu deiner Umfrage {target} ist geschlossen. Stimmen insgesamt: {n}',
     previewTitle: 'Vorschau',
     planPerDay: 'Stimme / Tag',
     statsPolls: 'Umfragen',
@@ -549,6 +609,17 @@ const de: typeof en = {
     planRegisteredComments: 'Kommentieren ✓',
     planRegisteredNotifications: 'Benachrich\u00adtigungen ✓',
     planSupporterPromo: 'Hält Opinio am Laufen',
+    durationLabel: 'Abstimmung offen für',
+    duration14d: '14 Tage',
+    duration1m: '1 Monat',
+    duration6m: '6 Monate',
+    timeLeftToVote: { one: 'Noch {n} zum Abstimmen', few: 'Noch {n} zum Abstimmen', many: 'Noch {n} zum Abstimmen', other: 'Noch {n} zum Abstimmen' },
+    timeLeft: { one: 'Noch {n}', few: 'Noch {n}', many: 'Noch {n}', other: 'Noch {n}' },
+    ended: 'Geschlossen',
+    votingClosed: 'Abstimmung geschlossen',
+    closedOnTip: 'Geschlossen am {date}',
+    closesOnTip: 'Schließt am {date}',
+    votingEnded: 'Abstimmung am {date} geschlossen - das sind die Endergebnisse.',
   },
   t: {
     aboutPrincipleTimeTitle: 'Wir respektieren deine Zeit',
@@ -645,6 +716,7 @@ const fr: typeof en = {
     statsCountriesHelp: 'Les pays dont les habitants ont le plus voté ces dernières 24 heures.',
     notifMilestone: 'Votre sondage {target} a atteint {n} votes',
     notifMilestoneFirst: 'Premier vote sur votre sondage {target}',
+    notifClosed: 'Le vote sur votre sondage {target} est clôturé. Total des votes : {n}',
     previewTitle: 'Aperçu',
     planPerDay: 'vote / jour',
     statsPolls: 'Sondages',
@@ -669,6 +741,17 @@ const fr: typeof en = {
     planRegisteredComments: 'Commenter ✓',
     planRegisteredNotifications: 'Notifications ✓',
     planSupporterPromo: 'Fait vivre Opinio',
+    durationLabel: 'Vote ouvert pendant',
+    duration14d: '14 jours',
+    duration1m: '1 mois',
+    duration6m: '6 mois',
+    timeLeftToVote: { one: 'Encore {n} pour voter', few: 'Encore {n} pour voter', many: 'Encore {n} pour voter', other: 'Encore {n} pour voter' },
+    timeLeft: { one: 'Encore {n}', few: 'Encore {n}', many: 'Encore {n}', other: 'Encore {n}' },
+    ended: 'Clôturé',
+    votingClosed: 'Vote clôturé',
+    closedOnTip: 'Clôturé le {date}',
+    closesOnTip: 'Se clôture le {date}',
+    votingEnded: 'Vote clôturé le {date} - voici les résultats définitifs.',
   },
   t: {
     aboutPrincipleTimeTitle: 'Nous respectons votre temps',
@@ -765,6 +848,7 @@ const it: typeof en = {
     statsCountriesHelp: 'I paesi le cui persone hanno votato di più nelle ultime 24 ore.',
     notifMilestone: 'Il tuo sondaggio {target} ha raggiunto {n} voti',
     notifMilestoneFirst: 'Primo voto sul tuo sondaggio {target}',
+    notifClosed: 'La votazione del tuo sondaggio {target} è chiusa. Voti totali: {n}',
     previewTitle: 'Anteprima',
     planPerDay: 'voto / giorno',
     statsPolls: 'Sondaggi',
@@ -789,6 +873,17 @@ const it: typeof en = {
     planRegisteredComments: 'Commentare ✓',
     planRegisteredNotifications: 'Notifiche ✓',
     planSupporterPromo: 'Tiene in vita Opinio',
+    durationLabel: 'Voto aperto per',
+    duration14d: '14 giorni',
+    duration1m: '1 mese',
+    duration6m: '6 mesi',
+    timeLeftToVote: { one: 'Ancora {n} per votare', few: 'Ancora {n} per votare', many: 'Ancora {n} per votare', other: 'Ancora {n} per votare' },
+    timeLeft: { one: 'Ancora {n}', few: 'Ancora {n}', many: 'Ancora {n}', other: 'Ancora {n}' },
+    ended: 'Chiuso',
+    votingClosed: 'Votazione chiusa',
+    closedOnTip: 'Chiuso il {date}',
+    closesOnTip: 'Si chiude il {date}',
+    votingEnded: 'Votazione chiusa il {date} - questi sono i risultati finali.',
   },
   t: {
     aboutPrincipleTimeTitle: 'Rispettiamo il tuo tempo',
@@ -885,6 +980,7 @@ const pl: typeof en = {
     statsCountriesHelp: 'Kraje, których mieszkańcy głosowali najwięcej w ostatnich 24 godzinach.',
     notifMilestone: 'Twoja ankieta {target} osiągnęła {n} głosów',
     notifMilestoneFirst: 'Pierwszy głos w twojej ankiecie {target}',
+    notifClosed: 'Głosowanie w twojej ankiecie {target} jest zamknięte. Łącznie głosów: {n}',
     previewTitle: 'Podgląd',
     planPerDay: 'głos / dzień',
     statsPolls: 'Ankiety',
@@ -909,6 +1005,17 @@ const pl: typeof en = {
     planRegisteredComments: 'Komentowanie ✓',
     planRegisteredNotifications: 'Powiadomienia ✓',
     planSupporterPromo: 'Utrzymuje Opinio',
+    durationLabel: 'Głosowanie otwarte przez',
+    duration14d: '14 dni',
+    duration1m: '1 miesiąc',
+    duration6m: '6 miesięcy',
+    timeLeftToVote: { one: 'Jeszcze {n} na głosowanie', few: 'Jeszcze {n} na głosowanie', many: 'Jeszcze {n} na głosowanie', other: 'Jeszcze {n} na głosowanie' },
+    timeLeft: { one: 'Jeszcze {n}', few: 'Jeszcze {n}', many: 'Jeszcze {n}', other: 'Jeszcze {n}' },
+    ended: 'Zamknięte',
+    votingClosed: 'Głosowanie zamknięte',
+    closedOnTip: 'Zamknięte {date}',
+    closesOnTip: 'Zamyka się {date}',
+    votingEnded: 'Głosowanie zamknięte {date} - oto wyniki końcowe.',
   },
   t: {
     aboutPrincipleTimeTitle: 'Szanujemy Twój czas',

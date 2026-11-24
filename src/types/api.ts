@@ -78,7 +78,7 @@ export interface MeResponse {
 
 // One line in the notifications panel. Phase 1 writes only `milestone`; the
 // other kinds come with later phases and the FE skips any kind it does not know.
-export type NotificationKind = 'milestone' | 'vote' | 'comment' | 'mention' | 'support';
+export type NotificationKind = 'milestone' | 'vote' | 'comment' | 'mention' | 'support' | 'closed';
 
 export interface NotificationItem {
   id: string;
@@ -90,6 +90,8 @@ export interface NotificationItem {
   actors: { id: string; handle: string; avatarUrl: string | null; countryCode: string | null }[];
   moreCount: number;
   milestone: number | null;
+  /** `closed` lines: the poll's vote total when it closed (final). */
+  finalVotes?: number | null;
   /** Null on a `support` line - it belongs to a ticket, not an opinio. */
   profile: { id: string; name: string; role: Role; imageUrl: string | null; isMine: boolean } | null;
   commentId: string | null;

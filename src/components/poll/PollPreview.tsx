@@ -9,6 +9,7 @@ import { RoleBadge } from '../common/RoleBadge';
 import { PollThumb } from './PollThumb';
 import { OptionMark } from './OptionAvatar';
 import { PollSummary } from './PollSummary';
+import { PollDeadline } from './PollDeadline';
 
 const WIDTH = 340;
 const GAP = 10; // visible gap between card and panel
@@ -174,6 +175,13 @@ export function PollPreview({ profile: listPoll, anchorEl, onMouseEnter, onMouse
             {' · '}{formatRelativeTime(profile.createdAt, locale, t.justNow)}
           </div>
         )}
+        {/* Under the asker, its own line: "Voting ended May 24, 2027" does
+            not fit beside a long handle in 340px. */}
+        <PollDeadline
+          endsAt={profile.endsAt}
+          variant="full"
+          className={`flex px-3 pb-2.5 text-[13px] ${profile.addedBy ? '-mt-1' : 'pt-2.5 border-t border-border'}`}
+        />
       </div>
     </div>,
     document.body,
