@@ -16,16 +16,19 @@ interface PollDeadlineProps {
   className?: string;
   /** Rendered before it, only when it renders (the " · " in a meta line). */
   lead?: ReactNode;
+  /** Say nothing once closed - where the line under the answers already
+   *  says it with the date (the mobile sheet). */
+  hideClosed?: boolean;
 }
 
 // How long a poll still takes votes - only in its last 3 days, everywhere:
 // "150 days left" changes nobody's vote, so before that nothing is shown (the
 // user's call). Said quietly: plain secondary text, no badge colour (orange
 // and amber are reserved); an ended poll drops to the faintest tier.
-export function PollDeadline({ endsAt, variant, className = '', lead }: PollDeadlineProps) {
+export function PollDeadline({ endsAt, variant, className = '', lead, hideClosed = false }: PollDeadlineProps) {
   const { p, locale } = useI18n();
   const phase = usePollDeadline(endsAt);
-  if (!endsAt || phase === 'open') return null;
+  if (!endsAt || phase === 'open' || (hideClosed && phase === 'ended')) return null;
 
   let text: string;
   if (phase === 'ended') {

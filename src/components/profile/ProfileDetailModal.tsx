@@ -154,10 +154,11 @@ export function ProfileDetailModal({ profile: seed, onClose, countryCode }: Prof
                   </HoverTip>
                 </div>
               </div>
-              {/* The last 3 days and after the end, on its own line: the
-                  sheet's "asked by" line sits under the answers, out of sight,
-                  and beside the badge a long language ran under the buttons. */}
-              <PollDeadline endsAt={profile.endsAt} variant="full" className="flex mt-1 text-[13px]" />
+              {/* The last 3 days only, on its own line (beside the badge a
+                  long language ran under the buttons). Once closed the line
+                  under the answers says it, with the date, right below the
+                  tiles - a header copy was a repeat (the user's call). */}
+              <PollDeadline endsAt={profile.endsAt} variant="full" className="flex mt-1 text-[13px]" hideClosed />
             </div>
           </div>
         </div>
