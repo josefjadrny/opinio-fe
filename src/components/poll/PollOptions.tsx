@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Profile } from '../../types/profile';
 import { useMe } from '../../hooks/useMe';
@@ -14,6 +14,10 @@ import { formatNumber } from '../../utils/formatNumber';
 import { formatPollDate } from '../../utils/formatRelativeTime';
 import { PollSummary } from './PollSummary';
 import { LockIcon } from './PollIcons';
+import { AnchoredTip } from '../common/AnchoredTip';
+import { useProfileCountries } from '../../hooks/useProfileCountries';
+import { OptionCountriesPanel } from './OptionCountriesPanel';
+import { optionCountries } from '../../utils/optionCountries';
 
 // The tick on my answer: a disc in the answer's colour.
 function MineBadge({ color, className = '' }: { color: string; className?: string }) {
@@ -45,13 +49,17 @@ interface PollOptionsProps {
   /** Votes + countries figures under the answers. The desktop window shows
    *  them over its country list instead. */
   summary?: boolean;
+  /** Each answer's countries on hover (desktop) or on a tap that no longer
+   *  votes (phone). Off for the one-country view, whose answers are already
+   *  that country's. */
+  countryTips?: boolean;
 }
 
 // The poll's answers, which are also its vote buttons (POLLS-DESIGN.md
 // section 8): results are visible to everyone, always - tapping an answer
 // votes. Registered voters can change their vote; anonymous votes are final
 // and limited to one per 24h, with Turnstile run on the press.
-export function PollOptions({ profile, showingOriginal = false, pictureClass = 'w-10 h-10', summary = true }: PollOptionsProps) {
+export function PollOptions({ profile, showingOriginal = false, pictureClass = 'w-10 h-10', summary = true, countryTips = true }: PollOptionsProps) {
   const { t, p, locale } = useI18n();
   const { data: me } = useMe();
   const queryClient = useQueryClient();
@@ -61,6 +69,19 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
   const [changing, setChanging] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The open countries panel: the answer and the row it points at. A mouse
+  // opens it on hover; a finger opens it by tapping a row that no longer votes
+  // (touch has no hover, and before the vote the tap must stay the vote).
+  const [tip, setTip] = useState<{ id: string; el: HTMLElement; touch: boolean } | null>(null);
+  const pointerType = useRef<string>('mouse');
+  const { data: countriesData } = useProfileCountries(countryTips ? profile.id : null);
+  // A touch-opened panel has no pointerleave: any press elsewhere closes it.
+  useEffect(() => {
+    if (!tip?.touch) return;
+    const onDown = (e: PointerEvent) => { if (!tip.el.contains(e.target as Node)) setTip(null); };
+    document.addEventListener('pointerdown', onDown);
+    return () => document.removeEventListener('pointerdown', onDown);
+  }, [tip]);
 
   const isRegistered = !!me?.user && me.user.tier !== 'anonymous';
   const hasCountry = me === undefined || !!me.user.countryCode;
@@ -84,7 +105,14 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
   const tappable = !ended && hasCountry && !verifying && !voteMutation.isPending
     && (voted ? isRegistered && changing : canVoteNow);
 
-  const handleTap = async (optionId: string) => {
+  const handleTap = async (optionId: string, el: HTMLElement) => {
+    // A finger on a row that would not vote reads that answer's countries:
+    // after a vote, after the end, and in viewer mode (no country, no vote).
+    // An anonymous voter out of votes still gets the sign-in prompt below.
+    if (pointerType.current !== 'mouse' && !tappable && (voted || ended || !hasCountry)) {
+      setTip((cur) => (cur?.id === optionId ? null : countryRows(optionId).length ? { id: optionId, el, touch: true } : null));
+      return;
+    }
     setError(null);
     if (ended || !hasCountry) return;
     if (!isRegistered && !canVoteNow && !voted) { promptSignIn(); return; }
@@ -139,6 +167,9 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
     ? ranked.ids.map((id) => byId.get(id)!).filter(Boolean)
     : profile.options;
   const withPictures = profile.options.some((x) => x.imageUrl);
+  const countryRows = (optionId: string) => (countriesData ? optionCountries(countriesData.countries, optionId) : []);
+  const tipOption = tip ? byId.get(tip.id) : undefined;
+  const tipRows = tip ? countryRows(tip.id) : [];
   const leader = total > 0 ? Math.max(...profile.options.map((o) => counts.get(o.id) ?? 0)) : -1;
 
   return (
@@ -164,8 +195,22 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
               key={o.id}
               type="button"
               role="listitem"
-              onClick={() => handleTap(o.id)}
-              disabled={!tappable && (ended || !(!isRegistered && !canVoteNow && !voted))}
+              onClick={(e) => handleTap(o.id, e.currentTarget)}
+              onPointerDown={(e) => {
+                pointerType.current = e.pointerType;
+                // A click votes: the panel would describe the row as it was.
+                if (e.pointerType === 'mouse') setTip(null);
+              }}
+              onPointerEnter={(e) => {
+                if (e.pointerType === 'mouse' && countryRows(o.id).length) setTip({ id: o.id, el: e.currentTarget, touch: false });
+              }}
+              onPointerLeave={(e) => {
+                if (e.pointerType === 'mouse') setTip((cur) => (cur?.id === o.id ? null : cur));
+              }}
+              // aria-disabled, not disabled: a disabled button gets no hover
+              // or tap, and a row that no longer votes still opens its
+              // countries. handleTap ignores what cannot vote.
+              aria-disabled={(!tappable && (ended || !(!isRegistered && !canVoteNow && !voted))) || undefined}
               aria-pressed={mine}
               aria-label={`${showingOriginal ? o.originalText : o.text}: ${pct}%, ${plural(p.votes, locale, n, formatNumber)}${mine ? `, ${p.yourVote}` : ''}`}
               className={`group relative w-full rounded-2xl text-left px-3 transition-[background-color,box-shadow,transform] duration-200 ${
@@ -208,6 +253,12 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
         })}
       </div>
 
+      {tip && tipOption && tipRows.length > 0 && (
+        <AnchoredTip anchorEl={tip.el} width={280} content={`${tip.id}:${tipRows.length}`} className="px-3 py-2.5">
+          <OptionCountriesPanel option={tipOption} text={showingOriginal ? tipOption.originalText : tipOption.text} rows={tipRows} />
+        </AnchoredTip>
+      )}
+
       <div
         role="status"
         aria-live="polite"
@@ -233,7 +284,19 @@ export function PollOptions({ profile, showingOriginal = false, pictureClass = '
             {p.votingEnded.replace('{date}', formatPollDate(profile.endsAt, locale))}
           </span>
         ) : !hasCountry ? (
-          <span>{isRegistered ? t.noCountryWarningRegistered : t.noCountryWarning}</span>
+          isRegistered ? (
+            <span>{t.noCountryWarningRegistered}</span>
+          ) : (
+            // "Viewer mode - sign in to vote.": the part after the dash is the
+            // way to a vote, so it is bold and opens sign-in. Every language
+            // keeps the "mode - action" shape.
+            <span>
+              {t.noCountryWarning.split(' - ')[0]} -{' '}
+              <button type="button" onClick={promptSignIn} className="font-semibold text-white hover:underline underline-offset-2">
+                {t.noCountryWarning.split(' - ').slice(1).join(' - ')}
+              </button>
+            </span>
+          )
         ) : verifying ? null : error ? (
           <span className="text-negative-soft">{error}</span>
         ) : voted ? (

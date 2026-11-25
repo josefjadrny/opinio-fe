@@ -30,6 +30,10 @@ export interface PollStrings {
   voteFailed: string;
   alreadyVoted: string;
   countriesEmpty: string;
+  /** Heading of an answer's hover/tap panel: which countries the answer's votes came from. */
+  optionTopCountries: string;
+  /** That panel's footer: the countries left out of its top list. */
+  optionMoreCountries: Plural;
   tie: string;
   votesTodayFrom: string;
   noVotesTodayFrom: string;
@@ -146,6 +150,8 @@ const en: { p: PollStrings; t: Partial<Strings> } = {
     voteFailed: 'Your vote did not go through. Try again.',
     alreadyVoted: 'You already answered this poll',
     countriesEmpty: 'Nobody has voted yet',
+    optionTopCountries: 'Where its votes come from',
+    optionMoreCountries: { one: '+{n} more country', few: '+{n} more countries', many: '+{n} more countries', other: '+{n} more countries' },
     tie: 'tie',
     votesTodayFrom: '{votes} today',
     noVotesTodayFrom: 'No votes from here yet',
@@ -280,6 +286,8 @@ const cs: typeof en = {
     voteFailed: 'Hlas se nepodařilo odeslat. Zkuste to znovu.',
     alreadyVoted: 'V této anketě už jste hlasovali',
     countriesEmpty: 'Zatím nikdo nehlasoval',
+    optionTopCountries: 'Odkud má hlasy',
+    optionMoreCountries: { one: '+{n} další země', few: '+{n} další země', many: '+{n} další země', other: '+{n} dalších zemí' },
     tie: 'remíza',
     votesTodayFrom: 'dnes {votes}',
     noVotesTodayFrom: 'Odsud zatím nikdo nehlasoval',
@@ -412,6 +420,8 @@ const es: typeof en = {
     voteFailed: 'Tu voto no se ha registrado. Inténtalo de nuevo.',
     alreadyVoted: 'Ya has respondido esta encuesta',
     countriesEmpty: 'Nadie ha votado todavía',
+    optionTopCountries: 'De dónde vienen sus votos',
+    optionMoreCountries: { one: '+{n} país más', few: '+{n} países más', many: '+{n} países más', other: '+{n} países más' },
     tie: 'empate',
     votesTodayFrom: '{votes} hoy',
     noVotesTodayFrom: 'Aún no hay votos desde aquí',
@@ -544,6 +554,8 @@ const de: typeof en = {
     voteFailed: 'Deine Stimme wurde nicht gezählt. Versuch es noch einmal.',
     alreadyVoted: 'Du hast bei dieser Umfrage schon abgestimmt',
     countriesEmpty: 'Noch hat niemand abgestimmt',
+    optionTopCountries: 'Woher die Stimmen kommen',
+    optionMoreCountries: { one: '+{n} weiteres Land', few: '+{n} weitere Länder', many: '+{n} weitere Länder', other: '+{n} weitere Länder' },
     tie: 'Gleichstand',
     votesTodayFrom: 'heute {votes}',
     noVotesTodayFrom: 'Von hier hat noch niemand abgestimmt',
@@ -676,6 +688,8 @@ const fr: typeof en = {
     voteFailed: 'Votre vote n\'est pas passé. Réessayez.',
     alreadyVoted: 'Vous avez déjà répondu à ce sondage',
     countriesEmpty: 'Personne n\'a encore voté',
+    optionTopCountries: "D'où viennent ses votes",
+    optionMoreCountries: { one: '+{n} autre pays', few: '+{n} autres pays', many: '+{n} autres pays', other: '+{n} autres pays' },
     tie: 'égalité',
     votesTodayFrom: '{votes} aujourd\'hui',
     noVotesTodayFrom: 'Aucun vote d\'ici pour l\'instant',
@@ -808,6 +822,8 @@ const it: typeof en = {
     voteFailed: 'Il tuo voto non è passato. Riprova.',
     alreadyVoted: 'Hai già risposto a questo sondaggio',
     countriesEmpty: 'Nessuno ha ancora votato',
+    optionTopCountries: 'Da dove arrivano i voti',
+    optionMoreCountries: { one: '+{n} altro paese', few: '+{n} altri paesi', many: '+{n} altri paesi', other: '+{n} altri paesi' },
     tie: 'parità',
     votesTodayFrom: '{votes} oggi',
     noVotesTodayFrom: 'Ancora nessun voto da qui',
@@ -940,6 +956,8 @@ const pl: typeof en = {
     voteFailed: 'Głos nie przeszedł. Spróbuj ponownie.',
     alreadyVoted: 'Już odpowiedziałeś w tej ankiecie',
     countriesEmpty: 'Nikt jeszcze nie głosował',
+    optionTopCountries: 'Skąd pochodzą głosy',
+    optionMoreCountries: { one: '+{n} kolejny kraj', few: '+{n} kolejne kraje', many: '+{n} kolejnych krajów', other: '+{n} kolejnego kraju' },
     tie: 'remis',
     votesTodayFrom: 'dziś {votes}',
     noVotesTodayFrom: 'Stąd nikt jeszcze nie głosował',

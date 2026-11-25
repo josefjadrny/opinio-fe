@@ -236,6 +236,7 @@ export function ProfileDetailModal({ profile: seed, onClose, countryCode }: Prof
                   showingOriginal={showingOriginal}
                   pictureClass="w-11 h-11"
                   summary={false}
+                  countryTips={false}
                 />
               )}
               <CountryNotes view={view} />

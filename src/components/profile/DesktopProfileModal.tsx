@@ -268,6 +268,7 @@ export function DesktopProfileModal({ profileId, countryCode }: DesktopProfileMo
                               showingOriginal={showingOriginal}
                               pictureClass="w-12 h-12"
                               summary={false}
+                              countryTips={false}
                             />
                           )}
                           <CountryNotes view={view} />
